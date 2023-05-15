@@ -14,5 +14,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('pages/welcome');
+});
+Route::get('/mon-profil', function () {
+    return view('pages/mon_profil');
+});
+Route::get('/formations', function () {
+    return view('pages/formations');
+});
+Route::get('/admin-club', function () {
+    return view('pages/admin_club');
+});
+Route::get('/admin-ur', function () {
+    return view('pages/admin_ur');
+});
+Route::get('/admin-fpf', function () {
+    return view('pages/admin_fpf');
 });
