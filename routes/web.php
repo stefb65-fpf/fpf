@@ -22,12 +22,12 @@ Route::get('/mon-profil', function () {
 Route::get('/formations', function () {
     return view('pages/formations');
 });
-Route::get('/admin-club', function () {
-    return view('pages/admin_club');
+Route::get('/gestion-club', function () {
+    return view('pages/gestion_club');
 });
-Route::get('/admin-ur', function () {
-    return view('pages/admin_ur');
+Route::get('/gestion-ur', function () {
+    return view('pages/gestion_ur');
 });
-Route::get('/admin-fpf', function () {
-    return view('pages/admin_fpf');
+Route::get('/gestion-fpf', function () {
+    return view('pages/gestion_fpf');
 });

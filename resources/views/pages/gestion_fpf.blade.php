@@ -3,7 +3,7 @@
 @section('content')
     <div class="adminFpfPage pageCanva">
         <h1 class="pageTitle">
-            Espace d'administration FPF
+            Espace de gestion FPF
         </h1>
         <div class="cardContainer">
             <div class="card">

@@ -3,7 +3,7 @@
 @section('content')
     <div class="adminUrPage pageCanva">
         <h1 class="pageTitle">
-            Espace d'administration d'UR
+            Espace de gestion d'UR
         </h1>
         <div class="cardContainer">
             <div class="card">

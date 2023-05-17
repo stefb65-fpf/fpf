@@ -3,7 +3,7 @@
 @section('content')
     <div class="adminClubPage pageCanva">
         <h1 class="pageTitle">
-            Espace d'administration club
+            Espace de gestion club
         </h1>
         <div class="cardContainer">
             <div class="card">
