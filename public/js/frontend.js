@@ -1,5 +1,3 @@
-console.log("load script")
-
 let navbarMenu = document.querySelector('.navbar .menu')
 let navbar = document.querySelector(".navbar")
 let hamburger = document.querySelector('.hamburger')

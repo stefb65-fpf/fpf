@@ -38,11 +38,14 @@
         </div>
 
             <ul class="menu">
-                <li class="menuItem{{ Request::is('mon-profil')?" active":""}}" data-direction="mon-profil" >
-                <div class="title">
-                    Mon Profil
-                </div>
-                </li>
+                <a href="mon-profil">
+                    <li class="menuItem{{ Request::is('mon-profil')?" active":""}}" data-direction="mon-profil" >
+                        <div class="title">
+                            Mon Profil
+                        </div>
+                    </li>
+                </a>
+
                 <li class="menuItem{{ Request::is('formations')?" active":""}}" data-direction="formations" >
                 <div class="title">
                     formations
