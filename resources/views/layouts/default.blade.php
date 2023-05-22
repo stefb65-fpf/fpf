@@ -32,6 +32,7 @@
 <script type="text/javascript" src="{{ asset('js/vanilla-tilt.min.js') }}"></script>
 <script src="https://kit.fontawesome.com/78d4dad418.js" crossorigin="anonymous"></script>
 <script src="{{ asset('js/frontend.js') }}"></script>
-<script src="{{ asset('./js/app.js') }}" defer></script>
+{{--@viteReactRefresh--}}
+{{--@vite('resources/js/app.jsx')--}}
 </body>
 </html>
