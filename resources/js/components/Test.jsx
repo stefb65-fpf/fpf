@@ -1,5 +1,4 @@
 export default  function Test() {
-    // TODO: Actually implement a navigation bar
     const objs = [
         {
             id: 1,

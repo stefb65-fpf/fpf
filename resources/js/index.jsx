@@ -1,13 +1,9 @@
 import './bootstrap';
 import { createRoot } from 'react-dom/client';
 
-import Test from "./components/Test.jsx";
-import Toto from "./components/Toto";
+import App from "./App";
 
-const domNode = document.getElementById('hello-react');
+const domNode = document.getElementById('root');
 const root = createRoot(domNode);
-root.render(<Test />);
+root.render(<App root={root}/>);
 
-const domNode2 = document.getElementById('toto-react');
-const root2 = createRoot(domNode2);
-root2.render(<Toto />);

@@ -1,0 +1,31 @@
+
+.navbar .menuItem {
+    list-style: none;
+    cursor: pointer;
+    text-decoration: none;
+    width: 100%;
+    max-width: 305px;
+    background: linear-gradient(93.19deg, rgba(255, 255, 255, 0.26) 34.84%, rgba(255, 255, 255, 0.6) 74.06%, rgba(255, 255, 255, 0.3) 96.07%);
+    border-top: 1px solid rgba(255, 255, 255, 0.38);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.02);
+    backdrop-filter: blur(5px);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 28px;
+    letter-spacing: 0.12em;
+    color: #4E4E4E;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+.navbar .menuItem a{
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.navbar .menuItem.active {
+    background: rgba(27, 59, 120, 0.61);
+    color: white;
+}

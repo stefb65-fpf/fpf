@@ -17,8 +17,11 @@
     @viteReactRefresh
     @vite('resources/js/index.jsx')
 </head>
-<body >
+<body>
 @include('layouts.header')
+<div id="root"></div>
+<div id="modal"></div>
+{{--<div id="modalReact"></div>--}}
 <div class="hamburger">
     <div class="wrapper">
         <div class="line"></div>
@@ -27,13 +30,12 @@
     </div>
 </div>
 <div class="mainContainer">
+
     @yield('content')
     @include('layouts.footer')
-    <div id="hello-react"></div>
 </div>
 @yield('js')
 <script type="text/javascript" src="{{ asset('js/vanilla-tilt.min.js') }}"></script>
-<script src="https://kit.fontawesome.com/78d4dad418.js" crossorigin="anonymous"></script>
 <script src="{{ asset('js/frontend.js') }}"></script>
 </body>
 </html>
