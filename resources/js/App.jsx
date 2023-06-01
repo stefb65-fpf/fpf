@@ -5,8 +5,6 @@ import {createRoot} from "react-dom/client";
 import Menu from "./components/Navbar/Menu/Menu";
 
 export default function App() {
-
-
     const [selectedCardInfos, setSelectedCardInfos] = useState({
         id: 1,
         number: " 02-0365-0036",

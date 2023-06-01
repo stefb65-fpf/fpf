@@ -7,19 +7,16 @@
         </h1>
         <div class="cardContainer">
             <div class="card">
-
                 <div class="wrapper">
                     <div class="cardTitle">Infos club</div>
                 </div>
             </div>
             <div class="card">
-
                 <div class="wrapper">
                     <div class="cardTitle">Infos club</div>
                 </div>
             </div>
             <div class="card">
-
                 <div class="wrapper">
                     <div class="cardTitle">Infos club</div>
                 </div>
@@ -39,7 +36,6 @@
                     <div class="cardTitle">Infos club</div>
                 </div>
             </div>
-
         </div>
     </div>
 @endsection

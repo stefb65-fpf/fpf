@@ -31,3 +31,16 @@ Route::get('/gestion-ur', function () {
 Route::get('/gestion-fpf', function () {
     return view('pages/gestion_fpf');
 });
+
+Route::get('/login', function () {
+    return view('auth/login');
+});
+Route::get('/register', function () {
+    return view('auth/register');
+});
+Route::get('/forgotPassword', function () {
+    return view('auth/forgotPassword');
+});
+Route::get('/reinitPassword', function () {
+    return view('auth/reinitPassword');
+});

@@ -48,7 +48,6 @@
             </div>
             <div class="card invisible">
             </div>
-
         </div>
     </div>
 @endsection

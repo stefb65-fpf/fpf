@@ -16,7 +16,7 @@ export default function Cards({selectedCardInfos,setSelectedCardInfos, setShowMo
             menus:[1,2]
         }
     ]
-    const changeCard = ( clickedCard )=>{
+    const changeCard = ( clickedCard ) => {
         if(selectedCardInfos.id !== clickedCard.id){
             setSelectedCardInfos(clickedCard)
             setShowModal(false)
