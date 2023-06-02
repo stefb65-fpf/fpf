@@ -20,10 +20,11 @@
         <div class="dropdown">
             <ul>
                 <li>
-                    Carte n° 10-0026-0003
+                    <a href="/mon-profil">  Mon Profil</a>
+
                 </li>
                 <li>
-                    Carte n° 06-0036-0017
+                    <a href="/login">  Se déconnecter</a>
                 </li>
             </ul>
         </div>
