@@ -26,9 +26,10 @@
     background-color: #a9b7d1;
     padding:  70px 30px;
 }
-.close{
+#modal .close{
     position: absolute;
     top: 15px;
     right: 15px;
     cursor: pointer;
 }
+

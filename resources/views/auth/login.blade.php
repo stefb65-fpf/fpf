@@ -11,23 +11,23 @@
             <a href="/register"> Enregistrez-vous !</a>
         </div>
         <div class="authForm">
-            <div class="authfield">
-                <label f class="authLabel">Votre adresse email</label>
-                <input class="authInput"  type="email" name="email"  >
+            <div class="customField">
+                <label >E-mail</label>
+                <input  type="email" name="email"  >
                 <div class="error">message erreur</div>
             </div>
-            <div class="authfield">
-                <label f class="authLabel">Votre mot de passe</label>
+            <div class="customField">
+                <label >Mot de passe</label>
                 <div class="group">
-                    <input class="authInput"  type="password" name="password"  >
-                    <div class="eye">
-                        <div class="open">
+                    <input   type="password" name="password"  >
+                    <div class="icons eye">
+                        <div class="icon open">
                             <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1 8C1 8 4 1 11 1C18 1 21 8 21 8C21 8 18 15 11 15C4 15 1 8 1 8Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M11 11C12.6569 11 14 9.65685 14 8C14 6.34315 12.6569 5 11 5C9.34315 5 8 6.34315 8 8C8 9.65685 9.34315 11 11 11Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
-                        <div class="closed">
+                        <div class="icon closed dark hidden">
                             <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1 11C1 11 4 4 11 4C18 4 21 11 21 11C21 11 18 18 11 18C4 18 1 11 1 11Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M11 14C12.6569 14 14 12.6569 14 11C14 9.34315 12.6569 8 11 8C9.34315 8 8 9.34315 8 11C8 12.6569 9.34315 14 11 14Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -39,10 +39,10 @@
 
                 <div class="error">message erreur</div>
             </div>
-            <div class="button"> Connectez-vous</div>
+            <div class="button customBtn"> Connectez-vous</div>
         </div>
         <a class="forgottenPswd" href="/forgotPassword">Vous avez oublié votre mot de passe ?</a>
-        <a class="findClub" href="https://federation-photo.fr/les-clubs/">Vous recherchez un club?</a>
+        <a class="findClub" target="_blank" href="https://federation-photo.fr/les-clubs/">Vous recherchez <span class="accent">un club</span> ?</a>
 
     </div>
 @endsection

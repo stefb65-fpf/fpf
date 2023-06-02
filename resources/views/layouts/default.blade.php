@@ -11,28 +11,18 @@
     @yield('css')
     @yield('headjs')
 
-    @viteReactRefresh
-    @vite('resources/js/index.jsx')
+{{--    @viteReactRefresh--}}
+{{--    @vite('resources/js/index.jsx')--}}
 </head>
 <body>
 @include('layouts.header')
 @include('layouts.menu')
-{{--<div id="root"></div>--}}
-{{--<div id="modal"></div>--}}
-{{--<div id="modalReact"></div>--}}
-{{--<div class="hamburger">--}}
-{{--    <div class="wrapper">--}}
-{{--        <div class="line"></div>--}}
-{{--        <div class="line"></div>--}}
-{{--        <div class="line"></div>--}}
-{{--    </div>--}}
-{{--</div>--}}
+
 <div class="mainContainer">
     @yield('content')
     @include('layouts.footer')
 </div>
 @yield('js')
-{{--<script type="text/javascript" src="{{ asset('js/vanilla-tilt.min.js') }}"></script>--}}
 <script src="{{ asset('js/frontend.js') }}"></script>
 </body>
 </html>

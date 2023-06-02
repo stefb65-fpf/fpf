@@ -38,3 +38,10 @@
     font-weight: 600;
     margin-right: 10px;
 }
+@media screen and (max-width: 500px) {
+
+    #modal .card{
+        margin: 0 0 20px;
+    }
+
+}

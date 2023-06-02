@@ -13,10 +13,10 @@
 </head>
 <body>
 @include('layouts.headerLogin')
-<div class="mainContainer fullWidth">
+<div class="mainContainer fullWidth fullHeight">
     @yield('content')
-    @include('layouts.footer')
 </div>
+@include('layouts.footer')
 @yield('js')
 <script src="{{ asset('js/frontend.js') }}"></script>
 </body>

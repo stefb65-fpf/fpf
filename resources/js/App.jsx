@@ -10,10 +10,10 @@ export default function App() {
         number: " 02-0365-0036",
         abonnement: true,
         abonnementFeatures: "abonné FP jusqu'au numéro 294",
-        menus: [1, 2, 3, 4, 5]
+        menus: [1, 2, 3,4,5]
     })
     const [showModal, setShowModal] = useState(false)
-    console.log(showModal)
+
     const domNode2 = document.getElementById('modal');
     const root2 = createRoot(domNode2);
     root2.render(<Modal showModal={showModal} setShowModal={setShowModal} selectedCardInfos={selectedCardInfos}
