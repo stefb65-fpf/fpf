@@ -69,3 +69,49 @@ if(formIcon){
 
     })
 }
+//autosuggest
+let autosuggestWrapper = document.querySelector(".autosuggestWrapper")
+if(autosuggestWrapper){
+    window.addEventListener('click', (e)=>{
+        let inputs = autosuggestWrapper.querySelectorAll('.autosuggestCFA')
+        let outside = true
+        inputs.forEach((input)=>{
+            if(e.target == input){
+                autosuggestWrapper.classList.add('active')
+                outside = false
+            }
+        })
+        if(outside){
+                autosuggestWrapper.classList.remove('active')
+        }
+
+    })
+
+}
+//search in topBar
+let searchIcons = document.querySelectorAll(".searchItem .icon")
+let searchItems = document.querySelectorAll(".searchItem")
+let searchBox = document.querySelector(".searchBoxContainer")
+if(searchBox){
+    let target = 0
+    searchBox.addEventListener('click',(e)=>{
+        searchIcons.forEach((searchIcon)=>{
+            console.log(e.target, searchIcon)
+            if(e.target.dataset.target == searchIcon.dataset.target){
+               console.log(searchIcon.dataset.target, searchIcon)
+                target = searchIcon.dataset.target
+           }
+            console.log("target is", target)
+
+        })
+        searchItems.forEach((searchItem)=>{
+            console.log("in search items loop", searchItem.dataset.target)
+            if(searchItem.dataset.target == target){
+                searchItem.classList.toggle("active")
+            }else{
+                searchItem.classList.remove("active")
+            }
+        })
+    })
+
+}

@@ -167,7 +167,9 @@ a{
     padding-left: 13px ;
 }
 .mainContainer.fullHeight{
-    height: calc(100vh - 120px);
+    /*height: calc(100vh - 120px);*/
+    min-height: calc(100vh - 120px);
+    height: auto;
 }
 @keyframes animate {
 
@@ -233,6 +235,82 @@ a{
 }
 .logoMobile {
     display: none;
+}
+.topbar .searchContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 35px;
+}
+.searchContainer .foster{
+    font-size: 16px;
+    color: #003d77;
+    margin-right: 15px;
+}
+.searchBoxContainer .icon{
+    text-align: center;
+    font-size: 12px;
+    color: #4E4E4E;
+    margin: 0 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.searchBoxContainer .icon svg{
+    height: 25px;
+}
+.searchBoxContainer .searchBtn svg {
+    height: 25px;
+    cursor: pointer;
+}
+.searchBoxContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.searchBoxContainer .searchItem{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.searchBoxContainer .searchItem .searchBox{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 0;
+    overflow: hidden;
+    transition: width 0.7s ease;
+}
+.searchBoxContainer .searchItem.active .searchBox{
+    width: 180px;
+}
+.searchBox.person input{
+    font-size: 12px;
+    border:none;
+    border-bottom: 1px solid #4E4E4E;
+    outline: none;
+    background-color: transparent;;
+    margin-right: 7px;
+    text-align: center;
+}
+.searchBox.person input:nth-child(1){
+    width:30px;
+}
+.searchBox.person input:nth-child(2).searchBox.club input:nth-child(1){
+    width:62px;
+}
+.searchBox.person input:nth-child(3){
+    width:62px;
+}
+.searchItem .searchBtn{
+    width: 0;
+    overflow: hidden;
+    transition: width 0.7s 0.2s ease;
+}
+.searchItem.active .searchBtn{
+    width: 43px;
 }
 .topTitle {
     font-size: small;
@@ -427,11 +505,11 @@ a{
 /*****************************************************  */
 .formationsPage .card .cardSubTitle{
     margin-top: 15px;
-    color: rgba(27, 59, 120, 0.61);
+    color: rgb(27, 59, 120);
     background-color: white;
     padding: 15px 20px;
 }
-.formationsPage .card .type{
+.card .type{
     font-weight: 300;
     margin-top: 10px;
     font-style: italic;
@@ -465,7 +543,7 @@ a{
     justify-content: center;
     align-items: center;
     text-align: center;
-    background:rgba(27, 59, 120, 0.61);
+    background:rgb(27, 59, 120);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(3px);
     cursor: pointer;
@@ -489,6 +567,7 @@ a{
     color: white;
     font-size: 19px;
 }
+
 .card.invisible, .card.invisible .wrapper{
     opacity: 0;
     box-shadow: none;
@@ -509,7 +588,7 @@ a{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /*min-height: calc(100vh - 120px);*/
+    min-height: calc(100vh - 120px);
     height: 100%;
     color: #1e1e1e;
     overflow-y: scroll;
@@ -548,13 +627,31 @@ a{
 /*****************************************************  */
 /* forms */
 /*****************************************************  */
+.authForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.authForm .separator{
+    height: 2px;
+    width: min(250px , 25%);
+    /*background-color: #707070;*/
+    border-radius: 5px;
+    margin:5px auto;
+}
+.doubleInput{
+    display: flex;
+    align-items: center;
+}
 .customField{
     display: flex;
     flex-direction: column;
-    width: fit-content;
+    width: max-content;
     position: static;
     max-width: min(280px, 100%);
-    width: 100%;
+    /*width: 100%;*/
+    width: 250px;
+    margin: 0 10px;
 }
 .customField label{
     font-size: 0.8rem;
@@ -565,7 +662,7 @@ a{
     margin: 0 0 0 7px;
     padding: 0 3px;
     background: #f5f5f9;
-    width: fit-content;
+    width: max-content;
     z-index: 10;
 }
 .customField input{
@@ -627,6 +724,34 @@ a{
 .customField .icon.hidden,.customField .icon.dark.hidden{
     display: none;
 }
+.autosuggestWrapper{
+    position: relative;
+}
+.autosuggestWrapper .autosuggest{
+    display: none;
+    position: absolute;
+    top: 63px;
+    right: 9px;
+    width: min(100% , 250px);
+    height: 291px;
+    overflow: scroll;
+    padding: 10px;
+    background: white;
+}
+.autosuggestWrapper.active .autosuggest{
+    display: block;
+}
+.customField .autosuggest li{
+    list-style: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+.customField .autosuggest li:hover{
+    list-style: none;
+    padding: 10px;
+    background-color: #c5c5c5;
+}
 .customBtn{
     border-radius: 5px;
     background-color: #003d77;
@@ -635,7 +760,7 @@ a{
     text-align: center;
     padding: 10px;
     font-size: 15px;
-    margin-bottom: 0.75rem;
+    margin: 1.75rem auto 2.75rem auto;
     cursor: pointer;
 }
 .forgottenPswd{

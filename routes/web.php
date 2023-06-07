@@ -44,3 +44,13 @@ Route::get('/forgotPassword', function () {
 Route::get('/reinitPassword', function () {
     return view('auth/reinitPassword');
 });
+Route::get('/registerAbonnement', function () {
+    return view('auth/registerAbonnement');
+});
+Route::get('/registerAdhesion', function () {
+    return view('auth/registerAdhesion');
+});
+Route::get('/registerFormation', function () {
+    return view('auth/registerFormation');
+});
+
