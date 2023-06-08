@@ -65,7 +65,7 @@
                 </div>
             </div>
             <div class="separator"></div>
-            <div class="doubleInput autosuggestWrapper">
+            <div class="doubleInput autosuggestContainer">
                 <div class="customField">
                     <label>Code postal</label>
                         <input type="text" name="town" class="autosuggestCFA">
@@ -73,6 +73,7 @@
                 </div>
                 <div class="customField">
                     <label>Ville</label>
+                    <div class="autoSuggestWrapper">
                         <input type="text" name="town" class="autosuggestCFA">
                         <ul class="autosuggest">
                             <li>DIJON</li>
@@ -87,6 +88,7 @@
                             <li>FAUVERNEY</li>
                             <li>GENLIS</li>
                         </ul>
+                    </div>
                     <div class="error">message erreur</div>
                 </div>
             </div>

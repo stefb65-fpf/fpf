@@ -20,7 +20,7 @@ h1 {
 }
 
 .pageCanva {
-    min-height: calc(100vh - 50px);
+    min-height: calc(100vh - 70px);
     width: 100%;
     padding: 6.5%;
 }
@@ -157,14 +157,14 @@ a{
 .mainContainer {
     /*background: linear-gradient(88.61deg, #FFFFFF -0.22%, #EFF4FD 17.71%, #DDE8FB 38.5%);*/
     background: #f5f5f9;
-    height: calc(100vh - 50px);
+    min-height: calc(100vh - 70px);
     width: 100vw;
     padding-left: 250px;
     position: relative;
+
 }
 .mainContainer.fullWidth{
-    padding-right: 13px ;
-    padding-left: 13px ;
+    padding:0 13px 10px;
 }
 .mainContainer.fullHeight{
     /*height: calc(100vh - 120px);*/
@@ -246,6 +246,16 @@ a{
     font-size: 16px;
     color: #003d77;
     margin-right: 15px;
+    transition:opacity 1s ease, transform 1s ease;
+    overflow: hidden;
+    transform: translateX(0);
+    width: 110px;
+    opacity: 1;
+}
+.searchContainer.searching .foster{
+    width: 0;
+    opacity: 0;
+    transform: translateX(-100vw);
 }
 .searchBoxContainer .icon{
     text-align: center;
@@ -257,7 +267,16 @@ a{
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    position: relative;
 }
+.searchBoxContainer .iconBtn{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
 .searchBoxContainer .icon svg{
     height: 25px;
 }
@@ -274,6 +293,7 @@ a{
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: all 1s ease;
 }
 .searchBoxContainer .searchItem .searchBox{
     display: flex;
@@ -283,10 +303,21 @@ a{
     overflow: hidden;
     transition: width 0.7s ease;
 }
-.searchBoxContainer .searchItem.active .searchBox{
+
+.searchItem .label{
+    min-width: 84px;
+    overflow: hidden;
+}
+.searchBoxContainer .searchItem.active .searchBox.person{
     width: 180px;
 }
-.searchBox.person input{
+.searchBoxContainer .searchItem.active .searchBox.club{
+    width: 70px;
+}
+.searchBoxContainer .searchItem.active .searchBox.payment {
+    width: 220px;
+}
+.searchBox input{
     font-size: 12px;
     border:none;
     border-bottom: 1px solid #4E4E4E;
@@ -295,15 +326,14 @@ a{
     margin-right: 7px;
     text-align: center;
 }
-.searchBox.person input:nth-child(1){
+
+.searchBox input.length2{
     width:30px;
 }
-.searchBox.person input:nth-child(2).searchBox.club input:nth-child(1){
+.searchBox input.length4{
     width:62px;
 }
-.searchBox.person input:nth-child(3){
-    width:62px;
-}
+
 .searchItem .searchBtn{
     width: 0;
     overflow: hidden;
@@ -311,6 +341,20 @@ a{
 }
 .searchItem.active .searchBtn{
     width: 43px;
+}
+.searchContainer.searching .searchItem{
+transform:translateY(-100px);
+}
+.searchContainer.searching .searchItem .icon{
+    transition: all 1s ease;
+    overflow: hidden;
+    width: 0;
+}
+.searchContainer.searching .searchItem.active{
+    transform:translateY(0);
+}
+.searchContainer.searching .searchItem.active .icon{
+    width: 90px;
 }
 .topTitle {
     font-size: small;
@@ -642,6 +686,8 @@ a{
 .doubleInput{
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 .customField{
     display: flex;
@@ -724,21 +770,23 @@ a{
 .customField .icon.hidden,.customField .icon.dark.hidden{
     display: none;
 }
-.autosuggestWrapper{
+.autosuggestContainer{
     position: relative;
 }
-.autosuggestWrapper .autosuggest{
+.autoSuggestWrapper{
+    position: relative;
+}
+.autosuggestContainer .autosuggest{
     display: none;
     position: absolute;
-    top: 63px;
-    right: 9px;
+    top: 44px;
     width: min(100% , 250px);
     height: 291px;
     overflow: scroll;
     padding: 10px;
     background: white;
 }
-.autosuggestWrapper.active .autosuggest{
+.autosuggestContainer.active .autosuggest{
     display: block;
 }
 .customField .autosuggest li{
@@ -908,8 +956,70 @@ footer .logo img {
 /*****************************************************  */
 /*media queries*/
 /*****************************************************  */
+@media screen and (max-width: 575px) {
+    .fosterRegister .foster {
+        font-size: 0.9rem;
+    }
+    .authLogo{
+        display: none;
+    }
+    .pageTitle {
+        font-size: 27px;
+        padding-top: 105px;
+    }
+    .welcomePage h1{
+        font-size: 27px;
+        padding: 0 16px;
+    }
+    .navbar .menuItem {
+        font-size: 15px;
+    }
+    .navbar .menuItem a{
+        padding: 13px;
+    }
+    .hamburger {
+        width: 41px;
+        height: 35px;
+    }
+    .hamburger .line:nth-child(2) {
+        top: 14px;
+    }
+    .hamburger .line:nth-child(3) {
+        top: 28px;
+    }
+    .hamburger.close .line:nth-child(3) {
+        top: 30px;
+    }
+    .logoMobileRight {
+        display: none;
+    }
+    .cardContainer .card {
+        margin: 35px 10px;
+    }
+}
+@media screen and (max-width: 670px) {
+    footer .top{
+        display: none !important;
+    }
 
-
+    footer .bottom .item{
+        margin-bottom: 15px;
+    }
+    footer .bottom{
+        flex-direction: column;
+    }
+    footer .separation{
+        display: none !important;
+    }
+    .fosterRegister{
+        margin-bottom: 1rem;
+    }
+    .authTitle{
+        margin:2rem 0 1.1rem;
+        padding: 0 15px;
+        font-size: 1.5rem;
+    }
+}
 @media screen and (max-width: 991px) {
     .mainContainer {
         padding-left: 0;
@@ -988,67 +1098,32 @@ footer .logo img {
         padding: 20px;
     }
 
-}
-@media screen and (max-width: 670px) {
-footer .top{
-    display: none !important;
+
 }
 
-    footer .bottom .item{
-        margin-bottom: 15px;
+@media screen and (max-width: 1199px) {
+    .topbar .searchContainer {
+        margin-right: 0;
     }
-    footer .bottom{
-       flex-direction: column;
-    }
-    footer .separation{
-        display: none !important;
-    }
-    .fosterRegister{
-        margin-bottom: 1rem;
-    }
-    .authTitle{
-        margin-bottom: 1.1rem;
-        font-size: 1.5rem;
-    }
+
+    .searchBoxContainer .icon{
+        margin: 0;
+        font-size: 11px;
 }
-@media screen and (max-width: 575px) {
-    .fosterRegister .foster {
-        font-size: 0.9rem;
+    .userAccount {
+        margin: 0 10px 0 5px;
+
     }
-    .authLogo{
-        display: none;
+    .actionTopbar{
+        margin-left: 15px;
     }
-    .pageTitle {
-        font-size: 27px;
-        padding-top: 105px;
+    .actionsTopbar{
+        margin-right: 10px;
     }
-    .welcomePage h1{
-        font-size: 27px;
-        padding: 0 16px;
+    .topbar, .searchContainer .foster{
+        font-size: 14px;
     }
-    .navbar .menuItem {
-        font-size: 15px;
-    }
-    .navbar .menuItem a{
-        padding: 13px;
-    }
-    .hamburger {
-        width: 41px;
-        height: 35px;
-    }
-    .hamburger .line:nth-child(2) {
-        top: 14px;
-    }
-    .hamburger .line:nth-child(3) {
-        top: 28px;
-    }
-    .hamburger.close .line:nth-child(3) {
-        top: 30px;
-    }
-    .logoMobileRight {
-        display: none;
-    }
-    .cardContainer .card {
-        margin: 35px 10px;
+  .searchContainer .foster{
+      width: 91px;
     }
 }

@@ -28,11 +28,6 @@
                     <div class="type">J'accède à la liste des formations dans toute la France</div>
                 </a>
             </div>
-            <div class="card invisible">
-                <div class="wrapper">
-                    <div class="cardTitle"></div>
-                </div>
-            </div>
         </div>
     </div>
 @endsection

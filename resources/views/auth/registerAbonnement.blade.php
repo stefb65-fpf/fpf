@@ -66,7 +66,7 @@
                     </div>
                 </div>
                 <div class="separator"></div>
-                <div class="doubleInput autosuggestWrapper">
+                <div class="doubleInput autosuggestContainer">
                     <div class="customField">
                         <label>Code postal</label>
                         <input type="text" name="town" class="autosuggestCFA">
@@ -74,20 +74,23 @@
                     </div>
                     <div class="customField">
                         <label>Ville</label>
-                        <input type="text" name="town" class="autosuggestCFA">
-                        <ul class="autosuggest">
-                            <li>DIJON</li>
-                            <li>AISEREY</li>
-                            <li>BEIRE-LE-FORT</li>
-                            <li>BESSEY-LES-CITEAUX</li>
-                            <li>BRETENIERE</li>
-                            <li>CESSEY-SU-TILLE</li>
-                            <li>CHAMBEIRE</li>
-                            <li>COLLONGES-LES-PREMIERES</li>
-                            <li>EYCHIGEY</li>
-                            <li>FAUVERNEY</li>
-                            <li>GENLIS</li>
-                        </ul>
+                        <div class="autoSuggestWrapper">
+                            <input type="text" name="town" class="autosuggestCFA">
+                            <ul class="autosuggest">
+                                <li>DIJON</li>
+                                <li>AISEREY</li>
+                                <li>BEIRE-LE-FORT</li>
+                                <li>BESSEY-LES-CITEAUX</li>
+                                <li>BRETENIERE</li>
+                                <li>CESSEY-SU-TILLE</li>
+                                <li>CHAMBEIRE</li>
+                                <li>COLLONGES-LES-PREMIERES</li>
+                                <li>EYCHIGEY</li>
+                                <li>FAUVERNEY</li>
+                                <li>GENLIS</li>
+                            </ul>
+                        </div>
+
                         <div class="error">message erreur</div>
                     </div>
                 </div>
