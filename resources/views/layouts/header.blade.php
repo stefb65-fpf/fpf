@@ -18,9 +18,7 @@
 
                 </div>
                 <div class="searchBox person" >
-                    <input class="length2" type="text" placeholder="ur" maxlength="2">
-                    <input class="length4" type="text" placeholder="club" maxlength="4">
-                    <input class="length4" type="text" placeholder="adhérant" maxlength="4">
+                    <input type="text" placeholder="identifiant , email ou nom" >
                 </div>
 
             </div>
@@ -45,7 +43,7 @@
 
                 </div>
                 <div class="searchBox club" >
-                    <input class="length4" type="text" placeholder="club" maxlength="4">
+                    <input type="text" placeholder="identifiant ou nom" >
                 </div>
             </div>
             <div class="searchItem" data-target="3">
@@ -55,19 +53,14 @@
                         <path d="M37.8571 43.9643C35.6022 44.9384 33.1706 45.4369 30.7143 45.4286C25.2727 45.1782 20.1516 42.7835 16.4707 38.7679C12.7898 34.7524 10.8485 29.4428 11.0714 24C10.8485 18.5572 12.7898 13.2476 16.4707 9.23204C20.1516 5.21651 25.2727 2.82177 30.7143 2.57143C32.6954 2.56033 34.664 2.88642 36.5357 3.53571M2.14286 18.6429H23.5714M2.14286 29.3571H23.5714" stroke="#2F2F2F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     <div class="label">Un règlement</div>
-
                 </div>
                 <div class="searchBox payment" >
-                    <input class="length4" type="text" placeholder="saison" maxlength="2">
-                    <input class="length2" type="text" placeholder="ur" maxlength="2">
-                    <input class="length4" type="text" placeholder="club" maxlength="4">
-                    <input class="length4" type="text" placeholder="numéro" maxlength="4">
+                    <input type="text" placeholder="identifiant ou nom" >
                 </div>
             </div>
         </div>
 
     </div>
-        <a href="/" class="actionTopbar">Filtrer</a>
         <a href="/" class="actionTopbar">Tableau de bord</a>
     </div>
     <div class="userAccount dropdownParent dropdownCall" data-dropdown-id="13">
@@ -80,8 +73,7 @@
         <div class="dropdown">
             <ul>
                 <li>
-                    <a href="/mon-profil">  Mon Profil</a>
-
+                    <a href="/mon-compte">  Mon Compte</a>
                 </li>
                 <li>
                     <a href="/login">  Se déconnecter</a>

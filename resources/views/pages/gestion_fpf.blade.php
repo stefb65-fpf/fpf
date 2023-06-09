@@ -23,7 +23,7 @@
             </div>
             <div class="card">
                 <div class="wrapper">
-                    <div class="cardTitle">Publication</div>
+                    <div class="cardTitle">Publications</div>
                 </div>
             </div>
             <div class="card">

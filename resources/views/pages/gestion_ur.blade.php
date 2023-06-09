@@ -13,7 +13,7 @@
             </div>
             <div class="card">
                 <div class="wrapper">
-                    <div class="cardTitle">Les Clubs de l'UR</div>
+                    <div class="cardTitle">Clubs</div>
                 </div>
             </div>
             <div class="card">
@@ -28,7 +28,7 @@
             </div>
             <div class="card">
                 <div class="wrapper">
-                    <div class="cardTitle">Trésorerie</div>
+                    <div class="cardTitle">Trésorerie, Reversements</div>
                 </div>
             </div>
 

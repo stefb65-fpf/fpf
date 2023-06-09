@@ -16,8 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('pages/welcome');
 });
-Route::get('/mon-profil', function () {
-    return view('pages/mon_profil');
+Route::get('/mon-compte', function () {
+    return view('account/mon_compte');
+
 });
 Route::get('/formations', function () {
     return view('pages/formations');
@@ -53,4 +54,15 @@ Route::get('/registerAdhesion', function () {
 Route::get('/registerFormation', function () {
     return view('auth/registerFormation');
 });
-
+Route::get('/mon-profil', function () {
+    return view('account/mon_profil');
+});
+Route::get('/mes-mails', function () {
+    return view('account/mes_mails');
+});
+Route::get('/mes-actions', function () {
+    return view('account/mes_actions');
+});
+Route::get('/mes-formations', function () {
+    return view('account/mes_formations');
+});

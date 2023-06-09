@@ -110,6 +110,7 @@ if (searchBox) {
                 if (target == searchItem.dataset.target) {
                     searchItem.classList.toggle("active")
                     if (searchItem.classList.contains("active")) {
+                        searchItem.querySelector("input").focus()
                         isSearching = true
                     } else {
                         isSearching = false
@@ -125,6 +126,33 @@ if (searchBox) {
         searchBox.classList.remove("searching")
     }
     })
-
 }
 
+//account profile
+let btnFormAccount = document.querySelectorAll(".formBlock .formBtn")
+let formBlocksAccount = document.querySelectorAll(".formBlockWrapper")
+if(btnFormAccount){
+    let indexl = 0
+    btnFormAccount.forEach((btn) => {
+        addEventListener("click", (e)=>{
+            e.preventDefault()
+            if(btn.dataset.action == "modify" && e.target.dataset.form == btn.dataset.form){
+                btn.innerHTML = "Valider"
+                // btn.setAttribute("data-action", "validate")
+                formBlocksAccount.forEach((block) => {
+                    if(e.target.dataset.form == block.dataset.form ){
+                        console.log("operate change input", block)
+                        block.querySelectorAll(".changeable").forEach((input) => {
+                            input.removeAttribute("disabled");
+                            input.classList.remove("changeable");
+                        })
+                        return
+                    }
+                })
+            }else{
+                btn.innerHTML = "Modifier"
+            }
+
+        })
+    })
+}
