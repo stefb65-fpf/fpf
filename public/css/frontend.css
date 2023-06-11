@@ -24,6 +24,42 @@ h1 {
     width: 100%;
     padding: 6.5%;
 }
+.mt25{
+    margin-top: 25px;
+}
+.mr25{
+    margin-right: 25px;
+}
+.uppercase{
+    text-transform: uppercase;
+}
+.blue{
+    color: #003d77;
+}
+.bold{
+    font-weight:bold ;
+}
+.italic{
+    font-style: italic;
+}
+.underline{
+    position:relative;
+}
+.underline::after{
+    position: absolute;
+    background-color: #1a1a1a;
+    width: 100%;
+    height: 1px;
+    bottom: 2px;
+    right: 0;
+    content: "";
+}
+.underlineBlue::after{
+    background-color: #003d77;
+}
+.dark{
+    font-weight: 600;
+}
 
 .pageTitle {
     padding-top: 5%;
@@ -634,20 +670,59 @@ transform:translateY(-100px);
 }
 .fosterRegister{
  text-align: center;
-    color: #4d4d4d;
-    margin-bottom: 2rem;
+    color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    max-width: 255px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #898989;
+    font-size: 15px;
+
+}
+.fosterRegister.light{
+    color: #3a3a3a;
+    background-color: transparent;
+    max-width: none;
+    font-size: 16px;
+}
+.fosterRegister.light  a{
+    color: #003d77;
+    margin-top: 5px;
 }
 .fosterRegister .foster{
     max-width: min(100% ,500px);
 }
 .fosterRegister a{
-    color: #003d77;
+    /*color: #003d77;*/
     font-weight: 500;
     text-decoration: underline;
+}
+.firstConnexion{
+display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #161616;
+    background-color: #8ACC8C;
+    padding: 20px;
+    text-align: center;
+    max-width: 255px;
+    border-radius: 5px;
+}
+.fosterContainer{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+.fosterContainer .separator{
+    font-size: 18px;
+    margin: 15px;
+    width: 15px;
 }
 .authLogo{
     height: 48px;
@@ -803,7 +878,7 @@ transform:translateY(-100px);
     text-align: center;
     padding: 10px;
     font-size: 15px;
-    margin: 1.75rem auto 2.75rem auto;
+    margin: 1.75rem auto 1rem auto;
     cursor: pointer;
 }
 .forgottenPswd{
@@ -951,7 +1026,47 @@ footer .logo img {
 /*****************************************************  */
 /*account*/
 /*****************************************************  */
-
+.badgesWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+}
+.badge{
+    margin: 0 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+.badge .img{
+    height: 50px;
+    width: 50px;
+    padding: 7px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+.badge.grey .img{
+    background-color:#D9D9D9 ;
+}
+.badge.grey svg{
+    fill:#545454;
+}
+.badge.green .img{
+    background-color:#8ACC8C ;
+}
+.badge.green svg{
+    fill:white;
+}
+.badge .label{
+    font-size: 12px;
+    font-weight: 300;
+    text-align: center;
+    max-width: 80px;
+    margin-top: 7px;
+}
 .accountSubtitle{
     color: white;
     font-size: 17px;
@@ -981,7 +1096,7 @@ footer .logo img {
     width: 100%;
     padding: 0 10px;
     border-bottom: 1px solid lightgrey;
-    margin: 28px 0 15px;
+    margin-top: 28px;
 }
 .accountMenuItem{
     color: #717171;
@@ -1002,7 +1117,6 @@ footer .logo img {
     height: 2px;
     bottom: 0;
     right: 1px;
-
     background-color: #003d77;
 }
 .accountMenuItem::before{
@@ -1014,7 +1128,7 @@ footer .logo img {
     right: 0;
     background-color: #f5f5f9;
     transition: 0.2s ease-in;
-    transform: scaleX(100%);
+    transform: scaleX(1);
     transform-origin: right;
     z-index: 10;
 }
@@ -1044,6 +1158,7 @@ footer .logo img {
     border-radius: 5px;
     background: #f5f5f9;
     margin: 20px 0;
+    max-width: 1200px;
 }
 .formBlockTitle{
     font-size: 1rem;
@@ -1056,7 +1171,7 @@ footer .logo img {
     padding: 0 8px;
     background: #f5f5f9;
     width: max-content;
-    z-index: 10;
+    z-index: 1;
 }
 .formBlockWrapper{
     display: flex;
@@ -1080,19 +1195,27 @@ footer .logo img {
     min-width: 180px;
     font-weight: 700;
 }
+.formBlockWrapper .formValueGroup{
+    display: flex;
+    flex-direction: column;
+
+}
 .formBlockWrapper .formValue{
     margin-right: 15px;
     outline: none;
-
 background-color: transparent;
-    border: none
+    border: none;
+    color: #575757;
+    margin-bottom: 3px;
+    padding: 3px;
 }
-.formBlockWrapper .formValue.changeable{
-    /*background-color: white;*/
+.formBlockWrapper .formValue.modifying{
+    background-color: white;
+    color: #424242;
 }
-.formBlockWrapper .formValue::placeholder{
-    color:#424242;
-}
+/*.formBlockWrapper .formValue::placeholder{*/
+/*    color:#424242;*/
+/*}*/
 .formBlockWrapper .formLineModify{
     color: #003d77;
     opacity: 0.7;
@@ -1109,13 +1232,126 @@ background-color: transparent;
     text-align: center;
     font-weight: 600;
     font-size: 14px;
+    position: absolute;
+    right: 30px;
+    bottom: 11px;;
+}
+.switch{
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+    width: 3.5em;
+    height: 2em;
+    margin-right: 15px;
+}
+.switch input {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 10;
+    cursor: pointer;
+    border: transparent;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    border: 1px solid #adb5bd;
+    transition: .4s;
+    border-radius: 30px;
 }
 
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 1.4em;
+    width: 1.4em;
+    border-radius: 20px;
+    left: 0.27em;
+    bottom: 0.25em;
+    background-color: #adb5bd;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #003d77;
+    border: 1px solid #003d77;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #003d77;
+}
+
+input:checked + .slider:before {
+    transform: translateX(1.4em);
+    background-color: #fff;
+}
+.formLine.newsletter{
+    margin-top: 30px;
+}
+.formLine.newsletter label span{
+    font-weight: 500;
+    color: #003d77;
+}
+.accountListWrapper{
+    background-color: white;
+    width: 100%;
+
+}
+.listLine{
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding: 15px 25px;
+    border-bottom:3px solid #F5F5F9;
+    font-size: 14px;
+}
+.listLine.mailList{
+    justify-content: space-between;
+}
+.listLine.actionList{
+    justify-content: flex-start;
+}
+.listLineLeft,.listLineRight{
+    display: flex;
+}
+
+.mailList .seeMore{
+    margin-right: 35px;
+    display: inline;
+    width: 111px;
+    height: max-content;
+    cursor: pointer;
+}
+.mailList .date{
+    width: 100px;
+    text-align: right;
+    overflow: hidden;
+}
+.listMailObject{
+    max-width: 230px;
+    overflow: hidden;
+    margin-right: 20px;
+    max-height: 21px;
+}
 /*****************************************************  */
 /*media queries*/
 /*****************************************************  */
+@media screen and (max-width: 375px) {
+.accountMenuItem{
+    /*height: 58px;*/
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+}
 @media screen and (max-width: 575px) {
-    .fosterRegister .foster {
+    .fosterRegister, .firstConnexion {
         font-size: 0.9rem;
     }
     .authLogo{
@@ -1124,6 +1360,9 @@ background-color: transparent;
     .pageTitle {
         font-size: 27px;
         padding-top: 105px;
+    }
+    .accountPage .pageTitle{
+        padding-top: 75px;
     }
     .welcomePage h1{
         font-size: 27px;
@@ -1167,8 +1406,24 @@ background-color: transparent;
         padding: 0;
         justify-content: center;
     }
-    .formBtn {
-        margin: auto;
+    .switch{
+        width: 2.5em;
+        height: 1.5em;
+
+    }
+    .slider::before{
+        height: 21px;
+        width: 21px;
+        left: 2px;
+        bottom: 2px;;
+    }
+    input:checked + .slider::before {
+        transform: translateX(14px);
+    }
+    .formLine.newsletter{
+        font-size: 15px;
+        max-width: 90%;
+        text-align: center;
     }
 }
 @media screen and (max-width: 670px) {
@@ -1186,12 +1441,20 @@ background-color: transparent;
         display: none !important;
     }
     .fosterRegister{
-        margin-bottom: 1rem;
-    }
+        /*margin-bottom: 1rem;*/
+    }.fosterContainer{
+    flex-direction: column;
+         }
     .authTitle{
         margin:2rem 0 1.1rem;
         padding: 0 15px;
         font-size: 1.5rem;
+    }
+    .formBtn{
+        position: relative;
+        margin: auto;
+        right: 0;
+        top: 0;
     }
 }
 @media screen and (max-width: 991px) {
@@ -1273,6 +1536,28 @@ background-color: transparent;
     }
     .accountSubtitle{
         background-color: #003d77;
+    }
+    .listLine{
+        cursor: pointer;
+        align-items: flex-start;
+        padding: 15px;
+    }
+    .listLineLeft{
+        flex-direction: column;
+    }
+    .mailList .seeMore{
+        display: none;
+    }
+    .listMailObject{
+        margin-bottom: 15px;
+        max-width: unset;
+        margin-right: 5px;
+    }
+    .mailList .date.dark{
+        font-size: 12px;
+        font-weight: normal;
+        width: 90px;
+        line-height: 23px;
     }
 }
 

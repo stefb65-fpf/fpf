@@ -132,27 +132,30 @@ if (searchBox) {
 let btnFormAccount = document.querySelectorAll(".formBlock .formBtn")
 let formBlocksAccount = document.querySelectorAll(".formBlockWrapper")
 if(btnFormAccount){
-    let indexl = 0
     btnFormAccount.forEach((btn) => {
-        addEventListener("click", (e)=>{
+        btn.addEventListener("click", (e)=>{
             e.preventDefault()
-            if(btn.dataset.action == "modify" && e.target.dataset.form == btn.dataset.form){
-                btn.innerHTML = "Valider"
-                // btn.setAttribute("data-action", "validate")
-                formBlocksAccount.forEach((block) => {
-                    if(e.target.dataset.form == block.dataset.form ){
-                        console.log("operate change input", block)
-                        block.querySelectorAll(".changeable").forEach((input) => {
-                            input.removeAttribute("disabled");
-                            input.classList.remove("changeable");
-                        })
-                        return
-                    }
-                })
-            }else{
-                btn.innerHTML = "Modifier"
-            }
-
+                 let associatedInputs = btn.closest(".formBlock").querySelectorAll("input.changeable")
+                if(btn.dataset.action === "modify"){
+                    btn.innerHTML = "Valider"
+                    btn.dataset.action = "validate"
+                    let i = 0
+                    associatedInputs.forEach((input) => {
+                                input.removeAttribute("disabled");
+                                input.classList.add("modifying");
+                                if(!i){
+                                    input.focus()
+                                }
+                                i = i+1
+                            })
+                }else{
+                    btn.innerHTML = "Modifier"
+                    btn.dataset.action = "modify"
+                    associatedInputs.forEach((input) => {
+                        input.setAttribute("disabled","");
+                        input.classList.remove("modifying");
+                    })
+                }
         })
     })
 }

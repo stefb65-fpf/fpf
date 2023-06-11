@@ -6,7 +6,7 @@
             <img src="{{ env('APP_URL').'storage/app/public/FPF-100-Logo-Seul.webp' }}" alt="Fédération Photographique de France">
         </div>
         <div class="authTitle">Réinitialisation de votre <br> mot de passe</div>
-        <div class="fosterRegister">
+        <div class="fosterRegister light">
             <div class="foster">Enregistrez votre nouveau mot de passe</div>
         </div>
         <div class="authForm">

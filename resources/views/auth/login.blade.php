@@ -6,9 +6,14 @@
             <img src="{{ env('APP_URL').'storage/app/public/FPF-100-Logo-Seul.webp' }}" alt="Fédération Photographique de France">
         </div>
         <div class="authTitle">Connexion</div>
-        <div class="fosterRegister">
-            <div class="foster">Vous n'avez pas encore de compte ?</div>
-            <a href="/register"> Enregistrez-vous !</a>
+        <div class="fosterContainer">
+            <a class="firstConnexion" href="/forgotPassword">
+                Vous avez un compte FPF mais c'est votre première connexion ?
+            </a> <div class="separator"></div>
+            <a  href="/register" class="fosterRegister">
+                <div class="foster">Vous n'avez pas encore de compte ?</div>
+                <span style="text-decoration: underline; font-weight: 600"> Enregistrez-vous !</span>
+            </a>
         </div>
         <div class="authForm">
             <div class="customField">
@@ -42,6 +47,7 @@
             <div class="button customBtn"> Connectez-vous</div>
         </div>
         <a class="forgottenPswd" href="/forgotPassword">Vous avez oublié votre mot de passe ?</a>
+
         <a class="findClub" target="_blank" href="https://federation-photo.fr/les-clubs/">Vous recherchez <span class="accent">un club</span> ?</a>
 
     </div>
