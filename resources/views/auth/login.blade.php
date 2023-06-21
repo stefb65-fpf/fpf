@@ -19,13 +19,13 @@
             {{ csrf_field() }}
             <div class="customField">
                 <label>E-mail</label>
-                <input  type="email" name="email" />
+                <input  type="email" name="email" maxlength="100" />
                 <div class="error">message erreur</div>
             </div>
             <div class="customField">
                 <label>Mot de passe</label>
                 <div class="group">
-                    <input type="password" name="password">
+                    <input type="password" name="password" maxlength="50" />
                     <div class="icons eye">
                         <div class="icon open">
                             <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
