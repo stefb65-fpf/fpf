@@ -77,6 +77,9 @@
                         <div class="autoSuggestWrapper">
                             <input type="text" name="town" class="autosuggestCFA">
                             <ul class="autosuggest">
+                                @foreach($communes as $commune)
+                                    <li>{{ $commune->nom }}</li>
+                                @endforeach
                                 <li>DIJON</li>
                                 <li>AISEREY</li>
                                 <li>BEIRE-LE-FORT</li>

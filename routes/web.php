@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 include 'web_sc.php';
 
-
 Route::get('/login', function () {
     return view('auth/login');
 })->name('login');
@@ -27,15 +26,18 @@ Route::get('/forgotPassword', function () {
 Route::get('/reinitPassword', function () {
     return view('auth/reinitPassword');
 });
-Route::get('/registerAbonnement', function () {
-    return view('auth/registerAbonnement');
-});
+//Route::get('/registerAbonnement', function () {
+//    return view('auth/registerAbonnement');
+//});
+Route::get('/registerAbonnement', [App\Http\Controllers\LoginController::class, 'registerAbonnement']);
 Route::get('/registerAdhesion', function () {
     return view('auth/registerAdhesion');
 });
 Route::get('/registerFormation', function () {
     return view('auth/registerFormation');
 });
+
+
 Route::get('/mon-profil', function () {
     return view('account/mon_profil');
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Models\Commune;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
@@ -33,6 +34,11 @@ class LoginController extends Controller
 //        $request->session()->put('page', $others);
 //
         return view('pages.welcome');
+    }
+
+    public function registerAbonnement() {
+        $communes = Commune::orderBy('nom')->get();
+        return view('auth.registerAbonnement', compact('communes'));
     }
 
 //    public function test(Request $request) {
