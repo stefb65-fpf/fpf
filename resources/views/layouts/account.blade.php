@@ -1,6 +1,5 @@
 @extends('layouts.default')
 @section('content')
-
     <div class="profilePage pageCanva accountPage">
         <h1 class="pageTitle">
             Mon compte
@@ -27,6 +26,3 @@
         @yield('contentaccount')
     </div>
 @endsection
-
-
-
