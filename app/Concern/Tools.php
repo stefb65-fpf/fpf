@@ -10,7 +10,15 @@ use App\Models\Personne;
 
 trait Tools
 {
-    public function registerAction($personne_id, $type, $action, $utilisateur_id = null)
+    /**
+     * enregistre l'action utilisateur dans la table historique
+     * @param $personne_id integer
+     * @param $type integer
+     * @param $action string
+     * @param $utilisateur_id integer|null
+     * @return bool
+     */
+    public function registerAction(int $personne_id, int $type, string $action, int $utilisateur_id = null)
     {
         if (!$personne_id || !$type || !$action) {
             return false;
@@ -21,7 +29,7 @@ trait Tools
         }
         $histo = Historique::create([
                 'personne_id' => $personne_id,
-                'utilisateur_id' => $utilisateur_id ?: 0,
+                'utilisateur_id' => $utilisateur_id ?: null,
                 'type' => $type,
                 'action' => $action,
             ]);
@@ -31,6 +39,11 @@ trait Tools
         return true;
     }
 
+    /**
+     * @param null $user
+     * @param $mail
+     * @return bool
+     */
     public function registerMail($user = null, $mail)
     {
         if (!$user || $user->personne) {

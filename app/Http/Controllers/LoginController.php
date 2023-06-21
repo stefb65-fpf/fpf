@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Concern\Tools;
 use App\Http\Requests\LoginRequest;
 use App\Models\Commune;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
+    use Tools;
     public function login(LoginRequest $request) {
         if ($request->email !== 'stephane.closse@gmail.com') {
             return redirect()->route('login')->with('error', "Email incorrect");
@@ -19,6 +21,10 @@ class LoginController extends Controller
                 'email' => 'stephane.closse@gmail.com'
             );
             $request->session()->put('user', $user);
+
+            $action = 'lorem ipsume dolor sic emet';
+
+            $this->registerAction(1,4,"dfhsfhsfhs");
 //        $user = array(
 //            'id' => 1,
 //            'name' => 'Closse',
