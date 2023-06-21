@@ -10,20 +10,20 @@ use App\Models\Personne;
 
 trait Tools
 {
-    public function registerAction($user = null, $action)
+    public function registerAction($personne_id, $type, $action, $utilisateur_id = null)
     {
-        if (!$user || $user->personne) {
+        if (!$personne_id || !$type || !$action) {
             return false;
         }
-        $person = Personne::where('id', $user->personne)->first();
+        $person = Personne::where('id', $personne_id)->first();
         if(!$person){
             return false;
         }
         $histo = Historique::create([
-                'personne_id' => $user->personne,
-                'utilisateur_id' => $user->utilisateur ?: 0,
-                'type' => $action->type,
-                'action' => $action->action,
+                'personne_id' => $personne_id,
+                'utilisateur_id' => $utilisateur_id ?: 0,
+                'type' => $type,
+                'action' => $action,
             ]);
         if (!$histo){
             return false;
