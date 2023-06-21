@@ -12,19 +12,20 @@
             </a> <div class="separator"></div>
             <a  href="/register" class="fosterRegister">
                 <div class="foster">Vous n'avez pas encore de compte ?</div>
-                <span style="text-decoration: underline; font-weight: 600"> Enregistrez-vous !</span>
+                <span style="text-decoration: underline; font-weight: 600">Enregistrez-vous !</span>
             </a>
         </div>
-        <div class="authForm">
+        <form action="{{ action('App\Http\Controllers\LoginController@login') }}" method="POST" class="authForm">
+            {{ csrf_field() }}
             <div class="customField">
-                <label >E-mail</label>
-                <input  type="email" name="email"  >
+                <label>E-mail</label>
+                <input  type="email" name="email" />
                 <div class="error">message erreur</div>
             </div>
             <div class="customField">
-                <label >Mot de passe</label>
+                <label>Mot de passe</label>
                 <div class="group">
-                    <input   type="password" name="password"  >
+                    <input type="password" name="password">
                     <div class="icons eye">
                         <div class="icon open">
                             <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -41,16 +42,11 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="error">message erreur</div>
             </div>
-            <div class="button customBtn"> Connectez-vous</div>
-        </div>
+            <button type="submit" class="button customBtn">Connectez-vous</button>
+        </form>
         <a class="forgottenPswd" href="/forgotPassword">Vous avez oublié votre mot de passe ?</a>
-
         <a class="findClub" target="_blank" href="https://federation-photo.fr/les-clubs/">Vous recherchez <span class="accent">un club</span> ?</a>
-
     </div>
 @endsection
-
-

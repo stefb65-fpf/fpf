@@ -12,30 +12,12 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+include 'web_sc.php';
 
-Route::get('/', function () {
-    return view('pages/welcome');
-});
-Route::get('/mon-compte', function () {
-    return view('account/mon_compte');
-
-});
-Route::get('/formations', function () {
-    return view('pages/formations');
-});
-Route::get('/gestion-club', function () {
-    return view('pages/gestion_club');
-});
-Route::get('/gestion-ur', function () {
-    return view('pages/gestion_ur');
-});
-Route::get('/gestion-fpf', function () {
-    return view('pages/gestion_fpf');
-});
 
 Route::get('/login', function () {
     return view('auth/login');
-});
+})->name('login');
 Route::get('/register', function () {
     return view('auth/register');
 });

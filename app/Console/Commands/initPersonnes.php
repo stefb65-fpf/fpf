@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Concern\Hash;
 use App\Mail\CommandeMail;
 use App\Mail\SendEmailReinitPassword;
 use App\Models\Adresse;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 
 class initPersonnes extends Command
 {
+    use Hash;
     /**
      * The name and signature of the console command.
      *
@@ -32,9 +34,12 @@ class initPersonnes extends Command
      */
     public function handle()
     {
-        $link = 'https://google.fr';
-        Mail::to('contact@envolinfo.com')->send(new SendEmailReinitPassword($link));
-        dd($link);
+        $pwd = $this->encodeShortReinit();
+//        $pwd = $this->encodePwd('azertyui1236');
+        dd($pwd);
+//        $link = 'https://google.fr';
+//        Mail::to('contact@envolinfo.com')->send(new SendEmailReinitPassword($link));
+//        dd($link);
 
         /*
          * statut 22 : participant openfed n'ayant jamais participé ==> a supprimer (35)
@@ -54,7 +59,7 @@ class initPersonnes extends Command
 
         Utilisateur::where('statut', 22)->delete();
 
-        $utilisateurs = Utilisateur::orderBy('courriel')->orderByDesc('adresses_id')->get();
+        $utilisateurs = Utilisateur::orderBy('courriel')->orderByDesc('adresses_id')->limit(10)->get();
 
         $letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*";
         $statuts_adherents = [0,1,2,3,4];
@@ -128,23 +133,19 @@ class initPersonnes extends Command
                     }
                 }
 
-                dd($datap);
 
-//                // on insère la personne
-//                $personne = Personne::create($datap);
-//
-//                // on insère la relation adresse_personne
-//                if ($adresse_user) {
-//                    $dataa = array('adresse_id' => $adresse_user->id, 'personne_id' => $personne->id);
-//                    DB::table('adresse_personne')->insert($dataa);
-//                }
+                // on insère la personne
+                $personne = Personne::create($datap);
+
+                // on insère la relation adresse_personne
+                if ($adresse_user) {
+                    $dataa = array('adresse_id' => $adresse_user->id, 'personne_id' => $personne->id);
+                    DB::table('adresse_personne')->insert($dataa);
+                }
             } else {
                 // l'utilisateur correspond à la personne précédente
             }
 
-
-            dd($datap);
-//            `type`, `organisation`, `password`, `erreur_init_email`, `phone_mobile`,`, `secure_code`, `is_adherent`
 
             $prec['email'] = $courriel;
             $prec['nom'] = $nom;
