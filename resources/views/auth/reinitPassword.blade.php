@@ -9,11 +9,12 @@
         <div class="fosterRegister light">
             <div class="foster">Enregistrez votre nouveau mot de passe</div>
         </div>
-        <div class="authForm">
+        <form  action="{{ action('App\Http\Controllers\LoginController@resetPassword',["securecode"=>$securecode,"mail"=>$email]) }}" method="POST" class="authForm">
+            {{ csrf_field() }}
             <div class="customField">
-                <label >Nouveau mot de passe</label>
+                <label >Nouveau mot de passe </label>
                 <div class="group">
-                    <input   type="password" name="password"  >
+                    <input type="password" name="password"  >
                     <div class="icons eye">
                         <div class="icon open">
                             <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -36,7 +37,7 @@
             <div class="customField">
                 <label >Confirmez</label>
                 <div class="group">
-                    <input   type="password" name="password"  >
+                    <input   type="password" name="password_confirmation"  >
                     <div class="icons eye">
                         <div class="icon open">
                             <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -56,8 +57,8 @@
 
                 <div class="error">message erreur</div>
             </div>
-            <div class="button customBtn"> Réinitialisez</div>
-        </div>
+            <button type="submit" class="button customBtn"> Réinitialisez</button>
+        </form>
 
 
     </div>

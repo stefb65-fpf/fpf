@@ -678,12 +678,16 @@ transform:translateY(-100px);
     font-size: 15px;
 
 }
+
 .fosterRegister.light{
     color: #3a3a3a;
     background-color: transparent;
     max-width: none;
     font-size: 16px;
 }
+.fosterRegister.text{
+     max-width: min(950px, 100%);
+ }
 .fosterRegister.light  a{
     color: #003d77;
     margin-top: 5px;

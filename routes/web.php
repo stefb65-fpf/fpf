@@ -22,10 +22,8 @@ Route::get('/register', function () {
 });
 Route::get('/forgotPassword', function () {
     return view('auth/forgotPassword');
-});
-Route::get('/reinitPassword', function () {
-    return view('auth/reinitPassword');
-});
+})->name('forgotPassword');
+Route::get('/reinitPassword/{securecode?}/{email?}', [App\Http\Controllers\LoginController::class, 'reinitPassword']);
 //Route::get('/registerAbonnement', function () {
 //    return view('auth/registerAbonnement');
 //});
@@ -50,3 +48,6 @@ Route::get('/mes-actions', function () {
 Route::get('/mes-formations', function () {
     return view('account/mes_formations');
 });
+//Route::get('/test/test', [App\Http\Controllers\LoginController::class, 'test']);
+Route::post('/forgotPassword', [App\Http\Controllers\LoginController::class, 'sendResetAccountPasswordLink']);
+Route::post('/reinitPassword', [App\Http\Controllers\LoginController::class, 'resetPassword']);
