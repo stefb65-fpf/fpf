@@ -27,12 +27,22 @@ Route::get('/forgotPassword', function () {
 Route::get('/reinitPassword/{securecode}', [App\Http\Controllers\LoginController::class, 'reinitPassword']);
 Route::post('/forgotPassword', [App\Http\Controllers\LoginController::class, 'sendResetAccountPasswordLink']);
 Route::put('/resetPassword/{personne}', [App\Http\Controllers\LoginController::class, 'resetPassword'])->name('resetPassword');
-
-
 //Route::get('/registerAbonnement', function () {
 //    return view('auth/registerAbonnement');
 //});
 Route::get('/registerAbonnement', [App\Http\Controllers\LoginController::class, 'registerAbonnement']);
+
+
+Route::get('/mes-mails', [App\Http\Controllers\PageController::class, 'mesMails']);
+Route::get('/mes-actions', function () {
+    return view('account/mes_actions');
+});
+Route::get('/mes-formations', function () {
+    return view('account/mes_formations');
+});
+Route::get('/mon-profil', function () {
+    return view('account/mon_profil');
+});
 Route::get('/registerAdhesion', function () {
     return view('auth/registerAdhesion');
 });
@@ -40,16 +50,3 @@ Route::get('/registerFormation', function () {
     return view('auth/registerFormation');
 });
 
-
-Route::get('/mon-profil', function () {
-    return view('account/mon_profil');
-});
-Route::get('/mes-mails', function () {
-    return view('account/mes_mails');
-});
-Route::get('/mes-actions', function () {
-    return view('account/mes_actions');
-});
-Route::get('/mes-formations', function () {
-    return view('account/mes_formations');
-});

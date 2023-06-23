@@ -75,6 +75,10 @@ a{
     text-decoration: none;
     color: inherit;
 }
+.pagination{
+    display: flex;
+
+}
 /*****************************************************  */
 /* hamburger */
 /*****************************************************  */
@@ -834,6 +838,45 @@ display: flex;
     color: indianred;
     opacity: 0;
 }
+.instructions{
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 250px;
+}
+.instructions .text{
+ text-align: center;
+}
+.instructions .list{
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items:flex-start;
+    margin-top: 10px;
+}
+.instructions .list .item{
+    font-size: 13px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.instructions .list .item.ok{
+color: #55B074;
+}
+
+.instructions .checkedBox svg path {
+    stroke:#55B074 !important;
+}
+.instructions .list .item .checkedBox{
+    margin-right: 7px;
+    visibility: hidden;
+    transition: 0.2s ease-in;
+}
+.instructions .list .item.ok .checkedBox{
+    visibility:visible;
+}
 .customField .error.visible{
     opacity: 1;
 }
@@ -880,6 +923,10 @@ display: flex;
     font-size: 15px;
     margin: 1.75rem auto 1rem auto;
     cursor: pointer;
+}
+.customBtn[disabled]{
+    cursor: not-allowed;
+    background-color: #424242;
 }
 .forgottenPswd{
     font-size: 14px;
@@ -1332,6 +1379,8 @@ input:checked + .slider:before {
     width: 100px;
     text-align: right;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 .listMailObject{
     max-width: 230px;
