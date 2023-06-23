@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Concern\Hash;
 use App\Mail\CommandeMail;
 use App\Mail\SendEmailReinitPassword;
+use App\Models\Abonnement;
 use App\Models\Adresse;
 use App\Models\Personne;
 use App\Models\Utilisateur;
@@ -34,9 +35,7 @@ class initPersonnes extends Command
      */
     public function handle()
     {
-        $pwd = $this->encodeShortReinit();
 //        $pwd = $this->encodePwd('azertyui1236');
-        dd($pwd);
 //        $link = 'https://google.fr';
 //        Mail::to('contact@envolinfo.com')->send(new SendEmailReinitPassword($link));
 //        dd($link);
@@ -55,23 +54,35 @@ class initPersonnes extends Command
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('personnes')->truncate();
         DB::table('abonnements')->truncate();
+        DB::table('adresse_personne')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        $datau = array('personne_id' => null);
+        DB::table('utilisateurs')->update($datau);
 
         Utilisateur::where('statut', 22)->delete();
 
-        $utilisateurs = Utilisateur::orderBy('courriel')->orderByDesc('adresses_id')->limit(10)->get();
+        $utilisateurs = Utilisateur::where('statut', 3)->orderByDesc('courriel')->orderByDesc('adresses_id')->limit(50)->get();
+//        $utilisateurs = Utilisateur::where('statut', 5)->get();
+//        $utilisateurs = Utilisateur::where('statut', 2)->orderBy('courriel')->orderByDesc('adresses_id')->limit(10)->get();
+//        $utilisateurs = Utilisateur::where('statut', 12)->orderBy('courriel')->orderByDesc('adresses_id')->limit(10)->get();
 
         $letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*";
         $statuts_adherents = [0,1,2,3,4];
 
+        $config_saison = DB::table('configsaisons')->where('id', 1)->first();
+        $numero_encours = $config_saison->numeroencours;
+
         $prec = array('email' => '', 'nom' => '', 'prenom' => '');
+        $personne = null;
         foreach ($utilisateurs as $v) {
             $courriel = trim($v->courriel);
             $prenom = mb_convert_case(trim($v->prenom), MB_CASE_TITLE, "UTF-8");
             $nom = mb_strtoupper(trim($v->nom));
 
             $shuffle_letters = str_shuffle($letters);
-            $random_password = substr($shuffle_letters, 0, 8);
+//            $random_password = substr($shuffle_letters, 0, 8);
+            $random_password = 'Az123456';
             $password = hash('sha512', $random_password);
             $datap = array(
                 'nom' => $nom,
@@ -145,6 +156,41 @@ class initPersonnes extends Command
             } else {
                 // l'utilisateur correspond à la personne précédente
             }
+
+            if ($personne) {
+                // on insère la relation utilisateur_personne
+                $datau = array('personne_id' => $personne->id);
+                DB::table('utilisateurs')->where('id', $v->id)->update($datau);
+            }
+
+
+            if ($v->numerofinabonnement != '') {
+                // on insère l'abonnement
+                $etat = ($v->numerofinabonnement <= $numero_encours) ? 2 : 1;
+                $dataa = array(
+                    'personne_id' => $personne->id,
+                    'debut' => $v->numerodebutabonnement,
+                    'fin' => $v->numerofinabonnement,
+                    'etat' => $etat,
+                );
+                Abonnement::create($dataa);
+
+                if ($etat == 1) {
+                    // on met à jour la personne
+                    $datap = array('is_abonne' => 1);
+                    $personne->update($datap);
+                }
+            }
+
+
+
+            if (!in_array($v->statut, $statuts_adherents)) {
+                // on supprime l'utilisateur car non adhérent
+//                DB::table('utilisateurs')->where('id', $v->id)->delete();
+            }
+
+
+
 
 
             $prec['email'] = $courriel;
