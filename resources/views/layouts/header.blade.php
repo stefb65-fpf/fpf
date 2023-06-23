@@ -64,7 +64,7 @@
         <a href="/" class="actionTopbar">Tableau de bord</a>
     </div>
     <div class="userAccount dropdownParent dropdownCall" data-dropdown-id="13">
-        Stéphane Closse
+        John Doe
         <div class="useAccountIcon">
             <svg width="13" height="9" viewBox="0 0 13 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6.5 9L0.870834 0.75L12.1292 0.75L6.5 9Z" fill="#003d77"/>

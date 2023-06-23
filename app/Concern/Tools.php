@@ -40,29 +40,25 @@ trait Tools
     }
 
     /**
-     * enregistre le mail envoyé à l'utilisateur dans la table historiquemail
-     * @param $personne_id integer
-     * @param $destinataire integer
-     * @param $titre integer
-     * @param $contenu string
-     * @param $utilisateur_id integer|null
+     * @param null $user
+     * @param $mail
      * @return bool
      */
-    public function registerMail($personne_id, $destinataire,  $titre, $contenu, $utilisateur_id = null)
+    public function registerMail($user = null, $mail)
     {
-        if (!$personne_id || !$destinataire || !$titre || !$contenu) {
+        if (!$user || $user->personne) {
             return false;
         }
-        $person = Personne::where('id', $personne_id)->first();
+        $person = Personne::where('id', $user->personne)->first();
         if(!$person){
             return false;
         }
         $histoMails = Historiquemail::create([
-            'personne_id' =>$personne_id,
-            'utilisateur_id' => $utilisateur_id ?: null,
-            'destinataire' => $destinataire,
-            'titre' => $titre,
-            'contenu' => $contenu,
+            'personne_id' => $user->personne,
+            'utilisateur_id' => $user->utilisateur ?: 0,
+            'destinataire' => $mail->destinataire,
+            'titre' => $mail->titre,
+            'contenu' => $mail->contenu,
         ]);
         if (!$histoMails){
             return false;

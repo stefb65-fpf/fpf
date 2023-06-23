@@ -57,20 +57,36 @@ if (dropdownCalls) {
 }
 // form show password
 let formIcon = document.querySelector(".customField .icons.eye")
+let formIcons = document.querySelectorAll(".customField .icons.eye")
+formIcons.forEach((formIcon) => {
+    if (formIcon) {
+        formIcon.addEventListener('click', () => {
+            formIcon.querySelector('.open').classList.toggle('hidden')
+            formIcon.querySelector('.closed').classList.toggle('hidden')
+            let inputPassword = formIcon.closest(".customField").querySelector('input')
+            if (inputPassword.type == "password") {
+                inputPassword.type = "text"
+            } else {
+                inputPassword.type = "password"
+            }
 
-if (formIcon) {
-    formIcon.addEventListener('click', () => {
-        formIcon.querySelector('.open').classList.toggle('hidden')
-        formIcon.querySelector('.closed').classList.toggle('hidden')
-        let inputPassword = formIcon.closest(".customField").querySelector('input')
-        if (inputPassword.type == "password") {
-            inputPassword.type = "text"
-        } else {
-            inputPassword.type = "password"
-        }
+        })
+    }
+})
 
-    })
-}
+// if (formIcon) {
+//     formIcon.addEventListener('click', () => {
+//         formIcon.querySelector('.open').classList.toggle('hidden')
+//         formIcon.querySelector('.closed').classList.toggle('hidden')
+//         let inputPassword = formIcon.closest(".customField").querySelector('input')
+//         if (inputPassword.type == "password") {
+//             inputPassword.type = "text"
+//         } else {
+//             inputPassword.type = "password"
+//         }
+//
+//     })
+// }
 //autosuggest
 
 if (autosuggestContainer) {
@@ -158,4 +174,89 @@ if(btnFormAccount){
                 }
         })
     })
+}
+
+
+//check password format in reinit password
+let checkableWidth = document.querySelector(".instructions .list .item.width")
+let checkableSmallLetter = document.querySelector(".instructions .list .item.smallLetter")
+let checkableupperCaseLetter = document.querySelector(".instructions .list .item.upperCaseLetter")
+let checkableNumber = document.querySelector(".instructions .list .item.number")
+let checkableConfirmation = document.querySelector(".instructions .list .item.confirmation")
+
+let checkableBtnOriginal = document.querySelector(".checkableInput.original")
+let checkableBtnConfirmation = document.querySelector(".checkableInput.confirmation")
+let submitBtn = document.querySelector("#resetPasswordBtn")
+
+if(checkableBtnOriginal){
+    let length = false;
+    let lower = false;
+    let uppercase = false;
+    let number = false;
+    let confirmation= false;
+        checkableBtnOriginal.addEventListener("keyup", (e) => {
+        //verif de la confirmation
+        let password = checkableBtnOriginal.value
+       if(password === checkableBtnConfirmation.value && checkableBtnOriginal.value.length){
+           checkableConfirmation.classList.add("ok")
+           confirmation = true
+       } else{
+           checkableConfirmation.classList.remove("ok")
+           confirmation = false
+       }
+       //verif des regex et longueur
+        if(checkableBtnOriginal.value.length > 7 && checkableBtnOriginal.value.length < 36){
+            checkableWidth.classList.add("ok")
+            length = true
+        }else{
+            checkableWidth.classList.remove("ok")
+            length = false
+        }
+        const regUpper = /^(.*[A-Z].*)+$/
+        if (regUpper.test(password)) {
+            checkableupperCaseLetter.classList.add("ok")
+            uppercase = true
+
+        }else{
+            checkableupperCaseLetter.classList.remove("ok")
+            uppercase = false
+        }
+        const regLower = /^(.*[a-z].*)+$/
+        if (regLower.test(password)) {
+            checkableSmallLetter.classList.add("ok")
+            lower = true
+        }else{
+            checkableSmallLetter.classList.remove("ok")
+            lower=false
+        }
+        const regNumber = /^(.*[0-9].*)+$/
+        if (regNumber.test(password)) {
+            checkableNumber.classList.add("ok")
+            number=true
+        }else{
+            checkableNumber.classList.remove("ok")
+            number=false
+        }
+    if(confirmation && number && length && lower && uppercase){
+        submitBtn.removeAttribute("disabled")
+    }else{
+        submitBtn.setAttribute("disabled","")
+    }
+    });
+    checkableBtnConfirmation.addEventListener("keyup", (e) => {
+        //verif de la confirmation
+        if(checkableBtnOriginal.value === checkableBtnConfirmation.value && checkableBtnConfirmation.value.length){
+            checkableConfirmation.classList.add("ok")
+            confirmation = true
+        } else{
+            checkableConfirmation.classList.remove("ok")
+            confirmation = false
+        }
+        if(confirmation && number && length && lower && uppercase){
+            submitBtn.removeAttribute("disabled")
+        }else{
+            submitBtn.setAttribute("disabled","")
+        }
+    });
+
 }
