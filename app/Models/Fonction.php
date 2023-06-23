@@ -13,4 +13,8 @@ class Fonction extends Model
     public function utilisateurs() {
         return $this->belongsToMany('App\Models\Utilisateur');
     }
+
+    public function droits() {
+        return $this->belongsToMany('App\Models\Droit');
+    }
 }

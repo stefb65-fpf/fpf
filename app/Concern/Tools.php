@@ -13,7 +13,7 @@ trait Tools
     /**
      * enregistre l'action utilisateur dans la table historique
      * @param $personne_id integer
-     * @param $type integer
+     * @param $type integer (0: gestion profil, 1: abonnement adhésion, 2: formation, 3: connexion inscription
      * @param $action string
      * @param $utilisateur_id integer|null
      * @return bool

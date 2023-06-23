@@ -73,10 +73,10 @@
         <div class="dropdown">
             <ul>
                 <li>
-                    <a href="/mon-compte">  Mon Compte</a>
+                    <a href="/mon-compte">Mon Compte</a>
                 </li>
                 <li>
-                    <a href="/login">  Se déconnecter</a>
+                    <a href="/logout">Se déconnecter</a>
                 </li>
             </ul>
         </div>
