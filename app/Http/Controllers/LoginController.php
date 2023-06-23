@@ -65,58 +65,42 @@ class LoginController extends Controller
         if (!$person) {
             return redirect()->route('forgotPassword')->with('error', "Nous ne trouvons pas votre email dans notre base de données.");
         }
-//       $pwd = $person->password;
         $crypt = $this->encodeShortReinit();
         $person->secure_code = $crypt;
         $person->save();
-        $link = "https://fpf-new.federation-photo.fr/reinitPassword/" . $crypt . "/" . $email;
-        dd($link);
-//     Mail::to($email)->send(new SendEmailReinitPassword($link));// change permission on server ??? ErrorException -  Failed to open stream: Permission denied -
+
+        $link = "https://fpf-new.federation-photo.fr/reinitPassword/" . $crypt;
+        $mailSent = Mail::to($email)->send(new SendEmailReinitPassword($link));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
         $this->registerAction($person->id, 1, "Demande génération mot de passe");
-        $content = "Nous avons reçu votre demande de réinitialisation de mot de passe.
-            Pour le modifier , cliquez sur ce lien.
-     Ce lien ne fonctionne pas ?
-            Copiez ce lien dans votre barre de recherche: " . $link;
-        $this->registerMail($person->id, $email, "Demande de réinitialisation de mot de passe", $content);
+        $this->registerMail($person->id, $email, "Demande de réinitialisation de mot de passe", $htmlContent);
+
         return view('auth.linkSent', compact('link', 'email'));
     }
 
-    public function reinitPassword($securecode = null, $email = null)
+    public function reinitPassword($securecode)
     {
-        if (!$email || !$securecode) {
+        $personne = Personne::selectRaw('id, email')->where('secure_code', $securecode)->first();
+        if (!$personne) {
             return redirect()->route('login')->with('error', "Ce lien n'est pas valide");
         }
-
-        return view('auth.reinitPassword', compact("email", "securecode"));
+        return view('auth.reinitPassword', compact("personne"));
     }
 
-    public function resetPassword(ResetPasswordRequest $request){
-        $parameters = $request->query->all();
-        $email = $parameters["mail"];
-        $securecode = $parameters["securecode"];
-        $personne = Personne::where('email', $email)->first();
-        if (!$email || !$securecode || !$personne) {
-            return redirect()->route('login')->with('error', "Ce lien n'est pas valide");
-        }
-        if ($personne->secure_code != $securecode) {
-            return redirect()->route('login')->with('error', "Ce lien n'est pas valide");
-        }
-//        dd("c'est ok, on peut changer le pwd ", $request->password);
-        $personne->password = $this->encodePwd($request->password);
-        //on supprime le securecode pour que le lien ne puisse servir qu'une seule fois
-        $personne->secure_code = null;
-        $personne->save();
+    public function resetPassword(ResetPasswordRequest $request, Personne $personne){
+        $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null);
+        $personne->update($datap);
         //connexion à une session
-        $user = array(
-            'id' => $personne->id,
-            'name' => $personne->nom,
-            'firtsname' => $personne->prenom,
-            'email' => $personne->email
-        );
-        $request->session()->put('user', $user);
+//        $user = array(
+//            'id' => $personne->id,
+//            'name' => $personne->nom,
+//            'firtsname' => $personne->prenom,
+//            'email' => $personne->email
+//        );
+//        $request->session()->put('user', $user);
 
         $this->registerAction(1, 4, "Modification du mot de passe");
-
         return view('pages.welcome')->with('success', "Votre mot de passe a été modifié avec succès");
     }
 
