@@ -10,14 +10,14 @@
             <div class="foster">Renseignez ici votre adresse mail de récupération. <br> Nous vous enverrons un lien pour réinitialiser votre mot de passe.</div>
 
         </div>
-        <div class="authForm">
+        <form action="{{ action('App\Http\Controllers\LoginController@sendResetAccountPasswordLink') }}" method="POST"  class="authForm">
+            {{ csrf_field() }}
             <div class="customField">
                 <label >E-mail</label>
                 <input  type="email" name="email"  >
                 <div class="error">message erreur</div>
             </div>
-
-            <div class="button customBtn">Envoyez-moi un lien</div>
-        </div>
+            <button type="submit" class="button customBtn">Envoyez-moi un lien</button>
+        </form>
     </div>
 @endsection
