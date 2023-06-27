@@ -11,6 +11,7 @@
             <div><a href="mailto:fpf@federation-photo.fr">fpf@federation-photo.fr</a></div>
         </div>
         <div class="bottom">
+            @if($person->is_abonne)
             <div class="memberCard">
                 <div class="memberCardTop">
                     <div>
@@ -45,6 +46,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             <ul class="leftMenu" id="navMenu">
 
                 <li class="leftMenuItem{{ Request::is('formations')?" active":""}}">

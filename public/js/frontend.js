@@ -260,3 +260,29 @@ if(checkableBtnOriginal){
     });
 
 }
+//modal
+let modalBackground = document.querySelector(".modalBackground")
+let modalContent = document.querySelector(".modalContent")
+let modalClose = document.querySelector(".modalWrapper .close .clickable")
+let modalTriggers = document.querySelectorAll(".modalTrigger")
+
+if(modalBackground){
+    modalBackground.addEventListener('click', (e)=>{
+        e.preventDefault()
+        // console.log( e.target == modalBackground?"true":"false",e.target == modalClose?"true":"false")
+        if(e.target == modalBackground || e.target == modalClose){
+            body.classList.remove("modalVisible")
+        }
+    })
+}
+if(modalTriggers.length){
+    modalTriggers.forEach((trigger) => {
+        trigger.addEventListener('click', function(){
+            body.classList.add("modalVisible")
+            console.log(trigger.dataset.modalContenu,trigger.dataset.modalStyle)
+
+            // modalContent.innerHTML = "<style>"+trigger.dataset.modalStyle +"</style>"+ trigger.dataset.modalContenu
+            modalContent.innerHTML =   '<div class="mail">'+trigger.dataset.modalContenu+'</div>'
+        })
+    })
+}

@@ -11,7 +11,7 @@
         rel="stylesheet">
 </head>
 <style>
-    body {
+    body.mail {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
@@ -21,7 +21,7 @@
         max-width: min(750px, 100%);
         margin: auto;
     }
-    .mainContent {
+    .mail .mainContent {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -29,18 +29,18 @@
         width: 100%;
         padding: 20px 0;
     }
-    .authLogo {
+    .mail .authLogo {
         margin: 0 auto;
         display: flex;
         align-items: center;
         text-align: center;
         flex-direction: column;
     }
-    .authLogo img {
+    .mail .authLogo img {
         object-fit: contain;
         height: 60px;
     }
-    .borderTop {
+    .mail .borderTop {
         height: 30px;
         background-color: #003d77;
         -webkit-box-shadow: 0px 5px 25px 0px rgba(45, 46, 92, 0.15);
@@ -49,7 +49,7 @@
         margin-bottom: 20px;
         margin-top: 10px;
     }
-    footer {
+    .mail footer {
         position: relative;
         background-color: #e2e2e2;
         color: #212121d4;
@@ -62,13 +62,13 @@
         width: 100%;
         margin-top: 20px;
     }
-    .coords {
+    .mail .coords {
         font-size: small;
     }
-    .coords a {
+    .mail .coords a {
         color: inherit;
     }
-    .header .topTitle {
+    .mail .header .topTitle {
         font-size: small;
         max-width: 130px;
         text-align: center;
@@ -76,24 +76,24 @@
         color: #3c3c3c;
     }
     /*    style other mails*/
-    .mailContent{
+    .mail .mailContent{
         padding: 10px;
         margin: 20px 0;
     }
-    .mailContent .text{
+    .mail .mailContent .text{
         font-size: 16px;
     }
-    .mailContent .link{
+    .mail  .mailContent .link{
         font-weight: 600;
     }
-    .mailContent .notWorking{
+    .mail .mailContent .notWorking{
         color: #9a9a9a;
         font-size: 14px;
         margin-top: 15px;
     }
 
 </style>
-<body>
+<body class="mail">
 @include('layouts.headerEmail')
 <div class="mainContent">
     @yield('content')

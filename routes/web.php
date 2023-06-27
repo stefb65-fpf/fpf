@@ -34,15 +34,9 @@ Route::get('/registerAbonnement', [App\Http\Controllers\LoginController::class, 
 
 
 Route::get('/mes-mails', [App\Http\Controllers\PageController::class, 'mesMails']);
-Route::get('/mes-actions', function () {
-    return view('account/mes_actions');
-});
-Route::get('/mes-formations', function () {
-    return view('account/mes_formations');
-});
-Route::get('/mon-profil', function () {
-    return view('account/mon_profil');
-});
+Route::get('/mes-actions', [App\Http\Controllers\PageController::class, 'mesActions']);
+Route::get('/mes-formations', [App\Http\Controllers\PageController::class, 'mesFormations']);
+Route::get('/mon-profil', [App\Http\Controllers\PageController::class, 'monProfil'])->name('admin');
 Route::get('/registerAdhesion', function () {
     return view('auth/registerAdhesion');
 });

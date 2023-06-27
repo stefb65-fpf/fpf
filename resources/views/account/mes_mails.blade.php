@@ -9,7 +9,7 @@
                        <div class="listMailReceiver italic">{{$mail->destinataire}}</div>
                    </div>
                    <div class="listLineRight">
-                       <div class="seeMore underline  underlineBlue blue">Voir le contenu</div>
+                       <div class="seeMore underline  underlineBlue blue modalTrigger" data-modal-contenu='{{$mail->contenu}}'   >Voir le contenu</div>
                        <div class="date dark">
                            <div class="day">{{$mail->date}}</div>
                            <div class="time">{{$mail->hour}}</div>
@@ -17,10 +17,8 @@
                    </div>
                </div>
            @endforeach
-
-    </div>
-        <nav>
+       </div>
             {{ $mails->render( "pagination::default") }}
-        </nav>
+    </div>
 @endsection
 

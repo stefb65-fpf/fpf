@@ -6,7 +6,7 @@
           <div class="formBlockWrapper">
               <div class="formLine">
                   <div class="formLabel">Email</div>
-                  <div class="formValue">juliehochet@gmail.com</div>
+                  <div class="formValue">{!! $person->email !!}</div>
                   <div class="formLineModify">Changement sécurisé</div>
 
               </div>
@@ -22,15 +22,15 @@
             <div class="formBlockWrapper" data-form="1">
                 <div class="formLine">
                     <div class="formLabel">Nom</div>
-                    <input class="formValue changeable"  value="Hochet" disabled="true"/>
+                    <input class="formValue changeable"  value="{{$person->nom}}" disabled="true"/>
                            </div>
                 <div class="formLine">
                     <div class="formLabel">Prénom</div>
-                    <input class="formValue changeable" value="Julie" disabled="true"/>
+                    <input class="formValue changeable" value="{{$person->prenom}}" disabled="true"/>
                 </div>
                 <div class="formLine">
                     <div class="formLabel">Date de naissance</div>
-                    <input class="formValue changeable" value="08/12/1980" disabled="true"/>
+                    <input class="formValue changeable" value="{{$person->datenaissance?$person->datenaissance:""}}" disabled="true"/>
                 </div>
 {{--                <div class="formLine">--}}
 {{--                    <div class="formLabel">Type</div>--}}
@@ -46,7 +46,7 @@
 {{--                </div>--}}
                 <div class="formLine">
                     <div class="formLabel">Téléphone mobile</div>
-                    <input class="formValue changeable" value="0658455425" disabled="true"/>
+                    <input class="formValue changeable" value="{{$person->phone_mobile?$person->phone_mobile:""}}" disabled="true"/>
                 </div>
             </div>
             <div class="formBtn" data-form="1" data-action="modify">Modifier</div>

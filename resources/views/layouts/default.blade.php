@@ -15,10 +15,10 @@
 {{--    @viteReactRefresh--}}
 {{--    @vite('resources/js/index.jsx')--}}
 </head>
-<body>
+<body >
 @include('layouts.header')
 @include('layouts.menu')
-
+@include('layouts.modal')
 <div class="mainContainer">
     @include('layouts.flash')
     @yield('content')
