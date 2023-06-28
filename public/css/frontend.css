@@ -1556,12 +1556,13 @@ input:checked + .slider:before {
     height: max-content;
     cursor: pointer;
 }
-.mailList .date{
+.mailList .date, .actionList .date{
     width: 100px;
     text-align: right;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    margin-left: auto;
 }
 .listMailObject{
     max-width: 230px;
