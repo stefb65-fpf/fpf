@@ -23,8 +23,8 @@ trait Tools
         if (!$personne_id || !$type || !$action) {
             return false;
         }
-        $person = Personne::where('id', $personne_id)->first();
-        if(!$person){
+        $personne = Personne::where('id', $personne_id)->first();
+        if(!$personne){
             return false;
         }
         $histo = Historique::create([
@@ -44,18 +44,18 @@ trait Tools
      * @param $mail
      * @return bool
      */
-    public function registerMail($user = null, $mail)
+    public function registerMail(int $personne_id, $mail, int $utilisateur_id = null)
     {
-        if (!$user || $user->personne) {
+        if (!$personne_id || !$mail) {
             return false;
         }
-        $person = Personne::where('id', $user->personne)->first();
-        if(!$person){
+        $personne = Personne::where('id', $personne_id)->first();
+        if(!$personne){
             return false;
         }
         $histoMails = Historiquemail::create([
-            'personne_id' => $user->personne,
-            'utilisateur_id' => $user->utilisateur ?: 0,
+            'personne_id' => $personne_id,
+            'utilisateur_id' => $utilisateur_id ?: null,
             'destinataire' => $mail->destinataire,
             'titre' => $mail->titre,
             'contenu' => $mail->contenu,

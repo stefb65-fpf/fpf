@@ -19,75 +19,58 @@ class PageController extends Controller
 
     public function accueil()
     {
-        $person = session()->get('personne');
-        return view('account.mon_compte', compact('person'));
+        return view('account.mon_compte');
     }
 
     public function monCompte()
     {
-        $person = session()->get('personne');
-//        dd($person);
-//        $person = Personne::where('id',  )->first();
-        return view('account.mon_compte', compact('person'));
+        return view('account.mon_compte');
     }
     public function monProfil()
     {
-        $person = session()->get('personne');
-//        $adress =
-
-        return view('account.mon_profil', compact('person'));
+        return view('account.mon_profil');
     }
     public function mesActions()
     {
-        $person = session()->get('personne');
-        $actions= Historique::where('personne_id', $person->id)->orderByDesc('created_at')
+        $personne = session()->get('personne');
+        $historiques= Historique::where('personne_id', $personne->id)->orderByDesc('created_at')
                 ->paginate(4);
-        foreach ($actions as $action) {
-            $action->date = $action->created_at->format('d/m/Y');
-        }
-        return view('account.mes_actions', compact('person', 'actions'));
+        return view('account.mes_actions', compact('historiques'));
     }
     public function mesFormations()
     {
-        $person = session()->get('personne');
-
-        return view('account.mes_formations', compact('person'));
+        return view('account.mes_formations');
     }
     public function mesMails()
     {
-        $person = session()->get('personne');
-        $mails = Historiquemail::where('personne_id', $person->id)->orderByDesc('created_at')
+        $personne = session()->get('personne');
+        $mails = Historiquemail::where('personne_id', $personne->id)->orderByDesc('created_at')
             ->paginate(4);
+
         foreach ($mails as $mail) {
-            $mail->date = $mail->created_at->format('d/m/Y');
-            $mail->hour = $mail->created_at->format('H:i');
             $mail->contenu = $this->get_string_between($mail->contenu, '<body class="mail">', '</body>');
         }
 
-        return view('account.mes_mails', compact('mails','person'));
+        return view('account.mes_mails', compact('mails'));
     }
 
     public function formations()
     {
-        $person = session()->get('personne');
-        return view('pages.formations', compact('person'));
+        return view('pages.formations');
     }
 
     public function gestionClub()
     {
-        $person = session()->get('personne');
-        return view('pages.gestion_club', compact('person'));
+        return view('pages.gestion_club');
     }
 
     public function gestionUr()
     {
-        $person = session()->get('personne');
-        return view('pages.gestion_ur', compact('person'));
+        return view('pages.gestion_ur');
     }
 
     public function gestionFpf()
     {
-        $person = session()->get('personne');
-        return view('pages.gestion_fpf', compact('person'));
+        return view('pages.gestion_fpf');
     }
 }

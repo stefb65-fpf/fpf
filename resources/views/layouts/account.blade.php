@@ -5,7 +5,7 @@
             Mon compte
         </h1>
         <div class="badgesWrapper">
-            @if($person->is_adherent === 1)
+            @if($personne->is_adherent === 1)
                 <div class="badge green">
                     <div class="img">
                         <svg width="30" height="24" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -14,7 +14,7 @@
                     </div>
                     <div class="label">Adhésion en cours</div>
                 </div>
-            @elseif($person->is_adherent === 2)
+            @elseif($personne->is_adherent === 2)
                 <div class="badge grey">
                     <div class="img">
                         <svg width="30" height="24" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,7 +25,7 @@
                 </div>
             @else
             @endif
-            @if($person->is_abonne === 1)
+            @if($personne->is_abonne === 1)
             <div class="badge green">
                 <div class="img">
                     <svg width="32" height="26" viewBox="0 0 32 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,7 +34,7 @@
                 </div>
                 <div class="label">Abonnement en cours</div>
             </div>
-                @elseif($person->is_abonne === 2)
+                @elseif($personne->is_abonne === 2)
                     <div class="badge grey">
                         <div class="img">
                             <svg width="32" height="26" viewBox="0 0 32 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,7 +45,7 @@
                     </div>
                 @else
                 @endif
-                @if($person->is_formateur === 1)
+                @if($personne->is_formateur === 1)
                     <div class="badge green">
                         <div class="img">
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="28" viewBox="0 0 30 28" fill="none">

@@ -70,6 +70,8 @@ class LoginController extends Controller
 
         $action = 'Connexion au site';
         $this->registerAction($personne->id, 3, $action);
+
+        return redirect()->route('accueil');
     }
 
     /**
@@ -91,21 +93,27 @@ class LoginController extends Controller
     public function sendResetAccountPasswordLink(SendResetLinkRequest $request)
     {
         $email = $request->email;
-        $person = Personne::where('email', $email)->first();
+        $personne = Personne::where('email', $email)->first();
 
-        if (!$person) {
+        if (!$personne) {
             return redirect()->route('forgotPassword')->with('error', "Nous ne trouvons pas votre email dans notre base de données.");
         }
         $crypt = $this->encodeShortReinit();
-        $person->secure_code = $crypt;
-        $person->save();
+        $personne->secure_code = $crypt;
+        $personne->save();
 
         $link = "https://fpf-new.federation-photo.fr/reinitPassword/" . $crypt;
         $mailSent = Mail::to($email)->send(new SendEmailReinitPassword($link));
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
-        $this->registerAction($person->id, 3, "Demande génération mot de passe");
-        $this->registerMail($person->id, $email, "Demande de réinitialisation de mot de passe", $htmlContent);
+        $this->registerAction($personne->id, 3, "Demande génération mot de passe");
+
+        $mail = new \stdClass();
+        $mail->titre = "Demande de réinitialisation de mot de passe";
+        $mail->destinataire = $email;
+        $mail->contenu = $htmlContent;
+
+        $this->registerMail($personne->id, $mail);
 
         return view('auth.linkSent', compact('link', 'email'));
     }
@@ -135,8 +143,14 @@ class LoginController extends Controller
         $this->registerAction(1, 4, "Modification du mot de passe");
 
         $mailSent = Mail::to($personne->email)->send(new SendEmailModifiedPassword());
+
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
-        $this->registerMail($personne->id, $personne->email, "Confirmation de modification de mot de passe", $htmlContent);
+        $mail = new \stdClass();
+        $mail->titre = "Confirmation de modification de mot de passe";
+        $mail->destinataire = $personne->email;
+        $mail->contenu = $htmlContent;
+
+        $this->registerMail($personne->id, $mail);
 
         $this->autologin($personne);
         return redirect()->route('accueil');

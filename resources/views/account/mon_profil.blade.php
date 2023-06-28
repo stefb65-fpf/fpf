@@ -6,7 +6,7 @@
           <div class="formBlockWrapper">
               <div class="formLine">
                   <div class="formLabel">Email</div>
-                  <div class="formValue">{!! $person->email !!}</div>
+                  <div class="formValue">{!! $personne->email !!}</div>
                   <div class="formLineModify">Changement sécurisé</div>
 
               </div>
@@ -22,15 +22,15 @@
             <div class="formBlockWrapper" data-form="1">
                 <div class="formLine">
                     <div class="formLabel">Nom</div>
-                    <input class="formValue changeable"  value="{{$person->nom}}" disabled="true"/>
+                    <input class="formValue changeable"  value="{{$personne->nom}}" disabled="true"/>
                            </div>
                 <div class="formLine">
                     <div class="formLabel">Prénom</div>
-                    <input class="formValue changeable" value="{{$person->prenom}}" disabled="true"/>
+                    <input class="formValue changeable" value="{{$personne->prenom}}" disabled="true"/>
                 </div>
                 <div class="formLine">
                     <div class="formLabel">Date de naissance</div>
-                    <input class="formValue changeable" value="{{$person->datenaissance?$person->datenaissance:""}}" disabled="true"/>
+                    <input class="formValue changeable" value="{{$personne->datenaissance?$personne->datenaissance:""}}" disabled="true"/>
                 </div>
 {{--                <div class="formLine">--}}
 {{--                    <div class="formLabel">Type</div>--}}
@@ -46,7 +46,7 @@
 {{--                </div>--}}
                 <div class="formLine">
                     <div class="formLabel">Téléphone mobile</div>
-                    <input class="formValue changeable" value="{{$person->phone_mobile?$person->phone_mobile:""}}" disabled="true"/>
+                    <input class="formValue changeable" value="{{$personne->phone_mobile?$personne->phone_mobile:""}}" disabled="true"/>
                 </div>
             </div>
             <div class="formBtn" data-form="1" data-action="modify">Modifier</div>
@@ -54,6 +54,11 @@
         <div class="formBlock">
             <div class="formBlockTitle">Adresses</div>
             <div class="formBlockWrapper" data-form="2">
+                @foreach($personne->adresses as $adresse)
+                    <div>{{ $adresse->libelle1 }}</div>
+                @endforeach
+
+
 
                 <div class="formLine">
                     <div class="formLabel">Adresse par défaut</div>

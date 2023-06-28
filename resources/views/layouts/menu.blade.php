@@ -11,7 +11,7 @@
             <div><a href="mailto:fpf@federation-photo.fr">fpf@federation-photo.fr</a></div>
         </div>
         <div class="bottom">
-            @if($person->is_abonne)
+            @if($personne->is_abonne)
             <div class="memberCard">
                 <div class="memberCardTop">
                     <div>
