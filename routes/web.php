@@ -47,15 +47,16 @@ Route::get('/mes-actions', [App\Http\Controllers\PersonneController::class, 'mes
 Route::get('/mes-formations', [App\Http\Controllers\PersonneController::class, 'mesFormations']);;
 Route::get('/mon-profil', [App\Http\Controllers\PersonneController::class, 'monProfil'])->name('mon-profil');;
 Route::put('/update-civilite/{personne}',[App\Http\Controllers\PersonneController::class, 'updateCivilite'])->name('updateCivilite');
+Route::put('/update-adresse/{personne}/{form}',[App\Http\Controllers\PersonneController::class, 'updateAdresse'])->name('updateAdresse');
 
 
 
-// afocjhage des formations et actions liées à l'inscription
+// affichage des formations et actions liées à l'inscription
 Route::get('/formations/accueil', [App\Http\Controllers\FormationController::class, 'accueil'])->name('formations.accueil');
 
 // gestion des clubs par responsable de clubs
 Route::get('/clubs/gestion', [App\Http\Controllers\ClubController::class, 'gestion'])->name('clubs.gestion');
-Route::get('/clubs/liste_adherents', [App\Http\Controllers\ClubController::class, 'liste_adherents'])->name('clubs.liste_adherents');
+//Route::get('/clubs/liste_adherents', [App\Http\Controllers\ClubController::class, 'liste_adherents'])->name('clubs.liste_adherents');
 
 
 // gestion des urs par responsable ur

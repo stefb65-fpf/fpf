@@ -265,3 +265,11 @@ if(modalTriggers.length){
         })
     })
 }
+// show form address
+// let addDefaultAddressBtn = document.querySelector(".addDefaultAddress")
+// let addLivraisonAddressBtn = document.querySelector(".addFacturationAddress")
+$('div[name=addAddress]').on('click',function(e){
+    e.preventDefault()
+    $(this).addClass('d-none')
+    $(this).parent().find('.formValueGroup').removeClass('hideForm')
+})
