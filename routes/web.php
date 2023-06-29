@@ -55,6 +55,8 @@ Route::get('/formations/accueil', [App\Http\Controllers\FormationController::cla
 
 // gestion des clubs par responsable de clubs
 Route::get('/clubs/gestion', [App\Http\Controllers\ClubController::class, 'gestion'])->name('clubs.gestion');
+Route::get('/clubs/liste_adherents', [App\Http\Controllers\ClubController::class, 'liste_adherents'])->name('clubs.liste_adherents');
+
 
 // gestion des urs par responsable ur
 Route::get('/urs/gestion', [App\Http\Controllers\UrController::class, 'gestion'])->name('urs.gestion');

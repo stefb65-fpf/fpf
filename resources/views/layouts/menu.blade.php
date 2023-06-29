@@ -52,12 +52,13 @@
                 </div>
             @endif
             <ul class="leftMenu" id="navMenu">
-
+                @if($menu['formation'])
                 <li class="leftMenuItem{{ Request::is('formations')?" active":""}}">
                     <a href="{{ route('formations.accueil') }}">
                         formations
                     </a>
                 </li>
+                @endif
                 @if($menu['club'])
                     <li class="leftMenuItem{{ Request::is('gestion-club')?" active":""}}">
                         <a href="{{ route('clubs.gestion') }}">

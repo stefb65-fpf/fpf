@@ -42,12 +42,14 @@ class LoginController extends Controller
             'club' => true,
             'ur' => false,
             'admin' => false,
+            'formation' => true,
         ];
         if ($personne->email === 'stephane.closse@gmail.com') {
             $menu = [
                 'club' => true,
                 'ur' => true,
                 'admin' => true,
+                'formation' => false,
             ];
         }
 

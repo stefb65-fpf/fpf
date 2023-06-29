@@ -10,7 +10,7 @@
             </div>
             @endforeach
         </div>
-
+        {{ $historiques->render( "pagination::default") }}
     </div>
 @endsection
 
