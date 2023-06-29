@@ -91,7 +91,6 @@
         font-size: 14px;
         margin-top: 15px;
     }
-
 </style>
 <body class="mail">
 @include('layouts.headerEmail')

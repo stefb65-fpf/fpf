@@ -2,25 +2,22 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Personne;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckLogin
+class UserAccessOnly
 {
     /**
      * Handle an incoming request.
      *
-     * @param Request $request
-     * @param \Closure(Request): (Response) $next
-     * @return Response
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->session()->get('user');
-        if (!$user) {
-            return redirect('/login');
+        $user = session()->get('user');
+        if ($user && $user->is_administratif) {
+            return redirect()->route('admin');
         }
         return $next($request);
     }

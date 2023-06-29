@@ -4,7 +4,7 @@ namespace App\Http\ViewComposers;
 
 use Illuminate\View\View;
 
-class PersonneAccountComposer
+class MenuComposer
 {
 
     /**
@@ -15,7 +15,7 @@ class PersonneAccountComposer
      */
     public function compose(View $view)
     {
-        $user = session()->get('user');
-        $view->with('user', $user);
+        $menu = session()->get('menu');
+        $view->with('menu', $menu);
     }
 }

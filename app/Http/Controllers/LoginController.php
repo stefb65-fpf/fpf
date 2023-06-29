@@ -36,10 +36,26 @@ class LoginController extends Controller
             return redirect()->route('login')->with('error', "Email incorrect");
         }
         unset($personne->password);
+
+        // on doit déterminer les accès de l'utilisateur et les pousser dans la session
+        $menu = [
+            'club' => true,
+            'ur' => false,
+            'admin' => false,
+        ];
+        if ($personne->email === 'stephane.closse@gmail.com') {
+            $menu = [
+                'club' => true,
+                'ur' => true,
+                'admin' => true,
+            ];
+        }
+
+        $request->session()->put('user', $personne);
+        $request->session()->put('menu', $menu);
         if (!$personne->is_administratif) {
             $personne = $this->getSituation($personne);
         }
-        $request->session()->put('personne', $personne);
 
         if ($personne->is_administratif) {
             return redirect()->route('admin');
@@ -62,7 +78,7 @@ class LoginController extends Controller
         if (!$personne->is_administratif) {
             $personne = $this->getSituation($personne);
         }
-        request()->session()->put('personne', $personne);
+        request()->session()->put('user', $personne);
 
         if ($personne->is_administratif) {
             return redirect()->route('admin');
@@ -80,10 +96,11 @@ class LoginController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function logout(Request $request) {
-        $personne = $request->session()->get('personne');
+        $user = $request->session()->get('user');
         $action = 'Déconnexion du site';
-        $this->registerAction($personne->id, 3, $action);
-        session()->forget('personne');
+        $this->registerAction($user->id, 3, $action);
+        session()->forget('user');
+        session()->forget('menu');
         return redirect()->route('login');
     }
 

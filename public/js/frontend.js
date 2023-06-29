@@ -145,37 +145,16 @@ if (searchBox) {
 }
 
 //account profile
-let btnFormAccount = document.querySelectorAll(".formBlock .formBtn")
-let formBlocksAccount = document.querySelectorAll(".formBlockWrapper")
-if(btnFormAccount){
-    btnFormAccount.forEach((btn) => {
-        btn.addEventListener("click", (e)=>{
-            e.preventDefault()
-                 let associatedInputs = btn.closest(".formBlock").querySelectorAll("input.changeable")
-                if(btn.dataset.action === "modify"){
-                    btn.innerHTML = "Valider"
-                    btn.dataset.action = "validate"
-                    let i = 0
-                    associatedInputs.forEach((input) => {
-                                input.removeAttribute("disabled");
-                                input.classList.add("modifying");
-                                if(!i){
-                                    input.focus()
-                                }
-                                i = i+1
-                            })
-                }else{
-                    btn.innerHTML = "Modifier"
-                    btn.dataset.action = "modify"
-                    associatedInputs.forEach((input) => {
-                        input.setAttribute("disabled","");
-                        input.classList.remove("modifying");
-                    })
-                }
-        })
-    })
-}
-
+console.log("mon script")
+$('button[name=updateForm]').on('click',function(e){
+    e.preventDefault()
+    $(this).addClass('d-none')
+    $(this).parent().find('button[name=enableBtn]').removeClass('d-none')
+    $(this).parent().parent().find('input').removeAttr('disabled').addClass('modifying')
+})
+// $('button[name=enableBtn]').on('click',function(e){
+//
+// })
 
 //check password format in reinit password
 let checkableWidth = document.querySelector(".instructions .list .item.width")

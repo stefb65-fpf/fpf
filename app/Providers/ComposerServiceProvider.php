@@ -14,8 +14,12 @@ class ComposerServiceProvider extends ServiceProvider
     public function boot()
     {
         view()->composer(
-            ['layouts.account', 'account.mon_profil', 'account.mon_compte'],
+            ['layouts.account', 'personnes.mon_profil', 'personnes.mon_compte', 'layouts.header', 'layouts.menu'],
             'App\Http\ViewComposers\PersonneAccountComposer'
+        );
+        view()->composer(
+            'layouts.menu',
+            'App\Http\ViewComposers\MenuComposer'
         );
     }
 

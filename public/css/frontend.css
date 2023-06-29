@@ -60,7 +60,9 @@ h1 {
 .dark{
     font-weight: 600;
 }
-
+.capitalize{
+    text-transform: capitalize;
+}
 .pageTitle {
     padding-top: 5%;
     margin-bottom: 30px;
@@ -74,6 +76,9 @@ h1 {
 a{
     text-decoration: none;
     color: inherit;
+}
+.d-none{
+    display: none;
 }
 .pagination{
     display: flex;
@@ -1428,6 +1433,12 @@ footer .logo img {
     flex-direction: column;
 
 }
+.formBlockWrapper .separator{
+    height: 2px;
+    width: min(332px, 100%);
+    margin: 0 auto 20px;
+    background-color: #acacac82;
+}
 .formBlockWrapper .formValue{
     margin-right: 15px;
     outline: none;
@@ -1436,6 +1447,13 @@ background-color: transparent;
     color: #575757;
     margin-bottom: 3px;
     padding: 3px;
+}
+.formBlockWrapper .formTitle{
+    width: 100%;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 11px;
+    color: #003d77;
 }
 .formBlockWrapper .formValue.modifying{
     background-color: white;
@@ -1556,12 +1574,13 @@ input:checked + .slider:before {
     height: max-content;
     cursor: pointer;
 }
-.mailList .date{
+.mailList .date, .actionList .date{
     width: 100px;
     text-align: right;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    margin-left: auto;
 }
 .listMailObject{
     max-width: 230px;

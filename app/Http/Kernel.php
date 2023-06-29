@@ -2,7 +2,11 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AdminAccess;
 use App\Http\Middleware\CheckLogin;
+use App\Http\Middleware\ClubAccess;
+use App\Http\Middleware\UrAccess;
+use App\Http\Middleware\UserAccessOnly;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -64,6 +68,10 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'checkLogin' => CheckLogin::class
+        'checkLogin' => CheckLogin::class,
+        'userAccessOnly' => UserAccessOnly::class,
+        'clubAccess' => ClubAccess::class,
+        'urAccess' => UrAccess::class,
+        'adminAccess' => AdminAccess::class,
     ];
 }

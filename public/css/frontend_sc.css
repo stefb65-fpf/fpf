@@ -3,14 +3,14 @@
     color: #58151c;
     border-left: 5px solid #f1aeb5;
     padding: 20px;
-    margin: 0px auto;
     width: max-content;
+    margin: 70px auto 0px;
 }
 .alertSuccess {
     background-color: #d1e7dd;
     color: #0a3622;
     border-left: 5px solid #a3cfbb;
     padding: 20px;
-    margin: 0px auto;
     width: max-content;
+    margin: 70px auto 0;
 }
