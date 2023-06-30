@@ -21,12 +21,12 @@ class AdressesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'libelle1' => 'nullable|string',
-            'libelle2' => 'nullable|string',
-            'libelle3' => 'nullable|string',
-            'codepostal'=>'string',
-            'ville'=>'string',
-            'pays'=>'nullable|string',
+            'libelle1' => ['nullable','string', 'max:120'],
+            'libelle2' => ['nullable','string', 'max:120'],
+//            'libelle3' => 'nullable|string',
+            'codepostal'=>['string', 'max:10', 'required'],
+            'ville'=> ['string','max:50'],
+            'pays'=>['numeric', 'required'],
             'telephonedomicile'=>'nullable|string',
 
         ];

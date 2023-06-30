@@ -54,22 +54,19 @@
                 </div>
             </div>
             <div>
-                <button type="submit" class="formBtn d-none" name="enableBtn">Valider</button>
-                <button class="formBtn" name="updateForm">Modifier</button>
+                <button type="submit" class="formBtn d-none success" name="enableBtn">Valider</button>
+                <button class="formBtn primary" name="updateForm">Modifier</button>
             </div>
-
         </form>
-
         <div class="formBlock">
             <div class="formBlockTitle">Adresses</div>
-            <form  action="{{ route('updateAdresse', [$personne,1]) }}" method="POST">
+            <form action="{{ route('updateAdresse', [$personne,1]) }}" method="POST">
                 <input type="hidden" name="_method" value="PUT">
                 {{ csrf_field() }}
                 <div class="formBlockWrapper" data-form="2">
                     @if(!$nbadresses)
-                        <div class="addAddress">Vous voulez rajouter une adresse?</div>
+                        <div class="addAddress" name="addAddress">Vous voulez rajouter une adresse ?</div>
                     @endif
-
                     <div class="formValueGroup {{ !$nbadresses ?" hideForm":""}}">
                         @if($nbadresses==2)
                             <div class="formTitle">Adresse de Facturation</div>
@@ -77,44 +74,54 @@
                             <div class="formTitle">Adresse</div>
                         @endif
                         <div class="formLine">
-                            <div class="formLabel">Libellé</div>
-                            <input name="libelle2" class="formValue "
-                                   type="text" value="{{$personne->adresses[0]->libelle2}}"
-                                   disabled="true"/>
-                        </div>
-                        <div class="formLine">
                             <div class="formLabel">Rue</div>
                             <input name="libelle1" type="text" class="formValue "
-                                   value="{{$personne->adresses[0]->libelle1}}"
-                                   disabled="true"/>
+                                   value="{{$personne->adresses[0]?$personne->adresses[0]->libelle1:""}}"
+                                   disabled="true" maxlength="120"/>
+                        </div>
+                        <div class="formLine">
+                            <div class="formLabel"></div>
+                            <input name="libelle2" class="formValue "
+                                   type="text" value="{{$personne->adresses[0]?$personne->adresses[0]->libelle2:""}}"
+                                   disabled="true" maxlength="120"/>
                         </div>
                         <div class="formLine">
                             <div class="formLabel">Code Postal</div>
                             <input name="codepostal" type="text" class="formValue"
-                                   value="{{$personne->adresses[0]->codepostal}}"
-                                   disabled="true"/>
+                                   value="{{$personne->adresses[0]?$personne->adresses[0]->codepostal:""}}"
+                                   disabled="true" maxlength="10" required/>
                         </div>
                         <div class="formLine">
                             <div class="formLabel">Ville</div>
                             <input name="ville" type="text" class="formValue"
-                                   value="{{$personne->adresses[0]->ville}}"
-                                   disabled="true"/>
+                                   value="{{$personne->adresses[0]?$personne->adresses[0]->ville:""}}"
+                                   disabled="true" maxlength="50"/>
                         </div>
                         <div class="formLine">
                             <div class="formLabel">Pays</div>
-                            <input name="pays" type="text" class="formValue"
-                                   value="{{$personne->adresses[0]->pays}}"
-                                   disabled="true"/>
+                            <select  class="formValue pays" name="pays"  disabled="true" required>
+                                {{$personne->adresses[0]->pays}}
+                                <option value="">Selectionnez un pays</option>
+                            @foreach($countries as $country)
+                                @if($personne->adresses[0])
+                                        <option value="{{$country->id}}" {{strtolower($country->nom) == strtolower($personne->adresses[0]->pays)? "selected":""}} data-indicator="{{$country->indicatif}}">{{$country->nom}}</option>
+                                    @else
+                                        <option value="{{$country->id}}" >{{$country->nom}}</option>
+                                    @endif
+                                @endforeach
+                            </select>
                         </div>
                         <div class="formLine">
                             <div class="formLabel">Téléphone fixe</div>
-                            <input class="formValue" type="text"
-                                   value="{{$personne->adresses[0]->telephonedomicile?:""}}"
-                                   disabled="true" name="telephonedomicile"/>
+                            <div class="group">
+                                <div class="indicator {{$personne->adresses[0] && $personne->adresses[0]->indicatif!==""?"":"d-none"}}">+{{$personne->adresses[0]?$personne->adresses[0]->indicatif:""}}</div>
+                                <input class="formValue phoneInput" type="text" value="{{$personne->adresses[0]?$personne->adresses[0]->telephonedomicile:""}}"
+                                       disabled="true" name="telephonedomicile"/>
+                            </div>
                         </div>
                         <div>
-                            <button type="submit" class="formBtn d-none" name="enableBtn">Valider</button>
-                            <button class="formBtn" name="updateForm">Modifier</button>
+                            <button type="submit" class="formBtn success d-none" name="enableBtn">Valider</button>
+                            <button class="formBtn primary" name="updateForm">Modifier</button>
                         </div>
                     </div> {{-- end formvaluegroup--}}
 
@@ -127,49 +134,60 @@
                     {{$personne->mail}}
                     <div class="formBlockWrapper" data-form="3">
                         @if(!($nbadresses == 2))
-                            <div class="addAddress" name="addAddress">Vous voulez rajouter une adresse de livraison?</div>
+                            <div class="addAddress" name="addAddress">Vous voulez rajouter une adresse de livraison ?
+                            </div>
                         @endif
                         <div class="formValueGroup {{ $nbadresses < 2 ?" hideForm":""}}">
                             <div class="formTitle">Adresse de Livraison</div>
                             <div class="formLine">
-                                <div class="formLabel">Libellé</div>
-                                <input name="libelle2" type="text" class="formValue"
-                                       value="{{$personne->adresses[1]?$personne->adresses[1]->libelle2:""}}"
-                                       disabled="true"/>
-                            </div>
-                            <div class="formLine">
                                 <div class="formLabel">Rue</div>
                                 <input name="libelle1" type="text" class="formValue"
                                        value="{{$personne->adresses[1]?$personne->adresses[1]->libelle1:""}}"
-                                       disabled="true"/>
+                                       disabled="true"  maxlength="120"/>
+                            </div>
+                            <div class="formLine">
+                                <div class="formLabel"></div>
+                                <input name="libelle2" type="text" class="formValue"
+                                       value="{{$personne->adresses[1]?$personne->adresses[1]->libelle2:""}}"
+                                       disabled="true"  maxlength="120"/>
                             </div>
                             <div class="formLine">
                                 <div class="formLabel">Code Postal</div>
                                 <input name="codepostal" type="text" class="formValue"
                                        value="{{$personne->adresses[1]?$personne->adresses[1]->codepostal:""}}"
-                                       disabled="true"/>
+                                       disabled="true"  maxlength="10" required/>
                             </div>
                             <div class="formLine">
                                 <div class="formLabel">Ville</div>
                                 <input name="ville" type="text" class="formValue"
                                        value="{{$personne->adresses[1]?$personne->adresses[1]->ville:""}}"
-                                       disabled="true"/>
+                                       disabled="true"  maxlength="50"/>
                             </div>
                             <div class="formLine">
                                 <div class="formLabel">Pays</div>
-                                <input name="pays" type="text" class="formValue"
-                                       value="{{$personne->adresses[1]?$personne->adresses[1]->pays:""}}"
-                                       disabled="true"/>
+                                <select  class="formValue pays" name="pays"  disabled="true" required>
+                                    {{$personne->adresses[0]->pays}}
+                                    <option value="">Selectionnez un pays</option>
+                                    @foreach($countries as $country)
+                                        @if($personne->adresses[1])
+                                            <option value="{{$country->id}}" {{strtolower($country->nom) == strtolower($personne->adresses[1]->pays)? "selected":""}} data-indicator="{{$country->indicatif}}">{{$country->nom}}</option>
+                                        @else
+                                            <option value="{{$country->id}}" >{{$country->nom}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="formLine">
                                 <div class="formLabel">Téléphone fixe</div>
-                                <input class="formValue"
-                                       value="{{$personne->adresses[1]?$personne->adresses[1]->telephonedomicile:""}}"
-                                       disabled="true" name="telephonedomicile"/>
+                                <div class="group">
+                                    <div class="indicator {{$personne->adresses[1] && $personne->adresses[1]->indicatif!==""?"":"d-none"}}">+{{$personne->adresses[1]?$personne->adresses[1]->indicatif:""}}</div>
+                                    <input class="formValue phoneInput" type="text" value="{{$personne->adresses[1]?$personne->adresses[1]->telephonedomicile:""}}"
+                                           disabled="true" name="telephonedomicile"/>
+                                </div>
                             </div>
                             <div>
-                                <button type="submit" class="formBtn d-none" name="enableBtn">Valider</button>
-                                <button class="formBtn" name="updateForm">Modifier</button>
+                                <button type="submit" class="formBtn success d-none" name="enableBtn">Valider</button>
+                                <button class="formBtn primary" name="updateForm">Modifier</button>
                             </div>
                         </div> {{-- end formvaluegroup--}}
 
@@ -179,19 +197,21 @@
         </div>
 
 
-            </form>
-            <div class="formLine newsletter" style="display: flex; justify-content: center; align-content: center">
-                <div class="switch">
-                    {{--                <input type="checkbox {{$personne->news?" active":""}}">--}}
-                    <input type="checkbox" {{$personne->news?'checked=true':'checked=false'}}>
-                    <span class="slider"></span>
-                </div>
-
-                <label for="subscribeNews"> Souhaitez-vous <span>recevoir les nouvelles</span> de la FPF ?<br> (Hors
-                    lettre
-                    de la fédé)</label>
+        </form>
+        <div class="formLine newsletter" style="display: flex; justify-content: center; align-content: center">
+            <div class="switch">
+                {{--                <input type="checkbox {{$personne->news?" active":""}}">--}}
+                <input type="checkbox" {{$personne->news?'checked=true':'checked=false'}}>
+                <span class="slider"></span>
             </div>
+
+            <label for="subscribeNews"> Souhaitez-vous <span>recevoir les nouvelles</span> de la FPF ?<br> (Hors
+                lettre
+                de la fédé)</label>
+        </div>
 
     </div>
 @endsection
-
+@section('js')
+    <script src="{{ asset('js/autocompleteCommune.js') }}?t=<?= time() ?>"></script>
+@endsection

@@ -424,7 +424,8 @@ body.mail {
 /*****************************************************  */
 .navbar {
     position: fixed;
-    height: 100vh;
+    height: calc( 100vh - 50px);
+    top: 50px;
     width: min(250px, 100%);
     z-index: 900;
     transition: 1s ease-in-out;
@@ -1424,6 +1425,9 @@ footer .logo img {
     margin-bottom: 10px;
     line-height: 27px;
 }
+.input[disabled] .datetime-reset-button{
+    display: none;
+}
 .formBlockWrapper .formLabel{
     min-width: 180px;
     font-weight: 700;
@@ -1472,6 +1476,20 @@ background-color: transparent;
 .formValueGroup.hideForm{
     display: none;
 }
+.addAddress{
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.formLine .group{
+    display: flex;
+}
+.formLine .group .indicator{
+    color: #003d77;
+    background-color: #cce3f9;
+    padding: 5px;
+    border-radius: 5px 0 0 5px;
+}
 .formBtn{
     margin: 10px 0 0 auto;
     background-color: #003d77;
@@ -1484,7 +1502,20 @@ background-color: transparent;
     font-size: 14px;
     position: absolute;
     right: 30px;
-    bottom: 11px;;
+    bottom: 11px;
+    border: none;
+}
+.formBtn.primary{
+    background-color: #003d77;
+    color: white;
+}
+.formBtn.success{
+    background-color: #38a449;
+    color: white;
+}
+.formBtn.danger{
+    background-color: #ce5b5b;
+    color: white;
 }
 .switch{
     font-size: 17px;

@@ -145,12 +145,11 @@ if (searchBox) {
 }
 
 //account profile
-console.log("mon script")
 $('button[name=updateForm]').on('click',function(e){
     e.preventDefault()
     $(this).addClass('d-none')
     $(this).parent().find('button[name=enableBtn]').removeClass('d-none')
-    $(this).parent().parent().find('input').removeAttr('disabled').addClass('modifying')
+    $(this).parent().parent().find('.formValue').removeAttr('disabled').addClass('modifying')
 })
 // $('button[name=enableBtn]').on('click',function(e){
 //
@@ -272,4 +271,34 @@ $('div[name=addAddress]').on('click',function(e){
     e.preventDefault()
     $(this).addClass('d-none')
     $(this).parent().find('.formValueGroup').removeClass('hideForm')
+    $(this).parent().find('button[name=enableBtn]').removeClass('d-none')
+    $(this).parent().find('button[name=updateForm]').addClass('d-none')
+    $(this).parent().find('input').removeAttr('disabled').addClass('modifying')
 })
+
+//show indicator div if a number has been typed
+if($('.phoneInput').val()){
+    $(this).parent().find('.indicator').removeClass("d-none")
+}else{
+    $(this).parent().find('.indicator').addClass("d-none")
+}
+$('.phoneInput').on('click', function(){
+    // if($(this).val()){
+        $(this).parent().find('.indicator').removeClass("d-none")
+    // }
+})
+
+//change indicator html if country is given
+$('select.pays').on('change', function(e) {
+    // alert( this.value )
+    let indicator = $("option:selected", this)[0].dataset.indicator
+    let  divToChange =  $(this).parent().parent().parent().find(" .indicator")
+    if(indicator){
+        divToChange.html("+"+indicator)
+        divToChange.removeClass('d-none')
+    }else{
+        divToChange.html("")
+        divToChange.addClass('d-none')
+    }
+
+});

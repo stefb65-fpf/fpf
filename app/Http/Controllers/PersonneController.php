@@ -8,8 +8,10 @@ use App\Http\Requests\CiviliteRequest;
 use App\Models\Adresse;
 use App\Models\Historique;
 use App\Models\Historiquemail;
+use App\Models\Pays;
 use App\Models\Personne;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PersonneController extends Controller
 {
@@ -29,15 +31,23 @@ class PersonneController extends Controller
     {
         $user = session()->get('user');
         $personne = Personne::where('id', $user->id)->first();
-//        dd($personne->adresses);
         $nbadresses = sizeof($personne->adresses);
         if (!$nbadresses) {
             $personne->adresses[0] = [];
         } elseif ($nbadresses == 1) {
             $personne->adresses[1] = [];
         }
-//        dd($personne->adresses[1], $personne->adresses[0]);
-        return view('personnes.mon_profil', compact('personne', 'nbadresses'));
+        foreach ( $personne->adresses as $adresse){
+            if($adresse->pays){
+                $country = Pays::where('nom', strtoupper(strtolower($adresse->pays)))->first();
+                $adresse->indicatif =$country->indicatif;
+//                dd( $adresse->indicatif);
+            }else{
+                $adresse->indicatif ="";
+            }
+        }
+        $countries = Pays::all();
+        return view('personnes.mon_profil', compact('personne', 'nbadresses', 'countries'));
     }
 
     public function mesActions()
@@ -76,35 +86,37 @@ class PersonneController extends Controller
 
     public function updateAdresse(AdressesRequest $request, Personne $personne, $form)
     {
-//        dd($form);
-        $datap_adresse = array(
-            'libelle1' => $request->libelle1, 'libelle2' => $request->libelle2, 'libelle3' => $request->libelle3, 'codepostal' => $request->codepostal, 'ville' => $request->ville, 'pays' => $request->pays, 'telephonedomicile' => $request->telephonedomicile);
+        $selected_pays = Pays::where('id', $request->pays)->first();
+        $datap_adresse = $request->all();
+        unset($datap_adresse['_token']);
+        unset($datap_adresse['_method']);
+        unset($datap_adresse['enableBtn']);
+       $datap_adresse['pays']=$selected_pays->nom;
+//        dd($datap_adresse);
+        if ($form == 1) {//$form = 1, c'est le formulaire d'adresse defaut / facturation
+            if (!sizeof($personne->adresses)) { //la personne n'a aucune adresse en base. On en crée une.
+                $new_adress = Adresse::create($datap_adresse);
+                if ($new_adress) {
+                    // on ajoute une ligne à la table pivot adresse_personne (le 'defaut' est à 1 pour "adresse de facturation"):
 
-
-        if ($form === 1) {//$form = 1, c'est le formulaire d'adresse defaut / facturation
-//            dd("form = 1");
-            if (!sizeof($personne->adresses)) {
-                Adresse::create($datap_adresse);
-            } else {
+                    $data_ap = array('adresse_id' => $new_adress->id, 'personne_id' => $personne->id, 'defaut' => 1);
+                    DB::table('adresse_personne')->insert($data_ap);
+                }
+            } else { //la personne a au moins une adresse en base. On met à jour l'adresse par defaut.
+//                dd($personne->adresses(), $personne->adresses[0]);
                 $personne->adresses[0]->update($datap_adresse);
             }
-        }else{ //$form = 2, c'est le formulaire d'adresse de livraison
-//            dd("form = 2");
-//            dd(sizeof($personne->adresses));
-            if (sizeof($personne->adresses) == 2) {
-                dd("update livraison");
+        } else { //$form = 2, c'est le formulaire d'adresse de livraison
+            if (sizeof($personne->adresses) == 2) { //la personne a déjà deux adresses (donc une de livraison). On la met à jour:
                 $personne->adresses[1]->update($datap_adresse);
-            } else {
-//                dd("create livraison");
-//                dd($datap_adresse);
+            } else { //la personne n'a pas encore d'adresse de livraison. On la crée:
                 $new_adress = Adresse::create($datap_adresse);
-                if($new_adress){
-                    $data_ap = array('adresse_id'=>$new_adress->id,'personne_id'=> $personne->id,'defaut'=>2);
+                if ($new_adress) {
+                    // on ajoute une ligne à la table pivot adresse_personne (le 'defaut' est à 2 pour "adresse de livraison"):
+                    $data_ap = array('adresse_id' => $new_adress->id, 'personne_id' => $personne->id, 'defaut' => 2);
                     DB::table('adresse_personne')->insert($data_ap);
-
                 }
-//                Adresse::create($datap_adresse);
-                dd($new_adress);
+//                dd($new_adress);
             }
         }
 
@@ -112,6 +124,8 @@ class PersonneController extends Controller
         $this->registerAction(1, 4, "Modification de vos adresses");
         return redirect()->route('mon-profil')->with('success', "Votre adresse a été modifiée avec succès");
     }
+
+
 
 
 }
