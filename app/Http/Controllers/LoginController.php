@@ -16,6 +16,7 @@ use App\Models\Historique;
 use App\Models\Personne;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -37,27 +38,16 @@ class LoginController extends Controller
         }
         unset($personne->password);
 
-        // on doit déterminer les accès de l'utilisateur et les pousser dans la session
-        $menu = [
-            'club' => true,
-            'ur' => false,
-            'admin' => false,
-            'formation' => true,
-        ];
-        if ($personne->email === 'stephane.closse@gmail.com') {
-            $menu = [
-                'club' => true,
-                'ur' => true,
-                'admin' => true,
-                'formation' => false,
-            ];
-        }
+        list($menu, $cartes) = $this->getMenu($personne);
 
         $request->session()->put('user', $personne);
         $request->session()->put('menu', $menu);
+
         if (!$personne->is_administratif) {
             $personne = $this->getSituation($personne);
         }
+
+        $request->session()->put('cartes', $cartes);
 
         if ($personne->is_administratif) {
             return redirect()->route('admin');
@@ -80,16 +70,92 @@ class LoginController extends Controller
         if (!$personne->is_administratif) {
             $personne = $this->getSituation($personne);
         }
+
+        list($menu, $cartes) = $this->getMenu($personne);;
+
         request()->session()->put('user', $personne);
+        request()->session()->put('menu', $menu);
 
         if ($personne->is_administratif) {
             return redirect()->route('admin');
         }
 
+        request()->session()->put('cartes', $cartes);
+
         $action = 'Connexion au site';
         $this->registerAction($personne->id, 3, $action);
 
         return redirect()->route('accueil');
+    }
+
+    protected function getMenu($personne) {
+        // on doit déterminer les accès de l'utilisateur et les pousser dans la session
+        $menu_club = false;
+        $menu_ur = false;
+        $menu_admin = $personne->is_administratif;
+        $menu_formation = !$personne->is_administratif;
+
+        $cartes = [];
+        if (!$personne->is_administratif && $personne->is_adherent) {
+            // on regarde les functions sur chaque carte
+            $utilisateurs = Utilisateur::where('personne_id', $personne->id)->orderBy('statut')->selectRaw('id, urs_id, clubs_id, identifiant, statut')->get();
+            $prec_statut3 = 4;
+            foreach ($utilisateurs as $utilisateur) {
+                $fonctions = Fonction::join('fonctionsutilisateurs', 'fonctionsutilisateurs.fonctions_id', '=', 'fonctions.id')
+                    ->where('fonctionsutilisateurs.utilisateurs_id', $utilisateur->id)
+                    ->selectRaw('fonctions.id, fonctions.libelle, fonctions.instance')
+                    ->orderBy('fonctions.instance')
+                    ->orderBy('fonctions.ordre')
+                    ->get();
+                $utilisateur->fonctions = $fonctions;
+                if ($utilisateur->statut == 3) {
+                    if (sizeof($fonctions) > 0) {
+                        if ($fonctions[0]->instance < $prec_statut3) {
+                            array_unshift($cartes, $utilisateur);
+                        } else {
+                            $cartes[] = $utilisateur;
+                        }
+                        $prec_statut3 = $fonctions[0]->instance;
+                    } else {
+                        $cartes[] = $utilisateur;
+                    }
+                } else {
+                    $cartes[] = $utilisateur;
+                }
+            }
+            if (sizeof($cartes[0]->fonctions) > 0) {
+                foreach ($cartes[0]->fonctions as $fonction) {
+                    if (in_array($fonction->id, config('app.club_functions'))) {
+                        $menu_club = true;
+                    }
+                    if (in_array($fonction->id, config('app.ur_functions'))) {
+                        $menu_ur = true;
+                    }
+                    if ($fonction->instance == 1) {
+                        // on contrôle les droits liés à la fonction
+                        if (sizeof($fonction->droits)) {
+                            $menu_admin = true;
+                        }
+                    }
+                }
+            }
+
+            if (!$menu_admin) {
+                // TODO on contrôle les droits liés à l'utilisateur
+                if (sizeof($cartes[0]->droits) > 0) {
+                    $menu_admin = true;
+                }
+            }
+        }
+
+        $menu = [
+            'club' => $menu_club,
+            'ur' => $menu_ur,
+            'admin' => $menu_admin,
+            'formation' => $menu_formation,
+        ];
+
+        return [$menu, $cartes];
     }
 
     /**

@@ -4,6 +4,8 @@
              alt="Fédération Photographique de France">
         <div class="logoMobileRight">Fédération Photographique de France</div>
     </div>
+
+    @if($menu['admin'] || $menu['ur'])
     <div class="actionsTopbar">
         <div class="searchContainer">
             <div class="foster"> Je cherche ...</div>
@@ -80,6 +82,9 @@
             </div>
         </div>
     </div>
+    @endif
+
+
     <div class="userAccount dropdownParent dropdownCall" data-dropdown-id="13">
         {{ $user->prenom }}
         <div class="useAccountIcon">

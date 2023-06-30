@@ -55,7 +55,7 @@
                 @if($menu['formation'])
                 <li class="leftMenuItem{{ Request::is('formations')?" active":""}}">
                     <a href="{{ route('formations.accueil') }}">
-                        formations
+                        catalogue formations
                     </a>
                 </li>
                 @endif

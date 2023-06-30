@@ -51,18 +51,19 @@ class initPersonnes extends Command
          * statuts 0,1,2,3, et 4 : adhérents ou abonnés seuls
          * */
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('personnes')->truncate();
-        DB::table('abonnements')->truncate();
-        DB::table('adresse_personne')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+//        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+//        DB::table('personnes')->truncate();
+//        DB::table('abonnements')->truncate();
+//        DB::table('adresse_personne')->truncate();
+//        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+//
+//        $datau = array('personne_id' => null);
+//        DB::table('utilisateurs')->update($datau);
+//
+//        Utilisateur::where('statut', 22)->delete();
 
-        $datau = array('personne_id' => null);
-        DB::table('utilisateurs')->update($datau);
-
-        Utilisateur::where('statut', 22)->delete();
-
-        $utilisateurs = Utilisateur::where('statut', 3)->orderByDesc('courriel')->orderByDesc('adresses_id')->limit(50)->get();
+        $utilisateurs = Utilisateur::whereNull('personne_id')->whereIn('statut', [0,1,2,3])->where('courriel', '<>', 'fpf@federation-photo.fr')->orderByDesc('courriel')->orderByDesc('adresses_id')->get();
+//        $utilisateurs = Utilisateur::where('statut', 3)->orderByDesc('courriel')->orderByDesc('adresses_id')->limit(50)->get();
 //        $utilisateurs = Utilisateur::where('statut', 5)->get();
 //        $utilisateurs = Utilisateur::where('statut', 2)->orderBy('courriel')->orderByDesc('adresses_id')->limit(10)->get();
 //        $utilisateurs = Utilisateur::where('statut', 12)->orderBy('courriel')->orderByDesc('adresses_id')->limit(10)->get();
@@ -169,7 +170,7 @@ class initPersonnes extends Command
                 $etat = ($v->numerofinabonnement <= $numero_encours) ? 2 : 1;
                 $dataa = array(
                     'personne_id' => $personne->id,
-                    'debut' => $v->numerodebutabonnement,
+                    'debut' => $v->numerodebutabonnement ?? 0,
                     'fin' => $v->numerofinabonnement,
                     'etat' => $etat,
                 );

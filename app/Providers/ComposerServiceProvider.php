@@ -18,7 +18,7 @@ class ComposerServiceProvider extends ServiceProvider
             'App\Http\ViewComposers\PersonneAccountComposer'
         );
         view()->composer(
-            'layouts.menu',
+            ['layouts.menu', 'layouts.header'],
             'App\Http\ViewComposers\MenuComposer'
         );
     }

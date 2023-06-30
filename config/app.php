@@ -186,4 +186,9 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+
+
+    'club_functions' => explode(',', env('CLUB_FUNCTIONS')),
+    'ur_functions' => explode(',', env('UR_FUNCTIONS')),
+
 ];

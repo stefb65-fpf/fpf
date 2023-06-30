@@ -1,39 +1,39 @@
 @extends('layouts.default')
 
 @section('content')
-    <div class="adminClubPage pageCanva">
+    <div class="pageCanva">
         <h1 class="pageTitle">
-            Espace de gestion club
+            Espace de gestion du club {{ $club->nom }}
         </h1>
         <div class="cardContainer">
-            <div class="card">
-                <div class="wrapper">
-                    <div class="cardTitle">Infos club</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="wrapper">
-                    <div class="cardTitle">Gestion adhésions et abonnements</div>
-                </div>
-            </div>
-            <div class="card">
+                <a class="card" href="{{ route('clubs.infos_club') }}">
+                    <div class="wrapper">
+                        <div class="cardTitle">Infos club</div>
+                    </div>
+                </a>
+                <a class="card" href="{{ route('clubs.gestion_adherents') }}">
+                    <div class="wrapper">
+                        <div class="cardTitle">Gestion adhésions et abonnements</div>
+                    </div>
+                </a>
+            <a class="card" href="{{ route('clubs.gestion_fonctions') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Fonctions club</div>
                 </div>
-            </div>  <div class="card">
-
+            </a>
+            <a class="card" href="{{ route('clubs.gestion_reglements') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Bordereaux & Réglements</div>
                 </div>
-            </div>
+            </a>
             <div class="card invisible">
                 <div class="wrapper">
-                    <div class="cardTitle">Infos club</div>
+                    <div class="cardTitle"></div>
                 </div>
             </div>
             <div class="card invisible">
                 <div class="wrapper">
-                    <div class="cardTitle">Infos club</div>
+                    <div class="cardTitle"></div>
                 </div>
             </div>
         </div>

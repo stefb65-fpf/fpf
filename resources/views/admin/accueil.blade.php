@@ -1,51 +1,51 @@
 @extends('layouts.default')
 
 @section('content')
-    <div class="adminFpfPage pageCanva">
+    <div class="pageCanva">
         <h1 class="pageTitle">
             Espace de gestion FPF
         </h1>
         <div class="cardContainer">
-            <div class="card">
+            <a class="card" href="{{ route('personnes.index') }}">
                 <div class="wrapper">
-                    <div class="cardTitle">Adhérents</div>
+                    <div class="cardTitle">Utilisateurs base en ligne</div>
                 </div>
-            </div>
-            <div class="card">
+            </a>
+            <a class="card" href="{{ route('admin.structures') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Structures & Fonctions</div>
                 </div>
-            </div>
-            <div class="card">
+            </a>
+            <a class="card" href="{{ route('admin.config') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Paramétrage</div>
                 </div>
-            </div>
-            <div class="card">
+            </a>
+            <a class="card" href="{{ route('admin.gestion_publications') }}">
                 <div class="wrapper">
-                    <div class="cardTitle">Publications</div>
+                    <div class="cardTitle">Routage, éditions</div>
                 </div>
-            </div>
-            <div class="card">
+            </a>
+            <a class="card" href="{{ route('formations.index') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Formations</div>
                 </div>
-            </div>
-            <div class="card">
+            </a>
+            <a class="card">
                 <div class="wrapper">
-                    <div class="cardTitle">Trésorerie, Reversements, Statistiques</div>
+                    <div class="cardTitle">Reversements, Statistiques</div>
                 </div>
-            </div>
-            <div class="card">
+            </a>
+            <a class="card" href="{{ route('votes.index') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Votes</div>
                 </div>
-            </div>
-            <div class="card">
+            </a>
+            <a class="card">
                 <div class="wrapper">
                     <div class="cardTitle">Newsletter</div>
                 </div>
-            </div>
+            </a>
             <div class="card invisible">
             </div>
         </div>

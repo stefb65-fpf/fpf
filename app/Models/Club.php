@@ -11,10 +11,14 @@ class Club extends Model
     protected $guarded = [];
 
     public function ur() {
-        return $this->belongsTo('App\Models\Ur');
+        return $this->belongsTo('App\Models\Ur', 'urs_id');
     }
 
     public function utilisateurs() {
-        return $this->hasMany('App\Models\Utilisateur');
+        return $this->hasMany('App\Models\Utilisateur', 'clubs_id');
+    }
+
+    public function adresse() {
+        return $this->belongsTo('App\Models\Adresse', 'adresses_id');
     }
 }

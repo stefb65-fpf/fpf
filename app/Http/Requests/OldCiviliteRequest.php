@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Requests;
+
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdressesRequest extends FormRequest
+
+class OldCiviliteRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,13 +23,10 @@ class AdressesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'libelle1' => 'nullable|string',
-            'libelle2' => 'nullable|string',
-            'libelle3' => 'nullable|string',
-            'codepostal'=>'string',
-            'ville'=>'string',
-            'pays'=>'nullable|string',
-            'telephonedomicile'=>'nullable|string',
+            'nom' => ['string','required','max:40', 'min:2'],
+            'prenom' => ['string','required','max:40', 'min:2'],
+            'datenaissance'=>'date',
+            'phone_mobile'=>['numeric','max:10', 'min:8']
         ];
     }
 }

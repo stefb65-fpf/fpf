@@ -11,10 +11,14 @@ class Ur extends Model
     protected $guarded = [];
 
     public function clubs() {
-        return $this->hasMany('App\Models\Club');
+        return $this->hasMany('App\Models\Club', 'urs_id');
     }
 
     public function utilisateurs() {
-        return $this->hasMany('App\Models\Utilisateur');
+        return $this->hasMany('App\Models\Utilisateur', 'urs_id');
+    }
+
+    public function adresse() {
+        return $this->belongsTo('App\Models\Adresse', 'adresses_id');
     }
 }

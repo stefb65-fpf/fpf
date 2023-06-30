@@ -22,4 +22,8 @@ class Adresse extends Model
         $splitted_number = trim(chunk_split($number, 2, ' '));
         return $isPoint? $splitted_number :$value;
     }
+
+    public function clubs() {
+        return $this->hasMany('App\Models\Club');
+    }
 }
