@@ -87,20 +87,26 @@
                         </div>
                         <div class="formLine">
                             <div class="formLabel">Code Postal</div>
-                            <input name="codepostal" type="text" class="formValue"
-                                   value="{{$personne->adresses[0]?$personne->adresses[0]->codepostal:""}}"
-                                   disabled="true" maxlength="10" required/>
+                            <div class="suggestionWrapper">
+                                <input name="codepostal" type="text" class="formValue"
+                                       value="{{$personne->adresses[0]?$personne->adresses[0]->codepostal:""}}"
+                                       disabled="true" maxlength="10" required/>
+                                <div class="suggestion"></div>
+                            </div>
+
                         </div>
                         <div class="formLine">
                             <div class="formLabel">Ville</div>
+                            <div class="suggestionWrapper">
                             <input name="ville" type="text" class="formValue"
                                    value="{{$personne->adresses[0]?$personne->adresses[0]->ville:""}}"
-                                   disabled="true" maxlength="50"/>
+                                   disabled="true" maxlength="50" required/>
+                                <div class="suggestion"></div>
+                            </div>
                         </div>
                         <div class="formLine">
                             <div class="formLabel">Pays</div>
                             <select  class="formValue pays" name="pays"  disabled="true" required>
-                                {{$personne->adresses[0]->pays}}
                                 <option value="">Selectionnez un pays</option>
                             @foreach($countries as $country)
                                 @if($personne->adresses[0])
@@ -153,20 +159,26 @@
                             </div>
                             <div class="formLine">
                                 <div class="formLabel">Code Postal</div>
-                                <input name="codepostal" type="text" class="formValue"
-                                       value="{{$personne->adresses[1]?$personne->adresses[1]->codepostal:""}}"
-                                       disabled="true"  maxlength="10" required/>
+                                <div class="suggestionWrapper">
+                                    <input name="codepostal" type="text" class="formValue"
+                                           value="{{$personne->adresses[1]?$personne->adresses[1]->codepostal:""}}"
+                                           disabled="true" maxlength="10" required/>
+                                    <div class="suggestion"></div>
+                                </div>
+
                             </div>
                             <div class="formLine">
                                 <div class="formLabel">Ville</div>
-                                <input name="ville" type="text" class="formValue"
-                                       value="{{$personne->adresses[1]?$personne->adresses[1]->ville:""}}"
-                                       disabled="true"  maxlength="50"/>
+                                <div class="suggestionWrapper">
+                                    <input name="ville" type="text" class="formValue"
+                                           value="{{$personne->adresses[1]?$personne->adresses[1]->ville:""}}"
+                                           disabled="true" maxlength="50" required/>
+                                    <div class="suggestion"></div>
+                                </div>
                             </div>
                             <div class="formLine">
                                 <div class="formLabel">Pays</div>
                                 <select  class="formValue pays" name="pays"  disabled="true" required>
-                                    {{$personne->adresses[0]->pays}}
                                     <option value="">Selectionnez un pays</option>
                                     @foreach($countries as $country)
                                         @if($personne->adresses[1])
@@ -200,14 +212,23 @@
         </form>
         <div class="formLine newsletter" style="display: flex; justify-content: center; align-content: center">
             <div class="switch">
-                {{--                <input type="checkbox {{$personne->news?" active":""}}">--}}
-                <input type="checkbox" {{$personne->news?'checked=true':'checked=false'}}>
+
+                <input type="checkbox" {{$personne->news?'checked=true':'checked=false'}} value={{$personne->news?1:0}}>
                 <span class="slider"></span>
             </div>
 
-            <label for="subscribeNews"> Souhaitez-vous <span>recevoir les nouvelles</span> de la FPF ?<br> (Hors
+            <label class="notSubscribing {{$personne->news?'d-none':''}}" for="subscribeNews">
+                <div>Souhaitez-vous <span>recevoir les nouvelles</span> de la FPF ?<br> (Hors
+                    lettre
+                    de la fédé)</div>
+                @if($personne->blacklist_date)
+                    <div class="blacklist {{$personne->news?'d-none':''}}">Vous avez mis les nouvelles de la FPF en liste noir depuis le {{($personne->blacklist_date)}} </div>
+                @endif</label>
+
+            <label class="subscribing {{$personne->news?'':'d-none'}}" for="subscribeNews"> Vous <span>recevez actuellement les nouvelles</span> de la FPF.<br> (Hors
                 lettre
                 de la fédé)</label>
+
         </div>
 
     </div>

@@ -22,7 +22,7 @@ h1 {
 .pageCanva {
     min-height: calc(100vh - 70px);
     width: 100%;
-    padding: 6.5%;
+    padding:   59px 6.5% 6.5% 6.5%;
 }
 .mt25{
     margin-top: 25px;
@@ -78,7 +78,7 @@ a{
     color: inherit;
 }
 .d-none{
-    display: none;
+    display: none!important;
 }
 .pagination{
     display: flex;
@@ -1447,7 +1447,7 @@ footer .logo img {
 .formBlockWrapper .formValue{
     margin-right: 15px;
     outline: none;
-background-color: transparent;
+    background-color: #e9e9e9;
     border: none;
     color: #575757;
     margin-bottom: 3px;
@@ -1487,8 +1487,12 @@ background-color: transparent;
 .formLine .group .indicator{
     color: #003d77;
     background-color: #cce3f9;
-    padding: 5px;
+    padding: 05px;
     border-radius: 5px 0 0 5px;
+    height: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .formBtn{
     margin: 10px 0 0 auto;
@@ -1534,6 +1538,32 @@ background-color: transparent;
     cursor: pointer;
     border: transparent;
 }
+.suggestionWrapper{
+    position: relative;
+    max-width: min(100%, 256px);
+}
+.suggestionWrapper .suggestion{
+    position: absolute;
+    top: 28px;
+    left: 0;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: scroll;
+    background-color: #e6e6e6;
+    margin-right: 15px;
+
+}
+.suggestionWrapper .suggestion .item{
+    background-color: white;
+    margin-bottom: 1px;
+    height: 30px;
+    width: 100%;
+    padding: 3px;
+cursor: pointer;
+    z-index: 100;
+    position: relative;
+}
+
 .slider {
     position: absolute;
     cursor: pointer;
@@ -1583,6 +1613,22 @@ input:checked + .slider:before {
     background-color: white;
     width: 100%;
 
+}
+.formLine.newsletter .notSubscribing{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    max-width: 400px
+}
+.formLine.newsletter .notSubscribing .blacklist{
+    margin-top: 15px;
+    background-color: #003d77;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
 }
 .listLine{
     display: flex;

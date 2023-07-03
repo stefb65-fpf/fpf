@@ -32,6 +32,7 @@ class PersonneController extends Controller
         $user = session()->get('user');
         $personne = Personne::where('id', $user->id)->first();
         $nbadresses = sizeof($personne->adresses);
+        $personne->blacklist_date = date('d/m/Y',(strtotime($personne->blacklist_date)));
         if (!$nbadresses) {
             $personne->adresses[0] = [];
         } elseif ($nbadresses == 1) {
@@ -80,7 +81,7 @@ class PersonneController extends Controller
         $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'datenaissance' => $request->datenaissance, "phone_mobile" => $request->phone_mobile);
         $personne->update($datap);
         $request->session()->put('user', $personne);
-        $this->registerAction(1, 4, "Modification de vos informations de civilité");
+        $this->registerAction($personne->id, 4, "Modification de vos informations de civilité");
         return redirect()->route('mon-profil')->with('success', "Vos informations de civilité ont été modifiées avec succès");
     }
 
@@ -119,9 +120,9 @@ class PersonneController extends Controller
 //                dd($new_adress);
             }
         }
-
+//dd($personne->id);
         $request->session()->put('user', $personne);
-        $this->registerAction(1, 4, "Modification de vos adresses");
+        $this->registerAction($personne->id, 4, "Modification de vos adresses");
         return redirect()->route('mon-profil')->with('success', "Votre adresse a été modifiée avec succès");
     }
 
