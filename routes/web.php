@@ -51,6 +51,7 @@ Route::put('/update-adresse/{personne}/{form}',[App\Http\Controllers\PersonneCon
 
 
 
+
 // affichage des formations et actions liées à l'inscription
 Route::get('/formations/accueil', [App\Http\Controllers\FormationController::class, 'accueil'])->name('formations.accueil');
 

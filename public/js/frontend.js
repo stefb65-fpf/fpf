@@ -302,29 +302,3 @@ $('select.pays').on('change', function(e) {
     }
 
 });
-
-//profile news switch toggle
-let  newsSwitchBtn = document.querySelector('.newsletter .switch input')
-let  newsNotSubscribingLabel = document.querySelector('.newsletter label.notSubscribing')
-let  newsSubscribingLabel = document.querySelector('.newsletter label.subscribing')
-let blacklistDate = document.querySelector('.newsletter .blacklist')
-if(newsSwitchBtn){
-    newsSwitchBtn.addEventListener('click',function(){
-        if(parseInt(this.value)){
-            this.value = 0
-            newsNotSubscribingLabel.classList.remove("d-none")
-            newsSubscribingLabel.classList.add("d-none")
-            if(blacklistDate){
-                blacklistDate.classList.remove("d-none")
-            }
-        } else{
-            this.value = 1
-            newsNotSubscribingLabel.classList.add("d-none")
-            newsSubscribingLabel.classList.remove("d-none")
-            if(blacklistDate){
-                blacklistDate.classList.add("d-none")
-            }
-        }
-
-    })
-}

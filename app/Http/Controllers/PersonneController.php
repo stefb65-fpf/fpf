@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Concern\Tools;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\CiviliteRequest;
+use App\Http\Requests\NewsRequest;
 use App\Models\Adresse;
 use App\Models\Historique;
 use App\Models\Historiquemail;
@@ -125,8 +126,6 @@ class PersonneController extends Controller
         $this->registerAction($personne->id, 4, "Modification de vos adresses");
         return redirect()->route('mon-profil')->with('success', "Votre adresse a été modifiée avec succès");
     }
-
-
 
 
 }

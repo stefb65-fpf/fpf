@@ -137,7 +137,7 @@
                 <form action="{{ route('updateAdresse', [$personne,2]) }}" method="POST">
                     <input type="hidden" name="_method" value="PUT">
                     {{ csrf_field() }}
-                    {{$personne->mail}}
+{{--                    {{$personne->mail}}--}}
                     <div class="formBlockWrapper" data-form="3">
                         @if(!($nbadresses == 2))
                             <div class="addAddress" name="addAddress">Vous voulez rajouter une adresse de livraison ?
@@ -210,10 +210,11 @@
 
 
         </form>
-        <div class="formLine newsletter" style="display: flex; justify-content: center; align-content: center">
+        <div class="formLine newsletter" style="display: flex; justify-content: center; align-content: center" action="{{ route('updateNews', $personne) }}" method="POST">
             <div class="switch">
-
-                <input type="checkbox" {{$personne->news?'checked=true':'checked=false'}} value={{$personne->news?1:0}}>
+                <div class="message success">Votre choix a été pris en compte</div>
+{{--                {{$personne->news}}--}}
+                                <input type="checkbox" {{$personne->news?'checked=true':'ckecked="false"'}}  value={{$personne->news?1:0}} name="newspreference" data-personne="{{$personne->id}}">
                 <span class="slider"></span>
             </div>
 
@@ -235,4 +236,5 @@
 @endsection
 @section('js')
     <script src="{{ asset('js/autocompleteCommune.js') }}?t=<?= time() ?>"></script>
+    <script src="{{ asset('js/newsPreferences.js') }}?t=<?= time() ?>"></script>
 @endsection
