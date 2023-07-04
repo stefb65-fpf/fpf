@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Concern\Hash;
 use App\Concern\Tools;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\CiviliteRequest;
 use App\Http\Requests\NewsRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Mail\SendEmailModifiedPassword;
 use App\Models\Adresse;
 use App\Models\Historique;
 use App\Models\Historiquemail;
@@ -13,10 +16,12 @@ use App\Models\Pays;
 use App\Models\Personne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class PersonneController extends Controller
 {
     use Tools;
+    use Hash;
 
     public function __construct()
     {
@@ -76,6 +81,23 @@ class PersonneController extends Controller
         return view('personnes.mes_mails', compact('mails'));
     }
 
+    public function updatePassword(ResetPasswordRequest $request, Personne $personne){
+        $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null);
+        $personne->update($datap);
+        $request->session()->put('user', $personne);
+        $this->registerAction($personne->id, 4, "Modification de votre mot de passe");
+
+        $mailSent = Mail::to($personne->email)->send(new SendEmailModifiedPassword());
+
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+        $mail = new \stdClass();
+        $mail->titre = "Confirmation de modification de mot de passe";
+        $mail->destinataire = $personne->email;
+        $mail->contenu = $htmlContent;
+
+        $this->registerMail($personne->id, $mail);
+        return redirect()->route('mon-profil')->with('success', "Votre mot de passe a été modifié avec succès");
+    }
 
     public function updateCivilite(CiviliteRequest $request, Personne $personne)
     {

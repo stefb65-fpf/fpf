@@ -23,6 +23,10 @@ h1 {
     min-height: calc(100vh - 70px);
     width: 100%;
     padding:   59px 6.5% 6.5% 6.5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 .mt25{
     margin-top: 25px;
@@ -35,6 +39,9 @@ h1 {
 }
 .blue{
     color: #003d77;
+}
+.grey{
+    color: gray;
 }
 .bold{
     font-weight:bold ;
@@ -54,8 +61,26 @@ h1 {
     right: 0;
     content: "";
 }
+.relative{
+    position: relative;
+}
 .underlineBlue::after{
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 2px;
+    right: 0;
+    content: "";
     background-color: #003d77;
+}
+.underlineGrey::after{
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 2px;
+    right: 0;
+    content: "";
+    background-color: #9d9b9b;
 }
 .dark{
     font-weight: 600;
@@ -79,6 +104,16 @@ a{
 }
 .d-none{
     display: none!important;
+}
+.flex-column{
+    flex-direction: column;
+}
+.center{
+    justify-content: center!important;
+   align-items: center!important;
+}
+.d-flex{
+    display: flex;
 }
 .pagination{
     display: flex;
@@ -256,8 +291,9 @@ body.mail {
 .mail .mailContent .text{
     font-size: 16px;
 }
+
 .mail  .mailContent .link{
-    font-weight: 600;
+    /*font-weight: 600;*/
 }
 .mail .mailContent .notWorking{
     color: #9a9a9a;
@@ -1111,9 +1147,9 @@ color: #55B074;
     margin: 1.75rem auto 1rem auto;
     cursor: pointer;
 }
-.customBtn[disabled]{
+.customBtn[disabled], button[disabled]{
     cursor: not-allowed;
-    background-color: #424242;
+    background-color: #424242!important;
 }
 .forgottenPswd{
     font-size: 14px;
@@ -1425,6 +1461,33 @@ footer .logo img {
     margin-bottom: 10px;
     line-height: 27px;
 }
+.formBlockWrapper.inline,.formValueGroup.inline{
+ flex-direction: row!important;
+    flex-wrap: wrap;
+    justify-content: space-around!important;
+}
+.formUnit{
+    display: flex;
+    margin: 0 16px 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.formSubtitle{
+    text-align: center;
+    color: #043f7b;
+    font-weight: 500;
+    margin: 45px 0 15px;
+    text-transform: uppercase;
+}
+.formBlockWrapper.inline .formUnit .formLabel{
+    min-width: unset;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
 .input[disabled] .datetime-reset-button{
     display: none;
 }
@@ -1453,12 +1516,60 @@ footer .logo img {
     margin-bottom: 3px;
     padding: 3px;
 }
+select.formValue {
+    max-width: 256px;
+}
+.formBlockWrapper .formValue.unchangeable{
+    background-color: transparent;
+}
+.formBlockWrapper .hiddenFields {
+    overflow: hidden;
+    transition: 0.5s ease-in-out;
+    width:540px;
+    max-width: 100%;
+    height: 305px;
+    min-height: max-content;
+}
+.formBlockWrapper .hiddenFields .instructions .text{
+    text-align: justify;
+}
+.formBlockWrapper .hiddenFields .instructions{
+    margin: auto;
+    max-width: 100%;
+}
+.formBlockWrapper .hiddenFields .fields{
+    display: flex;
+}
+.formBlockWrapper .formBtn.relative{
+    position: relative;
+    right: 0;
+    bottom: 0;
+    margin-top: 0;
+}
+.formBlockWrapper .togglingFields{
+    display: flex;
+}
+.formBlockWrapper .password.hiddenFields.hidden {
+    width: 0;
+    height: 0;
+}
 .formBlockWrapper .formTitle{
     width: 100%;
     font-weight: 600;
     text-align: center;
     margin-bottom: 11px;
     color: #003d77;
+}
+.formBlockWrapper .customField input{
+    border: none;
+    background: #e9e9e9;
+}
+.formBlockWrapper .customField .group .icon{
+    border:none;
+    background-color:white;
+}
+.formBlockWrapper .customField .group .icon.closed.dark svg path{
+    stroke:#003d77!important;
 }
 .formBlockWrapper .formValue.modifying{
     background-color: white;
@@ -1481,10 +1592,13 @@ footer .logo img {
     text-decoration: underline;
     cursor: pointer;
 }
-.formLine .group{
+.formLine .group, .formUnit .group{
     display: flex;
 }
-.formLine .group .indicator{
+.formLine .group .formValue, .formUnit .group .formValue{
+    max-width: calc(256px - 37px);
+}
+.formLine .group .indicator, .formUnit .group .indicator{
     color: #003d77;
     background-color: #cce3f9;
     padding: 05px;
@@ -1493,6 +1607,7 @@ footer .logo img {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 37px;
 }
 .formBtn{
     margin: 10px 0 0 auto;
@@ -1532,8 +1647,8 @@ footer .logo img {
 
 .switch .message.success {
     color: #494949;
-    background: rgb(138,204,140);
-    background: linear-gradient(90deg, rgba(138,204,140,1) 0%, rgba(138,204,140,1) 2%, rgba(255,255,255,1) 2%);
+    background: white;
+    border-left: 5px solid rgb(138, 204, 140);
     position: absolute;
     top: 0;
     left: 73px;
@@ -1692,121 +1807,36 @@ input:checked + .slider:before {
 /*****************************************************  */
 /*media queries*/
 /*****************************************************  */
-@media screen and (max-width: 375px) {
-.accountMenuItem{
-    /*height: 58px;*/
-    display: flex;
-    align-items: center;
-    padding: 5px;
-}
-}
-@media screen and (max-width: 575px) {
-    .fosterRegister, .firstConnexion {
-        font-size: 0.9rem;
-    }
-    .authLogo{
-        display: none;
-    }
-    .pageTitle {
-        font-size: 27px;
-        padding-top: 105px;
-    }
-    .accountPage .pageTitle{
-        padding-top: 75px;
-    }
-    .welcomePage h1{
-        font-size: 27px;
-        padding: 0 16px;
-    }
-    .navbar .menuItem {
-        font-size: 15px;
-    }
-    .navbar .menuItem a{
-        padding: 13px;
-    }
-    .hamburger {
-        width: 41px;
-        height: 35px;
-    }
-    .hamburger .line:nth-child(2) {
-        top: 14px;
-    }
-    .hamburger .line:nth-child(3) {
-        top: 28px;
-    }
-    .hamburger.close .line:nth-child(3) {
-        top: 30px;
-    }
-    .logoMobileRight {
-        display: none;
-    }
-    .cardContainer .card {
-        margin: 35px 10px;
-    }
-    .accountMenuItem{
-        font-size: 13px;
-    }
-    .accountSubtitle{
-        font-size: 15px;
-    }
-    .pageCanva.accountPage{
-        padding: 3%;
-    }
-    .accountMenu{
-        padding: 0;
-        justify-content: center;
-    }
-    .switch{
-        width: 2.5em;
-        height: 1.5em;
 
-    }
-    .slider::before{
-        height: 21px;
-        width: 21px;
-        left: 2px;
-        bottom: 2px;;
-    }
-    input:checked + .slider::before {
-        transform: translateX(14px);
-    }
-    .formLine.newsletter{
-        font-size: 15px;
-        max-width: 90%;
-        text-align: center;
-    }
-}
-@media screen and (max-width: 670px) {
-    footer .top{
-        display: none !important;
+
+
+@media screen and (max-width: 1199px) {
+    .topbar .searchContainer {
+        margin-right: 0;
     }
 
-    footer .bottom .item{
-        margin-bottom: 15px;
+    .searchBoxContainer .icon{
+        margin: 0;
+        font-size: 11px;
+}
+    .userAccount {
+        margin: 0 10px 0 5px;
+
     }
-    footer .bottom{
-        flex-direction: column;
+    .actionTopbar{
+        margin-left: 15px;
     }
-    footer .separation{
-        display: none !important;
+    .actionsTopbar{
+        margin-right: 10px;
     }
-    .fosterRegister{
-        /*margin-bottom: 1rem;*/
-    }.fosterContainer{
-    flex-direction: column;
-         }
-    .authTitle{
-        margin:2rem 0 1.1rem;
-        padding: 0 15px;
-        font-size: 1.5rem;
+    .topbar, .searchContainer .foster{
+        font-size: 14px;
     }
-    .formBtn{
-        position: relative;
-        margin: auto;
-        right: 0;
-        top: 0;
+  .searchContainer .foster{
+      width: 91px;
     }
 }
+
 @media screen and (max-width: 991px) {
     .mainContainer {
         padding-left: 0;
@@ -1903,37 +1933,157 @@ input:checked + .slider:before {
         max-width: unset;
         margin-right: 5px;
     }
-    .mailList .date.dark{
-        font-size: 12px;
-        font-weight: normal;
-        width: 90px;
-        line-height: 23px;
+    /*.mailList .date.dark{*/
+    /*    font-size: 12px;*/
+    /*    font-weight: normal;*/
+    /*    width: 90px;*/
+    /*    line-height: 23px;*/
+    /*}*/
+    .md-inline{
+        width: 100%;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .md-inline button{
+        margin: auto;
     }
 }
+@media screen and (max-width: 670px) {
+    footer .top{
+        display: none !important;
+    }
 
-@media screen and (max-width: 1199px) {
-    .topbar .searchContainer {
+    footer .bottom .item{
+        margin-bottom: 15px;
+    }
+    footer .bottom{
+        flex-direction: column;
+    }
+    footer .separation{
+        display: none !important;
+    }
+    .fosterRegister{
+        /*margin-bottom: 1rem;*/
+    }.fosterContainer{
+         flex-direction: column;
+     }
+    .authTitle{
+        margin:2rem 0 1.1rem;
+        padding: 0 15px;
+        font-size: 1.5rem;
+    }
+    .formBtn{
+        position: relative;
+        margin: auto;
+        right: 0;
+        top: 0;
+    }
+}
+@media screen and (max-width: 575px) {
+    .fosterRegister, .firstConnexion {
+        font-size: 0.9rem;
+    }
+    .authLogo{
+        display: none;
+    }
+    .pageTitle {
+        font-size: 27px;
+        padding-top: 105px;
+    }
+    .accountPage .pageTitle{
+        padding-top: 75px;
+    }
+    .welcomePage h1{
+        font-size: 27px;
+        padding: 0 16px;
+    }
+    .navbar .menuItem {
+        font-size: 15px;
+    }
+    .navbar .menuItem a{
+        padding: 13px;
+    }
+    .hamburger {
+        width: 41px;
+        height: 35px;
+    }
+    .hamburger .line:nth-child(2) {
+        top: 14px;
+    }
+    .hamburger .line:nth-child(3) {
+        top: 28px;
+    }
+    .hamburger.close .line:nth-child(3) {
+        top: 30px;
+    }
+    .logoMobileRight {
+        display: none;
+    }
+    .cardContainer .card {
+        margin: 35px 10px;
+    }
+    .accountMenuItem{
+        font-size: 13px;
+    }
+    .accountSubtitle{
+        font-size: 15px;
+    }
+    .pageCanva.accountPage{
+        padding: 3%;
+    }
+    .accountMenu{
+        padding: 0;
+        justify-content: center;
+    }
+    .switch{
+        width: 2.5em;
+        height: 1.5em;
+
+    }
+    .slider::before{
+        height: 21px;
+        width: 21px;
+        left: 2px;
+        bottom: 2px;;
+    }
+    input:checked + .slider::before {
+        transform: translateX(14px);
+    }
+    .formLine.newsletter{
+        font-size: 15px;
+        max-width: 90%;
+        text-align: center;
+    }
+    .listLine.mr25{
         margin-right: 0;
     }
-
-    .searchBoxContainer .icon{
-        margin: 0;
-        font-size: 11px;
-}
-    .userAccount {
-        margin: 0 10px 0 5px;
-
+    .listLine{
+        flex-direction: column;
     }
-    .actionTopbar{
-        margin-left: 15px;
+    .actionList .date{
+        margin-left: 0;
+        width: auto;
+        margin-top: 10px;
     }
-    .actionsTopbar{
-        margin-right: 10px;
-    }
-    .topbar, .searchContainer .foster{
+    .mailList .date.dark{
+        text-align: left;
         font-size: 14px;
+        margin-top: 10px;
+        width: auto;
     }
-  .searchContainer .foster{
-      width: 91px;
+    .listMailObject{
+        max-width: unset;
+        margin-right: 0;
+        max-height: unset;
+    }
+}
+@media screen and (max-width: 375px) {
+    .accountMenuItem{
+        /*height: 58px;*/
+        display: flex;
+        align-items: center;
+        padding: 5px;
     }
 }

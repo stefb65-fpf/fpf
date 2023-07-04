@@ -18,4 +18,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('/ajax/getAutocompleteCommune', [App\Http\Controllers\Api\CommuneController::class,'autocompleteCommune']);
-Route::post('/ajax/submitNewsPreferences', [App\Http\Controllers\Api\ApiFormValidationController::class,'newsPreferences']);
+Route::post('/ajax/submitNewsPreferences', [App\Http\Controllers\Api\ApiFormValidationController::class,'newsPreferences'])->name('updateNews');

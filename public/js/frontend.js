@@ -150,6 +150,9 @@ $('button[name=updateForm]').on('click',function(e){
     $(this).addClass('d-none')
     $(this).parent().find('button[name=enableBtn]').removeClass('d-none')
     $(this).parent().parent().find('.formValue').removeAttr('disabled').addClass('modifying')
+    if($(this).hasClass('showFields')){
+        $(this).parent().parent().find('.hiddenFields').removeClass('hidden')
+    }
 })
 // $('button[name=enableBtn]').on('click',function(e){
 //
