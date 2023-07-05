@@ -14,7 +14,7 @@
             <input type="hidden" name="_method" value="put">
             {{ csrf_field() }}
             <div class="customField">
-                <label>Nouveau mot de passe </label>
+
                 <div class="group">
                     <input class="checkableInput original" type="password" name="password" value="{{ old('password', '') }}"/>
                     <div class="icons eye">

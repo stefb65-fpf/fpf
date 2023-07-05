@@ -46,6 +46,7 @@ Route::get('/mes-mails', [App\Http\Controllers\PersonneController::class, 'mesMa
 Route::get('/mes-actions', [App\Http\Controllers\PersonneController::class, 'mesActions']);
 Route::get('/mes-formations', [App\Http\Controllers\PersonneController::class, 'mesFormations']);;
 Route::get('/mon-profil', [App\Http\Controllers\PersonneController::class, 'monProfil'])->name('mon-profil');;
+Route::put('/update-password/{personne}',[App\Http\Controllers\PersonneController::class, 'updatePassword'])->name('updatePassword');
 Route::put('/update-civilite/{personne}',[App\Http\Controllers\PersonneController::class, 'updateCivilite'])->name('updateCivilite');
 Route::put('/update-adresse/{personne}/{form}',[App\Http\Controllers\PersonneController::class, 'updateAdresse'])->name('updateAdresse');
 

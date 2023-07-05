@@ -6,6 +6,7 @@ use App\Models\Activite;
 use App\Models\Club;
 use App\Models\Equipement;
 use App\Models\Fonction;
+use App\Models\Pays;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +46,16 @@ class ClubController extends Controller
         }
         $club->activites = $tab_activites;
 
-        return view('clubs.infos_club', compact('club', 'activites', 'equipements'));
+        if($club->adresse->pays){
+            $country = Pays::where('nom', strtoupper(strtolower($club->adresse->pays)))->first();
+            $club->adresse->indicatif =$country->indicatif;
+//                dd( $adresse->indicatif);
+        }else{
+            $club->adresse->indicatif ="";
+        }
+
+    $countries = Pays::all();
+        return view('clubs.infos_club', compact('club', 'activites', 'equipements', 'countries'));
     }
 
     public function gestionFonctions() {
