@@ -4,7 +4,7 @@
     border-left: 5px solid #f1aeb5;
     padding: 20px;
     width: max-content;
-    margin: 70px auto 0px;
+    margin: 50px auto 0px;
 }
 .alertSuccess {
     background-color: #d1e7dd;
@@ -12,8 +12,32 @@
     border-left: 5px solid #a3cfbb;
     padding: 20px;
     width: max-content;
-    margin: 70px auto 0;
+    margin: 50px auto 0;
+}
+.alertInfo {
+    background-color: rgba(0,61,119, 0.2);
+    color: #003d77;
+    border-left: 5px solid rgba(0,61,119, 0.5);
+    padding: 20px;
+    width: max-content;
+    margin: 0px auto 20px;
 }
 .previousPage {
     margin-left: 25px;
+}
+.mt10 {
+    margin-top: 10px;
+}
+
+.rowForColumns {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+}
+.column50 {
+    width: 50%;
+}
+.mb25 {
+    margin-bottom: 25px;
 }

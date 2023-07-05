@@ -1,0 +1,74 @@
+.rowTarif {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.columnTarif {
+    width: 50%;
+}
+.inputTarif {
+    width: 150px;
+    padding: 5px;
+}
+.rowDroit {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+.columnDroitNom {
+    width: 20%;
+    font-weight: bold;
+}
+.columnDroitListe {
+    width: 40%;
+}
+.columnDroitAction {
+    width: 40%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.formDroitAction {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.w100 {
+    width: 100%;
+}
+.columnDroitItems {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: small;
+}
+.columnDroitItem {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.adminPrimary {
+    background-color: #003d77;
+    color: #fff;
+    padding: 5px 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.deleteDroit {
+    color: #500;
+    margin-left: 10px;
+    cursor: pointer;
+}
+.inputFormAction {
+    width: 250px;
+    margin-top: 10px;
+    padding: 5px;
+}
+.selectFormAction {
+    padding: 5px;
+}

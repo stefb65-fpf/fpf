@@ -21,6 +21,11 @@ class ComposerServiceProvider extends ServiceProvider
             ['layouts.menu', 'layouts.header'],
             'App\Http\ViewComposers\MenuComposer'
         );
+
+        view()->composer(
+            ['admin.accueil'],
+            'App\Http\ViewComposers\DroitsComposer'
+        );
     }
 
     /**

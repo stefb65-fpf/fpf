@@ -19,7 +19,9 @@ Route::get('/admin/personnes/liste_adherents', [App\Http\Controllers\Admin\Perso
 Route::get('/admin/personnes/liste_abonnes', [App\Http\Controllers\Admin\PersonneController::class, 'listeAbonnes'])->name('personnes.liste_abonnes');
 Route::get('/admin/personnes/liste_formateurs', [App\Http\Controllers\Admin\PersonneController::class, 'listeFormateurs'])->name('personnes.liste_formateurs');
 Route::resource('/admin/personnes', App\Http\Controllers\Admin\PersonneController::class);
-
+Route::resource('/admin/droits', App\Http\Controllers\Admin\DroitController::class);
+Route::delete('/admin/droits/deleteFonction/{droit_id}/{fonction_id}', [App\Http\Controllers\Admin\DroitController::class, 'deleteFonction'])->name('droits.deleteFonction');
+Route::delete('/admin/droits/deleteUtilisateur/{droit_id}/{utilisateur_id}', [App\Http\Controllers\Admin\DroitController::class, 'deleteUtilisateur'])->name('droits.deleteUtilisateur');
 
 Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
 
