@@ -13,85 +13,87 @@
             </a>
         </h1>
         <div class="formBlock">
-            <div class="formBlockTitle">Coordonnées</div>
-            <form action="" method="POST">
+            <div class="formBlockTitle">Généralités</div>
+            <form action="{{ route('updateGeneralite', $club) }}" method="POST">
                 <input type="hidden" name="_method" value="put">
                 {{ csrf_field() }}
-                @if($club->logo)
-                    <div class="formBlockWrapper">
-                        <div class="formLine center d-flex flex-column">
-                            <label class="d-flex flex-column" for="file" style="cursor:pointer">
-                                <img src="{{ env('APP_URL').'storage/app/public/FPF-100-Logo-Seul.webp' }}" alt="">
-                                {{--                    <img src="{{ env('APP_URL').'storage/app/public/'.$club->logo }}" alt="">--}}
-                                <span class="text underlineGrey grey relative">Changer de logo</span>
-                            </label>
-                            <input style="display: none;" type="file" id="file" accept=".png,.jpeg,.jpg">
-                            {{--                            <div>--}}
-                            {{--                                <button type="submit" class="formBtn relative d-none success" name="enableBtn">Valider</button>--}}
-                            {{--                                <button class="formBtn relative primary" name="updateForm">Modifier</button>--}}
-                            {{--                            </div>--}}
-                        </div>
+                {{--                @if($club->logo)--}}
+                <div class="formBlockWrapper">
+                    <div class="formLine center d-flex flex-column">
+                        <label class="d-flex flex-column" for="file" style="cursor:pointer">
+                            <img class="clubLogo"
+                                 src="{{ env('APP_URL').'storage/app/public/uploads/clubs/'.$club->numero.'/'.$club->logo }}"
+                                 alt="">
+                            <span class="text underlineGrey grey relative" style="width: 120px;margin: auto;">Changer de logo</span>
+                        </label>
+                        <input class="formValue d-none" type="file" id="file" accept=".png,.jpeg,.jpg" name="logo"
+                               disabled="true">
                     </div>
-                @endif
+                </div>
+                {{--                @endif--}}
                 <div class="formBlockWrapper inline">
                     <div class="formUnit">
                         <div class="formLabel">Nom</div>
                         <input class="formValue capitalize" type="text" value="{{$club->nom?:""}}" disabled="true"
-                               name="nom"/>
+                               name="nom" maxlength="40" minlength="2" type="text"/>
                     </div>
                     <div class="formUnit">
                         <div class="formLabel">Courriel</div>
                         <input class="formValue" type="email" value="{{$club->courriel?:""}}" disabled="true"
-                               name="courriel"/>
+                               name="courriel" maxlength="40" minlength="2" type="email"/>
                     </div>
                     <div class="formUnit">
                         <div class="formLabel">Site web</div>
                         <input class="formValue" type="text" value="{{$club->web?:""}}"
-                               disabled="true" name="web"/>
+                               disabled="true" name="web" type="text" minlength="4"/>
                     </div>
                     <div class="formUnit">
                         <div class="formLabel">Statut</div>
                         @switch($club->statut)
                             @case(0)
-                            {{--                        <input class="formValue unchangeable" value="Non renouvelé"--}}
-                            {{--                               disabled="true" name="statut"/>--}}
-                            <div>Non renouvelé</div>
+                            <div class="d-flex">
+                                <div class="sticker orange"></div>
+                                <div>Non renouvelé</div>
+                            </div>
                             @break
                             @case(1)
-                            {{--                        <input class="formValue unchangeable" value="Préinscrit"--}}
-                            {{--                               disabled="true" name="statut"/>--}}
-                            <div>Préinscrit</div>
+                            <div class="d-flex">
+                                <div class="sticker yellow"></div>
+                                <div>Préinscrit</div>
+                            </div>
                             @break
                             @case(2)
-                            {{--                        <input class="formValue unchangeable" value="Validé"--}}
-                            {{--                               disabled="true" name="statut"/>--}}
-                            <div>Validé</div>
+                            <div class="d-flex">
+                                <div class="sticker green"></div>
+                                <div>Validé</div>
+                            </div>
                             @break
                             @case(3)
-                            {{--                        <input class="formValue unchangeable" value="Désactivé"--}}
-                            {{--                               disabled="true" name="statut"/>--}}
-                            <div>Désactivé</div>
+                            <div class="d-flex">
+                                <div class="sticker"></div>
+                                <div>Désactivé</div>
+                            </div>
                             @break
                             @default
-                            {{--                        <input class="formValue unchangeable" value="Non renseigné"--}}
-                            {{--                               disabled="true" name="statut"/>--}}
                             <div>Non renseigné</div>
                         @endswitch
                     </div>
                     <div class="formUnit mr25">
                         <div class="formLabel">Nombre d'adhérents</div>
-                        {{--                    <input class="formValue" value="{{$club->nbadherents?:""}}"--}}
-                        {{--                           disabled="true" name="nbadherents"/>--}}
                         <div>{{$club->nbadherents?:""}}</div>
                     </div>
-                    <div class="md-inline">
-                        <button type="submit" class="formBtn relative d-none success" name="enableBtn">Valider</button>
-                        <button class="formBtn relative primary" name="updateForm">Modifier</button>
-                    </div>
+                </div>
+                <div class="w100">
+                    <button type="submit" class="formBtn mx16 relative d-none success" name="enableBtn">Valider
+                    </button>
+                    <button class="formBtn mx16 relative  primary" name="updateForm">Modifier</button>
                 </div>
             </form>
-            <h2 class="formSubtitle">Adresse</h2>
-            <form action="" method="POST">
+
+        </div>
+        <div class="formBlock">
+            <div class="formBlockTitle">Coordonnées</div>
+            <form action="{{route('updateClubAddress', $club)}}" method="POST">
                 <input type="hidden" name="_method" value="put">
                 {{ csrf_field() }}
                 <div class="formBlockWrapper inline">
@@ -147,59 +149,55 @@
                         <div class="formUnit">
                             <div class="formLabel">Téléphone fixe</div>
                             <div class="group">
-                                <div class="indicator {{$club->adresse && $club->adresse->indicatif!==""?"":"d-none"}}">
-                                    +{{$club->adresse?$club->adresse->indicatif:""}}</div>
+                                <div
+                                    class="indicator {{$club->adresse && $club->adresse->indicatif_fixe!==""?"":"d-none"}}">
+                                    +{{$club->adresse?$club->adresse->indicatif_fixe:""}}</div>
                                 <input class="formValue phoneInput" type="text"
                                        value="{{$club->adresse?$club->adresse->telephonedomicile:""}}"
                                        disabled="true" name="telephonedomicile"/>
                             </div>
                         </div>
-                        {{--                        <div class="formUnit">--}}
-                        {{--                            <div class="formLabel">Téléphone mobile</div>--}}
-                        {{--                            <div class="group">--}}
-                        {{--                                <div class="indicator {{$club->adresse && $club->adresse->indicatif!==""?"":"d-none"}}">+{{$club->adresse?$club->adresse->indicatif:""}}</div>--}}
-                        {{--                                <input class="formValue phoneInput" type="text" value="{{$club->adresse?$club->adresse->telephonemobile:""}}"--}}
-                        {{--                                       disabled="true" name="telephonmobile"/>--}}
-                        {{--                            </div>--}}
-                        {{--                        </div>--}}
-                        <div>
-                            <button type="submit" class="formBtn relative success d-none" name="enableBtn">Valider
+                        <div class="formUnit">
+                            <div class="formLabel">Téléphone mobile</div>
+                            <div class="group">
+                                {{--                                                        <div class="indicator {{$club->adresse && $club->adresse->indicatif_mobile!==""?"":"d-none"}}">+{{$club->adresse?$club->adresse->indicatif_mobile:""}}</div>--}}
+                                <input class="formValue phoneInput" type="text"
+                                       value="{{$club->adresse?$club->adresse->telephonemobile:""}}"
+                                       disabled="true" name="telephonemobile"/>
+                            </div>
+                        </div>
+                        <div class="w100">
+                            <button type="submit" class="formBtn relative mx16 success d-none" name="enableBtn">Valider
                             </button>
-                            <button class="formBtn primary relative" name="updateForm">Modifier</button>
+                            <button class="formBtn relative primary mx16" name="updateForm">Modifier</button>
                         </div>
                     </div> {{-- end formvaluegroup--}}
                 </div>{{-- end formBlockWrapper--}}
             </form>
-            <h2 class="formSubtitle">Abonnement</h2>
+        </div>
+        <div class="formBlock">
+            <div class="formBlockTitle">Abonnement</div>
             <div class="formBlockWrapper inline">
                 <div class="formUnit mr25">
                     <div class="formLabel">État de l'abonnement :</div>
-                    @switch($club->abon)
-                        @case(1)
-                        <div>Avec abonnement</div>
-                        @break
-                        @case("G")
-                        <div>Avec abonnement gratuit</div>
-                        @break
-                        @default
+                    @if($club->is_abonne)
+                        <div>Abonné</div>
+                    @else
                         <div>Sans abonnement</div>
-                    @endswitch
+                    @endif
                 </div>
-                <div class="formUnit mr25">
-                    <div class="formLabel">Date de début d'abonnement :</div>
-                    <div>{{$club->datedebutabonnement}}</div>
-                </div>
-                <div class="formUnit mr25">
-                    <div class="formLabel">Numéro de début d'abonnement :</div>
-                    <div>{{$club->numerodebutabonnement}}</div>
-                </div>
-                <div class="formUnit mr25">
-                    <div class="formLabel">Numéro de fin d'abonnement :</div>
-                    <div>{{$club->numerofinabonnement}}</div>
-                </div>
+                @if($club->is_abonne)
+                    <div class="formUnit mr25">
+                        <div class="formLabel">Numéro de fin d'abonnement :</div>
+                        <div>{{$club->numerofinabonnement}}</div>
+                    </div>
+                @endif
+
             </div>
-            <h2 class="formSubtitle">Réunions</h2>
-            <form action="" method="POST">
+        </div>
+        <div class="formBlock">
+            <div class="formBlockTitle">Réunions</div>
+            <form action="{{route('updateReunion', $club)}}" method="POST">
                 <input type="hidden" name="_method" value="put">
                 {{ csrf_field() }}
                 <div class="formBlockWrapper inline">
@@ -218,44 +216,57 @@
                         <input class="formValue" value="{{$club->horairesreunions?:""}}"
                                disabled="true" name="horairesreunions"/>
                     </div>
-                    <div class="md-inline">
-                        <button type="submit" class="formBtn relative d-none success" name="enableBtn">Valider</button>
-                        <button class="formBtn relative primary" name="updateForm">Modifier</button>
+                    <div class="w100">
+                        <button type="submit" class="formBtn relative mx16 d-none success" name="enableBtn">Valider
+                        </button>
+                        <button class="formBtn relative mx16 primary" name="updateForm">Modifier</button>
                     </div>
                 </div>
             </form>
-
         </div>
-        <div class="formBlock">
+        <div class="formBlock relative checkbox">
+            <div class="message success"
+                 style="left: calc( 50% - (250px / 2));
+                 position: absolute;
+                 width: 250px;
+                 text-align: center;">
+                Votre choix a été pris en compte
+            </div>
             <div class="formBlockTitle">Activités</div>
-            <form class="formBlockWrapper inline newsletter" action="" method="POST">
+            <div class="formBlockWrapper inline" data-form="activites" data-club="{{$club->id}}">
                 @foreach($activites as $activite)
-                    <div class="formUnit mr25">
-                        <label class="formLabel">{{$activite->libelle}}</label>
+                    <div class="formUnit mr25" name="ajaxCheckbox">
+                        <label class="formLabel pointer" for="{{$activite->libelle}}">{{$activite->libelle}} </label>
                         @if(in_array($activite->id, $club->activites))
-                            <input class="formValue" type="checkbox" value="1"/>
+                            <input class="formValue pointer" type="checkbox" value="{{$activite->id}}" checked name="{{$activite->libelle}}"/>
                         @else
-                            <input class="formValue" type="checkbox" value="0"/>
+                            <input class="formValue pointer" type="checkbox" value="{{$activite->id}}" name="{{$activite->libelle}}"/>
                         @endif
                     </div>
                 @endforeach
-            </form>
-
+            </div>
         </div>
-        <div class="formBlock">
+        <div class="formBlock relative checkbox">
+            <div class="message success"
+                 style="left: calc( 50% - (250px / 2));
+                 position: absolute;
+                 width: 250px;
+                 text-align: center;">
+                Votre choix a été pris en compte
+            </div>
             <div class="formBlockTitle">Équipements</div>
-            <form class="formBlockWrapper inline newsletter" action="" method="POST">
+            <div class="formBlockWrapper inline" data-form="equipements" data-club="{{$club->id}}">
                 @foreach($equipements as $equipement)
-                    <div class="formUnit mr25">
-                        <label class="formLabel">{{$equipement->libelle}}</label>
+                    <div class="formUnit mr25" name="ajaxCheckbox">
+                        <label class="formLabel pointer" for="{{$equipement->libelle}}">{{$equipement->libelle}} </label>
                         @if(in_array($equipement->id, $club->equipements))
-                            <input class="formValue" type="checkbox" value="1"/>
+                            <input class="formValue pointer" type="checkbox" value="{{$equipement->id}}" checked name="{{$equipement->libelle}}"/>
                         @else
-                            <input class="formValue" type="checkbox" value="0"/>
+                            <input class="formValue pointer" type="checkbox" value="{{$equipement->id}}" name="{{$equipement->libelle}}"/>
                         @endif
                     </div>
                 @endforeach
-            </form>
+            </div>
         </div>
         <div class="alertDanger" style="width: 80% !important">
             <p>
@@ -294,5 +305,5 @@
 @endsection
 @section('js')
     <script src="{{ asset('js/autocompleteCommune.js') }}?t=<?= time() ?>"></script>
-
+    <script src="{{ asset('js/clubPreferences.js') }}?t=<?= time() ?>"></script>
 @endsection

@@ -134,6 +134,16 @@ a{
     color: #003d77;
     font-weight: 500;
 }
+.w100{
+    width: 100%;
+}
+.mx16{
+    margin-right: 16px!important;
+    margin-left: 16px!important;
+}
+.pointer{
+    cursor:pointer;
+}
 /*****************************************************  */
 /* modal */
 /*****************************************************  */
@@ -1452,6 +1462,9 @@ footer .logo img {
     padding: 15px 10px 3px;
     font-size: 14px;
 }
+.checkbox .formUnit{
+    cursor: pointer;
+}
 .formBlockWrapper .formLine{
     width: 100%;
     display: flex;
@@ -1461,16 +1474,21 @@ footer .logo img {
     margin-bottom: 10px;
     line-height: 27px;
 }
+.clubLogo{
+    object-fit: contain;
+    height: 150px;
+    width: 150px;
+}
 .formBlockWrapper.inline,.formValueGroup.inline{
  flex-direction: row!important;
     flex-wrap: wrap;
-    justify-content: space-around!important;
+    justify-content: flex-start!important;
 }
 .formUnit{
     display: flex;
     margin: 0 16px 20px;
     flex-wrap: wrap;
-    justify-content: center;
+
     align-items: center;
 }
 .formSubtitle{
@@ -1540,7 +1558,7 @@ select.formValue {
 .formBlockWrapper .hiddenFields .fields{
     display: flex;
 }
-.formBlockWrapper .formBtn.relative{
+.formBtn.relative{
     position: relative;
     right: 0;
     bottom: 0;
@@ -1644,14 +1662,31 @@ select.formValue {
     height: 2em;
     margin-right: 15px;
 }
-
-.switch .message.success {
+.sticker{
+    background-color: #7c7b7b;
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+    margin: 0 7px 0 25px;
+    box-shadow: 2px 2px 2px #cbcbcb;
+    border: 2px solid #fff;
+}
+.sticker.green{
+    background-color: #99d59a;
+}
+.sticker.orange{
+    background-color: #e28a2d;
+}
+.sticker.yellow{
+    background-color: #f1e205;
+}
+.switch .message.success, .checkbox .message.success {
     color: #494949;
     background: white;
     border-left: 5px solid rgb(138, 204, 140);
     position: absolute;
     top: 0;
-    left: 73px;
+    left: -100vw;
     font-size: 13px;
     transition: ease-in-out 0.2s;
     opacity: 0;
@@ -1659,7 +1694,7 @@ select.formValue {
     padding: 5px 5px 5px 10px;
 }
 
-.switch .message.success.show {
+.switch .message.success.show, .checkbox .message.success.show{
     opacity: 1;
     top:-35px;
 }
@@ -1939,16 +1974,7 @@ input:checked + .slider:before {
     /*    width: 90px;*/
     /*    line-height: 23px;*/
     /*}*/
-    .md-inline{
-        width: 100%;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .md-inline button{
-        margin: auto;
-    }
+
 }
 @media screen and (max-width: 670px) {
     footer .top{

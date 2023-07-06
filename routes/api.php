@@ -18,7 +18,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('/ajax/getAutocompleteCommune', [App\Http\Controllers\Api\CommuneController::class,'autocompleteCommune']);
+
+// profile personne
 Route::post('/ajax/submitNewsPreferences', [App\Http\Controllers\Api\ApiFormValidationController::class,'newsPreferences']);
+
+// gestion club
+Route::post('/ajax/submitClubActivites', [App\Http\Controllers\Api\ApiFormValidationController::class,'clubActivite']);
+Route::post('/ajax/submitClubEquipements', [App\Http\Controllers\Api\ApiFormValidationController::class,'clubEquipement']);
 
 
 Route::post('/ajax/updateTarif', [App\Http\Controllers\Admin\ConfigController::class,'updateTarif']);

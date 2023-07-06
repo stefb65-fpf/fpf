@@ -9,6 +9,7 @@ class Club extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    public $timestamps = false;
 
     public function ur() {
         return $this->belongsTo('App\Models\Ur', 'urs_id');

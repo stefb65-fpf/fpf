@@ -59,6 +59,9 @@ Route::get('/formations/accueil', [App\Http\Controllers\FormationController::cla
 // gestion des clubs par responsable de clubs
 Route::get('/clubs/gestion', [App\Http\Controllers\ClubController::class, 'gestion'])->name('clubs.gestion');
 //Route::get('/clubs/liste_adherents', [App\Http\Controllers\ClubController::class, 'liste_adherents'])->name('clubs.liste_adherents');
+Route::put('/update-generalite/{club}', [App\Http\Controllers\ClubController::class, 'updateGeneralite'])->name('updateGeneralite');
+Route::put('/update-club-address/{club}', [App\Http\Controllers\ClubController::class, 'updateClubAddress'])->name('updateClubAddress');
+Route::put('/update-club-reunion/{club}', [App\Http\Controllers\ClubController::class, 'updateReunion'])->name('updateReunion');
 
 
 // gestion des urs par responsable ur

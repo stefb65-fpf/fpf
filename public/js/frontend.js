@@ -305,3 +305,10 @@ $('select.pays').on('change', function(e) {
     }
 
 });
+//input file change image
+$('input[name=logo]').on('change', function(e){
+    console.log($(this).val(),e.currentTarget, e.target.files[0])
+    $(this).parent().find('img').attr("src","https://fpf-new.federation-photo.fr/storage/app/public/FPF-default-image.jpg")
+    // $(this).attr("value", e.target.files[0])
+
+})

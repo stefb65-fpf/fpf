@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdressesRequest extends FormRequest
+class ClubReunionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,14 +21,9 @@ class AdressesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'libelle1' => 'nullable|string',
-            'libelle2' => 'nullable|string',
-            'libelle3' => 'nullable|string',
-            'codepostal'=>'string',
-            'ville'=>'string',
-            'pays'=>'string',
-            'telephonedomicile'=>'nullable|string',
-            'telephonemobile'=>'nullable|string',
+            'reunions' => ['string','nullable'],
+            'frequencereunions' => ['string','nullable'],
+            'horairesreunions' => ['string','nullable'],
         ];
     }
 }

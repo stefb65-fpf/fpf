@@ -6,7 +6,6 @@ use App\Concern\Hash;
 use App\Concern\Tools;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\CiviliteRequest;
-use App\Http\Requests\NewsRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Mail\SendEmailModifiedPassword;
 use App\Models\Adresse;
@@ -14,7 +13,6 @@ use App\Models\Historique;
 use App\Models\Historiquemail;
 use App\Models\Pays;
 use App\Models\Personne;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -111,11 +109,17 @@ class PersonneController extends Controller
     public function updateAdresse(AdressesRequest $request, Personne $personne, $form)
     {
         $selected_pays = Pays::where('id', $request->pays)->first();
+        $indicatif = $selected_pays->indicatif;
         $datap_adresse = $request->all();
         unset($datap_adresse['_token']);
         unset($datap_adresse['_method']);
         unset($datap_adresse['enableBtn']);
        $datap_adresse['pays']=$selected_pays->nom;
+       if($datap_adresse["telephonedomicile"]){
+           $datap_adresse["telephonedomicile"] = str_replace(" ","",$datap_adresse["telephonedomicile"]);
+           $datap_adresse["telephonedomicile"] = ltrim($datap_adresse["telephonedomicile"], '0');
+         $datap_adresse["telephonedomicile"] ='+'.$indicatif.'.'.$datap_adresse["telephonedomicile"];;
+       }
 //        dd($datap_adresse);
         if ($form == 1) {//$form = 1, c'est le formulaire d'adresse defaut / facturation
             if (!sizeof($personne->adresses)) { //la personne n'a aucune adresse en base. On en crée une.
@@ -127,7 +131,7 @@ class PersonneController extends Controller
                     DB::table('adresse_personne')->insert($data_ap);
                 }
             } else { //la personne a au moins une adresse en base. On met à jour l'adresse par defaut.
-//                dd($personne->adresses(), $personne->adresses[0]);
+//                dd($datap_adresse, $personne->adresses[0]);
                 $personne->adresses[0]->update($datap_adresse);
             }
         } else { //$form = 2, c'est le formulaire d'adresse de livraison

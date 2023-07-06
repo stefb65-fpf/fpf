@@ -154,11 +154,11 @@
             <div class="formBlockWrapper" data-form="1">
                 <div class="formLine">
                     <div class="formLabel">Nom</div>
-                    <input class="formValue capitalize" value="{{$personne->nom}}" disabled="true" name="nom"/>
+                    <input class="formValue capitalize" value="{{$personne->nom}}" disabled="true" name="nom" maxlength="40" minlength="2" type="text"/>
                 </div>
                 <div class="formLine">
                     <div class="formLabel">Prénom</div>
-                    <input class="formValue capitalize" value="{{$personne->prenom}}" disabled="true" name="prenom"/>
+                    <input class="formValue capitalize" value="{{$personne->prenom}}" disabled="true" name="prenom" maxlength="40" minlength="2" type="text"/>
                 </div>
                 <div class="formLine">
                     <div class="formLabel">Date de naissance</div>
@@ -340,7 +340,7 @@
 
 
         </form>
-        <form class="formLine newsletter" style="display: flex; justify-content: center; align-content: center" action="{{ route('updateNews', $personne) }}" method="POST">
+        <div class="formLine newsletter" style="display: flex; justify-content: center; align-content: center"  >
             <div class="switch">
                 <div class="message success">Votre choix a été pris en compte</div>
 {{--                {{$personne->news}}--}}
@@ -360,7 +360,7 @@
                 lettre
                 de la fédé)</label>
 
-        </form>
+        </div>
 
     </div>
 @endsection
