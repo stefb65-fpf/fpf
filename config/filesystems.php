@@ -56,6 +56,11 @@ return [
             'throw' => false,
         ],
 
+        'xls' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/xls')
+        ],
+
     ],
 
     /*

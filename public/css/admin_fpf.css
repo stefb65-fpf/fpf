@@ -59,6 +59,20 @@
     font-weight: 600;
     cursor: pointer;
 }
+.adminDanger {
+    background-color: #58151c;
+    color: #fff;
+    padding: 5px 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.adminSuccess {
+    background-color: #0a3622;
+    color: #fff;
+    padding: 5px 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
 .deleteDroit {
     color: #500;
     margin-left: 10px;
@@ -71,4 +85,35 @@
 }
 .selectFormAction {
     padding: 5px;
+}
+.btnSmall {
+    font-size: 0.7rem;
+    display: block;
+    text-align: center;
+    width: max-content;
+    border-radius: 5px;
+}
+.btnMedium {
+    font-size: 0.9rem;
+    display: block;
+    text-align: center;
+    width: max-content;
+    border-radius: 5px;
+}
+.flexEnd {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-right: 30px;
+}
+.formUnitAdmin {
+    width: 90%;
+}
+.formValueAdmin {
+    background-color: white !important;
+    border-bottom: 1px solid grey !important;
+    min-width: 250px;
+}
+.w75 {
+    width: 75%;
 }

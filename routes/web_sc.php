@@ -14,6 +14,17 @@ Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class,
 Route::resource('/admin/formations', App\Http\Controllers\Admin\FormationController::class);
 
 Route::resource('/admin/votes', App\Http\Controllers\Admin\VoteController::class);
+Route::get('/admin/votes/elections/{vote}', [App\Http\Controllers\Admin\VoteController::class, 'electionsList'])->name('votes.elections.index');
+Route::get('/admin/votes/elections/{vote}/create', [App\Http\Controllers\Admin\VoteController::class, 'electionsCreate'])->name('votes.elections.create');
+Route::post('/admin/votes/elections/{vote}/store', [App\Http\Controllers\Admin\VoteController::class, 'electionsStore'])->name('votes.elections.store');
+Route::get('/admin/votes/elections/{vote}/edit/{election}', [App\Http\Controllers\Admin\VoteController::class, 'electionsEdit'])->name('votes.elections.edit');
+Route::put('/admin/votes/elections/{vote}/update/{election}', [App\Http\Controllers\Admin\VoteController::class, 'electionsUpdate'])->name('votes.elections.update');
+Route::delete('/admin/votes/elections/{vote}/delete/{election}', [App\Http\Controllers\Admin\VoteController::class, 'electionsDestroy'])->name('votes.elections.delete');
+
+
+Route::get('/admin/votes/{vote}/elections/{election}/candidats', [App\Http\Controllers\Admin\VoteController::class, 'candidatsList'])->name('votes.elections.candidats.index');
+Route::post('/admin/votes/{vote}/elections/{election}/candidats', [App\Http\Controllers\Admin\VoteController::class, 'candidatsStore'])->name('votes.elections.candidats.store');
+Route::delete('/admin/votes/{vote}/elections/{election}/candidats/{candidat}', [App\Http\Controllers\Admin\VoteController::class, 'candidatsDestroy'])->name('votes.elections.candidats.delete');
 
 Route::get('/admin/personnes/liste_adherents', [App\Http\Controllers\Admin\PersonneController::class, 'listeAdherents'])->name('personnes.liste_adherents');
 Route::get('/admin/personnes/liste_abonnes', [App\Http\Controllers\Admin\PersonneController::class, 'listeAbonnes'])->name('personnes.liste_abonnes');
@@ -36,6 +47,8 @@ Route::get('/admin/routage/france_photo', [App\Http\Controllers\Admin\Publicatio
 Route::get('/admin/routage/lettres_fede', [App\Http\Controllers\Admin\PublicationController::class, 'routageFede'])->name('admin.routage.lettres_fede');
 Route::get('/admin/etiquettes', [App\Http\Controllers\Admin\PublicationController::class, 'etiquettes'])->name('admin.etiquettes');
 Route::get('/admin/emargements', [App\Http\Controllers\Admin\PublicationController::class, 'emargements'])->name('admin.emargements');
+
+Route::get('/admin/generateRoutageFp/{validate}', [App\Http\Controllers\Admin\PublicationController::class, 'generateRoutageFp'])->name('admin.generateRoutageFp');
 
 Route::get('/admin/config', [App\Http\Controllers\Admin\ConfigController::class, 'index'])->name('admin.config');
 

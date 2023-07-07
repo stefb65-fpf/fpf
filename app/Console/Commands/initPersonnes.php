@@ -167,7 +167,7 @@ class initPersonnes extends Command
 
             if ($v->numerofinabonnement != '') {
                 // on insère l'abonnement
-                $etat = ($v->numerofinabonnement <= $numero_encours) ? 2 : 1;
+                $etat = ($v->numerofinabonnement < $numero_encours) ? 2 : 1;
                 $dataa = array(
                     'personne_id' => $personne->id,
                     'debut' => $v->numerodebutabonnement ?? 0,

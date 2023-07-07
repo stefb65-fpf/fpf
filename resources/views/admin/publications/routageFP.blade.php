@@ -10,14 +10,19 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger" style="width: 80% !important">
-            <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p style="margin-top: 20px">
-                On peut éditer le fichier de routage France Photo et on peut contrôler au préalable les adresses présentes dans le fichier de routage
-            </p>
+        <div style="text-align: center">
+                <div class="bold mt10">Prochain numéro à éditer: <span style="font-size: 2rem;">{{ $numeroencours }}</span></div>
+                <div class="bold mt10">Nombre d'adhérents recevant le numéro: {{ $nbabos }}</div>
+                <div class="bold mt10">Nombre de clubs recevant le numéro: {{ $nbclubsAbos }}</div>
+                <div class="bold mt10">Nombre total d'exemplaires à éditer: {{ $nbabos + $nbclubsAbos }}</div>
+                <div style="display: flex; justify-content: space-around; margin-top: 100px;">
+                    <a href="{{ route('admin.generateRoutageFp', 0) }}" class="adminSuccess" style="margin-right: 10px;">Fichier de contrôle</a>
+                    <a data-method="get" data-confirm="Voulez-vous vraiment valider le routage ? Le numéro en cours va être modifié et le statut des abonnements sera affecté" href="{{ route('admin.generateRoutageFp', 1) }}" class="adminPrimary" style="margin-left: 10px;">Valider le routage et éditer le fichier</a>
+                </div>
+
         </div>
     </div>
+@endsection
+@section('css')
+    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection

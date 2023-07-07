@@ -18,9 +18,9 @@
 
             // If the data-method attribute is not PUT or DELETE,
             // then we don't know what to do. Just ignore.
-            if ( $.inArray(httpMethod, ['PUT', 'DELETE']) === - 1 ) {
-                return;
-            }
+            // if ( $.inArray(httpMethod, ['PUT', 'DELETE']) === - 1 ) {
+            //     return;
+            // }
 
             // Allow user to optionally provide data-confirm="Are you sure?"
             if ( link.data('confirm') ) {
