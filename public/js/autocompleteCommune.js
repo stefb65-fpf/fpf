@@ -4,9 +4,11 @@ function handleClick(e, suggestionDiv, divIndicator,optionPaysFrance){
     if( e.target.getAttribute("name") == "suggestionItem" && $(e.target).parent()[0] == suggestionDiv[0]){
         $(suggestionDiv).parent().parent().parent().find('input[name=codepostal]').val(e.target.dataset.zip)
         $(suggestionDiv).parent().parent().parent().find('input[name=ville]').val(e.target.dataset.name)
+        // console.log( $(suggestionDiv).parent().parent().parent().find('input[name=codepostal]'),$(suggestionDiv).parent().parent().parent().find('input[name=codepostal]').val(), $(suggestionDiv).parent().parent().parent().find('input[name=ville]').val())
         divIndicator.innerHTML = "+33"
         divIndicator.classList.remove('d-none')
         optionPaysFrance.value = 78
+        // console.log(optionPaysFrance.value)
     }
     $('.suggestion').html("")
 }
@@ -22,6 +24,7 @@ function autocomplete(term, suggestionDiv) {
         success: function (data) {
             let divIndicator = $(suggestionDiv).parent().parent().parent().find('.indicator')[0]
             let optionPaysFrance = $(suggestionDiv).parent().parent().parent().find('select.pays')[0]
+            // console.log(divIndicator, optionPaysFrance)
             if (data.length > 0) {
                 //reset suggestion to empty list
                 suggestionDiv.html("")

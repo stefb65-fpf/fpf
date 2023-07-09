@@ -9,6 +9,7 @@ class Ur extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    public $timestamps = false;
 
     public function clubs() {
         return $this->hasMany('App\Models\Club', 'urs_id');

@@ -62,6 +62,11 @@ Route::get('/clubs/gestion', [App\Http\Controllers\ClubController::class, 'gesti
 Route::put('/update-generalite/{club}', [App\Http\Controllers\ClubController::class, 'updateGeneralite'])->name('updateGeneralite');
 Route::put('/update-club-address/{club}', [App\Http\Controllers\ClubController::class, 'updateClubAddress'])->name('updateClubAddress');
 Route::put('/update-club-reunion/{club}', [App\Http\Controllers\ClubController::class, 'updateReunion'])->name('updateReunion');
+// gestion des fonctions club par responsable de clubs
+Route::delete('/delete-club-fonction/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\ClubController::class,'deleteFonction'])->name('deleteFonctionClub');
+Route::put('/update-club-fonction/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\ClubController::class,'updateFonction'])->name('updateFonctionClub');
+Route::put('/add-club-fonction/{fonction_id}',[App\Http\Controllers\ClubController::class,'addFonction'])->name('addFonctionClub');
+
 
 
 // gestion des urs par responsable ur
@@ -72,5 +77,6 @@ Route::get('/urs/gestion', [App\Http\Controllers\UrController::class, 'gestion']
 Route::get('/admin', [App\Http\Controllers\Admin\UserController::class, 'accueil'])->name('admin');
 
 
-
-
+//Gestion urs par responsable fpf
+Route::get('/admin/urs/{ur}/edit', [App\Http\Controllers\Admin\UrController::class, 'urEdit'])->name('urs.edit');
+Route::put('/urs/update-ur/{ur}', [App\Http\Controllers\Admin\UrController::class, 'updateUr'])->name('updateUr');

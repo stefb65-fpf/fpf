@@ -36,21 +36,30 @@ class PersonneController extends Controller
         $user = session()->get('user');
         $personne = Personne::where('id', $user->id)->first();
         $nbadresses = sizeof($personne->adresses);
-        $personne->blacklist_date = date('d/m/Y',(strtotime($personne->blacklist_date)));
+        if($personne->blacklist_date){
+            $personne->blacklist_date = date('d/m/Y', (strtotime($personne->blacklist_date)));
+        }else{
+            $personne->blacklist_date = null;
+        }
         if (!$nbadresses) {
             $personne->adresses[0] = [];
         } elseif ($nbadresses == 1) {
             $personne->adresses[1] = [];
         }
-        foreach ( $personne->adresses as $adresse){
-            if($adresse->pays){
-                $country = Pays::where('nom', strtoupper(strtolower($adresse->pays)))->first();
-                $adresse->indicatif =$country->indicatif;
+
+        foreach ($personne->adresses as $adresse) {
+            if ($adresse) {
+                if ($adresse->pays) {
+                    $country = Pays::where('nom', strtoupper(strtolower($adresse->pays)))->first();
+                    $adresse->indicatif = $country->indicatif;
 //                dd( $adresse->indicatif);
-            }else{
-                $adresse->indicatif ="";
+                } else {
+                    $adresse->indicatif = "";
+                }
             }
         }
+
+
         $countries = Pays::all();
         return view('personnes.mon_profil', compact('personne', 'nbadresses', 'countries'));
     }
@@ -79,7 +88,8 @@ class PersonneController extends Controller
         return view('personnes.mes_mails', compact('mails'));
     }
 
-    public function updatePassword(ResetPasswordRequest $request, Personne $personne){
+    public function updatePassword(ResetPasswordRequest $request, Personne $personne)
+    {
         $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null);
         $personne->update($datap);
         $request->session()->put('user', $personne);
@@ -109,17 +119,18 @@ class PersonneController extends Controller
     public function updateAdresse(AdressesRequest $request, Personne $personne, $form)
     {
         $selected_pays = Pays::where('id', $request->pays)->first();
+//        dd($request);
         $indicatif = $selected_pays->indicatif;
         $datap_adresse = $request->all();
         unset($datap_adresse['_token']);
         unset($datap_adresse['_method']);
         unset($datap_adresse['enableBtn']);
-       $datap_adresse['pays']=$selected_pays->nom;
-       if($datap_adresse["telephonedomicile"]){
-           $datap_adresse["telephonedomicile"] = str_replace(" ","",$datap_adresse["telephonedomicile"]);
-           $datap_adresse["telephonedomicile"] = ltrim($datap_adresse["telephonedomicile"], '0');
-         $datap_adresse["telephonedomicile"] ='+'.$indicatif.'.'.$datap_adresse["telephonedomicile"];;
-       }
+        $datap_adresse['pays'] = $selected_pays->nom;
+        if ($datap_adresse["telephonedomicile"]) {
+            $datap_adresse["telephonedomicile"] = str_replace(" ", "", $datap_adresse["telephonedomicile"]);
+            $datap_adresse["telephonedomicile"] = ltrim($datap_adresse["telephonedomicile"], '0');
+            $datap_adresse["telephonedomicile"] = '+' . $indicatif . '.' . $datap_adresse["telephonedomicile"];;
+        }
 //        dd($datap_adresse);
         if ($form == 1) {//$form = 1, c'est le formulaire d'adresse defaut / facturation
             if (!sizeof($personne->adresses)) { //la personne n'a aucune adresse en base. On en crée une.

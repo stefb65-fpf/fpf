@@ -7,8 +7,6 @@
         <input type="hidden" name="_method" value="put">
 @endif
 {{ csrf_field() }}
-
-
         <div class="formBlockWrapper">
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Nom</div>

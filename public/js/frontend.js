@@ -74,19 +74,7 @@ formIcons.forEach((formIcon) => {
     }
 })
 
-// if (formIcon) {
-//     formIcon.addEventListener('click', () => {
-//         formIcon.querySelector('.open').classList.toggle('hidden')
-//         formIcon.querySelector('.closed').classList.toggle('hidden')
-//         let inputPassword = formIcon.closest(".customField").querySelector('input')
-//         if (inputPassword.type == "password") {
-//             inputPassword.type = "text"
-//         } else {
-//             inputPassword.type = "password"
-//         }
-//
-//     })
-// }
+
 //autosuggest
 
 if (autosuggestContainer) {
@@ -147,16 +135,23 @@ if (searchBox) {
 //account profile
 $('button[name=updateForm]').on('click',function(e){
     e.preventDefault()
+    let formIdName = $(this).parent().attr('data-formId')
     $(this).addClass('d-none')
     $(this).parent().find('button[name=enableBtn]').removeClass('d-none')
-    $(this).parent().parent().find('.formValue').removeAttr('disabled').addClass('modifying')
+    $('#'+ formIdName).find('.formValue').removeAttr('disabled').addClass('modifying')
+    // $(this).parent().parent().find('.formValue').removeAttr('disabled').addClass('modifying')
     if($(this).hasClass('showFields')){
-        $(this).parent().parent().find('.hiddenFields').removeClass('hidden')
+        $('#'+ formIdName).find('.hiddenFields').removeClass('hidden')
+        // $(this).parent().parent().find('.hiddenFields').removeClass('hidden')
     }
 })
-// $('button[name=enableBtn]').on('click',function(e){
-//
-// })
+//send form on click button[name=enableBtn]
+$('button[name=enableBtn]').on('click', function (e) {
+    e.preventDefault()
+    let formIdName = $(this).parent().attr('data-formId')
+    // console.log(   $('#'+ formIdName))
+    $('#'+ formIdName).submit()
+})
 
 //check password format in reinit password
 let checkableWidth = document.querySelector(".instructions .list .item.width")
@@ -276,8 +271,11 @@ $('div[name=addAddress]').on('click',function(e){
     $(this).parent().find('.formValueGroup').removeClass('hideForm')
     $(this).parent().find('button[name=enableBtn]').removeClass('d-none')
     $(this).parent().find('button[name=updateForm]').addClass('d-none')
-    $(this).parent().find('input').removeAttr('disabled').addClass('modifying')
+    let formIdName = $(this).attr('data-formId')
+    $('#'+ formIdName).find('input').removeAttr('disabled').addClass('modifying')
+    $('#'+ formIdName).find('select').removeAttr('disabled').addClass('modifying')
 })
+
 
 //show indicator div if a number has been typed
 if($('.phoneInput').val()){
@@ -311,4 +309,11 @@ $('input[name=logo]').on('change', function(e){
     $(this).parent().find('img').attr("src","https://fpf-new.federation-photo.fr/storage/app/public/FPF-default-image.jpg")
     // $(this).attr("value", e.target.files[0])
 
+})
+
+//show select on click
+$("button[name=showSelect]").on('click', function(e){
+    e.preventDefault()
+    console.log("aa")
+    $(this).parent().find('select').removeClass('hidden')
 })

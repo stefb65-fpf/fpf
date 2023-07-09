@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concern\Tools;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubAbonnementRequest;
 use App\Http\Requests\ClubReunionRequest;
@@ -13,9 +14,11 @@ use App\Models\Equipement;
 use App\Models\Pays;
 use App\Models\Utilisateur;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class ClubController extends Controller
 {
+    use Tools;
     public function __construct()
     {
         $this->middleware(['checkLogin', 'clubAccess']);
@@ -62,24 +65,24 @@ class ClubController extends Controller
         //gestion affichage telephone
         $tab = explode('.', $club->adresse->telephonedomicile);
 //        dd($club->adresse->telephonefixe,  $tab);
-        if(sizeof($tab)>1){
+        if (sizeof($tab) > 1) {
             $club->adresse->telephonedomicile = $tab[1];
         }
         $club->adresse->telephonedomicile = ltrim($club->adresse->telephonedomicile, '0');
 
-        if($club->adresse->indicatif_fixe == "33"){
-            $club->adresse->telephonedomicile = "0". $club->adresse->telephonedomicile ;
+        if ($club->adresse->indicatif_fixe == "33") {
+            $club->adresse->telephonedomicile = "0" . $club->adresse->telephonedomicile;
         }
         $club->adresse->indicatif_mobile = "";
-      $tab = explode('.', $club->adresse->telephonemobile);
-        if(sizeof($tab)>1){
+        $tab = explode('.', $club->adresse->telephonemobile);
+        if (sizeof($tab) > 1) {
             $club->adresse->telephonemobile = $tab[1];
         }
-        $first_number = substr($club->adresse->telephonemobile, 0,1);
+        $first_number = substr($club->adresse->telephonemobile, 0, 1);
 //        dd($first_number);
-        if( $first_number == "6" || $first_number == "7"){
+        if ($first_number == "6" || $first_number == "7") {
 //            $club->adresse->telephonemobile = "0". $club->adresse->telephonemobile ;
-            $club->adresse->telephonemobile = chunk_split("0". $club->adresse->telephonemobile , 2, ' ');
+            $club->adresse->telephonemobile = chunk_split("0" . $club->adresse->telephonemobile, 2, ' ');
         }
         //gestion abonnement
         $currentNumber = Configsaison::where('id', 1)->first()->numeroencours;
@@ -106,11 +109,15 @@ class ClubController extends Controller
             ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('utilisateurs.clubs_id', $club->id)
             ->where('fonctions.instance', 3)
-            ->selectRaw('fonctions.id, fonctions.libelle, utilisateurs.identifiant, personnes.nom, personnes.prenom')
+            ->selectRaw('fonctions.id, fonctions.libelle, utilisateurs.identifiant, personnes.nom, personnes.prenom , utilisateurs.id as id_utilisateur')
             ->orderBy('fonctions.ordre')
             ->get();
+        $tab_fonctions = [];
+        foreach ($fonctions as $fonction) {
+            $tab_fonctions[$fonction->id] = $fonction;
+        }
 
-        return view('clubs.gestion_fonctions', compact('club', 'adherents', 'fonctions'));
+        return view('clubs.gestion_fonctions', compact('club', 'adherents', 'tab_fonctions'));
     }
 
     public function gestionReglements()
@@ -156,6 +163,7 @@ class ClubController extends Controller
 
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
+
         $selected_pays = Pays::where('id', $request->pays)->first();
         $datap_adresse = $request->all();
         unset($datap_adresse['_token']);
@@ -164,21 +172,11 @@ class ClubController extends Controller
         $datap_adresse['pays'] = $selected_pays->nom;
 //        dd($datap_adresse);
         $indicatif = $selected_pays->indicatif;
-        if ($datap_adresse["telephonedomicile"]) {
-            $datap_adresse["telephonedomicile"] = str_replace(" ","",$datap_adresse["telephonedomicile"]);
-            $datap_adresse["telephonedomicile"] = ltrim($datap_adresse["telephonedomicile"], '0');
-            $datap_adresse["telephonedomicile"] = '+' . $indicatif . '.' . $datap_adresse["telephonedomicile"];
-        }
-        if ($datap_adresse["telephonemobile"]) {
-            $first_two_numbers = substr($datap_adresse["telephonemobile"], 0,2);
-            if( $first_two_numbers == "06" || $first_two_numbers == "07"){
-                //TODO: remove "0" and add "+33."
-                $datap_adresse["telephonemobile"] = str_replace(" ","",$datap_adresse["telephonemobile"]);
-                $datap_adresse["telephonemobile"] = ltrim($datap_adresse["telephonemobile"], '0');
-                $datap_adresse["telephonemobile"] = '+33.' . $datap_adresse["telephonemobile"];
-            }
-        }
+        $datap_adresse["telephonedomicile"] =$this->format_fixe_for_base($datap_adresse["telephonedomicile"],$indicatif) ;
+        $datap_adresse["telephonemobile"] =$this->format_mobile_for_base($datap_adresse["telephonemobile"]);
+        $datap_adresse['pays'] = $selected_pays->nom;
 //        dd($datap_adresse);
+;
         if (!$club->adresses_id) { //le club n'a aucune adresse en base. On en crée une.
             $new_adresse = Adresse::create($datap_adresse);
         } else { //la club a déjà une adresse en base. On met à jour l'adresse par defaut.
@@ -187,7 +185,7 @@ class ClubController extends Controller
         return redirect()->route('clubs.infos_club')->with('success', "L'adresse du club a été mise à jour");
     }
 
-    public function updateReunion( ClubReunionRequest $request, Club $club)
+    public function updateReunion(ClubReunionRequest $request, Club $club)
     {
         $datap = $request->all();
         unset($datap['_token']);
@@ -196,5 +194,64 @@ class ClubController extends Controller
 //        dd($datap);
         $club->update($datap);
         return redirect()->route('clubs.infos_club')->with('success', "L'adresse du club a été mise à jour");
+    }
+
+    public function updateFonction(Request $request, $current_utilisateur_id, $fonction_id)
+    {
+//        dd($request, $current_utilisateur_id,$fonction_id);
+        //on vérifie que le nouvel utilisateur appartient au club
+        $club = $this->getClub();
+        $adherents = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->where('utilisateurs.clubs_id', $club->id)
+            ->selectRaw('utilisateurs.id')
+            ->get();
+        $in_array = false;
+        $new_utilisateur_id = $request->adherent_id;
+        foreach ($adherents as $adherent) {
+            if ($adherent->id == $new_utilisateur_id) {
+                $in_array = true;
+            }
+        }
+        if (!$in_array) {
+            return redirect()->route('clubs.gestion_fonctions')->with('error', 'Cet utilisateur ne fait pas partie des adhérent du club');
+        }
+        //on ajoute la ligne correspondant à la table pivot
+        $data_ap = array('utilisateurs_id' => $new_utilisateur_id, 'fonctions_id' => $fonction_id);
+        DB::table('fonctionsutilisateurs')->insert($data_ap);
+        //on supprime l'ancien utilisateur
+        DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+        return redirect()->route('clubs.gestion_fonctions')->with('success', "La fonction a été attribuée à un nouvel utilisateur");
+    }
+
+    public function addFonction(Request $request, $fonction_id)
+    {
+//        dd($request, $fonction_id);
+        //on vérifie que le nouvel utilisateur appartient au club
+        $club = $this->getClub();
+        $adherents = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->where('utilisateurs.clubs_id', $club->id)
+            ->selectRaw('utilisateurs.id, utilisateurs.identifiant, personnes.nom, personnes.prenom')
+            ->get();
+        $in_array = false;
+        $new_utilisateur_id = $request->adherent_id;
+        foreach ($adherents as $adherent) {
+            if ($adherent->id == $new_utilisateur_id) {
+                $in_array = true;
+            }
+        }
+        if (!$in_array) {
+            return redirect()->route('clubs.gestion_fonctions')->with('error', 'Cet utilisateur ne fait pas partie des adhérent du club');
+        }
+        //on ajoute la ligne correspondant à la table pivot
+        $data_ap = array('utilisateurs_id' => $new_utilisateur_id, 'fonctions_id' => $fonction_id);
+        DB::table('fonctionsutilisateurs')->insert($data_ap);
+        return redirect()->route('clubs.gestion_fonctions')->with('success', "La fonction a été ajoutée à cet utilisateur");
+    }
+
+    public function deleteFonction($current_utilisateur_id, $fonction_id)
+    {
+//        dd($current_utilisateur_id, $fonction_id);
+        DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+        return redirect()->route('clubs.gestion_fonctions')->with('success', "La fonction a été ôtée à cet utilisateur");
     }
 }

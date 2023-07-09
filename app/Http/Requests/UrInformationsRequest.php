@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdressesRequest extends FormRequest
+class UrInformationsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,14 +20,17 @@ class AdressesRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'nom' => ['string','required','max:120', 'min:2'],
+            'courriel' => ['string','max:120', 'min:2'],
+            'web' => ['string','max:120', 'min:2'],
             'libelle1' => 'nullable|string',
             'libelle2' => 'nullable|string',
             'libelle3' => 'nullable|string',
-            'codepostal'=>'string|required',
-            'ville'=>'string',
-            'pays'=>'string|required',
-            'telephonedomicile'=>'nullable|string',
-            'telephonemobile'=>'nullable|string',
+            'codepostal' => 'string|required',
+            'ville' => 'string',
+            'pays' => 'string|required',
+            'telephonedomicile' => 'nullable|string',
+            'telephonemobile' => 'nullable|string',
         ];
     }
 }
