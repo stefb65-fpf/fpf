@@ -34,6 +34,9 @@ h1 {
 .mr25{
     margin-right: 25px!important;
 }
+.mr10{
+    margin-right: 10px!important;
+}
 .uppercase{
     text-transform: uppercase;
 }
@@ -176,6 +179,40 @@ a{
     width: max-content!important;
     height: max-content!important;
 }
+.flexWrap{
+    flex-wrap: wrap;
+}
+.flex{
+    display: flex;
+}
+.items-center{
+    justify-items: center;
+}
+.justify-between{
+    justify-content: space-between;
+}
+/* laravel > 5.1  */
+.pagination nav {
+    flex-direction: column;
+}
+.pagination nav  div:nth-child(2) div:nth-child(1){
+   display: none;
+}
+.pagination nav  div:nth-child(2) div:nth-child(2) span:nth-child(1){
+    display: flex;
+}
+.pagination nav  div:nth-child(2) div:nth-child(2) span:nth-child(1) svg{
+    height: 30px;
+}
+.pagination nav  div:nth-child(2) div:nth-child(2) span:nth-child(1)> a,.pagination nav  div:nth-child(2) div:nth-child(2) span:nth-child(1) > span{
+    margin:auto;
+    display: flex; justify-content: center;
+    align-items: center;
+    padding-right: 10px;
+}
+/*.pagination nav  div:nth-child(2) div:nth-child(2) span:nth-child(1) >  span{*/
+/*    */
+/*}*/
 /*****************************************************  */
 /* modal */
 /*****************************************************  */

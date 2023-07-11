@@ -80,3 +80,6 @@ Route::get('/admin', [App\Http\Controllers\Admin\UserController::class, 'accueil
 //Gestion urs par responsable fpf
 Route::get('/admin/urs/{ur}/edit', [App\Http\Controllers\Admin\UrController::class, 'urEdit'])->name('urs.edit');
 Route::put('/urs/update-ur/{ur}', [App\Http\Controllers\Admin\UrController::class, 'updateUr'])->name('updateUr');
+
+//Gestion clubs par responsable fpf
+Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'index'])->name('admin.clubs.index');

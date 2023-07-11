@@ -132,4 +132,14 @@ trait Tools
         }
 return $number;
     }
+    public function complement_string_to($string,$final_length){
+        if(strlen($string)< $final_length){
+            $diff= $final_length - strlen($string);
+            for ($i = 0; $i < $diff;$i++){
+                $string = "0".$string;
+            }
+        }
+//        dd($string);
+        return $string;
+    }
 }

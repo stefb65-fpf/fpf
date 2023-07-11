@@ -42,7 +42,9 @@
     margin-bottom: 25px;
 }
 
-
+.mb0 {
+    margin-bottom: 0;
+}
 
 .styled-table {
     border-collapse: collapse;
