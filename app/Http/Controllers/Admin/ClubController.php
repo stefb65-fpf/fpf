@@ -2,10 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concern\ClubTools;
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AdressesRequest;
+use App\Http\Requests\ClubReunionRequest;
 use App\Models\Abonnement;
+use App\Models\Activite;
+use App\Models\Adresse;
 use App\Models\Club;
+use App\Models\Configsaison;
+use App\Models\Equipement;
+use App\Models\Pays;
 use App\Models\Ur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 class ClubController extends Controller
 {
     use Tools;
+    use ClubTools;
     public function __construct() {
         $this->middleware(['checkLogin', 'adminAccess']);
     }
@@ -22,7 +31,13 @@ class ClubController extends Controller
     public function index($ur_id = null, $statut = null, $type_carte = null, $abonnement = null)
     {
 
-        $clubs = Club::orderBy('numero')->paginate(30);
+        if(!$statut){
+            $statut = "all";
+        }
+        if(!$abonnement){
+            $abonnement = "all";
+        }
+        $clubs = Club::orderBy('numero')->paginate(100);
         if (($ur_id != null) && ($ur_id != 'all')) {
             //verifier que le parametre envoyé existe
             $lur = Ur::where('id',$ur_id)->first();
@@ -65,17 +80,27 @@ class ClubController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.clubs.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function storeGeneralite(Request $request)
     {
-        //
+        dd($request);
+        return view('admin.clubs.create');
     }
-
+    public function storeAddress(Request $request)
+    {
+        dd($request);
+        return view('admin.clubs.create');
+    }
+    public function storeReunion(Request $request)
+    {
+        dd($request);
+        return view('admin.clubs.create');
+    }
     /**
      * Display the specified resource.
      */
@@ -87,18 +112,16 @@ class ClubController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function update( Club $club)
     {
-        //
+       $result = $this->getClubFormParameters($club);
+        $club = $result[0];
+        $activites = $result[1];
+        $equipements = $result[2];
+        $countries = $result[3];
+        return view('admin.clubs.update',compact('club','activites', 'equipements', 'countries'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -107,4 +130,23 @@ class ClubController extends Controller
     {
         //
     }
+    public function updateGeneralite(ClubReunionRequest $request, Club $club)
+    {
+        //TODO : enregistrer file sur le serveur
+ $this->updateClubGeneralite($club, $request);
+        return redirect()->route('updateClub',compact('club'))->with('success', "Les informations générales du club a été mise à jour");;
+    }
+
+    public function updateClubAddress(AdressesRequest $request, Club $club)
+    {
+       $this->updateClubAdress($club,$request);
+        return redirect()->route('updateClub',compact('club'))->with('success', "L'adresse du club a été mise à jour");;
+    }
+
+    public function updateReunion(ClubReunionRequest $request, Club $club)
+    {
+     $this->updateClubReunion($club, $request);
+        return redirect()->route('updateClub',compact('club'))->with('success', "Les informations de réunion du club ont été mises à jour");
+    }
+
 }

@@ -34,10 +34,9 @@ Route::resource('/admin/droits', App\Http\Controllers\Admin\DroitController::cla
 Route::delete('/admin/droits/deleteFonction/{droit_id}/{fonction_id}', [App\Http\Controllers\Admin\DroitController::class, 'deleteFonction'])->name('droits.deleteFonction');
 Route::delete('/admin/droits/deleteUtilisateur/{droit_id}/{utilisateur_id}', [App\Http\Controllers\Admin\DroitController::class, 'deleteUtilisateur'])->name('droits.deleteUtilisateur');
 
-Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
+
 
 Route::resource('/admin/urs', App\Http\Controllers\Admin\UrController::class);
-
 Route::get('/admin/fonctions/ca', [App\Http\Controllers\Admin\FonctionController::class, 'ca'])->name('admin.fonctions.ca');
 Route::get('/admin/fonctions/ce', [App\Http\Controllers\Admin\FonctionController::class, 'ce'])->name('admin.fonctions.ce');
 Route::resource('/admin/fonctions', App\Http\Controllers\Admin\FonctionController::class);

@@ -61,8 +61,7 @@
             </div>
         </div>
         <div class="mt25 flexEnd">
-            <a href="" class="adminPrimary btnMedium">Ajouter un club</a>
-            {{--            <a href="{{ route('votes.create') }}" class="adminPrimary btnMedium">Créer une nouvelle session de votes</a>--}}
+            <a href="{{ route('admin.clubs.create') }}" class="adminPrimary btnMedium">Ajouter un club</a>
         </div>
         <div class="filters d-flex"></div>
         @if(!sizeof($clubs))
@@ -143,7 +142,7 @@
                         </td>
                         <td>
                             <div style="margin-bottom: 3px;">
-                                <a href="" class="adminPrimary btnSmall">Éditer</a>
+                                <a href="{{ route('updateClub', $club) }}" class="adminPrimary btnSmall">Éditer</a>
                             </div>
                             <div style="margin-bottom: 3px;">
                                 <a href="" class="adminSuccess btnSmall">Liste des adhérents</a>
@@ -153,52 +152,13 @@
                 @endforeach
                 </tbody>
             </table>
-        <div class="pagination">
-        @if(sizeof($clubs)>1)
-            {{ $clubs->render( "pagination::default") }}
-            {{-- {{ $clubs->links() }} --}}
-            @endif
-        </div>
-
+            <div class="pagination">
+                @if(sizeof($clubs)>30)
+                    {{ $clubs->render( "pagination::default") }}
+                    {{-- {{ $clubs->links() }} --}}
+                @endif
+            </div>
         @endif
-
-
-        {{--        <div class="alertDanger" style="width: 80% !important">--}}
-        {{--            <p>--}}
-        {{--                <span class="bold">Attention !</span>--}}
-        {{--                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.--}}
-        {{--            </p>--}}
-        {{--            <p style="margin-top: 20px">--}}
-        {{--                On affiche ici la liste des clubs, triés par numéro, avec pagination.<br>--}}
-        {{--                Pour chaque club, possibilité de modifier les informations du club comme le ferait un responsable--}}
-        {{--                club.<br>--}}
-        {{--                Possibilité d'ajout de clubs (attention, il est nécessaire de saisir un contact lors de l'ajout du--}}
-        {{--                club).<br>--}}
-        {{--                Filtre à mettre en place pour l'affichage des clubs (par UR, statut, type de carte, abonnements).<br>--}}
-        {{--            </p>--}}
-        {{--        </div>--}}
-        {{--        <div class="alertDanger" style="width: 80% !important">--}}
-        {{--            <div class="bold">on récupère la liste des clubs dans $clubs</div>--}}
-        {{--            <div>pour chaque club, on affiche une ligne avec les informations numéro (complémenté à 4), UR (complémenté--}}
-        {{--                à 2), nom, email si présent avec lien mailto,--}}
-        {{--                un petit bloc coordonnées + telephone ($club->adresse), nom, prénom du contact ($club->contact) plus--}}
-        {{--                deux actions Editer et listes des adhérents--}}
-        {{--            </div>--}}
-        {{--            <div>On prévoir également sur la ligne d'afficher le statut de manière visuelle (petit rond de couleur):--}}
-        {{--                orange (0 non renouvelé), jaune (1 pré inscrit), vert (2 validé) et gris (3 désactivés)--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
-        {{--        <div class="alertDanger" style="width: 80% !important">--}}
-        {{--            <div class="bold">on prévoit un système de filtre avec plusieurs possibilité de filtrer l'affichage par ur,--}}
-        {{--                par statut, par type--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
-        {{--        <div class="alertDanger" style="width: 80% !important">--}}
-        {{--            <div class="bold">il faut prévoir de pouvoir ajouter un club don un botuon / icône bien visible (avec--}}
-        {{--                redirection vers formulaire d'ajout ensuite)--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
-
     </div>
 @endsection
 @section('css')

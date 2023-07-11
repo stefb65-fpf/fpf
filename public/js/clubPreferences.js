@@ -43,5 +43,5 @@ $('div[name=ajaxCheckbox]').on('click',function(e){
         }
     }
         submitNewsPreferences(activite, clubId, form, $(this))
-    })
+})
 
