@@ -1,4 +1,3 @@
-
 function submitNewsPreferences(preference, clubId, form,clickedElement){
     let url= ""
     if(form === "activites"){

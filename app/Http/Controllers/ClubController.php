@@ -97,20 +97,8 @@ class ClubController extends Controller
 
     public function updateGeneralite( Request $request, Club $club)
     {
-//        dd($request);
-//        if (!empty($_FILES) && $_FILES['image']['size'] > 0) {
-//            // le post a une image
-//            $this->saveMediaForPost($post);
-//        }
-        //TODO : enregistrer file sur le serveur
-        $logo = $club->logo;
-        if ($request->logo) {
-            $logo = $request->logo;
-//           dd($logo);
-        }
-        $datap = array('nom' => $request->nom, 'courriel' => $request->courriel, 'web' => $request->web, "logo" => $logo);
-        $club = Club::where('id', $club->id)->first();
-        $club->update($datap);
+
+$this->updateClubGeneralite($club,$request);
         return redirect()->route('clubs.infos_club')->with('success', "Les informations générales du club ont été mises à jour");
 
     }
@@ -118,37 +106,14 @@ class ClubController extends Controller
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
 
-        $selected_pays = Pays::where('id', $request->pays)->first();
-        $datap_adresse = $request->all();
-        unset($datap_adresse['_token']);
-        unset($datap_adresse['_method']);
-        unset($datap_adresse['enableBtn']);
-        $datap_adresse['pays'] = $selected_pays->nom;
-//        dd($datap_adresse);
-        $indicatif = $selected_pays->indicatif;
-        $datap_adresse["telephonedomicile"] =$this->format_fixe_for_base($datap_adresse["telephonedomicile"],$indicatif) ;
-        $datap_adresse["telephonemobile"] =$this->format_mobile_for_base($datap_adresse["telephonemobile"]);
-        $datap_adresse['pays'] = $selected_pays->nom;
-//        dd($datap_adresse);
-;
-        if (!$club->adresses_id) { //le club n'a aucune adresse en base. On en crée une.
-            $new_adresse = Adresse::create($datap_adresse);
-        } else { //la club a déjà une adresse en base. On met à jour l'adresse par defaut.
-            $club->adresse->update($datap_adresse);
-        }
+    $this->updateClubAdress($club,$request);
         return redirect()->route('clubs.infos_club')->with('success', "L'adresse du club a été mise à jour");
-
     }
 
     public function updateReunion(ClubReunionRequest $request, Club $club)
     {
-        $datap = $request->all();
-        unset($datap['_token']);
-        unset($datap['_method']);
-        unset($datap['enableBtn']);
-//        dd($datap);
-        $club->update($datap);
-        return redirect()->route('clubs.infos_club')->with('success', "L'adresse du club a été mise à jour");
+        $this->updateClubReunion($club,$request);
+        return redirect()->route('clubs.infos_club')->with('success', "Les informations de réunion du club ont été mises à jour");
     }
 
     public function updateFonction(Request $request, $current_utilisateur_id, $fonction_id)
