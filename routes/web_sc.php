@@ -6,7 +6,7 @@ Route::get('/clubs/infos_club', [App\Http\Controllers\ClubController::class, 'in
 
 
 Route::get('/urs/infos_ur', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
-Route::get('/urs/liste_clubs', [App\Http\Controllers\UrController::class, 'listeClubs'])->name('urs.liste_clubs');
+
 Route::get('/urs/liste_adherents', [App\Http\Controllers\UrController::class, 'listeAdherents'])->name('urs.liste_adherents');
 Route::get('/urs/liste_fonctions', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.liste_fonctions');
 Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class, 'listeReversements'])->name('urs.liste_reversements');

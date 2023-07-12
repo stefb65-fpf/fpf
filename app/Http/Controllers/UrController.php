@@ -94,7 +94,20 @@ class UrController extends Controller
         $ur = $this->getUr();
         return view('urs.liste_adherents', compact('ur'));
     }
-
+    public function listeAdherentsClub(Club $club) {
+        $ur = $this->getUr();
+//        $club = Club::where('id',$club);
+        if(!($club->urs_id == $ur->id)){
+            return redirect()->route('accueil')->with('error', "La liste des adhérents du club à laquelle vous avez cherché à accéder n'appartient pas à l'UR que vous gérez");
+        }
+//        dd($club->numero);
+//1924
+        $limit_pagination = 100;
+//        $adherents =  DB::table('adherents')->where('num_club', $club->numero)->orderBy('num_carte')->join('utilisateurs', 'adherents.num_carte', '=', 'utilisateurs.identifiant')->paginate($limit_pagination);
+        $adherents =  DB::table('utilisateurs')->where('clubs_id', $club->id)->orderBy('identifiant')->paginate($limit_pagination);
+//        dd($adherents);
+        return view('urs.liste_adherents_club', compact('ur','club','adherents','limit_pagination'));
+    }
     public function listeFonctions() {
         $ur = $this->getUr();
         return view('urs.liste_fonctions', compact('ur'));

@@ -82,6 +82,8 @@ Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}', [App\H
 Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
 
 //gestion clubs par responsable ur
+Route::get('/urs/liste_clubs/{statut?}/{type_carte?}/{abonnement?}', [App\Http\Controllers\UrController::class, 'listeClubs'])->name('urs.liste_clubs');
+Route::get('/urs/clubs/liste_adherents/{club}',[App\Http\Controllers\UrController::class, 'listeAdherentsClub'])->name('urs.liste_adherents_club');
 Route::get('/urs/clubs/{club}', [App\Http\Controllers\UrController::class, 'updateClub'])->name('UrGestion_updateClub');
 Route::put('/urs/clubs/update-generalite/{club}', [App\Http\Controllers\UrController::class, 'updateGeneralite'])->name('UrGestion_updateGeneralite');
 Route::put('/urs/clubs/update-club-address/{club}', [App\Http\Controllers\UrController::class, 'updateClubAddress'])->name('UrGestion_updateClubAddress');

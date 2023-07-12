@@ -133,7 +133,7 @@
                                 <a href="{{ route('UrGestion_updateClub', $club) }}" class="adminPrimary btnSmall">Éditer</a>
                             </div>
                             <div style="margin-bottom: 3px;">
-                                <a href="" class="adminSuccess btnSmall">Liste des adhérents</a>
+                                <a href="{{route('urs.liste_adherents_club',$club)}}" class="adminSuccess btnSmall">Liste des adhérents</a>
                             </div>
                         </td>
                     </tr>
@@ -162,5 +162,5 @@
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection
 @section('js')
-    <script src="{{ asset('js/filter-club-ur.js') }}?t=<?= time() ?>"></script>
+    <script src="{{ asset('js/filters-club-ur.js') }}?t=<?= time() ?>"></script>
 @endsection
