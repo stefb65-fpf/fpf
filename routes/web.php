@@ -39,7 +39,7 @@ Route::get('/registerAbonnement', [App\Http\Controllers\LoginController::class, 
 Route::get('/mes-mails', [App\Http\Controllers\PersonneController::class, 'mesMails']);
 Route::get('/mes-actions', [App\Http\Controllers\PersonneController::class, 'mesActions']);
 Route::get('/mes-formations', [App\Http\Controllers\PersonneController::class, 'mesFormations']);;
-Route::get('/mon-profil', [App\Http\Controllers\PersonneController::class, 'monProfil'])->name('mon-profil');;
+Route::get('/mon-profil', [App\Http\Controllers\PersonneController::class, 'monProfil'])->name('mon-profil');
 Route::put('/update-password/{personne}',[App\Http\Controllers\PersonneController::class, 'updatePassword'])->name('updatePassword');
 Route::put('/update-civilite/{personne}',[App\Http\Controllers\PersonneController::class, 'updateCivilite'])->name('updateCivilite');
 Route::put('/update-adresse/{personne}/{form}',[App\Http\Controllers\PersonneController::class, 'updateAdresse'])->name('updateAdresse');
@@ -80,3 +80,5 @@ Route::get('/admin/clubs/ajouter', [App\Http\Controllers\Admin\ClubController::c
 //Route::get('/admin/clubs/store', [App\Http\Controllers\Admin\AdminController::class, 'store'])->name('admin.clubs.store');
 Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'index'])->name('admin.clubs.index');
 Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
+
+//gestion clubs par responsable ur

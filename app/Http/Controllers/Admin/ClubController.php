@@ -31,13 +31,17 @@ class ClubController extends Controller
     public function index($ur_id = null, $statut = null, $type_carte = null, $abonnement = null)
     {
 
-        if(!$statut){
+        if($statut === null){
             $statut = "all";
+
         }
-        if(!$abonnement){
+
+        if( $abonnement === null){
             $abonnement = "all";
         }
-        $clubs = Club::orderBy('numero')->paginate(100);
+        //TODO: régler le problème de rendre du paginate (la methode render() du blade réponds en erreur si la limite de pagination est supérieur au nombre de clubs dans $clubs!
+        $limit_pagination = 100;
+        $clubs = Club::orderBy('numero')->paginate($limit_pagination);
         if (($ur_id != null) && ($ur_id != 'all')) {
             //verifier que le parametre envoyé existe
             $lur = Ur::where('id',$ur_id)->first();
@@ -47,12 +51,28 @@ class ClubController extends Controller
         }
         if (($statut != null) && ($statut != 'all')) {
             //verifier que le parametre envoyé existe
-            $lestatut = in_array($statut,[0,1,2,3]);
+            $lestatut = in_array(strval($statut),["0","1","2","3"]);
             if ($lestatut) {
                 $clubs  = $clubs->where('statut', $statut);
             }
         }
-//        dd($clubs);
+        if (($abonnement != null) && ($abonnement != 'all')) {
+            //verifier que le parametre envoyé existe
+            $labonnement = in_array(strval($abonnement),["0","1","G"]);
+
+            if ($labonnement) {
+                $clubs  = $clubs->where('abon', $abonnement);
+            }
+        }
+
+        if (($type_carte != null) && ($type_carte != 'all')) {
+            //verifier que le parametre envoyé existe
+            $letypecarte = in_array(strval($type_carte),["1","N","C","A"]);
+            if ($letypecarte) {
+                $clubs  = $clubs->where('ct', $type_carte);
+            }
+        }
+
         foreach ($clubs as $club) {
             // on récupère le contact
             $contact = DB::table('fonctionsutilisateurs')->join('utilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
@@ -72,7 +92,7 @@ class ClubController extends Controller
         }
         $urs = Ur::orderBy('nom')->get();
 
-        return view('admin.clubs.index',compact('clubs','urs',"ur_id","statut","type_carte","abonnement"));
+        return view('admin.clubs.index',compact('clubs','urs','ur_id','statut','type_carte','abonnement','limit_pagination'));
     }
 
     /**
@@ -114,11 +134,8 @@ class ClubController extends Controller
      */
     public function update( Club $club)
     {
-       $result = $this->getClubFormParameters($club);
-        $club = $result[0];
-        $activites = $result[1];
-        $equipements = $result[2];
-        $countries = $result[3];
+
+        list($club, $activites, $equipements, $countries) = $this->getClubFormParameters($club);
         return view('admin.clubs.update',compact('club','activites', 'equipements', 'countries'));
     }
 
