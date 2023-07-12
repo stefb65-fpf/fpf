@@ -41,11 +41,7 @@ class ClubController extends Controller
     public function infosClub()
     {
         $club = $this->getClub();
-        $result = $this->getClubFormParameters($club);
-        $club = $result[0];
-        $activites = $result[1];
-        $equipements = $result[2];
-        $countries = $result[3];
+        list($club,$activites,$equipements,$countries) = $this->getClubFormParameters($club);
         return view('clubs.infos_club', compact('club', 'activites', 'equipements', 'countries'));
     }
 

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Concern\ClubTools;
 use App\Concern\Tools;
+use App\Http\Requests\AdressesRequest;
+use App\Http\Requests\ClubReunionRequest;
 use App\Models\Club;
 use App\Models\Ur;
 use Illuminate\Http\Request;
@@ -11,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 class UrController extends Controller
 {
     use Tools;
+    use ClubTools;
     public function __construct() {
         $this->middleware(['checkLogin', 'urAccess']);
     }
@@ -28,22 +32,41 @@ class UrController extends Controller
     public function listeClubs($statut = null, $type_carte = null, $abonnement = null) {
         $ur = $this->getUr();
 //        dd($ur);
-        $clubs = Club::where('urs_id', $ur->id)->orderBy('numero')->paginate(100);
-        if(!$statut){
+
+        if($statut === null){
             $statut = "all";
         }
-        if(!$abonnement){
+        if( $abonnement === null){
             $abonnement = "all";
         }
-
+        //TODO: régler le problème de rendre du paginate (la methode render() du blade réponds en erreur si la limite de pagination est supérieur au nombre de clubs dans $clubs!
+        $limit_pagination = 100;
+        $clubs = Club::where('urs_id', $ur->id)->orderBy('numero')->paginate($limit_pagination);
+//dd($clubs);
         if (($statut != null) && ($statut != 'all')) {
             //verifier que le parametre envoyé existe
-            $lestatut = in_array($statut,[0,1,2,3]);
+            $lestatut = in_array(strval($statut),["0","1","2","3"]);
             if ($lestatut) {
                 $clubs  = $clubs->where('statut', $statut);
             }
         }
-//        dd($clubs);
+        if (($abonnement != null) && ($abonnement != 'all')) {
+            //verifier que le parametre envoyé existe
+            $labonnement = in_array(strval($abonnement),["0","1","G"]);
+
+            if ($labonnement) {
+                $clubs  = $clubs->where('abon', $abonnement);
+            }
+        }
+
+        if (($type_carte != null) && ($type_carte != 'all')) {
+            //verifier que le parametre envoyé existe
+            $letypecarte = in_array(strval($type_carte),["1","N","C","A"]);
+            if ($letypecarte) {
+                $clubs  = $clubs->where('ct', $type_carte);
+            }
+        }
+
         foreach ($clubs as $club) {
             // on récupère le contact
             $contact = DB::table('fonctionsutilisateurs')->join('utilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
@@ -54,14 +77,17 @@ class UrController extends Controller
                 ->first();
             $club->contact = $contact ?? null;
             $club->numero = $this->complement_string_to($club->numero, 4);
-//            $club->urs_id = $this->complement_string_to($club->urs_id , 2);
+            //TODO:remove this
+            $club->urs_id = $this->complement_string_to($club->urs_id , 2);
 //            dd($club);
             $club->adresse->callable_mobile = $this->format_phone_number_callable($club->adresse->telephonemobile);
             $club->adresse->visual_mobile = $this->format_phone_number_visual($club->adresse->telephonemobile);    $club->adresse->callable_fixe = $this->format_phone_number_callable($club->adresse->telephonedomicile);
             $club->adresse->visual_fixe = $this->format_phone_number_visual($club->adresse->telephonedomicile);
             //changer les url des adresses web
         }
-        return view('urs.liste_clubs', compact('ur',"statut","type_carte","abonnement"));
+//        dd($clubs);
+
+        return view('urs.liste_clubs', compact('ur','clubs','statut','type_carte','abonnement','limit_pagination'));
     }
 
     public function listeAdherents() {
@@ -92,5 +118,30 @@ class UrController extends Controller
         }
         return $ur;
     }
+    public function updateClub(Club $club){
+        $ur = $this->getUr();
+          if(!($club->urs_id == $ur->id)){
+            return redirect()->route('accueil')->with('error', "Le club que vous avez cherché à modifier n'appartient pas à l'UR que vous gérez");
+        }
+        list($club, $activites, $equipements, $countries) = $this->getClubFormParameters($club);
+        return view('urs.update_club',compact('club','activites','countries','equipements'));
+    }
+    public function updateGeneralite(ClubReunionRequest $request, Club $club)
+    {
+        //TODO : enregistrer file sur le serveur
+        $this->updateClubGeneralite($club, $request);
+        return redirect()->route('UrGestion_updateClub',compact('club'))->with('success', "Les informations générales du club a été mise à jour");;
+    }
 
+    public function updateClubAddress(AdressesRequest $request, Club $club)
+    {
+        $this->updateClubAdress($club,$request);
+        return redirect()->route('UrGestion_updateClub',compact('club'))->with('success', "L'adresse du club a été mise à jour");
+    }
+
+    public function updateReunion(ClubReunionRequest $request, Club $club)
+    {
+        $this->updateClubReunion($club, $request);
+        return redirect()->route('UrGestion_updateClub',compact('club'))->with('success', "Les informations de réunion du club ont été mises à jour");
+    }
 }

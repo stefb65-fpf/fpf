@@ -30,12 +30,9 @@ class ClubController extends Controller
      */
     public function index($ur_id = null, $statut = null, $type_carte = null, $abonnement = null)
     {
-
         if($statut === null){
             $statut = "all";
-
         }
-
         if( $abonnement === null){
             $abonnement = "all";
         }
@@ -151,19 +148,19 @@ class ClubController extends Controller
     {
         //TODO : enregistrer file sur le serveur
  $this->updateClubGeneralite($club, $request);
-        return redirect()->route('updateClub',compact('club'))->with('success', "Les informations générales du club a été mise à jour");;
+        return redirect()->route('FPFGestion_updateClub',compact('club'))->with('success', "Les informations générales du club a été mise à jour");;
     }
 
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
        $this->updateClubAdress($club,$request);
-        return redirect()->route('updateClub',compact('club'))->with('success', "L'adresse du club a été mise à jour");
+        return redirect()->route('FPFGestion_updateClub',compact('club'))->with('success', "L'adresse du club a été mise à jour");
     }
 
     public function updateReunion(ClubReunionRequest $request, Club $club)
     {
      $this->updateClubReunion($club, $request);
-        return redirect()->route('updateClub',compact('club'))->with('success', "Les informations de réunion du club ont été mises à jour");
+        return redirect()->route('FPFGestion_updateClub',compact('club'))->with('success', "Les informations de réunion du club ont été mises à jour");
     }
 
 }

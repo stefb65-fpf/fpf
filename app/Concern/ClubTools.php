@@ -45,9 +45,10 @@ trait ClubTools
         if (sizeof($tab) > 1) {
             $club->adresse->telephonedomicile = $tab[1];
         }
+
         $club->adresse->telephonedomicile = ltrim($club->adresse->telephonedomicile, '0');
 
-        if ($club->adresse->indicatif_fixe == "33") {
+        if ($club->adresse->indicatif_fixe == "33" && strlen($club->adresse->telephonedomicile)) {
             $club->adresse->telephonedomicile = "0" . $club->adresse->telephonedomicile;
         }
         $club->adresse->indicatif_mobile = "";

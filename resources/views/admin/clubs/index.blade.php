@@ -140,7 +140,7 @@
                         </td>
                         <td>
                             <div style="margin-bottom: 3px;">
-                                <a href="{{ route('updateClub', $club) }}" class="adminPrimary btnSmall">Éditer</a>
+                                <a href="{{ route('FPFGestion_updateClub', $club) }}" class="adminPrimary btnSmall">Éditer</a>
                             </div>
                             <div style="margin-bottom: 3px;">
                                 <a href="" class="adminSuccess btnSmall">Liste des adhérents</a>
@@ -163,5 +163,5 @@
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection
 @section('js')
-    <script src="{{ asset('js/filters.js') }}?t=<?= time() ?>"></script>
+    <script src="{{ asset('js/filters-club-admin.js') }}?t=<?= time() ?>"></script>
 @endsection

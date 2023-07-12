@@ -75,10 +75,14 @@ Route::put('/admin/update-generalite/{club}', [App\Http\Controllers\Admin\ClubCo
 Route::put('/admin/update-club-address/{club}', [App\Http\Controllers\Admin\ClubController::class, 'updateClubAddress'])->name('FPFGestion_updateClubAddress');
 Route::put('/admin/update-club-reunion/{club}', [App\Http\Controllers\Admin\ClubController::class, 'updateReunion'])->name('FPFGestion_updateReunion');
 
-Route::get('/admin/clubs/club/{club}', [App\Http\Controllers\Admin\ClubController::class, 'update'])->name('updateClub');
+Route::get('/admin/clubs/club/{club}', [App\Http\Controllers\Admin\ClubController::class, 'update'])->name('FPFGestion_updateClub');
 Route::get('/admin/clubs/ajouter', [App\Http\Controllers\Admin\ClubController::class, 'create'])->name('admin.clubs.create');
 //Route::get('/admin/clubs/store', [App\Http\Controllers\Admin\AdminController::class, 'store'])->name('admin.clubs.store');
 Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'index'])->name('admin.clubs.index');
 Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
 
 //gestion clubs par responsable ur
+Route::get('/urs/clubs/{club}', [App\Http\Controllers\UrController::class, 'updateClub'])->name('UrGestion_updateClub');
+Route::put('/urs/clubs/update-generalite/{club}', [App\Http\Controllers\UrController::class, 'updateGeneralite'])->name('UrGestion_updateGeneralite');
+Route::put('/urs/clubs/update-club-address/{club}', [App\Http\Controllers\UrController::class, 'updateClubAddress'])->name('UrGestion_updateClubAddress');
+Route::put('/urs/clubs/update-club-reunion/{club}', [App\Http\Controllers\UrController::class, 'updateReunion'])->name('UrGestion_updateReunion');

@@ -58,7 +58,7 @@
                 <thead>
                 <tr>
                     <th>N°</th>
-                    <th>UR</th>
+{{--                    <th>UR</th>--}}
                     <th>Nom</th>
                     <th>Statut</th>
                     <th>Courriel</th>
@@ -72,7 +72,7 @@
                 @foreach($clubs as $club)
                     <tr>
                         <td>{{ $club->numero }}</td>
-                        <td>{{$club->urs_id}}</td>
+{{--                        <td>{{$club->urs_id}}</td>--}}
                         <td>{{$club->nom}}</td>
                         <td>
                             @switch($club->statut)
@@ -129,7 +129,8 @@
                         </td>
                         <td>
                             <div style="margin-bottom: 3px;">
-                                <a href="{{ route('updateClub', $club) }}" class="adminPrimary btnSmall">Éditer</a>
+{{--                                <a href="" class="adminPrimary btnSmall">Éditer</a>--}}
+                                <a href="{{ route('UrGestion_updateClub', $club) }}" class="adminPrimary btnSmall">Éditer</a>
                             </div>
                             <div style="margin-bottom: 3px;">
                                 <a href="" class="adminSuccess btnSmall">Liste des adhérents</a>
@@ -140,20 +141,26 @@
                 </tbody>
             </table>
             <div class="pagination">
-                @if(sizeof($clubs)>30)
+                @if(sizeof($clubs)>$limit_pagination)
                     {{ $clubs->render( "pagination::default") }}
                     {{-- {{ $clubs->links() }} --}}
                 @endif
             </div>
         @endif
-        <div class="alertDanger" style="width: 80% !important">
-            <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p style="margin-top: 20px">
-                On affiche ici la liste des clubs de l'UR avec la possibilité d'effectuer les mêmes actions que les reponsables de club
-            </p>
-        </div>
+{{--        <div class="alertDanger" style="width: 80% !important">--}}
+{{--            <p>--}}
+{{--                <span class="bold">Attention !</span>--}}
+{{--                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.--}}
+{{--            </p>--}}
+{{--            <p style="margin-top: 20px">--}}
+{{--                On affiche ici la liste des clubs de l'UR avec la possibilité d'effectuer les mêmes actions que les reponsables de club--}}
+{{--            </p>--}}
+{{--        </div>--}}
     </div>
+@endsection
+@section('css')
+    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
+@endsection
+@section('js')
+    <script src="{{ asset('js/filter-club-ur.js') }}?t=<?= time() ?>"></script>
 @endsection
