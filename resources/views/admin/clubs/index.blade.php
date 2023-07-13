@@ -136,14 +136,14 @@
                             @endif
                         </td>
                         <td>
-                            {{ $club->numerofinabonnement }}
+                            {{ $club->numerofinabonnement?:"" }}
                         </td>
                         <td>
                             <div style="margin-bottom: 3px;">
                                 <a href="{{ route('FPFGestion_updateClub', $club) }}" class="adminPrimary btnSmall">Éditer</a>
                             </div>
                             <div style="margin-bottom: 3px;">
-                                <a href="" class="adminSuccess btnSmall">Liste des adhérents</a>
+                                <a href="{{route('admin.clubs.liste_adherents_club',$club)}}" class="adminSuccess btnSmall">Liste des adhérents</a>
                             </div>
                         </td>
                     </tr>

@@ -162,5 +162,10 @@ class ClubController extends Controller
      $this->updateClubReunion($club, $request);
         return redirect()->route('FPFGestion_updateClub',compact('club'))->with('success', "Les informations de réunion du club ont été mises à jour");
     }
-
+    public function listeAdherent(Club $club){
+//        dd($club);
+        $limit_pagination = 100;
+        $adherents =  DB::table('utilisateurs')->where('clubs_id', $club->id)->orderBy('identifiant')->paginate($limit_pagination);
+        return view('admin.clubs.liste_adherents_club',compact('club','adherents','limit_pagination'));
+    }
 }

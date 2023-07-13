@@ -210,6 +210,9 @@ a{
     align-items: center;
     padding-right: 10px;
 }
+.styled-table th,.styled-table td{
+    text-align: center;
+}
 /*.pagination nav  div:nth-child(2) div:nth-child(2) span:nth-child(1) >  span{*/
 /*    */
 /*}*/
