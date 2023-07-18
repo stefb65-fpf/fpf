@@ -120,8 +120,8 @@ class PersonneController extends Controller
      $personne->update($datap);
      $request->session()->put('user', $personne);
      $this->registerAction($personne->id, 4, "Demande de modification d'email");
-     //TODO: remplacer email en dur par $personne->email
-     $mailSent = Mail::to("hellebore-contact@protonmail.com")->send(new SendEmailChangeEmailAddress($link));
+
+     $mailSent = Mail::to($personne->email)->send(new SendEmailChangeEmailAddress($link));
 
      $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
      $mail = new \stdClass();

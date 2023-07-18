@@ -343,8 +343,8 @@ class LoginController extends Controller
 
         $personne->update($datap);
         $this->registerAction(1, 4, "Modification se l'email");
-//TODO: changer email en dur par $personne->email
-        $mailSent = Mail::to('hellebore-contact@protonmail.com')->send(new SendEmailModifiedEmail());
+
+        $mailSent = Mail::to($personne->email)->send(new SendEmailModifiedEmail());
 
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
         $mail = new \stdClass();
