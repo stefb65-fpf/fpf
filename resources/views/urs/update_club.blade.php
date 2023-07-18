@@ -12,7 +12,11 @@
                 </svg>
             </a>
         </h1>
-
+        <div class="alertInfo" style="width: 80% !important">
+            Ici vous avez la possibilité de modifier les informations relative au club sélectionné : informations générales, coordonnées, réunions, activités et équipement.
+            <br>
+            Vous pouvez aussi consulter l'état de l'abonnement du club, son statut et le nombre d'adhérents.
+        </div>
         @include('clubs.update_form_club', ['pathPrefixName' => 'UrGestion_'])
     </div>
 @endsection

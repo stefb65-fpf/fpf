@@ -10,6 +10,9 @@
             </svg>
         </a>
     </h1>
+    <div class="alertInfo" style="width: 80% !important">
+        Ici vous avez la possibilité d'afficher la liste des adhérents du club et de les filtrer en fonction de leur statut et de leur abonnement.
+    </div>
     <div class="filters d-flex">
         <div class="formBlock" style="max-width: 100%">
             <div class="formBlockTitle">Filtres</div>

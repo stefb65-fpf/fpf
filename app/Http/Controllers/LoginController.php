@@ -323,37 +323,43 @@ class LoginController extends Controller
     {
         $personne = Personne::selectRaw('id, email,nouvel_email')->where('secure_code', $securecode)->first();
         $user = session()->get('user');
+        //si le user est connecté, on met fin à la session
         if($user){
             $action = 'Déconnexion du site';
             $this->registerAction($user->id, 3, $action);
             session()->forget('user');
             session()->forget('menu');
-//            dd("deco de user");
         }
+        //si aucune personne de correspond à ce securecode, on redirige vers le login
         if (!$personne) {
-//            dd("pas de personne");
             return redirect()->route('login')->with('error', "Ce lien n'est pas valide");
         }
-//        dd($personne);
         return view('personnes.changeEmail', compact("personne"));
     }
+    /*
+  * enregistrement de nouvel_email à la place de email
+  * @param $personne $request
+  */
     public function resetEmail(Request $request, Personne $personne){
-//        dd($personne);
+        //on enregistre le nouvel email
         $datap = array('email' => $personne->nouvel_email, 'secure_code' => null,"nouvel_email"=>null);
-
         $personne->update($datap);
+
+        //on enregistre la modification dans l'historique des actions
         $this->registerAction(1, 4, "Modification se l'email");
 
+        //on envoie un mail à l'utilisateur à sa nouvelle adresse mail
         $mailSent = Mail::to($personne->email)->send(new SendEmailModifiedEmail());
 
+        //on enregistre ce mail dans l'historique des mails
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
         $mail = new \stdClass();
-        $mail->titre = "Confirmation de modification de votre Email";
+        $mail->titre = "Confirmation de modification de votre email";
         $mail->destinataire = $personne->email;
         $mail->contenu = $htmlContent;
-
         $this->registerMail($personne->id, $mail);
 
+        //on connecte l'utilisateur
         $this->autologin($personne);
 
         return redirect()->route('accueil')->with('success', "Votre adresse mail a été modifiée avec succès");

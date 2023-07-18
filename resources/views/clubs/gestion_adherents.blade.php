@@ -10,6 +10,9 @@
                 </svg>
             </a>
         </h1>
+        <div class="alertInfo" style="width: 80% !important">
+            Ici vous avez la possibilité d'afficher la liste des adhérents du club et de les filtrer en fonction de leur statut et de leur abonnement.
+        </div>
         <div class="filters d-flex">
             <div class="formBlock" style="max-width: 100%">
                 <div class="formBlockTitle">Filtres</div>
@@ -143,16 +146,6 @@
                 @endif
             </div>
         @endif
-{{--        <div class="alertDanger" style="width: 80% !important">--}}
-{{--            <p>--}}
-{{--                <span class="bold">Attention !</span>--}}
-{{--                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.--}}
-{{--            </p>--}}
-{{--            <p style="margin-top: 20px">--}}
-{{--                On affiche ici les adhérents du club, les informations abonnés. <br>--}}
-{{--                On permet le renouvellement des adhésions, l'ajout d'un nouvel adhérent, la modification des informations des adhérents pour le club--}}
-{{--            </p>--}}
-{{--        </div>--}}
     </div>
 @endsection
 @section('css')

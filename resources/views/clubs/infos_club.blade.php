@@ -12,40 +12,12 @@
                 </svg>
             </a>
         </h1>
+        <div class="alertInfo" style="width: 80% !important">
+            Ici vous avez la possibilité de modifier les informations relative au club sélectionné : informations générales, coordonnées, réunions, activités et équipement.
+            <br>
+            Vous pouvez aussi consulter l'état de l'abonnement du club, son statut et le nombre d'adhérents.
+        </div>
         @include('clubs.update_form_club', ['pathPrefixName' => 'clubGestion_'])
 
-{{--        <div class="alertDanger" style="width: 80% !important">--}}
-{{--            <p>--}}
-{{--                <span class="bold">Attention !</span>--}}
-{{--                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.--}}
-{{--            </p>--}}
-{{--            <p style="margin-top: 20px">--}}
-{{--                on affiche ici informations du club par bloc (coordonnées, équipements, activités, logo), chaque bloc--}}
-{{--                étant modifiable indépendamment<br>--}}
-{{--                Les équiements et activités sont des cases à cocher parmi des activités et fonctions prédéfinies.<br>--}}
-{{--            </p>--}}
-{{--        </div>--}}
-{{--        <div class="alertDanger" style="width: 80% !important">--}}
-{{--            <div class="bold">on récupère les infos du club avec dans la variable $club</div>--}}
-{{--            {{ $club }}--}}
-{{--        </div>--}}
-{{--        <div class="alertDanger" style="width: 80% !important">--}}
-{{--            <div class="bold">on récupère les coordonnées dans $club->adresse</div>--}}
-{{--            {{ $club->adresse }}--}}
-{{--        </div>--}}
-{{--        <div class="alertDanger" style="width: 80% !important">--}}
-{{--            <div class="bold">on récupère l'ensemble des activités de la FPF dans $activites</div>--}}
-{{--            {{ $activites }}--}}
-{{--            <br>--}}
-{{--            <div class="bold">et les activités proposées par le club dans $club->activites</div>--}}
-{{--            {{ json_encode($club->activites) }}--}}
-{{--        </div>--}}
-{{--        <div class="alertDanger" style="width: 80% !important">--}}
-{{--            <div class="bold">on récupère l'ensemble des équipements de la FPF dans $equipements</div>--}}
-{{--            {{ $equipements }}--}}
-{{--            <br>--}}
-{{--            <div class="bold">et les équipements proposés par le club dans $club->equipements</div>--}}
-{{--            {{ json_encode($club->equipements) }}--}}
-{{--        </div>--}}
     </div>
 @endsection

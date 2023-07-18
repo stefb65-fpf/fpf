@@ -109,26 +109,31 @@ class PersonneController extends Controller
         $this->registerMail($personne->id, $mail);
         return redirect()->route('mon-profil')->with('success', "Votre mot de passe a été modifié avec succès");
     }
+
  public function updateEmail(EmailRequest $request,Personne $personne){
-//        dd($request);
+    //on crée un code sécurisé unique et on l'enregistre dans le champ secure_code de l'utilisateur
      $crypt = $this->encodeShortReinit();
      $personne->secure_code = $crypt;
      $personne->save();
 
-     $link = "https://fpf-new.federation-photo.fr/changeEmail/" . $crypt;
+     //on enregistre le nouvel email provisoire
      $datap = array('nouvel_email' => $request->email);
      $personne->update($datap);
      $request->session()->put('user', $personne);
+
+     //on enregistre l'action dans l'historique
      $this->registerAction($personne->id, 4, "Demande de modification d'email");
 
+     // on envoie un mail à l'utilisateur avec le lien de confirmation de modification de l'adresse amil
+     $link = "https://fpf-new.federation-photo.fr/changeEmail/" . $crypt;
      $mailSent = Mail::to($personne->email)->send(new SendEmailChangeEmailAddress($link));
 
+     //on enregistre le mail dans l'historique des mails
      $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
      $mail = new \stdClass();
      $mail->titre = "Demande de modification de votre adresse email";
      $mail->destinataire = $personne->email;
      $mail->contenu = $htmlContent;
-
      $this->registerMail($personne->id, $mail);
 
      return redirect()->route('mon-profil')->with('success', "Nous avons pris en compte votre demande de modification d'email. Pour valider ce changement, rendez-vous sur votre boîte mail actuelle");

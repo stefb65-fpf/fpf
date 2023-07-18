@@ -10,6 +10,10 @@
                 </svg>
             </a>
         </h1>
+        <div class="alertInfo" style="width: 80% !important">
+            Ici vous avez la possibilité d'afficher la liste des clubs de votre UR et de les filtrer en fonction de leur statut, de leur type de carte et de leur abonnement.<br>
+            Vous pouvez également ajouter un club qui n'est pas encore présent dans cette liste, modifier les informations d'un club déjà existant et afficher la liste de ses abonnés.
+        </div>
         <div class="filters d-flex">
             <div class="formBlock" style="max-width: 100%">
                 <div class="formBlockTitle">Filtres</div>
@@ -147,15 +151,6 @@
                 @endif
             </div>
         @endif
-{{--        <div class="alertDanger" style="width: 80% !important">--}}
-{{--            <p>--}}
-{{--                <span class="bold">Attention !</span>--}}
-{{--                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.--}}
-{{--            </p>--}}
-{{--            <p style="margin-top: 20px">--}}
-{{--                On affiche ici la liste des clubs de l'UR avec la possibilité d'effectuer les mêmes actions que les reponsables de club--}}
-{{--            </p>--}}
-{{--        </div>--}}
     </div>
 @endsection
 @section('css')
