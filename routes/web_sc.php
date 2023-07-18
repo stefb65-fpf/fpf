@@ -1,5 +1,6 @@
 <?php
-Route::get('/clubs/gestion_adherents', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.gestion_adherents');
+//Route::get('/clubs/gestion_adherents', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.gestion_adherents');
+
 Route::get('/clubs/gestion_fonctions', [App\Http\Controllers\ClubController::class, 'gestionFonctions'])->name('clubs.gestion_fonctions');
 Route::get('/clubs/gestion_reglements', [App\Http\Controllers\ClubController::class, 'gestionReglements'])->name('clubs.gestion_reglements');
 Route::get('/clubs/infos_club', [App\Http\Controllers\ClubController::class, 'infosClub'])->name('clubs.infos_club');

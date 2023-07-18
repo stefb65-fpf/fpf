@@ -26,7 +26,7 @@ class ApiFormValidationController extends Controller
 
     public function clubActivite(Request $request, Club $club)
     {
-        //TODO:faut-il creer une request ?
+
         $club = Club::where('id', $request->club);
         $club_activites = DB::table('activitesclubs')->where('clubs_id', $request->club)->get();
 //        $key = array_search($request->clubPreferences, $club_activites);
@@ -52,7 +52,7 @@ class ApiFormValidationController extends Controller
     }
     public function clubEquipement(Request $request, Club $club)
     {
-        //TODO:faut-il creer une request ?
+
 
         $club = Club::where('id', $request->club);
         $club_equipements = DB::table('equipementsclubs')->where('clubs_id', $request->club)->get();

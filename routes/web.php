@@ -30,10 +30,14 @@ Route::get('/forgotPassword', function () {
 })->name('forgotPassword');
 Route::post('/setupLogin', [App\Http\Controllers\LoginController::class, 'login']);
 
+Route::get('/changeEmail/{securecode}', [App\Http\Controllers\LoginController::class, 'changeEmail']);
 Route::get('/reinitPassword/{securecode}', [App\Http\Controllers\LoginController::class, 'reinitPassword']);
 Route::post('/forgotPassword', [App\Http\Controllers\LoginController::class, 'sendResetAccountPasswordLink']);
 Route::put('/resetPassword/{personne}', [App\Http\Controllers\LoginController::class, 'resetPassword'])->name('resetPassword');
+
 Route::get('/registerAbonnement', [App\Http\Controllers\LoginController::class, 'registerAbonnement']);
+
+
 
 // gestion profil de la personne
 Route::get('/mes-mails', [App\Http\Controllers\PersonneController::class, 'mesMails']);
@@ -41,8 +45,12 @@ Route::get('/mes-actions', [App\Http\Controllers\PersonneController::class, 'mes
 Route::get('/mes-formations', [App\Http\Controllers\PersonneController::class, 'mesFormations']);;
 Route::get('/mon-profil', [App\Http\Controllers\PersonneController::class, 'monProfil'])->name('mon-profil');
 Route::put('/update-password/{personne}',[App\Http\Controllers\PersonneController::class, 'updatePassword'])->name('updatePassword');
+Route::put('/update-email/{personne}',[App\Http\Controllers\PersonneController::class, 'updateEmail'])->name('updateEmail');
 Route::put('/update-civilite/{personne}',[App\Http\Controllers\PersonneController::class, 'updateCivilite'])->name('updateCivilite');
 Route::put('/update-adresse/{personne}/{form}',[App\Http\Controllers\PersonneController::class, 'updateAdresse'])->name('updateAdresse');
+
+Route::put('/resetEmail/{personne}', [App\Http\Controllers\LoginController::class, 'resetEmail'])->name('resetEmail');
+
 
 // affichage des formations et actions liées à l'inscription
 Route::get('/formations/accueil', [App\Http\Controllers\FormationController::class, 'accueil'])->name('formations.accueil');
@@ -58,7 +66,8 @@ Route::put('/update-club-reunion/{club}', [App\Http\Controllers\ClubController::
 Route::delete('/delete-club-fonction/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\ClubController::class,'deleteFonction'])->name('deleteFonctionClub');
 Route::put('/update-club-fonction/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\ClubController::class,'updateFonction'])->name('updateFonctionClub');
 Route::put('/add-club-fonction/{fonction_id}',[App\Http\Controllers\ClubController::class,'addFonction'])->name('addFonctionClub');
-
+//gestion des adhésions et abonnements club par responsable de clubs
+Route::get('/clubs/gestion_adherents/{statut?}/{abonnement?}', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.gestion_adherents');
 
 // gestion des urs par responsable ur
 Route::get('/urs/gestion', [App\Http\Controllers\UrController::class, 'gestion'])->name('urs.gestion');
@@ -79,12 +88,12 @@ Route::get('/admin/clubs/club/{club}', [App\Http\Controllers\Admin\ClubControlle
 Route::get('/admin/clubs/ajouter', [App\Http\Controllers\Admin\ClubController::class, 'create'])->name('admin.clubs.create');
 //Route::get('/admin/clubs/store', [App\Http\Controllers\Admin\AdminController::class, 'store'])->name('admin.clubs.store');
 Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'index'])->name('admin.clubs.index');
-Route::get('/admin/liste_adherent/{club}', [App\Http\Controllers\Admin\ClubController::class, 'listeAdherent'])->name('admin.clubs.liste_adherents_club');
+Route::get('/admin/liste_adherent/{club}/{statut?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'listeAdherent'])->name('admin.clubs.liste_adherents_club');
 Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
 
 //gestion clubs par responsable ur
 Route::get('/urs/liste_clubs/{statut?}/{type_carte?}/{abonnement?}', [App\Http\Controllers\UrController::class, 'listeClubs'])->name('urs.liste_clubs');
-Route::get('/urs/clubs/liste_adherents/{club}',[App\Http\Controllers\UrController::class, 'listeAdherentsClub'])->name('urs.liste_adherents_club');
+Route::get('/urs/clubs/liste_adherents/{club}/{statut?}/{abonnement?}',[App\Http\Controllers\UrController::class, 'listeAdherentsClub'])->name('urs.liste_adherents_club');
 Route::get('/urs/clubs/{club}', [App\Http\Controllers\UrController::class, 'updateClub'])->name('UrGestion_updateClub');
 Route::put('/urs/clubs/update-generalite/{club}', [App\Http\Controllers\UrController::class, 'updateGeneralite'])->name('UrGestion_updateGeneralite');
 Route::put('/urs/clubs/update-club-address/{club}', [App\Http\Controllers\UrController::class, 'updateClubAddress'])->name('UrGestion_updateClubAddress');

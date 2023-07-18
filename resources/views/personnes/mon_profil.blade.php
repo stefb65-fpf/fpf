@@ -5,11 +5,36 @@
             <div class="formBlockTitle">Email et mot de passe</div>
             <div class="formBlockWrapper">
                 <div class="formLine">
-                    <div class="formLabel">Email</div>
-                    <div class="formValue unchangeable">{!! $personne->email !!}</div>
-                    {{--                            <div class="formLineModify">Changement sécurisé</div>--}}
-
+                    <form class="togglingFields" action="{{route('updateEmail',$personne)}}" method="POST"
+                          id="emailForm">
+                        <input type="hidden" name="_method" value="put">
+                        {{ csrf_field() }}
+                                <div class="formLabel">Email</div>
+                                <div class="currentValue" >{{ $personne->email }}</div>
+                                <div class="hiddenFields hidden">
+                                    <div class="fields">
+                                        <input class="formValue" placeholder="nouvel email" type="email" name="email" maxlength="100"/>
+                                        {{--                            <div class="formLineModify">Changement sécurisé</div>--}}
+                                    </div>
+                                </div>
+                    </form>
+                    <div data-formId="emailForm">
+                        <button class="formBtn relative d-none success" name="enableBtn"  id="resetEmailBtn"
+                        >Valider
+                        </button>
+                        <button class="formBtn relative primary showFields" name="updateForm">Modifier</button>
+                    </div>
                 </div>
+
+                    @if($personne->nouvel_email)
+                    <div class="formLine">
+                            <div class="formLabel">Validation en attente</div>
+                            <div class="currentValue">{{ $personne->nouvel_email }}</div>
+                            <div class="comment">Nous vous avons envoyé un mail à l'adresse {{ $personne->email }} pour valider ce changement.</div>
+                        </div>
+
+                    @endif
+
                 <div class="formLine">
                     <div class="formLabel">Mot de Passe</div>
                     <form class="togglingFields" action="{{route('updatePassword',$personne)}}" method="POST"

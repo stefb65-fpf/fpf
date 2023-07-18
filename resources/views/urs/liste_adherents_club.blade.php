@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="pageCanva">
-    <h1 class="pageTitle">
+    <h1 class="pageTitle" data-club ={{$club->id}}>
         Liste des adhérents du club {{ $club->nom }}
         <a class="previousPage" title="Retour page précédente" href="{{ route('urs.liste_clubs') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
@@ -10,9 +10,36 @@
             </svg>
         </a>
     </h1>
+    <div class="filters d-flex">
+        <div class="formBlock" style="max-width: 100%">
+            <div class="formBlockTitle">Filtres</div>
+            <div class="d-flex flexWrap">
+                <div class="formUnit mb0">
+                    <div class="formLabel mr10 bold">Statut :</div>
+                    <select class="formValue modifying" name="filter" data-ref="statut">
+                        <option value="all">Tous</option>
+                        <option value="2" {{$statut == 2? "selected":""}}>Validé</option>
+                        <option value="1" {{$statut == 1? "selected":""}}>Pré-inscrit</option>
+                        <option value="0" {{$statut == 0? "selected":""}}>Non renouvelé</option>
+                        <option value="3" {{$statut == 3? "selected":""}}>Désactivé</option>
+                    </select>
+                </div>
+                <div class="formUnit mb0">
+                    <div class="formLabel mr10 bold">Abonnement :</div>
+                    <select class="formValue modifying" name="filter" data-ref="abonnement">
+                        <option value="all">Tous</option>
+                        <option value="1" {{$abonnement== 1? "selected":""}}>Avec</option>
+                        <option value="0" {{$abonnement== 0? "selected":""}}>Sans</option>
+{{--                        <option value="G" {{$abonnement== "G"? "selected":""}}>Gratuits</option>--}}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
     @if(!sizeof($adherents))
-        Ce club ne possède aucun adhérent.
+        Ce club ne possède aucun adhérent répondant aux critères selectionnés.
     @else
+
         <table class="styled-table">
             <thead>
             <tr>
@@ -121,4 +148,7 @@
 @endsection
 @section('css')
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
+@endsection
+@section('js')
+    <script src="{{ asset('js/filters-club-liste-adherent.js') }}?t=<?= time() ?>"></script>
 @endsection

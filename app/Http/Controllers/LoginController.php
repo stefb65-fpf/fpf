@@ -7,6 +7,7 @@ use App\Concern\Tools;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\SendResetLinkRequest;
+use App\Mail\SendEmailModifiedEmail;
 use App\Mail\SendEmailModifiedPassword;
 use App\Mail\SendEmailReinitPassword;
 use App\Models\Abonnement;
@@ -314,5 +315,47 @@ class LoginController extends Controller
 //        $droits['visiteur'] = $personne->visiteur;
 //        return $droits;
 //    }
+    /*
+    * réinitialisation de l'email
+    * @param $securecode
+    */
+    public function changeEmail($securecode)
+    {
+        $personne = Personne::selectRaw('id, email,nouvel_email')->where('secure_code', $securecode)->first();
+        $user = session()->get('user');
+        if($user){
+            $action = 'Déconnexion du site';
+            $this->registerAction($user->id, 3, $action);
+            session()->forget('user');
+            session()->forget('menu');
+//            dd("deco de user");
+        }
+        if (!$personne) {
+//            dd("pas de personne");
+            return redirect()->route('login')->with('error', "Ce lien n'est pas valide");
+        }
+//        dd($personne);
+        return view('personnes.changeEmail', compact("personne"));
+    }
+    public function resetEmail(Request $request, Personne $personne){
+//        dd($personne);
+        $datap = array('email' => $personne->nouvel_email, 'secure_code' => null,"nouvel_email"=>null);
 
+        $personne->update($datap);
+        $this->registerAction(1, 4, "Modification se l'email");
+//TODO: changer email en dur par $personne->email
+        $mailSent = Mail::to('hellebore-contact@protonmail.com')->send(new SendEmailModifiedEmail());
+
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+        $mail = new \stdClass();
+        $mail->titre = "Confirmation de modification de votre Email";
+        $mail->destinataire = $personne->email;
+        $mail->contenu = $htmlContent;
+
+        $this->registerMail($personne->id, $mail);
+
+        $this->autologin($personne);
+
+        return redirect()->route('accueil')->with('success', "Votre adresse mail a été modifiée avec succès");
+    }
 }

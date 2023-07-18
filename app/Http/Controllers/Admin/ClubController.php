@@ -36,7 +36,7 @@ class ClubController extends Controller
         if( $abonnement === null){
             $abonnement = "all";
         }
-        //TODO: régler le problème de rendre du paginate (la methode render() du blade réponds en erreur si la limite de pagination est supérieur au nombre de clubs dans $clubs!
+        //TODO: régler le problème de rendre du paginate (la methode render() du blade réponds en erreur si la limite de pagination est supérieure au nombre de clubs dans $clubs!
         $limit_pagination = 100;
         $clubs = Club::orderBy('numero')->paginate($limit_pagination);
         if (($ur_id != null) && ($ur_id != 'all')) {
@@ -162,10 +162,31 @@ class ClubController extends Controller
      $this->updateClubReunion($club, $request);
         return redirect()->route('FPFGestion_updateClub',compact('club'))->with('success', "Les informations de réunion du club ont été mises à jour");
     }
-    public function listeAdherent(Club $club){
+    public function listeAdherent(Club $club, $statut = null,$abonnement = null){
 //        dd($club);
+        if($statut === null){
+            $statut = "all";
+        }
+        if( $abonnement === null){
+            $abonnement = "all";
+        }
         $limit_pagination = 100;
         $adherents =  DB::table('utilisateurs')->where('clubs_id', $club->id)->orderBy('identifiant')->paginate($limit_pagination);
-        return view('admin.clubs.liste_adherents_club',compact('club','adherents','limit_pagination'));
+        if (($statut != null) && ($statut != 'all')) {
+            //verifier que le parametre envoyé existe
+            $lestatut = in_array(strval($statut),["0","1","2","3"]);
+            if ($lestatut) {
+                $adherents  = $adherents->where('statut', $statut);
+            }
+        }
+        if (($abonnement != null) && ($abonnement != 'all')) {
+            //verifier que le parametre envoyé existe
+            $labonnement = in_array(strval($abonnement),["0","1"]);
+
+            if ($labonnement) {
+                $adherents  = $adherents->where('abon', $abonnement);
+            }
+        }
+        return view('admin.clubs.liste_adherents_club',compact('club','adherents','limit_pagination', 'statut','abonnement'));
     }
 }

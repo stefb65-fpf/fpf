@@ -6,13 +6,16 @@ use App\Concern\Hash;
 use App\Concern\Tools;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\CiviliteRequest;
+use App\Http\Requests\EmailRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Mail\SendEmailChangeEmailAddress;
 use App\Mail\SendEmailModifiedPassword;
 use App\Models\Adresse;
 use App\Models\Historique;
 use App\Models\Historiquemail;
 use App\Models\Pays;
 use App\Models\Personne;
+use http\Env\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -106,6 +109,30 @@ class PersonneController extends Controller
         $this->registerMail($personne->id, $mail);
         return redirect()->route('mon-profil')->with('success', "Votre mot de passe a été modifié avec succès");
     }
+ public function updateEmail(EmailRequest $request,Personne $personne){
+//        dd($request);
+     $crypt = $this->encodeShortReinit();
+     $personne->secure_code = $crypt;
+     $personne->save();
+
+     $link = "https://fpf-new.federation-photo.fr/changeEmail/" . $crypt;
+     $datap = array('nouvel_email' => $request->email);
+     $personne->update($datap);
+     $request->session()->put('user', $personne);
+     $this->registerAction($personne->id, 4, "Demande de modification d'email");
+     //TODO: remplacer email en dur par $personne->email
+     $mailSent = Mail::to("hellebore-contact@protonmail.com")->send(new SendEmailChangeEmailAddress($link));
+
+     $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+     $mail = new \stdClass();
+     $mail->titre = "Demande de modification de votre adresse email";
+     $mail->destinataire = $personne->email;
+     $mail->contenu = $htmlContent;
+
+     $this->registerMail($personne->id, $mail);
+
+     return redirect()->route('mon-profil')->with('success', "Nous avons pris en compte votre demande de modification d'email. Pour valider ce changement, rendez-vous sur votre boîte mail actuelle");
+ }
 
     public function updateCivilite(CiviliteRequest $request, Personne $personne)
     {

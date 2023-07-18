@@ -32,10 +32,33 @@ class ClubController extends Controller
         return view('clubs.gestion', compact('club'));
     }
 
-    public function gestionAdherents()
+    public function gestionAdherents($statut = null,$abonnement = null)
     {
         $club = $this->getClub();
-        return view('clubs.gestion_adherents', compact('club'));
+        if($statut === null){
+            $statut = "all";
+        }
+        if( $abonnement === null){
+            $abonnement = "all";
+        }
+        $limit_pagination = 100;
+        $adherents =  DB::table('utilisateurs')->where('clubs_id', $club->id)->orderBy('identifiant')->paginate($limit_pagination);
+        if (($statut != null) && ($statut != 'all')) {
+            //verifier que le parametre envoyé existe
+            $lestatut = in_array(strval($statut),["0","1","2","3"]);
+            if ($lestatut) {
+                $adherents  = $adherents->where('statut', $statut);
+            }
+        }
+        if (($abonnement != null) && ($abonnement != 'all')) {
+            //verifier que le parametre envoyé existe
+            $labonnement = in_array(strval($abonnement),["0","1"]);
+
+            if ($labonnement) {
+                $adherents  = $adherents->where('abon', $abonnement);
+            }
+        }
+        return view('clubs.gestion_adherents', compact('club','statut','abonnement','limit_pagination','adherents'));
     }
 
     public function infosClub()

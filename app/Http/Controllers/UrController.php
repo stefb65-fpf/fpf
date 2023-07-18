@@ -94,9 +94,15 @@ class UrController extends Controller
         $ur = $this->getUr();
         return view('urs.liste_adherents', compact('ur'));
     }
-    public function listeAdherentsClub(Club $club) {
+    public function listeAdherentsClub(Club $club, $statut = null,$abonnement = null) {
         $ur = $this->getUr();
 //        $club = Club::where('id',$club);
+        if($statut === null){
+            $statut = "all";
+        }
+        if( $abonnement === null){
+            $abonnement = "all";
+        }
         if(!($club->urs_id == $ur->id)){
             return redirect()->route('accueil')->with('error', "La liste des adhérents du club à laquelle vous avez cherché à accéder n'appartient pas à l'UR que vous gérez");
         }
@@ -105,8 +111,23 @@ class UrController extends Controller
         $limit_pagination = 100;
 //        $adherents =  DB::table('adherents')->where('num_club', $club->numero)->orderBy('num_carte')->join('utilisateurs', 'adherents.num_carte', '=', 'utilisateurs.identifiant')->paginate($limit_pagination);
         $adherents =  DB::table('utilisateurs')->where('clubs_id', $club->id)->orderBy('identifiant')->paginate($limit_pagination);
+        if (($statut != null) && ($statut != 'all')) {
+            //verifier que le parametre envoyé existe
+            $lestatut = in_array(strval($statut),["0","1","2","3"]);
+            if ($lestatut) {
+                $adherents  = $adherents->where('statut', $statut);
+            }
+        }
+        if (($abonnement != null) && ($abonnement != 'all')) {
+            //verifier que le parametre envoyé existe
+            $labonnement = in_array(strval($abonnement),["0","1"]);
+
+            if ($labonnement) {
+                $adherents  = $adherents->where('abon', $abonnement);
+            }
+        }
 //        dd($adherents);
-        return view('urs.liste_adherents_club', compact('ur','club','adherents','limit_pagination'));
+        return view('urs.liste_adherents_club', compact('ur','club','adherents','statut','abonnement','limit_pagination'));
     }
     public function listeFonctions() {
         $ur = $this->getUr();
