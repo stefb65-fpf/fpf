@@ -131,7 +131,7 @@ class initPersonnes extends Command
                 if ($v->statut == 6) {
                     $datap['is_abonne'] = 1;
                 }
-                if (in_array($v->statut, $statuts_adherents)) {
+                if (in_array($v->statut, $statuts_adherents) && $v->urs_id != 0) {
                     $datap['is_adherent'] = 1;
                 }
 

@@ -21,7 +21,7 @@
                     <div class="cardTitle">Adhérents</div>
                 </div>
             </a>
-            <a class="card" href="{{ route('urs.liste_fonctions') }}">
+            <a class="card" href="{{ route('urs.fonctions.liste') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Fonctions</div>
                 </div>

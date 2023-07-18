@@ -95,25 +95,21 @@
                                 @case(0)
                                 <div class="d-flex">
                                     <div class="sticker orange" title="Non renouvelé"></div>
-
                                 </div>
                                 @break
                                 @case(1)
                                 <div class="d-flex">
                                     <div class="sticker yellow" title="Préinscrit"></div>
-
                                 </div>
                                 @break
                                 @case(2)
                                 <div class="d-flex">
                                     <div class="sticker green" title="Validé"></div>
-
                                 </div>
                                 @break
                                 @case(3)
                                 <div class="d-flex">
                                     <div class="sticker" title="Désactivé"></div>
-
                                 </div>
                                 @break
                                 @default

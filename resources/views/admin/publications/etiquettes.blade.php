@@ -10,14 +10,107 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger" style="width: 80% !important">
+        <div class="alertInfo" style="width: 80% !important">
             <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p style="margin-top: 20px">
-                On peut lancer les impressions des étiquettes en sélectionnant des groupes d'utilisateurs<br>
+                <span class="bold">Informations !</span>
+                Vous pouvez éditer un fichier PDF avec les étiquettes par groupe d'utilisateurs
             </p>
         </div>
+
+        <table class="styled-table" style="width: 100%">
+            <thead>
+                <tr>
+                    <th>Groupe d'utilisateurs</th>
+                    <th></th>
+                    <th colspan="2">Actions</th>
+                </tr>
+            <tbody>
+{{--            <tr>--}}
+{{--                <td>--}}
+{{--                    Cubs avec statut validé ({{ $nb_clubs }})--}}
+{{--                </td>--}}
+{{--                <td></td>--}}
+{{--                <td>--}}
+{{--                    <a name="editEtiquettes" data-ref="0" class="adminPrimary btnSmall">Éditer les étiquettes</a>--}}
+{{--                </td>--}}
+{{--                <td style="width: 220px">--}}
+{{--                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none">Visualiser le ficher</a>--}}
+{{--                </td>--}}
+{{--            </tr>--}}
+            <tr>
+                <td>
+                    Adhérents individuels avec statut validé ({{ $nb_individuels }})
+                </td>
+                <td></td>
+                <td>
+                    <a name="editEtiquettes" data-ref="1" class="adminPrimary btnSmall">Éditer les étiquettes</a>
+                </td>
+                <td>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Membres du CA ({{ $nb_ca }})
+                </td>
+                <td></td>
+                <td>
+                    <a name="editEtiquettes" data-ref="2" class="adminPrimary btnSmall">Éditer les étiquettes</a>
+                </td>
+                <td>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Membres du CE ({{ $nb_ce }})
+                </td>
+                <td></td>
+                <td>
+                    <a name="editEtiquettes" data-ref="3" class="adminPrimary btnSmall">Éditer les étiquettes</a>
+                </td>
+                <td>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Présidents d'UR ({{ sizeof($urs) }})
+                </td>
+                <td></td>
+                <td>
+                    <a name="editEtiquettes" data-ref="4" class="adminPrimary btnSmall">Éditer les étiquettes</a>
+                </td>
+                <td>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Contacts de clubs
+                </td>
+                <td>
+                    <select id="selectUrForEtiquettesContact">
+                        <option value="0">Toutes urs</option>
+                        @foreach($urs as $ur)
+                            <option value="{{ $ur->id }}">{{ $ur->nom }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td>
+                    <a id="etiquettesContact" name="editEtiquettes" data-ref="5" data-ur="0" class="adminPrimary btnSmall">Éditer les étiquettes</a>
+                </td>
+                <td>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
+@endsection
+@section('css')
+    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
+@endsection
+@section('js')
+    <script src="{{ asset('js/admin_etiquettes.js') }}?t=<?= time() ?>"></script>
 @endsection

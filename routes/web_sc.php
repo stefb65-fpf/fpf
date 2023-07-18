@@ -9,8 +9,15 @@ Route::get('/clubs/infos_club', [App\Http\Controllers\ClubController::class, 'in
 Route::get('/urs/infos_ur', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
 
 Route::get('/urs/liste_adherents', [App\Http\Controllers\UrController::class, 'listeAdherents'])->name('urs.liste_adherents');
-Route::get('/urs/liste_fonctions', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.liste_fonctions');
 Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class, 'listeReversements'])->name('urs.liste_reversements');
+
+
+Route::get('/urs/fonctions/liste', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.fonctions.liste');
+Route::get('/urs/{fonction}/change_attribution', [App\Http\Controllers\UrController::class, 'changeAttribution'])->name('urs.fonctions.change_attribution');
+Route::delete('/urs/{fonction}/destroy_fonction', [App\Http\Controllers\UrController::class, 'destroyFonction'])->name('urs.fonctions.destroy');
+Route::get('/urs/fonctions/create', [App\Http\Controllers\UrController::class, 'createFonction'])->name('urs.fonctions.create');
+Route::post('/urs/fonctions/store', [App\Http\Controllers\UrController::class, 'storeFonction'])->name('urs.fonctions.store');
+Route::post('/urs/fonctions/{fonction}/update', [App\Http\Controllers\UrController::class, 'updateFonction'])->name('urs.fonctions.update');
 
 Route::resource('/admin/formations', App\Http\Controllers\Admin\FormationController::class);
 
@@ -40,13 +47,18 @@ Route::delete('/admin/droits/deleteUtilisateur/{droit_id}/{utilisateur_id}', [Ap
 Route::resource('/admin/urs', App\Http\Controllers\Admin\UrController::class);
 Route::get('/admin/fonctions/ca', [App\Http\Controllers\Admin\FonctionController::class, 'ca'])->name('admin.fonctions.ca');
 Route::get('/admin/fonctions/ce', [App\Http\Controllers\Admin\FonctionController::class, 'ce'])->name('admin.fonctions.ce');
+Route::get('/admin/fonctions/create_ur', [App\Http\Controllers\Admin\FonctionController::class, 'create_ur'])->name('fonctions.create_ur');
+Route::post('/admin/fonctions/store_ur', [App\Http\Controllers\Admin\FonctionController::class, 'store_ur'])->name('fonctions.store_ur');
+Route::get('/admin/fonctions/{fonction}/edit_ur', [App\Http\Controllers\Admin\FonctionController::class, 'edit_ur'])->name('fonctions.edit_ur');
+Route::put('/admin/fonctions/{fonction}/update_ur', [App\Http\Controllers\Admin\FonctionController::class, 'update_ur'])->name('fonctions.update_ur');
+Route::delete('/admin/fonctions/{utilisateur}/destroy_ca', [App\Http\Controllers\Admin\FonctionController::class, 'destroy_ca'])->name('fonctions.destroy_ca');
+Route::post('/admin/fonctions/add_ca', [App\Http\Controllers\Admin\FonctionController::class, 'add_ca'])->name('fonctions.add_ca');
 Route::resource('/admin/fonctions', App\Http\Controllers\Admin\FonctionController::class);
 
 Route::get('/admin/gestion_publications', [App\Http\Controllers\Admin\PublicationController::class, 'index'])->name('admin.gestion_publications');
 Route::get('/admin/routage/france_photo', [App\Http\Controllers\Admin\PublicationController::class, 'routageFP'])->name('admin.routage.france_photo');
 Route::get('/admin/routage/lettres_fede', [App\Http\Controllers\Admin\PublicationController::class, 'routageFede'])->name('admin.routage.lettres_fede');
 Route::get('/admin/etiquettes', [App\Http\Controllers\Admin\PublicationController::class, 'etiquettes'])->name('admin.etiquettes');
-Route::get('/admin/emargements', [App\Http\Controllers\Admin\PublicationController::class, 'emargements'])->name('admin.emargements');
 
 Route::get('/admin/generateRoutageFp/{validate}', [App\Http\Controllers\Admin\PublicationController::class, 'generateRoutageFp'])->name('admin.generateRoutageFp');
 

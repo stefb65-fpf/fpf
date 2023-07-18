@@ -7,7 +7,9 @@ use App\Concern\Tools;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
 use App\Models\Club;
+use App\Models\Fonction;
 use App\Models\Ur;
+use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -131,7 +133,27 @@ class UrController extends Controller
     }
     public function listeFonctions() {
         $ur = $this->getUr();
-        return view('urs.liste_fonctions', compact('ur'));
+        $fonctions = Fonction::join('fonctionsurs', 'fonctionsurs.fonctions_id', '=', 'fonctions.id')
+            ->where('fonctionsurs.urs_id', $ur->id)
+            ->orderBy('fonctions.urs_id')
+            ->orderBy('fonctions.id')
+            ->selectRaw('fonctions.*')
+            ->get();
+        foreach ($fonctions as $k => $fonction) {
+            $utilisateur = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
+                ->whereNotNull('utilisateurs.personne_id')
+                ->where('utilisateurs.urs_id', $ur->id)
+                ->first();
+
+            if ($utilisateur) {
+                $fonction->utilisateur = $utilisateur;
+            } else {
+                unset($fonctions[$k]);
+            }
+        }
+
+        return view('urs.fonctions.liste', compact('ur', 'fonctions'));
     }
 
     public function listeReversements() {
@@ -177,5 +199,100 @@ class UrController extends Controller
     {
         $this->updateClubReunion($club, $request);
         return redirect()->route('UrGestion_updateClub',compact('club'))->with('success', "Les informations de réunion du club ont été mises à jour");
+    }
+
+
+    public function createFonction() {
+        $ur = $this->getUr();
+        // on liste toutes les fonctions FPF
+        $fonctions = Fonction::where('urs_id', 0)->where('instance', 2)->get();
+        // on retire toutes les fonctions déjà attribuées à l'UR
+        foreach ($fonctions as $k => $fonction) {
+            $fonctionur = DB::table('fonctionsurs')->where('fonctions_id', $fonction->id)->where('urs_id', $ur->id)->first();
+            if ($fonctionur) {
+                unset($fonctions[$k]);
+            }
+        }
+        return view('urs.fonctions.create', compact('ur', 'fonctions'));
+    }
+
+    public function storeFonction(Request $request) {
+        if ($request->fonction_fpf != 0 && $request->libelle != '') {
+            return redirect()->route('urs.fonctions.create')->with('error', "Vous devez choisir entre fonction FPF et fonction spécifique");
+        }
+        if ($request->fonction_fpf == 0 && $request->libelle == '') {
+            return redirect()->route('urs.fonctions.create')->with('error', "Vous devez sélectionner une fonction FPF ou saisir une fonction spécifique");
+        }
+        if ($request->identifiant == '') {
+            return redirect()->route('urs.fonctions.create')->with('error', "Vous devez saisir un identifiant");
+        }
+        $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
+        if (!$utilisateur) {
+            return redirect()->route('urs.fonctions.create')->with('error', "L'identifiant saisi n'est pas valide");
+        }
+        if ($utilisateur->urs_id != $this->getUr()->id) {
+            return redirect()->route('urs.fonctions.create')->with('error', "L'adhérent doit faire partie de votre UR");
+        }
+
+        if ($request->libelle != '') {
+            // on crée la fonction spécifique pour l'UR
+            $max_ordre = Fonction::where('urs_id', $this->getUr()->id)->where('instance', 2)->max('ordre');
+            $dataf = array('libelle' => trim($request->libelle), 'urs_id' => $this->getUr()->id, 'instance' => 2, 'ordre' => $max_ordre + 1);
+            $fonction = Fonction::create($dataf);
+        } else {
+            $fonction = Fonction::where('id', $request->fonction_fpf)->first();
+        }
+        if (!$fonction) {
+            return redirect()->route('urs.fonctions.create')->with('error', "La fonction n'a pas pu être créée");
+        }
+        // on ajoute la fonction à la table fonctionsurs
+        $max_ordre = DB::table('fonctionsurs')->where('urs_id', $this->getUr()->id)->max('ordre');
+        $datafu = array('fonctions_id' => $fonction->id, 'urs_id' => $this->getUr()->id, 'ordre' => $max_ordre + 1);
+        DB::table('fonctionsurs')->insert($datafu);
+
+        // on ajoute la fonction à la table fonctionsutilisateurs
+        $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
+        DB::table('fonctionsutilisateurs')->insert($datafu);
+
+        return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été créée");
+    }
+
+    public function destroyFonction(Fonction $fonction) {
+        DB::table('fonctionsurs')->where('fonctions_id', $fonction->id)->delete();
+        DB::table('fonctionsutilisateurs')->where('fonctions_id', $fonction->id)->delete();
+        $fonction->delete();
+        return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été supprimée");
+    }
+
+    public function changeAttribution(Fonction $fonction) {
+        $ur = $this->getUr();
+        return view('urs.fonctions.change_attribution', compact('fonction', 'ur'));
+    }
+
+    public function updateFonction(Request $request, Fonction $fonction) {
+        $ur = $this->getUr();
+        if ($request->identifiant == '') {
+            return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "Vous devez saisir un identifiant");
+        }
+        $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
+        if (!$utilisateur) {
+            return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "L'identifiant saisi n'est pas valide");
+        }
+        if ($utilisateur->urs_id != $this->getUr()->id) {
+            return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "L'adhérent doit faire partie de votre UR");
+        }
+        // on supprime l'ancienne attribution
+        $old_utilisateur = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
+            ->whereNotNull('utilisateurs.personne_id')
+            ->where('utilisateurs.urs_id', $ur->id)
+            ->first();
+        DB::table('fonctionsutilisateurs')->where('fonctions_id', $fonction->id)->where('utilisateurs_id', $old_utilisateur->id)->delete();
+
+        // on ajoute la nouvelle attribution
+        $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
+        DB::table('fonctionsutilisateurs')->insert($datafu);
+
+        return redirect()->route('urs.fonctions.liste')->with('success', "L'attribution de la fonction a été modifiée");
     }
 }

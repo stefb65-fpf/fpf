@@ -10,14 +10,30 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger" style="width: 80% !important">
-            <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p style="margin-top: 20px">
-                On affiche ici la liste membres du CE<br>
-            </p>
+        <div class="alertInfo" style="width: 80% !important">
+            <span class="bold">Informations !</span>
+            La liste des membres du Comité Exécuitf est donnée pour information. L'appartenance au CE est liée aux fonctions et doit être gérée dans l'espace de gestion des fonctions.
         </div>
+
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>Adhérent</th>
+                <th>Identifiant</th>
+                <th>Fonction</th>
+                <th>Email fonction</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($utilisateurs as $utilisateur)
+                <tr>
+                    <td>{{ $utilisateur->personne->prenom.' '.$utilisateur->personne->nom }}</td>
+                    <td>{{ $utilisateur->identifiant }}</td>
+                    <td>{{ $utilisateur->libelle }}</td>
+                    <td><a href="mailto:{{ $utilisateur->courriel }}">{{ $utilisateur->courriel }}</a></td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
     </div>
 @endsection
