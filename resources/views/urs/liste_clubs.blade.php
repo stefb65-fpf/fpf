@@ -11,6 +11,7 @@
             </a>
         </h1>
         <div class="alertInfo" style="width: 80% !important">
+            <span class="bold">Informations !</span>
             Ici vous avez la possibilité d'afficher la liste des clubs de votre UR et de les filtrer en fonction de leur statut, de leur type de carte et de leur abonnement.<br>
             Vous pouvez également ajouter un club qui n'est pas encore présent dans cette liste, modifier les informations d'un club déjà existant et afficher la liste de ses abonnés.
         </div>
@@ -52,7 +53,8 @@
         </div>
 
         <div class="mt25 flexEnd">
-            <a href="{{ route('admin.clubs.create') }}" class="adminPrimary btnMedium">Ajouter un club</a>
+{{--            <a href="{{ route('admin.clubs.create') }}" class="adminPrimary btnMedium">Ajouter un club</a>--}}
+            <a  class="adminPrimary btnMedium">Ajouter un club</a>
         </div>
 
         @if(!sizeof($clubs))

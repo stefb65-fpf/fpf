@@ -1783,7 +1783,9 @@ footer .logo img {
     align-items: center;
 
 }
-
+.formBlockWrapper .modifyVisible{
+    display: none;
+}
 .input[disabled] .datetime-reset-button {
     display: none;
 }

@@ -13,6 +13,7 @@
             </a>
         </h1>
         <div class="alertInfo" style="width: 80% !important">
+            <span class="bold">Informations !</span>
             Ici vous avez la possibilité d'afficher la liste des clubs de toutes les UR de France et de les filtrer en fonction des Ur, de leur statut, de leur type de carte et de leur abonnement.
             <br>
             Vous pouvez également ajouter un club qui n'est pas encore présent dans cette liste, modifier les informations d'un club déjà existant et afficher la liste de ses abonnés.

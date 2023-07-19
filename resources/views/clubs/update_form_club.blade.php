@@ -11,7 +11,7 @@
                         <img class="clubLogo"
                              src="{{ env('APP_URL').'storage/app/public/uploads/clubs/'.$club->numero.'/'.$club->logo }}"
                              alt="">
-                        <span class="text underlineGrey grey relative" style="width: 120px;margin: auto;">Changer de logo</span>
+                        <span class="text underlineGrey grey relative modifyVisible" style="width: 120px;margin: auto;">Changer de logo</span>
                     </label>
                     <input class="formValue d-none" type="file" id="file" accept=".png,.jpeg,.jpg" name="logo"
                            disabled="true">

@@ -10,6 +10,12 @@
                 </svg>
             </a>
         </h1>
+        <div class="alertInfo" style="width: 80% !important">
+            <span class="bold">Informations !</span>
+            Ici vous avez la possibilité d'afficher la liste des différentes UR de France et de consulter leur informations.
+            <br>
+            Vous pouvez également modifier les informations de chacune et visualiser les fonctions s'y rapportant.
+        </div>
         <div>
             <table class="styled-table">
                 <thead>

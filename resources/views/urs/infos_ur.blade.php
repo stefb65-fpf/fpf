@@ -11,6 +11,7 @@
             </a>
         </h1>
         <div class="alertDanger" style="width: 80% !important">
+
             <p>
                 <span class="bold">Attention !</span>
                 Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.

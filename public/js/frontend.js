@@ -140,6 +140,8 @@ $('button[name=updateForm]').on('click',function(e){
     $(this).parent().find('button[name=enableBtn]').removeClass('d-none')
     $('#'+ formIdName).find('.formValue').removeAttr('disabled').addClass('modifying')
     // $(this).parent().parent().find('.formValue').removeAttr('disabled').addClass('modifying')
+    $('#'+ formIdName).find('.modifyVisible').removeClass('modifyVisible')
+
     if($(this).hasClass('showFields')){
         $('#'+ formIdName).find('.hiddenFields').removeClass('hidden')
         // $(this).parent().parent().find('.hiddenFields').removeClass('hidden')
@@ -274,6 +276,7 @@ $('div[name=addAddress]').on('click',function(e){
     let formIdName = $(this).attr('data-formId')
     $('#'+ formIdName).find('input').removeAttr('disabled').addClass('modifying')
     $('#'+ formIdName).find('select').removeAttr('disabled').addClass('modifying')
+
 })
 
 
