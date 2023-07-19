@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\RoutageFedeExport;
 use App\Exports\RoutageFpExport;
 use App\Http\Controllers\Controller;
 use App\Models\Abonnement;
+use App\Models\Adresse;
 use App\Models\Club;
 use App\Models\Configsaison;
+use App\Models\Personne;
+use App\Models\Ur;
+use App\Models\Utilisateur;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PublicationController extends Controller
 {
     public function __construct() {
-        $this->middleware(['checkLogin', 'adminAccess']);
+        $this->middleware(['checkLogin', 'adminAccess'])->except(['createEtiquettes', 'createRoutageFede']);
     }
 
     public function index()
@@ -43,7 +50,7 @@ class PublicationController extends Controller
             $file_to_download = env('APP_URL').'storage/app/public/xls/'.$fichier;
 
             if ($validate == 1) {
-                // on change l'éta des abonnments dont le dernier numéro est celui en cours
+                // on change l'état des abonnments dont le dernier numéro est celui en cours
                 $dataa = array('etat' => 2);
                 Abonnement::where('fin', $numeroencours)->update($dataa);
 
@@ -60,16 +67,220 @@ class PublicationController extends Controller
 
     public function routageFede()
     {
-        return view('admin.publications.routageFede');
+        $saison = (in_array(date('m'), ['09', '10', '11', '12']) ? date('Y') : date('Y') - 1);
+        $nb_clubs = Club::where('statut', 2)->count();
+        $nb_individuels = Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', ['7', '8', '9', 'F'])->count();
+        $nb_abonnes = Personne::where('is_abonne', 1)->where('is_adherent', 0)->count();
+        $nb_ca = Utilisateur::where('ca', 1)->count();
+        $nb_adherents_clubs = Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', [2, 3, 4, 5, 6])->count();
+        $nb_adherents_prec = Utilisateur::where('statut', 0)->where('urs_id', '<>', 0)->where('saison', $saison)->count();
+        $ce = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
+            ->where('fonctions.ce', 1)
+            ->selectRaw('DISTINCT utilisateurs.id')
+            ->get();
+        $nb_ce = sizeof($ce);
+        $urs = Ur::orderBy('id')->get();
+        return view('admin.publications.routageFede',
+            compact('nb_clubs', 'nb_individuels', 'nb_ca', 'nb_ce', 'urs', 'nb_abonnes', 'nb_adherents_clubs', 'nb_adherents_prec'));
     }
 
     public function etiquettes()
     {
-        return view('admin.publications.etiquettes');
+        $nb_clubs = Club::where('statut', 2)->count();
+        $nb_individuels = Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', ['7', '8', '9', 'F'])->count();
+        $nb_ca = Utilisateur::where('ca', 1)->count();
+        $ce = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
+            ->where('fonctions.ce', 1)
+            ->selectRaw('DISTINCT utilisateurs.id')
+            ->get();
+        $nb_ce = sizeof($ce);
+        $urs = Ur::orderBy('id')->get();
+        return view('admin.publications.etiquettes', compact('nb_clubs', 'nb_individuels', 'nb_ca', 'nb_ce', 'urs'));
     }
 
-    public function emargements()
-    {
-        return view('admin.publications.emargements');
+    public function createEtiquettes(Request $request) {
+        $ref = $request->ref;
+        switch ($ref) {
+//            case 0 : // clubs
+//                $etiquettes = $this->getEtiquettesClub();
+//                break;
+            case 1 : // individuels
+                $etiquettes = $this->getIndividuels();
+                break;
+            case 2 : // CA
+                $etiquettes = $this->getCa();
+                break;
+            case 3 : // CE
+                $etiquettes = $this->getCe();
+                break;
+            case 4: // présidents d'ur
+                $etiquettes = $this->getPresidentsUr();
+                break;
+            case 5 : // contacts club
+                $urs_id = $request->ur;
+                $etiquettes = $this->getContactsClub($urs_id);
+                break;
+            default :
+                $etiquettes = [];
+                break;
+        }
+        if (sizeof($etiquettes) == 0) {
+            return new JsonResponse(['error' => 'Aucune étiquette à imprimer'], 400);
+        } else {
+            $name = 'etiquettes_'.date('YmdHis').'.pdf';
+            $pdf = App::make('dompdf.wrapper');
+            $pdf->loadView('pdf.etiquettes', compact('etiquettes'))
+                ->setWarnings(false)
+                ->setPaper('a4', 'portrait')
+                ->save(storage_path().'/app/public/uploads/etiquettes/'.$name);
+
+            return new JsonResponse(['file' => $name], 200);
+        }
+
     }
+
+    public function createRoutageFede(Request $request) {
+        $tab_personnes = array();
+        foreach ($request->tab as $ref) {
+            $personnes = [];
+            $utilisateurs = [];
+            switch ($ref) {
+                case 0 : // individuels
+                    $utilisateurs = $this->getIndividuels();
+                    break;
+                case 1 : // adhérents club
+                    $utilisateurs = $this->getAdherentsClub();
+                    break;
+                case 2 : // adhérents non renouvelés n-1
+                    $utilisateurs = $this->getAdherentsPrec();
+                    break;
+                case 3 : // abonnés seuls
+                    $personnes = $this->getAbonnesSeuls();
+                    break;
+                case 4 : // CA
+                    $utilisateurs = $this->getCa();
+                    break;
+                case 5 : // CE
+                    $utilisateurs = $this->getCe();
+                    break;
+                case 6: // présidents d'ur
+                    $utilisateurs = $this->getPresidentsUr();
+                    break;
+                case 7 : // contacts club
+                    $urs_id = $request->ur;
+                    $utilisateurs = $this->getContactsClub($urs_id);
+                    break;
+                default : break;
+            }
+
+            if ($ref == 3) {
+                foreach ($personnes as $personne) {
+                    $personne->urs_id = '';
+                    $personne->clubs_id = '';
+                    $personne->identifiant = '';
+                    $personne->nom_club = '';
+                    $tab_personnes[] = $personne;
+                }
+            } else {
+                foreach ($utilisateurs as $utilisateur) {
+                    $personne = Personne::where('id', $utilisateur->personne_id)->first();
+                    if ($personne) {
+                        $personne->urs_id = $utilisateur->urs_id;
+                        $personne->clubs_id = $utilisateur->clubs_id;
+                        $personne->identifiant = $utilisateur->identifiant;
+                        if ($utilisateur->clubs_id) {
+                            $club = Club::where('id', $utilisateur->clubs_id)->first();
+                            if ($club) {
+                                $personne->nom_club = $club->nom;
+                            }
+                        } else {
+                            $personne->nom_club = '';
+                        }
+                        $tab_personnes[] = $personne;
+                    }
+                }
+            }
+        }
+        foreach ($tab_personnes as $personne) {
+            $adresse = Adresse::join('adresse_personne', 'adresse_personne.adresse_id', '=', 'adresses.id')
+                ->where('adresse_personne.personne_id', $personne->id)
+                ->orderByDesc('adresse_personne.defaut')
+                ->selectRaw('adresses.libelle1, adresses.libelle2, adresses.codepostal, adresses.ville, adresses.pays')
+                ->first();
+            $personne->adresse = $adresse;
+        }
+        $fichier = 'routage_' . date('YmdHis') . '.xls';
+        if (Excel::store(new RoutageFedeExport($tab_personnes), $fichier, 'xls')) {
+            $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
+            return new JsonResponse(['file' => $file_to_download], 200);
+        } else {
+            return new JsonResponse(['erreur' => 'impossible de récupérer le fichier'], 400);
+        }
+
+    }
+
+    protected function getIndividuels() {
+        // on récupère les individuels
+        return Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', ['7', '8', '9', 'F'])->whereNotNull('utilisateurs.personne_id')->orderBy('identifiant')->get();
+    }
+
+    protected function getAdherentsClub() {
+        // on récupère les adhérents non renouvelés n-1
+        $saison = (in_array(date('m'), ['09', '10', '11', '12']) ? date('Y') : date('Y') - 1);
+        return Utilisateur::where('statut', 0)->where('urs_id', '<>', 0)->where('saison', $saison)->orderBy('identifiant')->get();
+    }
+
+    protected function getAdherentsPrec() {
+        // on récupère les adhérents de club
+        return Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', [2, 3, 4, 5, 6])->whereNotNull('utilisateurs.personne_id')->orderBy('identifiant')->get();
+    }
+
+    protected function getAbonnesSeuls() {
+        // on récupère les abonnés seuls
+        return Personne::where('is_abonne', 1)->where('is_adherent', 0)->get();
+    }
+    protected function getCa() {
+        // on récupère les membres du CA
+        return Utilisateur::where('ca', 1)->whereNotNull('utilisateurs.personne_id')->orderBy('identifiant')->get();
+    }
+
+    protected function getCe() {
+        // on récupère les membres du CE
+        return Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
+            ->where('fonctions.ce', 1)
+            ->whereNotNull('utilisateurs.personne_id')
+            ->selectRaw('DISTINCT utilisateurs.id, utilisateurs.*')
+            ->orderBy('utilisateurs.identifiant')
+            ->get();
+    }
+
+    protected function getPresidentsUr() {
+        // on récupère les présidents d'ur
+        return Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
+            ->where('fonctions.id', 57)
+            ->whereNotNull('utilisateurs.personne_id')
+            ->selectRaw('DISTINCT utilisateurs.id, utilisateurs.*')
+            ->orderBy('utilisateurs.urs_id')
+            ->get();
+    }
+
+    protected function getContactsClub($urs_id) {
+        // on récupère les contacts des clubs
+        $query =  Utilisateur::join('clubs', 'utilisateurs.clubs_id', '=', 'clubs.id')
+            ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
+            ->where('clubs.statut', 2)
+            ->whereNotNull('utilisateurs.personne_id')
+            ->where('fonctions.id', 97);
+        if ($urs_id != 0) {
+            $query->where('clubs.urs_id', $urs_id);
+        }
+        return  $query->selectRaw('DISTINCT utilisateurs.id, utilisateurs.*')->orderBy('identifiant')->get();
+    }
+
+
 }

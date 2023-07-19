@@ -10,14 +10,97 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger" style="width: 80% !important">
+        <div class="alertInfo" style="width: 80% !important">
             <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p style="margin-top: 20px">
-                On peut éditer au format excel des listes de routage en sélectionnant des utilisateurs par liste
+                <span class="bold">Informations !</span>
+                Vous pouvez sélectionner un ou plusieurs groupes d'utilisateurs pour générer un fichier de routage
             </p>
         </div>
+
+        <div class="alertSuccess" style="width: 80% !important; display: none;" id="alertFedeRoutage">
+            Le fichier de routage a bien été généré. Vous pouvez le télécharger en cliquant sur le lient suivant: <a id="linkFedeRoutage" target="_blank" style="cursor: pointer">Télécharger le fichier</a>
+        </div>
+
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th></th>
+                <th>Groupe d'utilisateurs</th>
+            </tr>
+            <tbody>
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="0">
+                </td>
+                <td>
+                    Adhérents individuels avec statut validé ({{ $nb_individuels }})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="1">
+                </td>
+                <td>
+                    Adhérents clubs avec statut validé ({{ $nb_adherents_clubs }})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="2">
+                </td>
+                <td>
+                    Adhérents non renouvelés n - 1 ({{ $nb_adherents_prec }})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="3">
+                </td>
+                <td>
+                    Abonnés seuls ({{ $nb_abonnes }})
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="4">
+                </td>
+                <td>
+                    Membres du CA ({{ $nb_ca }})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="5">
+                </td>
+                <td>
+                    Membres du CE ({{ $nb_ce }})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="6">
+                </td>
+                <td>
+                    Présidents d'UR ({{ sizeof($urs) }})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="7">
+                </td>
+                <td>
+                    Contacts de clubs
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <button class="adminPrimary btnMedium" id="btnRoutageFede">Générer le fichier de routage</button>
     </div>
+@endsection
+@section('css')
+    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
+@endsection
+@section('js')
+    <script src="{{ asset('js/admin_etiquettes.js') }}?t=<?= time() ?>"></script>
 @endsection

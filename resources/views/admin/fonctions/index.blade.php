@@ -10,17 +10,104 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger" style="width: 80% !important">
-            <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p style="margin-top: 20px">
-                On affiche ici la liste des fonctions générales niveau FPF et niveau UR avec leurs particularités<br>
-                Possibilité d'ajouter, supprimer une fonction et bien sur de l'attribuer à un adhérent. <br>
-                Pour les fonctions fédérales, possibilité de lier un email FPF et de dire si la fonction est liée au CE<br>
-                Pour les fonctions URs, possibilité de lister l'attribution sur toutes les urs<br>
-            </p>
+        <div style="width: 100%; padding-top: 60px;" id="fonctions_federales">
+            <div class="pageTitle">Fonctions fédérales <a href="#fonctions_regionales" style="font-size: 1rem; margin-left: 50px;">(fonctions régionales)</a></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px; width: 100%">
+                <a href="{{ route('fonctions.create') }}" class="adminPrimary btnMedium">Ajouter une fonction fédérale</a>
+            </div>
+        </div>
+
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>Fonction fédérale</th>
+                <th>Droits liés</th>
+                <th>Adhérent</th>
+                <th>Email fonction</th>
+                <th>CE</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($admin_fonctions as $fonction)
+                <tr>
+                    <td>{{ $fonction->libelle }}</td>
+                    <td>
+                        @foreach($fonction->droits as $droit)
+                            {{ $droit->nom }}<br>
+                        @endforeach
+                    </td>
+                    <td>{{ $fonction->utilisateur ? $fonction->utilisateur->personne->prenom.' '.$fonction->utilisateur->personne->nom.' ('.$fonction->utilisateur->identifiant.')' : '' }}</td>
+                    <td>
+                        <a href="mailto:{{ $fonction->courriel }}">{{ $fonction->courriel }}</a>
+                    </td>
+                    <td>
+                        <input type="checkbox" name="ceFonction" {{ $fonction->ce == 1 ? 'checked' : '' }} data-ref="{{ $fonction->id }}">
+                    </td>
+                    <td>
+                        <div style="margin-bottom: 3px;">
+                            <a href="{{ route('fonctions.edit', $fonction) }}" class="adminPrimary btnSmall">Éditer</a>
+                        </div>
+                        <div style="margin-bottom: 3px;">
+                            <a href="{{route('fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer</a>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+
+        <div style="width: 100%; padding-top: 60px;" id="fonctions_regionales">
+            <div class="pageTitle">Fonctions régionales <a href="#fonctions_federales" style="font-size: 1rem; margin-left: 50px;">(fonctions fédérales)</a></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px; width: 100%">
+                <a href="{{ route('fonctions.create_ur') }}" class="adminPrimary btnMedium">Ajouter une fonction régionale</a>
+            </div>
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Fonction régionale</th>
+                    <th>URs ayant déclaré la fonction</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($ur_fonctions as $fonction)
+                    <tr>
+                        <td>{{ $fonction->libelle }}</td>
+                        <td>
+                            <div>
+                                <span>{{ sizeof($fonction->urs) }}</span> <span class="adminPrimary" style="font-size: 0.7rem" data-expand="0" name="toExpandUr">voir</span>
+                            </div>
+                            <div style="display: none; margin-top: 20px;" name="expandUr">
+                                @if(sizeof($fonction->urs) == 0)
+                                    Aucune UR
+                                @else
+                                    @foreach($fonction->urs as $ur)
+                                        {{ $ur->nom }}<br>
+                                    @endforeach
+                                @endif
+
+                            </div>
+                        </td>
+                        <td>
+                            <div style="margin-bottom: 3px;">
+                                <a href="{{ route('fonctions.edit_ur', $fonction) }}" class="adminPrimary btnSmall">Éditer</a>
+                            </div>
+                            <div style="margin-bottom: 3px;">
+                                <a href="{{route('fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer</a>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+
+            </table>
         </div>
     </div>
+@endsection
+@section('css')
+    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
+@endsection
+@section('js')
+    <script src="{{ asset('js/admin_fonctions.js') }}?t=<?= time() ?>"></script>
 @endsection

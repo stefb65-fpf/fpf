@@ -10,14 +10,38 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger" style="width: 80% !important">
-            <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p style="margin-top: 20px">
-                On affiche ici la liste membres du CA/ Possibilité de supprimer (et d'ajouter ?) un membre du CA<br>
-            </p>
-        </div>
+        <form action="{{ route('fonctions.add_ca') }}" method="POST" style="width: 100%">
+            {{ csrf_field() }}
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px; width: 100%;">
+                <input type="text" placeholder="Identifiant de l'adhérent à ajouter" style="padding: 5px" maxlength="12" name="identifiant" />
+                <button type="submit" class="adminPrimary btnSmall">Ajouter au CA</button>
+            </div>
+        </form>
+
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>Adhérent</th>
+                <th>Identifiant</th>
+                <th>Email</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($utilisateurs as $utilisateur)
+                <tr>
+                    <td>{{ $utilisateur->personne->prenom.' '.$utilisateur->personne->nom }}</td>
+                    <td>{{ $utilisateur->identifiant }}</td>
+                    <td><a href="mailto:{{ $utilisateur->personne->email }}">{{ $utilisateur->personne->email }}</a></td>
+                    <td>
+                            <a href="{{route('fonctions.destroy_ca', $utilisateur)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment enelever cet utilisateur du CA ?">Supprimer du CA</a>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
     </div>
+@endsection
+@section('css')
+    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection

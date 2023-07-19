@@ -26,11 +26,6 @@
                     <div class="cardTitle">&Eacute;tiquettes</div>
                 </div>
             </a>
-            <a class="card" href="{{ route('admin.emargements') }}">
-                <div class="wrapper">
-                    <div class="cardTitle">&Eacute;margements</div>
-                </div>
-            </a>
             <div class="card invisible">
             </div>
             <div class="card invisible">
