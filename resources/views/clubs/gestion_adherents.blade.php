@@ -22,10 +22,11 @@
                         <div class="formLabel mr10 bold">Statut :</div>
                         <select class="formValue modifying" name="filter" data-ref="statut">
                             <option value="all">Tous</option>
-                            <option value="2" {{$statut == 2? "selected":""}}>Validé</option>
-                            <option value="1" {{$statut == 1? "selected":""}}>Pré-inscrit</option>
-                            <option value="0" {{$statut == 0? "selected":""}}>Non renouvelé</option>
-                            <option value="3" {{$statut == 3? "selected":""}}>Désactivé</option>
+                            <option value="0" {{$statut == 0 ? "selected":""}}>Non renouvelé</option>
+                            <option value="1" {{$statut == 1 ? "selected":""}}>Pré-inscrit</option>
+                            <option value="2" {{$statut == 2 ? "selected":""}}>Validé</option>
+                            <option value="3" {{$statut == 3 ? "selected":""}}>Carte éditée</option>
+                            <option value="4" {{$statut == 4 ? "selected":""}}>Anciens adhérents</option>
                         </select>
                     </div>
                     <div class="formUnit mb0">
@@ -58,8 +59,8 @@
                 <tbody>
                 @foreach($adherents as $adherent)
                     <tr>
-                        <td>{{$adherent->identifiant}}</td>
-                        <td>{{$adherent->nom}} {{$adherent->prenom}} </td>
+                        <td>{{ $adherent->identifiant }}</td>
+                        <td>{{ $adherent->personne->nom }} {{ $adherent->personne->prenom }} </td>
                         <td>
                             @switch($adherent->statut)
                                 @case(0)
@@ -79,7 +80,7 @@
                                 @break
                                 @case(3)
                                 <div class="d-flex">
-                                    <div class="sticker" title="Carte éditée"></div>
+                                    <div class="sticker green" title="Carte éditée"></div>
                                 </div>
                                 @break
                                 @case(4)
@@ -91,9 +92,9 @@
                                 <div>Non renseigné</div>
                             @endswitch
                         </td>
-                        <td><a href="mailto:{{$adherent->courriel}}">{{$adherent->courriel}}</a></td>
+                        <td><a href="mailto:{{ $adherent->personne->email }}">{{ $adherent->personne->email }}</a></td>
                         <td>
-                            {{ $adherent->numerofinabonnement?:"" }}
+                            {{ $adherent->fin }}
                         </td>
                         <td>
                             @switch($adherent->ct)
@@ -112,18 +113,6 @@
                                 @case(6)
                                 <div>adhérent 2eme club</div>
                                 @break
-                                @case(7)
-                                <div>individuel > 25ans</div>
-                                @break
-                                @case(8)
-                                <div>individuel 18-25 ans</div>
-                                @break
-                                @case(9)
-                                <div>individuel < 18ans</div>
-                                @break
-                                @case("F")
-                                <div>individuel famille</div>
-                                @break
                                 @default
                                 <div>Non renseigné</div>
                             @endswitch
@@ -140,12 +129,12 @@
                 @endforeach
                 </tbody>
             </table>
-            <div class="pagination">
-                @if(sizeof($adherents)>$limit_pagination)
-                    {{ $adherents->render( "pagination::default") }}
-                    {{ $adherents->links() }}
-                @endif
-            </div>
+{{--            <div class="pagination">--}}
+{{--                @if(sizeof($adherents)>$limit_pagination)--}}
+{{--                    {{ $adherents->render( "pagination::default") }}--}}
+{{--                    {{ $adherents->links() }}--}}
+{{--                @endif--}}
+{{--            </div>--}}
         @endif
     </div>
 @endsection

@@ -35,30 +35,48 @@ class ClubController extends Controller
     public function gestionAdherents($statut = null,$abonnement = null)
     {
         $club = $this->getClub();
-        if($statut === null){
-            $statut = "all";
-        }
-        if( $abonnement === null){
-            $abonnement = "all";
-        }
-        $limit_pagination = 100;
-        $adherents =  DB::table('utilisateurs')->where('clubs_id', $club->id)->orderBy('identifiant')->paginate($limit_pagination);
-        if (($statut != null) && ($statut != 'all')) {
-            //verifier que le parametre envoyé existe
-            $lestatut = in_array(strval($statut),["0","1","2","3"]);
-            if ($lestatut) {
-                $adherents  = $adherents->where('statut', $statut);
-            }
-        }
-        if (($abonnement != null) && ($abonnement != 'all')) {
-            //verifier que le parametre envoyé existe
-            $labonnement = in_array(strval($abonnement),["0","1"]);
+//        if($statut === null){
+//            $statut = "all";
+//        }
+//        if( $abonnement === null){
+//            $abonnement = "all";
+//        }
+//        $limit_pagination = 100;
+//        $adherents =  DB::table('utilisateurs')->where('clubs_id', $club->id)->orderBy('identifiant')->paginate($limit_pagination);
+//        if (($statut != null) && ($statut != 'all')) {
+//            //verifier que le parametre envoyé existe
+//            $lestatut = in_array(strval($statut),["0","1","2","3"]);
+//            if ($lestatut) {
+//                $adherents  = $adherents->where('statut', $statut);
+//            }
+//        }
+//        if (($abonnement != null) && ($abonnement != 'all')) {
+//            //verifier que le parametre envoyé existe
+//            $labonnement = in_array(strval($abonnement),["0","1"]);
+//
+//            if ($labonnement) {
+//                $adherents  = $adherents->where('abon', $abonnement);
+//            }
+//        }
 
-            if ($labonnement) {
-                $adherents  = $adherents->where('abon', $abonnement);
-            }
+
+        $statut = $statut ?? "all";
+        $abonnement = $abonnement ?? "all";
+        $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->where('utilisateurs.clubs_id', $club->id)->orderBy('utilisateurs.identifiant');
+        if (in_array($statut, [0,1,2,3, 4])) {
+            $query = $query->where('utilisateurs.statut', $statut);
         }
-        return view('clubs.gestion_adherents', compact('club','statut','abonnement','limit_pagination','adherents'));
+        if (in_array($abonnement, [0,1])) {
+            $query = $query->where('personnes.is_abonne', $abonnement);
+        }
+        $adherents = $query->get();
+        foreach ($adherents as $adherent) {
+            // si la personne est abonnée, on récupère le numéro de fin de son abonnement
+            $adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[1]['fin'] : '';
+        }
+
+        return view('clubs.gestion_adherents', compact('club','statut','abonnement','adherents'));
     }
 
     public function infosClub()
