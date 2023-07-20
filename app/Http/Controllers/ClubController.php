@@ -108,16 +108,14 @@ class ClubController extends Controller
 
     public function updateGeneralite( Request $request, Club $club)
     {
-
-$this->updateClubGeneralite($club,$request);
+        $this->updateClubGeneralite($club,$request);
         return redirect()->route('clubs.infos_club')->with('success', "Les informations générales du club ont été mises à jour");
 
     }
 
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
-
-    $this->updateClubAdress($club,$request);
+        $this->updateClubAdress($club,$request);
         return redirect()->route('clubs.infos_club')->with('success', "L'adresse du club a été mise à jour");
     }
 
