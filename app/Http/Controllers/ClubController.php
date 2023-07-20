@@ -35,31 +35,6 @@ class ClubController extends Controller
     public function gestionAdherents($statut = null,$abonnement = null)
     {
         $club = $this->getClub();
-//        if($statut === null){
-//            $statut = "all";
-//        }
-//        if( $abonnement === null){
-//            $abonnement = "all";
-//        }
-//        $limit_pagination = 100;
-//        $adherents =  DB::table('utilisateurs')->where('clubs_id', $club->id)->orderBy('identifiant')->paginate($limit_pagination);
-//        if (($statut != null) && ($statut != 'all')) {
-//            //verifier que le parametre envoyé existe
-//            $lestatut = in_array(strval($statut),["0","1","2","3"]);
-//            if ($lestatut) {
-//                $adherents  = $adherents->where('statut', $statut);
-//            }
-//        }
-//        if (($abonnement != null) && ($abonnement != 'all')) {
-//            //verifier que le parametre envoyé existe
-//            $labonnement = in_array(strval($abonnement),["0","1"]);
-//
-//            if ($labonnement) {
-//                $adherents  = $adherents->where('abon', $abonnement);
-//            }
-//        }
-
-
         $statut = $statut ?? "all";
         $abonnement = $abonnement ?? "all";
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
@@ -134,16 +109,14 @@ class ClubController extends Controller
 
     public function updateGeneralite( Request $request, Club $club)
     {
-
-$this->updateClubGeneralite($club,$request);
+        $this->updateClubGeneralite($club,$request);
         return redirect()->route('clubs.infos_club')->with('success', "Les informations générales du club ont été mises à jour");
 
     }
 
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
-
-    $this->updateClubAdress($club,$request);
+        $this->updateClubAdress($club,$request);
         return redirect()->route('clubs.infos_club')->with('success', "L'adresse du club a été mise à jour");
     }
 

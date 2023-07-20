@@ -62,7 +62,6 @@ class PersonneController extends Controller
             }
         }
 
-
         $countries = Pays::all();
         return view('personnes.mon_profil', compact('personne', 'nbadresses', 'countries'));
     }
@@ -99,7 +98,6 @@ class PersonneController extends Controller
         $this->registerAction($personne->id, 4, "Modification de votre mot de passe");
 
         $mailSent = Mail::to($personne->email)->send(new SendEmailModifiedPassword());
-
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
         $mail = new \stdClass();
         $mail->titre = "Confirmation de modification de mot de passe";
