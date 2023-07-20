@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Concern\ClubTools;
 use App\Concern\Tools;
+use App\Exports\RoutageFedeExport;
+use App\Exports\RoutageListAdherents;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
@@ -16,6 +18,7 @@ use App\Models\Equipement;
 use App\Models\Pays;
 use App\Models\Ur;
 use App\Models\Utilisateur;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -145,7 +148,6 @@ class ClubController extends Controller
 //        dd($club);
         $statut = $statut ?? "all";
         $abonnement = $abonnement ?? "all";
-        $limit_pagination = 100;
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('utilisateurs.clubs_id', $club->id)->orderBy('utilisateurs.identifiant');
         if (in_array($statut, [0,1,2,3,4])) {
@@ -155,7 +157,12 @@ class ClubController extends Controller
             $query = $query->where('personnes.is_abonne', $abonnement);
         }
         $adherents = $query->get();
-//        dd($adherents);
-        return view('admin.clubs.liste_adherents_club',compact('club','adherents','limit_pagination', 'statut','abonnement'));
+        foreach ($adherents as $adherent) {
+            // si la personne est abonnée, on récupère le numéro de fin de son abonnement
+            $adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[0]['fin'] : '';
+        }
+
+        return view('admin.clubs.liste_adherents_club',compact('club','adherents', 'statut','abonnement'));
     }
+
 }

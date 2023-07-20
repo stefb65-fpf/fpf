@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 include 'api_sc.php';
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -30,4 +31,7 @@ Route::post('/ajax/submitClubEquipements', [App\Http\Controllers\Api\ApiFormVali
 Route::post('/ajax/updateTarif', [App\Http\Controllers\Admin\ConfigController::class,'updateTarif']);
 Route::post('/ajax/updateConfig', [App\Http\Controllers\Admin\ConfigController::class,'updateConfig']);
 
+
+//liste adhérents club
+Route::post('/ajax/editListAdherents', [App\Http\Controllers\Api\AdherentsList::class,'createListAdherents']);
 
