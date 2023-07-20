@@ -36,17 +36,17 @@
                         <div class="formLabel mr10 bold">Statut :</div>
                         <select class="formValue modifying" name="filter" data-ref="statut">
                             <option value="all">Tous</option>
-                            <option value="2" {{strval($statut) == "2"? "selected":""}}>Validé</option>
-                            <option value="1" {{strval($statut)  == "1"? "selected":""}}>Pré-inscrit</option>
-                            <option value="0" {{strval($statut)  == "0"? "selected":""}}>Non renouvelé</option>
-                            <option value="3" {{strval($statut) == "3"? "selected":""}}>Désactivé</option>
+                            <option value="2" {{$statut == 2? "selected":""}}>Validé</option>
+                            <option value="1" {{$statut == 1? "selected":""}}>Pré-inscrit</option>
+                            <option value="0" {{$statut == 0? "selected":""}}>Non renouvelé</option>
+                            <option value="3" {{$statut == 3? "selected":""}}>Désactivé</option>
                         </select>
                     </div>
                     <div class="formUnit mb0">
                         <div class="formLabel mr10 bold">Type carte :</div>
                         <select class="formValue modifying" name="filter" data-ref="typeCarte">
                             <option value="all">Tous</option>
-                            <option value="1" {{strval($type_carte) ==" 1"? "selected":""}}>Normaux</option>
+                            <option value="1" {{$type_carte ==1? "selected":""}}>Normaux</option>
                             <option value="N" {{$type_carte == "N"? "selected":""}}>Nouveau</option>
                             <option value="C" {{$type_carte == "C"? "selected":""}}>Tous adhérents</option>
                             <option value="A" {{$type_carte == "A"? "selected":""}}>Tous abonnés</option>
@@ -56,8 +56,8 @@
                         <div class="formLabel mr10 bold">Abonnement :</div>
                         <select class="formValue modifying" name="filter" data-ref="abonnement">
                             <option value="all">Tous</option>
-                            <option value="1" {{strval($abonnement)== "1"? "selected":""}}>Avec</option>
-                            <option value="0" {{strval($abonnement)== "0"? "selected":""}}>Sans</option>
+                            <option value="1" {{$abonnement== 1? "selected":""}}>Avec</option>
+                            <option value="0" {{$abonnement== 0? "selected":""}}>Sans</option>
                             <option value="G" {{$abonnement== "G"? "selected":""}}>Gratuits</option>
                         </select>
                     </div>

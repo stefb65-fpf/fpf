@@ -8,6 +8,7 @@ use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
 use App\Models\Club;
 use App\Models\Fonction;
+use App\Models\Pays;
 use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
@@ -28,45 +29,33 @@ class UrController extends Controller
 
     public function infosUr() {
         $ur = $this->getUr();
-        return view('urs.infos_ur', compact('ur'));
+        $ur->departements =  DB::table('departementsurs')->where('urs_id',$ur->id)->get();
+        $ur->adresse->telephonemobile = $this->format_phone_number_visual($ur->adresse->telephonemobile);
+        $ur->adresse->telephonedomicile = $this->format_phone_number_visual($ur->adresse->telephonedomicile);
+        $countries = Pays::all();
+
+        $ur->adresse->indicatif_fixe = Pays::where('nom', $ur->adresse->pays)->first()->indicatif;
+        return view('urs.infos_ur', compact('ur','countries'));
     }
 
     public function listeClubs($statut = null, $type_carte = null, $abonnement = null) {
         $ur = $this->getUr();
 //        dd($ur);
-
-        if($statut === null){
-            $statut = "all";
-        }
-        if( $abonnement === null){
-            $abonnement = "all";
-        }
+        $statut = $statut ?? "all";
+        $abonnement = $abonnement ?? "all";
         //TODO: régler le problème de rendre du paginate (la methode render() du blade réponds en erreur si la limite de pagination est supérieur au nombre de clubs dans $clubs!
         $limit_pagination = 100;
         $clubs = Club::where('urs_id', $ur->id)->orderBy('numero')->paginate($limit_pagination);
-//dd($clubs);
-        if (($statut != null) && ($statut != 'all')) {
-            //verifier que le parametre envoyé existe
-            $lestatut = in_array(strval($statut),["0","1","2","3"]);
-            if ($lestatut) {
+            if (($statut != 'all') && in_array(strval($statut),[0,1,2,3])) {
                 $clubs  = $clubs->where('statut', $statut);
             }
-        }
-        if (($abonnement != null) && ($abonnement != 'all')) {
-            //verifier que le parametre envoyé existe
-            $labonnement = in_array(strval($abonnement),["0","1","G"]);
 
-            if ($labonnement) {
+        if ( in_array(strval($abonnement),[0,1,"G"]) && ($abonnement != 'all')) {
                 $clubs  = $clubs->where('abon', $abonnement);
-            }
         }
 
-        if (($type_carte != null) && ($type_carte != 'all')) {
-            //verifier que le parametre envoyé existe
-            $letypecarte = in_array(strval($type_carte),["1","N","C","A"]);
-            if ($letypecarte) {
+        if (in_array(strval($type_carte),[1,"N","C","A"]) && ($type_carte != 'all')) {
                 $clubs  = $clubs->where('ct', $type_carte);
-            }
         }
 
         foreach ($clubs as $club) {
@@ -78,10 +67,7 @@ class UrController extends Controller
                 ->selectRaw('utilisateurs.id, utilisateurs.identifiant, personnes.nom, personnes.prenom')
                 ->first();
             $club->contact = $contact ?? null;
-            $club->numero = $this->complement_string_to($club->numero, 4);
-            //TODO:remove this
-            $club->urs_id = $this->complement_string_to($club->urs_id , 2);
-//            dd($club);
+            $club->numero = str_pad($club->numero, 4,"0");
             $club->adresse->callable_mobile = $this->format_phone_number_callable($club->adresse->telephonemobile);
             $club->adresse->visual_mobile = $this->format_phone_number_visual($club->adresse->telephonemobile);    $club->adresse->callable_fixe = $this->format_phone_number_callable($club->adresse->telephonedomicile);
             $club->adresse->visual_fixe = $this->format_phone_number_visual($club->adresse->telephonedomicile);

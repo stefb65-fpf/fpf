@@ -21,6 +21,7 @@
                 <thead>
                 <tr>
                     <th>UR</th>
+                    <th>Départements</th>
                     <th>Courriel</th>
                     <th>Site web</th>
                     <th>Coordonnées</th>
@@ -32,6 +33,11 @@
                 @foreach($urs as $ur)
                     <tr>
                         <td>{{ $ur->nom }}</td>
+                        <td> @foreach($ur->departements as $departement)
+                                <p>
+                                    {{$departement->numerodepartement}} - {{$departement->libelle}}
+                                </p>
+                            @endforeach</td>
                         <td><a href="mailto:{{$ur->courriel}}">{{$ur->courriel}}</a></td>
                         <td><a href="{{ $ur->web}}" target="_blank">{{$ur->web}}</a></td>
                         <td>

@@ -7,7 +7,7 @@
         </div>
         <div class="authTitle">Récupération de votre <br>mot de passe</div>
         <div class="fosterRegister light">
-            <div class="foster">Renseignez ici votre adresse mail de récupération. <br> Nous vous enverrons un lien pour réinitialiser votre mot de passe.</div>
+            <div class="foster">Renseignez ici votre adresse mail de compte FPF. <br> Nous vous enverrons un lien pour réinitialiser votre mot de passe.</div>
 
         </div>
         <form action="{{ action('App\Http\Controllers\LoginController@sendResetAccountPasswordLink') }}" method="POST"  class="authForm">

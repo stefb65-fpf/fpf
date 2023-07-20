@@ -110,7 +110,18 @@
                                         name="telephonemobile"/>
                                 </div>
                             </div>
+
                         </div> {{-- end formvaluegroup--}}
+                        <div class="formUnit align-start mt25">
+                            <div class="formLabel">Départements</div>
+                            <div style="">
+                                @foreach($ur->departements as $departement)
+                                    <p>
+                                        {{$departement->numerodepartement}} - {{$departement->libelle}}
+                                    </p>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>{{-- end formBlockWrapper--}}
                     <button class="formBtn success" type="submit">Valider</button>
                 </form>
