@@ -32,26 +32,31 @@ class ClubController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($ur_id = null, $statut = null, $type_carte = null, $abonnement = null)
+    public function index($ur_id = null, $statut = null, $type_carte = null, $abonnement = null, $term = null)
     {
         $statut = $statut ?? "all";
         $abonnement = $abonnement ?? "all";
         //TODO: régler le problème de rendre du paginate (la methode render() du blade réponds en erreur si la limite de pagination est supérieure au nombre de clubs dans $clubs!
         $limit_pagination = 100;
-        $clubs = Club::orderBy('numero')->paginate($limit_pagination);
+        $query = Club::orderBy('numero');
+        if($term){
+            //appel de la fonction getClubByTerm($club, $term) qui retourne les clubs filtrés selon le term
+        $this->getClubsByTerm($term,$query);
+        }
         $lur = Ur::where('id',$ur_id)->first();
         if ($ur_id != 'all' &&$lur) {
-                $clubs  = $clubs->where('urs_id', $lur->id);
+              $query  = $query->where('urs_id', $lur->id);
         }
         if ($statut != 'all' && in_array(strval($statut),[0,1,2,3])) {
-                $clubs  = $clubs->where('statut', $statut);
+            $query  = $query->where('statut', $statut);
         }
         if ($abonnement != 'all' && in_array(strval($abonnement),[0,1,"G"])) {
-                $clubs  = $clubs->where('abon', $abonnement);
+            $query  = $query->where('abon', $abonnement);
         }
         if ($type_carte != 'all' && (in_array(strval($type_carte),[1,"N","C","A"]))) {
-                $clubs  = $clubs->where('ct', $type_carte);
+            $query  = $query->where('ct', $type_carte);
         }
+       $clubs = $query->paginate($limit_pagination);
         foreach ($clubs as $club) {
             // on récupère le contact
             $contact = DB::table('fonctionsutilisateurs')->join('utilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
@@ -61,8 +66,8 @@ class ClubController extends Controller
                 ->selectRaw('utilisateurs.id, utilisateurs.identifiant, personnes.nom, personnes.prenom')
                 ->first();
             $club->contact = $contact ?? null;
-            $club->numero = str_pad($club->numero, 4,'0');
-            $club->urs_id = str_pad($club->urs_id , 2,'0');
+            $club->numero = str_pad($club->numero, 4,'0',STR_PAD_LEFT);
+            $club->urs_id = str_pad($club->urs_id , 2,'0',STR_PAD_LEFT);
 //            dd($club);
             $club->adresse->callable_mobile = $this->format_phone_number_callable($club->adresse->telephonemobile);
             $club->adresse->visual_mobile = $this->format_phone_number_visual($club->adresse->telephonemobile);    $club->adresse->callable_fixe = $this->format_phone_number_callable($club->adresse->telephonedomicile);
@@ -71,7 +76,7 @@ class ClubController extends Controller
         }
         $urs = Ur::orderBy('nom')->get();
 
-        return view('admin.clubs.index',compact('clubs','urs','ur_id','statut','type_carte','abonnement','limit_pagination'));
+        return view('admin.clubs.index',compact('clubs','urs','ur_id','statut','type_carte','abonnement','limit_pagination','term'));
     }
 
     /**

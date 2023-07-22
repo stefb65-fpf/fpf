@@ -38,26 +38,30 @@ class UrController extends Controller
         return view('urs.infos_ur', compact('ur','countries'));
     }
 
-    public function listeClubs($statut = null, $type_carte = null, $abonnement = null) {
+    public function listeClubs($statut = null, $type_carte = null, $abonnement = null,$term = null) {
+
         $ur = $this->getUr();
 //        dd($ur);
         $statut = $statut ?? "all";
         $abonnement = $abonnement ?? "all";
         //TODO: régler le problème de rendre du paginate (la methode render() du blade réponds en erreur si la limite de pagination est supérieur au nombre de clubs dans $clubs!
         $limit_pagination = 100;
-        $clubs = Club::where('urs_id', $ur->id)->orderBy('numero')->paginate($limit_pagination);
+        $query = Club::where('urs_id', $ur->id)->orderBy('numero');
             if (($statut != 'all') && in_array(strval($statut),[0,1,2,3])) {
-                $clubs  = $clubs->where('statut', $statut);
+                $clubs  = $query->where('statut', $statut);
             }
-
-        if ( in_array(strval($abonnement),[0,1,"G"]) && ($abonnement != 'all')) {
-                $clubs  = $clubs->where('abon', $abonnement);
+        if($term){
+            //appel de la fonction getClubByTerm($club, $term) qui retourne les clubs filtrés selon le term
+            $this->getClubsByTerm($term,$query);
+        }
+            if ( in_array(strval($abonnement),[0,1,"G"]) && ($abonnement != 'all')) {
+                $query  = $query->where('abon', $abonnement);
         }
 
         if (in_array(strval($type_carte),[1,"N","C","A"]) && ($type_carte != 'all')) {
-                $clubs  = $clubs->where('ct', $type_carte);
+            $query  = $query->where('ct', $type_carte);
         }
-
+$clubs = $query->paginate($limit_pagination);
         foreach ($clubs as $club) {
             // on récupère le contact
             $contact = DB::table('fonctionsutilisateurs')->join('utilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
@@ -75,7 +79,7 @@ class UrController extends Controller
         }
 //        dd($clubs);
 
-        return view('urs.liste_clubs', compact('ur','clubs','statut','type_carte','abonnement','limit_pagination'));
+        return view('urs.liste_clubs', compact('ur','clubs','statut','type_carte','abonnement','limit_pagination','term'));
     }
 
     public function listeAdherents() {

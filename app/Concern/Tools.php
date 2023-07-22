@@ -132,5 +132,12 @@ trait Tools
         }
 return $number;
     }
-
+    public function getClubsByTerm($term,$query){
+        if (is_numeric($term)) {
+            $query =$query->where('numero', 'LIKE', '%'.$term.'%')->get();
+        } else {
+            $query = $query->where('nom', 'LIKE','%'. $term.'%')->get();
+        }
+        return $query;
+    }
 }

@@ -87,12 +87,13 @@ Route::put('/admin/update-club-reunion/{club}', [App\Http\Controllers\Admin\Club
 Route::get('/admin/clubs/club/{club}', [App\Http\Controllers\Admin\ClubController::class, 'update'])->name('FPFGestion_updateClub');
 Route::get('/admin/clubs/ajouter', [App\Http\Controllers\Admin\ClubController::class, 'create'])->name('admin.clubs.create');
 //Route::get('/admin/clubs/store', [App\Http\Controllers\Admin\AdminController::class, 'store'])->name('admin.clubs.store');
-Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'index'])->name('admin.clubs.index');
+Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}/{term?}', [App\Http\Controllers\Admin\ClubController::class, 'index'])->name('admin.clubs.index');
 Route::get('/admin/liste_adherent/{club}/{statut?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'listeAdherent'])->name('admin.clubs.liste_adherents_club');
 Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
 
 //gestion clubs par responsable ur
-Route::get('/urs/liste_clubs/{statut?}/{type_carte?}/{abonnement?}', [App\Http\Controllers\UrController::class, 'listeClubs'])->name('urs.liste_clubs');
+Route::get('/urs/liste_clubs/{statut?}/{type_carte?}/{abonnement?}/{term?}', [App\Http\Controllers\UrController::class, 'listeClubs'])->name('urs.liste_clubs');
+//Route::post('/urs/liste_clubs/search')->name('urs.searchClub');
 Route::get('/urs/clubs/liste_adherents/{club}/{statut?}/{abonnement?}',[App\Http\Controllers\UrController::class, 'listeAdherentsClub'])->name('urs.liste_adherents_club');
 Route::get('/urs/clubs/{club}', [App\Http\Controllers\UrController::class, 'updateClub'])->name('UrGestion_updateClub');
 Route::put('/urs/clubs/update-generalite/{club}', [App\Http\Controllers\UrController::class, 'updateGeneralite'])->name('UrGestion_updateGeneralite');

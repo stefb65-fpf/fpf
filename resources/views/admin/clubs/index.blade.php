@@ -64,6 +64,15 @@
                 </div>
             </div>
         </div>
+        @if($term)
+        <div class="searchedTerm mt25">
+            <div class="title mt25">Vous avez cherché les Clubs contenant l'expression :</div>
+            <div class="d-flex mt25 center">
+                <div class="value">{{$term}}</div>
+                <div class="close">X</div>
+            </div>
+        </div>
+        @endif
         <div class="mt25 flexEnd">
             <a href="{{ route('admin.clubs.create') }}" class="adminPrimary btnMedium">Ajouter un club</a>
         </div>
