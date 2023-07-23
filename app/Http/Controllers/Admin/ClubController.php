@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Concern\ClubTools;
 use App\Concern\Tools;
+use App\Exports\RoutageFedeExport;
+use App\Exports\RoutageListAdherents;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
@@ -16,6 +18,7 @@ use App\Models\Equipement;
 use App\Models\Pays;
 use App\Models\Ur;
 use App\Models\Utilisateur;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -58,8 +61,8 @@ class ClubController extends Controller
                 ->selectRaw('utilisateurs.id, utilisateurs.identifiant, personnes.nom, personnes.prenom')
                 ->first();
             $club->contact = $contact ?? null;
-            $club->numero = str_pad($club->numero, 4,'0', STR_PAD_LEFT);
-            $club->urs_id = str_pad($club->urs_id , 2,'0', STR_PAD_LEFT);
+            $club->numero = str_pad($club->numero, 4,'0');
+            $club->urs_id = str_pad($club->urs_id , 2,'0');
 //            dd($club);
             $club->adresse->callable_mobile = $this->format_phone_number_callable($club->adresse->telephonemobile);
             $club->adresse->visual_mobile = $this->format_phone_number_visual($club->adresse->telephonemobile);    $club->adresse->callable_fixe = $this->format_phone_number_callable($club->adresse->telephonedomicile);
@@ -156,8 +159,10 @@ class ClubController extends Controller
         $adherents = $query->get();
         foreach ($adherents as $adherent) {
             // si la personne est abonnée, on récupère le numéro de fin de son abonnement
-            $adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[1]['fin'] : '';
+            $adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[0]['fin'] : '';
         }
+
         return view('admin.clubs.liste_adherents_club',compact('club','adherents', 'statut','abonnement'));
     }
+
 }

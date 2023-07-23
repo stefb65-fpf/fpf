@@ -706,14 +706,6 @@ body.mail {
     position: relative;
 }
 
-.searchBoxContainer .iconBtn {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    left: 0;
-}
-
 .searchBoxContainer .icon svg {
     height: 25px;
 }
@@ -2196,6 +2188,35 @@ select.floating.hidden {
     top: -100vh;
 }
 
+/*****************************************************  */
+/*search */
+/*****************************************************  */
+.searchedTerm .value{
+    text-align: center;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    color: #003d77;
+    border: 2px solid #3d3d3d54;
+    padding: 5px 10px;
+    font-weight: 600;
+    min-width: 74px;
+}
+.searchedTerm .close{
+    margin: auto 0 auto 10px;
+    height: 20px;
+    width: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    background-color: #e0e0e0;
+    color: #003d77;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #3d3d3d54;
+
+}
 /*****************************************************  */
 /*media queries*/
 /*****************************************************  */

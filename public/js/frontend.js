@@ -94,6 +94,43 @@ if (autosuggestContainer) {
 }
 
 
+//search in topBar
+let searchIconBtns = document.querySelectorAll(".searchItem .icon .iconBtn")
+let searchItems = document.querySelectorAll(".searchItem")
+let searchBox = document.querySelector(".searchContainer")
+if (searchBox) {
+    let target = 0
+    searchBox.addEventListener('click', (e) => {
+        let isBtnClicked = false
+        let isSearching = false
+        searchIconBtns.forEach((searchIconBtn) => {
+            if (e.target.dataset.target == searchIconBtn.dataset.target) {
+                target = searchIconBtn.dataset.target
+                isBtnClicked = true
+            }
+        })
+        searchItems.forEach((searchItem) => {
+            if (isBtnClicked) {
+                if (target == searchItem.dataset.target) {
+                    searchItem.classList.toggle("active")
+                    if (searchItem.classList.contains("active")) {
+                        searchItem.querySelector("input").focus()
+                        isSearching = true
+                    } else {
+                        isSearching = false
+                    }
+                } else {
+                    searchItem.classList.remove("active")
+                }
+            }
+        })
+    if(isSearching){
+        searchBox.classList.add("searching")
+    }else{
+        searchBox.classList.remove("searching")
+    }
+    })
+}
 
 //account profile
 $('button[name=updateForm]').on('click',function(e){

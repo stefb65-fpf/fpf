@@ -35,3 +35,5 @@ Route::post('/ajax/updateConfig', [App\Http\Controllers\Admin\ConfigController::
 //liste adhérents club
 Route::post('/ajax/editListAdherents', [App\Http\Controllers\Api\UtilisateurController::class,'createListAdherents']);
 
+//topBar search
+Route:: get('/ajax/isAdmin', [App\Http\Controllers\Api\TopBarController::class,'isAdmin']);

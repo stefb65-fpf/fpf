@@ -10,9 +10,8 @@
         <div class="searchContainer">
             <div class="foster"> Je cherche ...</div>
             <div class="searchBoxContainer">
-                <div class="searchItem" data-target="1">
-                    <div class="icon">
-                        <div class="iconBtn" data-target="1"></div>
+                <div class="searchItem" >
+                    <div class="icon" name="searchBtn">
                         <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M17 17C14.7083 17 12.7465 16.184 11.1146 14.5521C9.48264 12.9201 8.66667 10.9583 8.66667 8.66666C8.66667 6.37499 9.48264 4.41319 11.1146 2.78125C12.7465 1.1493 14.7083 0.333328 17 0.333328C19.2917 0.333328 21.2535 1.1493 22.8854 2.78125C24.5174 4.41319 25.3333 6.37499 25.3333 8.66666C25.3333 10.9583 24.5174 12.9201 22.8854 14.5521C21.2535 16.184 19.2917 17 17 17ZM0.333332 33.6667V27.8333C0.333332 26.6528 0.637499 25.5674 1.24583 24.5771C1.85417 23.5868 2.66111 22.8319 3.66667 22.3125C5.81944 21.2361 8.00694 20.4285 10.2292 19.8896C12.4514 19.3507 14.7083 19.0819 17 19.0833C19.2917 19.0833 21.5486 19.3528 23.7708 19.8917C25.9931 20.4305 28.1806 21.2375 30.3333 22.3125C31.3403 22.8333 32.1479 23.5889 32.7563 24.5792C33.3646 25.5694 33.6681 26.6542 33.6667 27.8333V33.6667H0.333332Z"
@@ -25,9 +24,8 @@
                     </div>
 
                 </div>
-                <div class="searchItem" data-target="2">
-                    <div class="icon">
-                        <div class="iconBtn" data-target="2"></div>
+                <div class="searchItem">
+                    <div class="icon" name="searchBtn">
                         <svg width="54" height="50" viewBox="0 0 54 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="26.8084" cy="3.68936" r="3.68936" fill="#2F2F2F"/>
                             <path
@@ -63,11 +61,11 @@
                     </div>
                     <div class="searchBox club">
                         <input type="text" placeholder="identifiant ou nom">
+
                     </div>
                 </div>
                 <div class="searchItem" data-target="3">
-                    <div class="icon">
-                        <div class="iconBtn" data-target="3"></div>
+                    <div class="icon" name="searchBtn">
                         <svg width="40" height="48" viewBox="0 0 40 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M37.8571 43.9643C35.6022 44.9384 33.1706 45.4369 30.7143 45.4286C25.2727 45.1782 20.1516 42.7835 16.4707 38.7679C12.7898 34.7524 10.8485 29.4428 11.0714 24C10.8485 18.5572 12.7898 13.2476 16.4707 9.23204C20.1516 5.21651 25.2727 2.82177 30.7143 2.57143C32.6954 2.56033 34.664 2.88642 36.5357 3.53571M2.14286 18.6429H23.5714M2.14286 29.3571H23.5714"
@@ -83,7 +81,6 @@
         </div>
     </div>
     @endif
-
 
     <div class="userAccount dropdownParent dropdownCall" data-dropdown-id="13">
         {{ $user->prenom }}
@@ -104,3 +101,6 @@
         </div>
     </div>
 </div>
+{{--@section('js')--}}
+{{--    <script src="{{ asset('js/topbar_searchbox.js') }}?t=<?= time() ?>"></script>--}}
+{{--@endsection--}}
