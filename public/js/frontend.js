@@ -94,43 +94,6 @@ if (autosuggestContainer) {
 }
 
 
-//search in topBar
-let searchIconBtns = document.querySelectorAll(".searchItem .icon .iconBtn")
-let searchItems = document.querySelectorAll(".searchItem")
-let searchBox = document.querySelector(".searchContainer")
-if (searchBox) {
-    let target = 0
-    searchBox.addEventListener('click', (e) => {
-        let isBtnClicked = false
-        let isSearching = false
-        searchIconBtns.forEach((searchIconBtn) => {
-            if (e.target.dataset.target == searchIconBtn.dataset.target) {
-                target = searchIconBtn.dataset.target
-                isBtnClicked = true
-            }
-        })
-        searchItems.forEach((searchItem) => {
-            if (isBtnClicked) {
-                if (target == searchItem.dataset.target) {
-                    searchItem.classList.toggle("active")
-                    if (searchItem.classList.contains("active")) {
-                        searchItem.querySelector("input").focus()
-                        isSearching = true
-                    } else {
-                        isSearching = false
-                    }
-                } else {
-                    searchItem.classList.remove("active")
-                }
-            }
-        })
-    if(isSearching){
-        searchBox.classList.add("searching")
-    }else{
-        searchBox.classList.remove("searching")
-    }
-    })
-}
 
 //account profile
 $('button[name=updateForm]').on('click',function(e){
@@ -321,3 +284,36 @@ $("button[name=showSelect]").on('click', function(e){
     $(this).parent().find('select').removeClass('hidden')
 })
 
+
+//searchbox topbar
+$('.icon[name=searchBtn]').on("click", function () {
+    $(this).parent().toggleClass('active')
+    $('.searchContainer').toggleClass('searching')
+    $(this).parent().parent().find('input').trigger( "focus" )
+})
+
+function searchClub(term) {
+    const url = '/api/ajax/getClubs'
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: {
+            term: term
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            if (data.length > 0) {
+            } else {
+
+            }
+        },
+        error: function (e) {
+        }
+    });
+}
+$('.searchBox.club input').on('keypress', function (e) {
+    // e.preventDefault()
+    if (e.which === 13) {
+      searchClub($(this).val());
+    }
+})

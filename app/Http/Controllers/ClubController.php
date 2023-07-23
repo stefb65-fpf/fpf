@@ -35,10 +35,14 @@ class ClubController extends Controller
     public function gestionAdherents($statut = null,$abonnement = null)
     {
         $club = $this->getClub();
+        $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+        $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
+        $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
         $statut = $statut ?? "all";
         $abonnement = $abonnement ?? "all";
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
-            ->where('utilisateurs.clubs_id', $club->id)->orderBy('utilisateurs.identifiant');
+            ->where('utilisateurs.clubs_id', $club->id)->orderBy('utilisateurs.identifiant')
+            ->selectRaw('*, utilisateurs.id as id_utilisateur');
         if (in_array($statut, [0,1,2,3, 4])) {
             $query = $query->where('utilisateurs.statut', $statut);
         }
@@ -46,6 +50,7 @@ class ClubController extends Controller
             $query = $query->where('personnes.is_abonne', $abonnement);
         }
         $adherents = $query->get();
+//        dd($adherents);
         foreach ($adherents as $adherent) {
             // si la personne est abonnée, on récupère le numéro de fin de son abonnement
             $adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[1]['fin'] : '';

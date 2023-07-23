@@ -6,6 +6,5 @@
 </head>
 <body style="background: transparent">
     @yield('content')
-</div>
 </body>
 </html>

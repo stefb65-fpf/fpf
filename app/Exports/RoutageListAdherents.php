@@ -13,15 +13,15 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class RoutageListAdherents implements FromView, WithStyles, ShouldAutoSize
 {
-    public function __construct(array $adherents)
+    public function __construct($utilisateurs)
     {
-        $this->adherents = $adherents;
+        $this->utilisateurs = $utilisateurs;
     }
 
     public function view(): View
     {
-        $adherents = $this->adherents;
-        return view('exports.routageListeAdherents', compact('adherents'));
+        $utilisateurs = $this->utilisateurs;
+        return view('exports.routageListeAdherents', compact('utilisateurs'));
     }
 
 

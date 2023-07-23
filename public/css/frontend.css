@@ -223,13 +223,18 @@ a {
 .flex {
     display: flex;
 }
-
+.flex-1 {
+    flex: 1;
+}
 .items-center {
     justify-items: center;
 }
 
 .justify-between {
     justify-content: space-between;
+}
+.justify-around {
+    justify-content: space-around;
 }
 
 /* laravel > 5.1  */
@@ -1988,19 +1993,24 @@ select.formValue {
     box-shadow: 2px 2px 2px #cbcbcb;
     border: 2px solid #fff;
 }
-
-.sticker.green {
-    background-color: #99d59a;
+.sticker.green, .statutClub.green {
+    background-color: #99d59a !important;
 }
-
-.sticker.orange {
-    background-color: #e28a2d;
+.sticker.orange, .statutClub.orange {
+    background-color: #e28a2d !important;
 }
-
-.sticker.yellow {
-    background-color: #f1e205;
+.sticker.yellow, .statutClub.yellow {
+    background-color: #f1e205 !important;
 }
-
+.statutClub {
+    padding: 5px 10px;
+    /*margin-bottom: 20px;*/
+    background-color: #7c7b7b;
+    display: flex;
+    justify-content: center;
+    margin-right: 10px;
+    border-radius: 5px;
+}
 .switch .message.success, .checkbox .message.success {
     color: #494949;
     background: white;

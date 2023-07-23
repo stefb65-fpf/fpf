@@ -18,22 +18,22 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($adherents as $adherent)
+    @foreach($utilisateurs as $utilisateur)
         <tr>
-            <td>{{ $adherent->identifiant }}</td>
-            <td>{{ $adherent->nom }}</td>
-            <td>{{ $adherent->prenom }}</td>
-            <td>{{ $adherent->adresse->libelle1 }}</td>
-            <td>{{ $adherent->adresse->libelle2 }}</td>
-            <td>{{ str_pad($adherent->adresse->codepostal, 5, '0', STR_PAD_LEFT) }}</td>
-            <td>{{ strtoupper($adherent->adresse->ville) }}</td>
-            <td>{{ strtoupper($adherent->adresse->pays) }}</td>
-            <td>{{ $adherent->email }}</td>
-            <td>{{ $adherent->phone_mobile }}</td>
+            <td>{{ $utilisateur->identifiant }}</td>
+            <td>{{ $utilisateur->personne->nom }}</td>
+            <td>{{ $utilisateur->personne->prenom }}</td>
+            <td>{{ $utilisateur->personne->adresses[0]->libelle1 }}</td>
+            <td>{{ $utilisateur->personne->adresses[0]->libelle2 }}</td>
+            <td>{{ str_pad($utilisateur->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT) }}</td>
+            <td>{{ strtoupper($utilisateur->personne->adresses[0]->ville) }}</td>
+            <td>{{ strtoupper($utilisateur->personne->adresses[0]->pays) }}</td>
+            <td>{{ $utilisateur->personne->email }}</td>
+            <td>{{ $utilisateur->personne->phone_mobile }}</td>
             <td>
-                @switch($adherent->statut)
+                @switch($utilisateur->statut)
                     @case(0)
-                Non renouvelé
+                    Non renouvelé
                     @break
                     @case(1)
                    Préinscrit
@@ -52,8 +52,8 @@
                 @endswitch
 
             </td>
-            <td>{{ $adherent->is_abonne?"Avec":"Sans" }}</td>
-            <td>{{ $adherent->fin }}</td>
+            <td>{{ $utilisateur->personne->is_abonne ? "Avec" : "Sans" }}</td>
+            <td>{{ $utilisateur->fin }}</td>
         </tr>
     @endforeach
     </tbody>

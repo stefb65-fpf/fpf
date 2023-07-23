@@ -123,28 +123,28 @@
 .w75 {
     width: 75%;
 }
-.modalEdit {
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    position: fixed;
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 20px;
-    min-width: 600px;
-}
-.modalEditHeader {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.modalEditTitle {
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-.modalEditClose {
-    cursor: pointer;
-}
+/*.modalEdit {*/
+/*    left: 50%;*/
+/*    top: 50%;*/
+/*    transform: translate(-50%, -50%);*/
+/*    position: fixed;*/
+/*    background-color: white;*/
+/*    border: 1px solid #ccc;*/
+/*    padding: 20px;*/
+/*    min-width: 600px;*/
+/*}*/
+/*.modalEditHeader {*/
+/*    margin-bottom: 10px;*/
+/*    padding-bottom: 10px;*/
+/*    border-bottom: 1px solid #ccc;*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*}*/
+/*.modalEditTitle {*/
+/*    font-weight: bold;*/
+/*    font-size: 1.2rem;*/
+/*}*/
+/*.modalEditClose {*/
+/*    cursor: pointer;*/
+/*}*/
