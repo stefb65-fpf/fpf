@@ -17,7 +17,7 @@
         padding: 0;
         font-family: 'Poppins', sans-serif;
         max-width: 100%;
-        overflow: hidden;
+        overflow: scroll;
         max-width: min(750px, 100%);
         margin: auto;
     }
@@ -25,7 +25,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        text-align: center;
+        /*text-align: center;*/
         width: 100%;
         padding: 20px 0;
     }

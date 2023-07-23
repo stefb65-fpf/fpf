@@ -195,7 +195,9 @@ $('#btnRenouvellement').on('click',function (e) {
         },
         dataType: 'JSON',
         success: function (reponse) {
-
+            $('#modalRenouvellement').addClass('d-none')
+            $('#lienBordereauClub').attr('href', $('#app_url').html() + reponse.file)
+            $('#modalRenouvellementOk').removeClass('d-none')
         },
         error: function (e) {
         }

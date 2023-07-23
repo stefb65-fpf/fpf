@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Api;
 use App\Exports\RoutageListAdherents;
 use App\Http\Controllers\Controller;
 
+use App\Mail\SendEmailReinitPassword;
+use App\Mail\SendRenouvellementMail;
 use App\Models\Adresse;
 use App\Models\Club;
 use App\Models\Personne;
@@ -16,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UtilisateurController extends Controller
@@ -104,13 +107,29 @@ class UtilisateurController extends Controller
 
         // on crée le bordereau
         $name = $ref.'.pdf';
+        $dir = $club->getImageDir();
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadView('pdf.borderauclub', compact('tab_adherents', 'ref', 'club', 'total_montant', 'total_club',
             'montant_adhesion_club', 'montant_abonnement_club', 'montant_adhesion_club_ur', 'total_adhesion', 'total_abonnement', 'total_adherents'))
             ->setWarnings(false)
             ->setPaper('a4', 'portrait')
-            ->save(storage_path().'/app/public/uploads/bordereauclub/'.$name);
-        dd($tab_adherents);
+            ->save($dir.'/'.$name);
+        list($tmp, $filename) = explode('htdocs/', $dir.'/'.$name);
+
+        // on envoie le mail au contact du club
+        $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('clubs_id', $club->id)->where('fonctionsutilisateurs.fonctions_id', 97)->whereNotNull('utilisateurs.personne_id')->first();
+        if ($contact) {
+            // TODO : changer l'adresse email
+//            $mail = $contact->personne->email;
+            $mail = 'contact@envolinfo.com';
+            Mail::to($mail)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant));
+        }
+
+        return new JsonResponse(['file' => $filename], 200);
     }
 
     protected function getMontantRenouvellementClub($club_id, $abo_club) {

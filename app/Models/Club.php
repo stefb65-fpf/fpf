@@ -22,4 +22,8 @@ class Club extends Model
     public function adresse() {
         return $this->belongsTo('App\Models\Adresse', 'adresses_id');
     }
+
+    public function getImageDir() {
+        return storage_path().'/app/public/uploads/bordereauclub/'.ceil($this->id / 100);
+    }
 }

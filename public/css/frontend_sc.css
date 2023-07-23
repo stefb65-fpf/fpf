@@ -101,6 +101,7 @@
     min-width: 600px;
     max-width: 1000px;
     z-index: 100;
+    box-shadow: 5px 5px 3px grey;
 }
 .modalEditHeader {
     margin-bottom: 10px;
@@ -114,7 +115,7 @@
     font-weight: bold;
     font-size: 1.2rem;
 }
-.modalEditClose {
+.modalEditClose, .modalEditCloseReload {
     cursor: pointer;
 }
 .modalEditBody {

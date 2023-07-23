@@ -193,6 +193,26 @@
 
         </div>
     </div>
+
+
+
+    <div class="modalEdit d-none" id="modalRenouvellementOk">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Renouvellement des adhésions et abonnements</div>
+            <div class="modalEditCloseReload">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            <div class="alertSuccess">
+                Le bordereau pour le renouvellement a bien été généré. Vous pouvez le télécharger en cliquant sur le lien suivant: <a id="lienBordereauClub" target="_blank">bordreau de renouvellement</a>.<br>
+                Le bordereau vous a également été transmis par mail et vous pouvez le retrouver dans votre espace "Bordereaux et règlements".
+            </div>
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditCloseReload">Fermer</div>
+        </div>
+    </div>
 @endif
 @section('js')
     <script src="{{ asset('js/filters-club-liste-adherent.js') }}?t=<?= time() ?>"></script>
