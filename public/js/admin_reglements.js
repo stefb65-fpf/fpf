@@ -1,0 +1,10 @@
+$('a[name=validerReglement]').on('click', function(e){
+    e.preventDefault()
+    let id = $(this).data('id')
+    let reference = $(this).data('reference')
+    let montant = $(this).data('montant')
+    $('#referenceValidationRenouvellement').html(reference)
+    $('#montantValidationRenouvellement').html(montant)
+    $('#validRenouvellement').data('id', id)
+    $('#modalValidationRenouvellement').removeClass('d-none')
+})

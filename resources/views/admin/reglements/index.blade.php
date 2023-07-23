@@ -35,7 +35,14 @@
                         <td>{{ $reglement->numerocheque ?? '' }}</td>
                         <td>
                             @if($reglement->bordereau)
-                                <a class="adminPrimary btnSmall" target="_blank" href="{{ $reglement->bordereau }}">bordereau</a>
+                                <div style="margin-bottom: 3px;">
+                                    <a class="adminPrimary btnSmall" target="_blank" href="{{ $reglement->bordereau }}">bordereau</a>
+                                </div>
+                            @endif
+                            @if($reglement->statut === 0)
+                                <div style="margin-bottom: 3px;">
+                                    <a class="adminSuccess btnSmall" target="_blank" name="validerReglement" data-ref="{{ $reglement->id }}" data-reference="{{ $reglement->reference }}" data-montant="{{ $reglement->montant }}">valider</a>
+                                </div>
                             @endif
                         </td>
                     </tr>
@@ -48,7 +55,33 @@
             {{ $reglements->render( "pagination::default") }}
         </div>
     </div>
+    <div class="modalEdit d-none" id="modalValidationRenouvellement">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Renouvellement des adhésions et abonnements</div>
+            <div class="modalEditCloseReload">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Le règlement ayant pour référence <span id="referenceValidationRenouvellement"></span> est exigé pour un montant <span id="montantValidationRenouvellement"></span>€.<br>
+            <br>
+            Saisir les information de règlement dans le champ ci-dessous. Ne validez que si le montant correspond à celui attendu.<br>
+            <br>
+            <div style="text-align: center">
+                <label for="infoValidationRenouvellement">Informations de règlement</label>
+                <input type="text" id="infoValidationRenouvellement">
+            </div>
+
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Fermer</div>
+            <div class="adminPrimary btnMedium mr10" id="validRenouvellement" data-id="">Valider le règlement</div>
+        </div>
+    </div>
 @endsection
 @section('css')
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
+@endsection
+@section('js')
+    <script src="{{ asset('js/admin_reglements.js') }}?t=<?= time() ?>"></script>
 @endsection
