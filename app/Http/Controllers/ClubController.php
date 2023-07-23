@@ -13,6 +13,7 @@ use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Equipement;
 use App\Models\Pays;
+use App\Models\Reglement;
 use App\Models\Utilisateur;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -93,7 +94,12 @@ class ClubController extends Controller
     public function gestionReglements()
     {
         $club = $this->getClub();
-        return view('clubs.gestion_reglements', compact('club'));
+        // on récupère tous les règlements du club
+        $reglements = Reglement::where('clubs_id', $club->id)->orderByDesc('id')->get();
+        $dir = $club->getImageDir();
+        list($tmp, $dir_club) = explode('htdocs/', $dir);
+        $dir_club = env('APP_URL') . '/' . $dir_club;
+        return view('clubs.gestion_reglements', compact('club', 'reglements', 'dir_club', 'dir'));
     }
 
     protected function getClub()

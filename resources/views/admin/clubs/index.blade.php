@@ -162,10 +162,7 @@
                 </tbody>
             </table>
             <div class="pagination">
-                @if(sizeof($clubs)>$limit_pagination)
-                    {{ $clubs->render( "pagination::default") }}
-                    {{-- {{ $clubs->links() }} --}}
-                @endif
+                {{ $clubs->render( "pagination::default") }}
             </div>
         @endif
     </div>

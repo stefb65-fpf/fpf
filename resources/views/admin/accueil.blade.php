@@ -20,6 +20,13 @@
                     </div>
                 </a>
             @endif
+            @if(in_array('GESREG', $droits_fpf))
+                <a class="card" href="{{ route('reglements.index') }}">
+                    <div class="wrapper">
+                        <div class="cardTitle">Règlements</div>
+                    </div>
+                </a>
+            @endif
             @if(in_array('GESPARAM', $droits_fpf))
                 <a class="card" href="{{ route('admin.config') }}">
                     <div class="wrapper">
@@ -71,6 +78,8 @@
             @endif
             <div class="card invisible">
             </div>
+                <div class="card invisible">
+                </div>
         </div>
     </div>
 @endsection

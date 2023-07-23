@@ -42,7 +42,7 @@ Route::resource('/admin/droits', App\Http\Controllers\Admin\DroitController::cla
 Route::delete('/admin/droits/deleteFonction/{droit_id}/{fonction_id}', [App\Http\Controllers\Admin\DroitController::class, 'deleteFonction'])->name('droits.deleteFonction');
 Route::delete('/admin/droits/deleteUtilisateur/{droit_id}/{utilisateur_id}', [App\Http\Controllers\Admin\DroitController::class, 'deleteUtilisateur'])->name('droits.deleteUtilisateur');
 
-
+Route::resource('/admin/reglements', App\Http\Controllers\Admin\ReglementController::class);
 
 Route::resource('/admin/urs', App\Http\Controllers\Admin\UrController::class);
 Route::get('/admin/fonctions/ca', [App\Http\Controllers\Admin\FonctionController::class, 'ca'])->name('admin.fonctions.ca');

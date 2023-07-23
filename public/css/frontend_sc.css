@@ -4,7 +4,7 @@
     border-left: 5px solid #f1aeb5;
     padding: 20px;
     width: max-content;
-    margin: 20px auto 0px;
+    margin: 500px auto 0px;
     max-width: 100%;
 }
 .alertSuccess {
@@ -13,7 +13,7 @@
     border-left: 5px solid #a3cfbb;
     padding: 20px;
     width: max-content;
-    margin: 20px auto 0;
+    margin: 50px auto 0;
     max-width: 100%;
 }
 .alertInfo {
