@@ -41,6 +41,19 @@ $('#editerCartes').on('click', function(e){
         },
         dataType: 'JSON',
         success: function (reponse) {
+            let chaine = ''
+            if (reponse.file_cartes != '') {
+                chaine += '<li><a target="_blank" href="' + $('#app_url').html() + reponse.file_cartes + '">le fichier des cartes</a></li>'
+            }
+            if (reponse.file_etiquettes_club != '') {
+                chaine += '<li><a target="_blank" href="' + $('#app_url').html() + reponse.file_etiquettes_club + '">le fichier liste pour les clubs</a></li>'
+            }
+            if (reponse.file_etiquettes_individuels != '') {
+                chaine += '<li><a target="_blank" href="' + $('#app_url').html() + reponse.file_etiquettes_individuels + '">le fichier des étiquettes pour les individuels</a></li>'
+            }
+
+            $('#listeCartesEditees').html(chaine)
+            $('#modalCartesOk').removeClass('d-none')
         },
         error: function (e) {
         }

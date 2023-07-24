@@ -21,20 +21,19 @@
             width: 100%;
         }
         .identite {
-            width: max-content;
+            width: 100%;
             margin-top: 50px;
-            margin-left: auto;
-            margin-right: auto;
+            text-align: center;
         }
         .identifiant {
             position: fixed;
-            bottom: 40px;
+            bottom: 45px;
             width: 100%;
             text-align: center;
         }
         .club {
             position: fixed;
-            bottom: 50px;
+            bottom: 65px;
             width: 100%;
             text-align: center;
         }
@@ -57,19 +56,31 @@
             </div>
         </div>
 
+
         @if($carte->clubs_id)
             <div class="club">{{ $carte->club->nom.' ('.str_pad($carte->club->numero, 4, '0', STR_PAD_LEFT).')' }}</div>
         @endif
 
-        <div class="identifiant">{{ $carte->identifiant }}</div>
-        <div style="width: 90%; margin-left: 5%;">
-            <table style="width: 100%; position: fixed; bottom: 30px; left: 0;">
+        <div class="identifiant">Adhérent {{ $carte->identifiant }}</div>
+        <div>
+            <table style="width: 100%; position: fixed; bottom: 40px; left: 0;">
                 <tr>
-                    <td style="width: 33%; height: 20px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center">
-                        {{ in_array(date('m'), ['09', '10', '11', '12']) ? date('y').' - '.(date('y') + 1) : (date('y') - 1).' - '.date('y') }}
+                    <td style="width: 33%;">
+                        <div style="height: 30px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center; margin-left: 5px; margin-right: 5px;">
+                            {{ in_array(date('m'), ['09', '10', '11', '12']) ? date('y').' - '.(date('y') + 1) : (date('y') - 1).' - '.date('y') }}<br>
+                            <span style="font-size: 8px;">septembre - septembre</span>
+                        </div>
                     </td>
-                    <td style="width: 33%; height: 20px; background-color: #F2F2F2; border: 1px solid #3a3a3a;">&nbsp;</td>
-                    <td style="width: 33%; height: 20px; background-color: #F2F2F2; border: 1px solid #3a3a3a;">&nbsp;</td>
+                    <td style="width: 33%;">
+                        <div style="height: 30px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center; margin-left: 5px; margin-right: 5px;">
+                            &nbsp;
+                        </div>
+                    </td>
+                    <td style="width: 33%;">
+                        <div style="height: 30px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center; margin-left: 5px; margin-right: 5px;">
+                            &nbsp;
+                        </div>
+                    </td>
                 </tr>
             </table>
         </div>
