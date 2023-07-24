@@ -27,6 +27,13 @@
                     </div>
                 </a>
             @endif
+            @if(in_array('GESREG', $droits_fpf))
+                <a class="card" href="{{ route('reglements.cartes') }}">
+                    <div class="wrapper">
+                        <div class="cardTitle">Edition des cartes</div>
+                    </div>
+                </a>
+            @endif
             @if(in_array('GESPARAM', $droits_fpf))
                 <a class="card" href="{{ route('admin.config') }}">
                     <div class="wrapper">

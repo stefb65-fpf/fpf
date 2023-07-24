@@ -152,7 +152,8 @@ class ClubController extends Controller
         $statut = $statut ?? "all";
         $abonnement = $abonnement ?? "all";
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
-            ->where('utilisateurs.clubs_id', $club->id)->orderBy('utilisateurs.identifiant');
+            ->where('utilisateurs.clubs_id', $club->id)->orderBy('utilisateurs.identifiant')
+            ->selectRaw('*, utilisateurs.id as id_utilisateur');
         if (in_array($statut, [0,1,2,3,4])) {
             $query = $query->where('utilisateurs.statut', $statut);
         }

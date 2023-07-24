@@ -41,7 +41,7 @@
                             @endif
                             @if($reglement->statut === 0)
                                 <div style="margin-bottom: 3px;">
-                                    <a class="adminSuccess btnSmall" target="_blank" name="validerReglement" data-ref="{{ $reglement->id }}" data-reference="{{ $reglement->reference }}" data-montant="{{ $reglement->montant }}">valider</a>
+                                    <a class="adminSuccess btnSmall" target="_blank" name="validerReglement" data-id="{{ $reglement->id }}" data-reference="{{ $reglement->reference }}" data-montant="{{ $reglement->montant }}">valider</a>
                                 </div>
                             @endif
                         </td>
@@ -71,11 +71,27 @@
                 <label for="infoValidationRenouvellement">Informations de règlement</label>
                 <input type="text" id="infoValidationRenouvellement">
             </div>
-
         </div>
         <div class="modalEditFooter">
             <div class="adminDanger btnMedium mr10 modalEditClose">Fermer</div>
             <div class="adminPrimary btnMedium mr10" id="validRenouvellement" data-id="">Valider le règlement</div>
+        </div>
+    </div>
+
+    <div class="modalEdit d-none" id="modalReglementOk">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Renouvellement des adhésions et abonnements</div>
+            <div class="modalEditCloseReload">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            <div class="alertSuccess"  style="margin: 10px auto 0">
+                Le règlement a bien pris en compte
+            </div>
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditCloseReload">Fermer</div>
         </div>
     </div>
 @endsection

@@ -15,11 +15,11 @@ class Utilisateur extends Model
     }
 
     public function club() {
-        return $this->belongsTo('App\Models\Club');
+        return $this->belongsTo('App\Models\Club', 'clubs_id');
     }
 
     public function ur() {
-        return $this->belongsTo('App\Models\Ur');
+        return $this->belongsTo('App\Models\Ur', 'urs_id');
     }
 
     public function fonctions() {

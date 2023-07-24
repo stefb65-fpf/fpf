@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\Reglement;
+use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 
 class ReglementController extends Controller
@@ -31,6 +32,11 @@ class ReglementController extends Controller
             }
         }
         return view('admin.reglements.index', compact('reglements'));
+    }
+
+    public function editionCartes() {
+        $utilisateurs = Utilisateur::where('statut', 2)->whereNotNull('personne_id')->where('urs_id', '<>', 0)->orderBy('clubs_id')->get();
+        return view('admin.reglements.cartes', compact('utilisateurs'));
     }
 
     /**

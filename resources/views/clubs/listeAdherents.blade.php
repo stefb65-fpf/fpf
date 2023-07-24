@@ -153,7 +153,7 @@
             </div>
         </div>
         <div class="modalEditBody">
-            <div class="alertDanger">
+            <div class="alertDanger" style="margin: 10px auto 0">
                 Veuillez contrôler attentivement les informations ci-dessous. Pour l'instant, aucune donnée n'a été enregistrée.
                 Si vous annulez, votre saisie ne sera pas prise en compte. Si vous validez le renouvellement, les informations seront enregistrées et vous
                 pourrez télécharger le bordereau club. Tout autre bordereau créé et n'ayant pas été validé par un règlement enregistré par la FPF sera supprimé.
@@ -204,7 +204,7 @@
             </div>
         </div>
         <div class="modalEditBody">
-            <div class="alertSuccess">
+            <div class="alertSuccess" style="margin: 10px auto 0">
                 Le bordereau pour le renouvellement a bien été généré. Vous pouvez le télécharger en cliquant sur le lien suivant: <a id="lienBordereauClub" target="_blank">bordreau de renouvellement</a>.<br>
                 Le bordereau vous a également été transmis par mail et vous pouvez le retrouver dans votre espace "Bordereaux et règlements".
             </div>
