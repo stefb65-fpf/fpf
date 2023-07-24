@@ -117,8 +117,9 @@ class ClubController extends Controller
         return $club;
     }
 
-    public function updateGeneralite( Request $request, Club $club)
+    public function updateGeneralite( ClubReunionRequest $request, Club $club)
     {
+
         $this->updateClubGeneralite($club,$request);
         return redirect()->route('clubs.infos_club')->with('success', "Les informations générales du club ont été mises à jour");
 

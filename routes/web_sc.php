@@ -34,10 +34,10 @@ Route::get('/admin/votes/{vote}/elections/{election}/candidats', [App\Http\Contr
 Route::post('/admin/votes/{vote}/elections/{election}/candidats', [App\Http\Controllers\Admin\VoteController::class, 'candidatsStore'])->name('votes.elections.candidats.store');
 Route::delete('/admin/votes/{vote}/elections/{election}/candidats/{candidat}', [App\Http\Controllers\Admin\VoteController::class, 'candidatsDestroy'])->name('votes.elections.candidats.delete');
 
-Route::get('/admin/personnes/liste_adherents', [App\Http\Controllers\Admin\PersonneController::class, 'listeAdherents'])->name('personnes.liste_adherents');
-Route::get('/admin/personnes/liste_abonnes', [App\Http\Controllers\Admin\PersonneController::class, 'listeAbonnes'])->name('personnes.liste_abonnes');
-Route::get('/admin/personnes/liste_formateurs', [App\Http\Controllers\Admin\PersonneController::class, 'listeFormateurs'])->name('personnes.liste_formateurs');
-Route::resource('/admin/personnes', App\Http\Controllers\Admin\PersonneController::class);
+//Route::get('/admin/personnes/liste_adherents', [App\Http\Controllers\Admin\PersonneController::class, 'listeAdherents'])->name('personnes.liste_adherents');
+//Route::get('/admin/personnes/liste_abonnes', [App\Http\Controllers\Admin\PersonneController::class, 'listeAbonnes'])->name('personnes.liste_abonnes');
+//Route::get('/admin/personnes/liste_formateurs', [App\Http\Controllers\Admin\PersonneController::class, 'listeFormateurs'])->name('personnes.liste_formateurs');
+//Route::resource('/admin/personnes', App\Http\Controllers\Admin\PersonneController::class);
 Route::resource('/admin/droits', App\Http\Controllers\Admin\DroitController::class);
 Route::delete('/admin/droits/deleteFonction/{droit_id}/{fonction_id}', [App\Http\Controllers\Admin\DroitController::class, 'deleteFonction'])->name('droits.deleteFonction');
 Route::delete('/admin/droits/deleteUtilisateur/{droit_id}/{utilisateur_id}', [App\Http\Controllers\Admin\DroitController::class, 'deleteUtilisateur'])->name('droits.deleteUtilisateur');

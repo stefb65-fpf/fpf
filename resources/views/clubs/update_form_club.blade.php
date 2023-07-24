@@ -1,10 +1,9 @@
 <div class="formBlock">
     <div class="formBlockTitle">Généralités</div>
     <div class="formBlockWrapper">
-        <form action="{{ route($pathPrefixName.'updateGeneralite', $club) }}" method="POST" id="generaliteForm">
+        <form action="{{ route($pathPrefixName.'updateGeneralite', $club) }}" method="POST" id="generaliteForm" enctype="multipart/form-data">
             <input type="hidden" name="_method" value="put">
             {{ csrf_field() }}
-            {{--                @if($club->logo)--}}
             <div class="formBlockWrapper">
                 <div class="formLine center d-flex flex-column">
                     <label class="d-flex flex-column" for="file" style="cursor:pointer">

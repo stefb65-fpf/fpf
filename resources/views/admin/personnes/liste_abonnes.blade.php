@@ -11,4 +11,5 @@
             </a>
         </h1>
     </div>
+{{--    @include('admin.personnes.liste_utilisateurs_template', $utilisateurs)--}}
 @endsection

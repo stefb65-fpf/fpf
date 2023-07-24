@@ -11,17 +11,19 @@
             </a>
         </h1>
         <div class="cardContainer">
-            <a class="card" href="{{ route('personnes.liste_adherents') }}">
+            <a class="card" href="/admin/personnes/adherents">
                 <div class="wrapper">
                     <div class="cardTitle">Adhérents</div>
                 </div>
             </a>
-            <a class="card" href="{{ route('personnes.liste_abonnes') }}">
+            <a class="card" href="">
+{{--            <a class="card" href="{{ route('personnes.liste_abonnes') }}">--}}
                 <div class="wrapper">
                     <div class="cardTitle">Abonnés</div>
                 </div>
             </a>
-            <a class="card" href="{{ route('personnes.liste_formateurs') }}">
+            <a class="card" href="">
+{{--            <a class="card" href="{{ route('personnes.liste_formateurs') }}">--}}
                 <div class="wrapper">
                     <div class="cardTitle">Formateurs</div>
                 </div>

@@ -11,6 +11,7 @@ use App\Models\Configsaison;
 use App\Models\Equipement;
 use App\Models\Pays;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 trait ClubTools
 {
@@ -70,12 +71,29 @@ trait ClubTools
         return[ $club, $activites, $equipements ,$countries];
     }
     public function updateClubGeneralite(Club $club, $request){
-        $logo = $club->logo;
-        if ($request->logo) {
-            $logo = $request->logo;
-//           dd($logo);
+
+        if ($_FILES['logo']['name'] != '') {
+            // une image a été envoyé, on change donc le media du slider
+            list($first, $extension) = explode('.', $_FILES['logo']['name']);
+            $name ='club-'.uniqid();
+            $dir = storage_path().'/app/public/uploads/clubs/'.$club->numero;
+            $target_file = $dir .'/'. $name . '.' . $extension;
+            $size = $_FILES['logo']['size'];
+            $authrorized_extensions = array('jpeg', 'jpg', 'png');
+            if (!in_array($extension, $authrorized_extensions)) {
+                return redirect()->back()->with('error', "L'image n'est pas au bon format. Veuillez télécharger une image au format .jpeg, .jpg ou .png");
+            }
+            if ($size > 1048576) {
+                return redirect()->back()->with('error', "L'image est trop grande. Veuillez télécharger une image de taille maximum de 1 Mo ");
+            }
+            if(!File::isDirectory($dir)){
+                File::makeDirectory($dir);
+            }
+            if (move_uploaded_file($_FILES["logo"]["tmp_name"], $target_file)) {
+                $request->logo = $name . '.' . $extension;
+            }
         }
-        $datap = array('nom' => $request->nom, 'courriel' => $request->courriel, 'web' => $request->web, "logo" => $logo);
+        $datap = array('nom' => $request->nom, 'courriel' => $request->courriel, 'web' => $request->web, "logo" => $request->logo);
         $club = Club::where('id', $club->id)->first();
         $club->update($datap);
     }

@@ -100,3 +100,6 @@ Route::put('/urs/clubs/update-generalite/{club}', [App\Http\Controllers\UrContro
 Route::put('/urs/clubs/update-club-address/{club}', [App\Http\Controllers\UrController::class, 'updateClubAddress'])->name('UrGestion_updateClubAddress');
 Route::put('/urs/clubs/update-club-reunion/{club}', [App\Http\Controllers\UrController::class, 'updateReunion'])->name('UrGestion_updateReunion');
 
+//gestion admin personnes
+Route::get('/admin/personnes/{view_type}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\Admin\PersonneController::class, 'listeUtilisateurs'])->name('personnes.liste_personnes_template');
+Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::class,'index'])->name('personnes.index');

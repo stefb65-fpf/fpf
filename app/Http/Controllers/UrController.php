@@ -13,6 +13,7 @@ use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class UrController extends Controller
 {
@@ -162,7 +163,6 @@ $clubs = $query->paginate($limit_pagination);
     }
     public function updateGeneralite(ClubReunionRequest $request, Club $club)
     {
-        //TODO : enregistrer file sur le serveur
         $this->updateClubGeneralite($club, $request);
         return redirect()->route('UrGestion_updateClub',compact('club'))->with('success', "Les informations générales du club a été mise à jour");;
     }
