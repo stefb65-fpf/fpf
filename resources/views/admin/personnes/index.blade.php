@@ -16,13 +16,13 @@
                     <div class="cardTitle">Adhérents</div>
                 </div>
             </a>
-            <a class="card" href="">
+            <a class="card" href="/admin/personnes/abonnes">
 {{--            <a class="card" href="{{ route('personnes.liste_abonnes') }}">--}}
                 <div class="wrapper">
                     <div class="cardTitle">Abonnés</div>
                 </div>
             </a>
-            <a class="card" href="">
+            <a class="card" href="/admin/personnes/formateurs">
 {{--            <a class="card" href="{{ route('personnes.liste_formateurs') }}">--}}
                 <div class="wrapper">
                     <div class="cardTitle">Formateurs</div>

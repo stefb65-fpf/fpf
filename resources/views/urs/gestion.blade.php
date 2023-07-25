@@ -16,7 +16,7 @@
                     <div class="cardTitle">Clubs</div>
                 </div>
             </a>
-            <a class="card" href="{{ route('urs.liste_adherents') }}">
+            <a class="card" href="ur_adherents/{{$ur->id}}/">
                 <div class="wrapper">
                     <div class="cardTitle">Adhérents</div>
                 </div>
