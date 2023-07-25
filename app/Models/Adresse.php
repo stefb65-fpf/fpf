@@ -9,7 +9,7 @@ class Adresse extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    public $timestamps = false;
+//    public $timestamps = false;
 
     public function personnes() {
         return $this->belongsToMany('App\Models\Personne');

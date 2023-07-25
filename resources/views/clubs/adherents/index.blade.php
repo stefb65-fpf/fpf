@@ -18,4 +18,3 @@
 @section('css')
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection
-

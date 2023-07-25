@@ -391,41 +391,5 @@
                 @endif
             </div>
         </div>
-        {{--        <div class="alertDanger" style="width: 80% !important">--}}
-        {{--            <p>--}}
-        {{--                <span class="bold">Attention !</span>--}}
-        {{--                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.--}}
-        {{--            </p>--}}
-        {{--            <p style="margin-top: 20px">--}}
-        {{--                on affiche ici les fonctions du club (président, trésorier, secrétaire, contact et webmaster.)<br>--}}
-        {{--                Comme le nombre de fonction est limité, on va afficher une ligne par fonction.<br>--}}
-        {{--                Président (+ nom, prénom, identifiant, email si président renseigné - correspond à la fonction 94)<br>--}}
-        {{--                Contact (+ nom, prénom, identifiant, email si contact renseigné - correspond à la fonction 97)<br>--}}
-        {{--                Trésorier (+ nom, prénom, identifiant, email si trésorie renseigné - correspond à la fonction 95)<br>--}}
-        {{--                Secrétaire (+ nom, prénom, identifiant, email si secrétaire renseigné - correspond à la fonction 96)<br>--}}
-        {{--                Webmaster (+ nom, prénom, identifiant, email si webmaster renseigné - correspond à la fonction--}}
-        {{--                320)<br><br>--}}
-        {{--                Si la ligne est vide, on permet l'ajout d'un adhérent pour cette fonction. L'adhérent doit être choisi--}}
-        {{--                parmi les adhérents du club. <br><br>--}}
-        {{--                Si la fonction est renseignée, on peut supprimer l'attribution à l'adhérent ou le remplacer par un autre--}}
-        {{--                adhérent du club (à choisir parmi une liste)<br>--}}
-        {{--                Dans le contrôleur, on récupère tous les adhérents du club et on les affiche dans une liste déroulante--}}
-        {{--                utilisable pour chaque fonction.<br>--}}
-        {{--                On peut remplacer le contact mais pas le supprimer.<br>--}}
-        {{--                Pour nous, toutes les fonctions peuvent être occupées par une même personne--}}
-        {{--            </p>--}}
-        {{--        </div>--}}
-        {{--        <div class="alertDanger" style="width: 80% !important">--}}
-        {{--            <p>--}}
-        {{--            <div class="bold">on récupère les fonctions attribuées dans $fonctions</div>--}}
-        {{--            --}}{{--            {{ $fonctions }}--}}
-        {{--            </p>--}}
-        {{--        </div>--}}
-        {{--        <div class="alertDanger" style="width: 80% !important">--}}
-        {{--            <p>--}}
-        {{--            <div class="bold">on récupère la liste de tous les adherents dans $adherents</div>--}}
-        {{--            {{ $adherents }}--}}
-        {{--            </p>--}}
-        {{--        </div>--}}
     </div>
 @endsection

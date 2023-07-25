@@ -57,8 +57,13 @@
         <button class="adminPrimary btnMedium" type="text" id="btnAdherentsAjout" data-club="{{$club->id}}" style="margin-left: 10px">Ajouter un adhérent</button>
         <button class="adminPrimary btnMedium" type="text" id="renouvellementAdherents" data-club="{{$club->id}}" disabled style="margin-left: 10px">Renouveler</button>
     </div>
-    <div style="display: flex; justify-content: flex-start; margin-top: 20px; width: 100%;">
-        <input type="checkbox" class="mr10" id="abonnementClub"> Abonner le club jusqu'au numéro {{ $club->numero_fin_reabonnement }}
+    <div style="display: flex; justify-content: space-between; margin-top: 20px; width: 100%;">
+        <div>
+            <input type="checkbox" class="mr10" id="abonnementClub"> Abonner le club jusqu'au numéro {{ $club->numero_fin_reabonnement }}
+        </div>
+        <div>
+            <a class="adminPrimary btnMedium" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>
+        </div>
     </div>
     <table class="styled-table">
         <thead>
@@ -132,12 +137,7 @@
                     </div>
                 </td>
                 <td>
-                    <div style="margin-bottom: 3px;">
-                        <a href="" class="adminPrimary btnSmall">action</a>
-                    </div>
-                    <div style="margin-bottom: 3px;">
-                        <a href="" class="adminSuccess btnSmall">action</a>
-                    </div>
+                    <a href="{{ route('clubs.adherents.edit', $adherent->id_utilisateur) }}" class="adminPrimary btnSmall">éditer</a>
                 </td>
             </tr>
         @endforeach

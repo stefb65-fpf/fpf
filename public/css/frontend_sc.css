@@ -168,3 +168,9 @@
     padding-top: 5px;
     margin-top: 5px;
 }
+.selectPersonne {
+    margin-bottom: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: bold;
+}

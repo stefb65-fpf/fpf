@@ -16,12 +16,12 @@
                         <div class="cardTitle">Gestion adhésions et abonnements</div>
                     </div>
                 </a>
-            <a class="card" href="{{ route('clubs.gestion_fonctions') }}">
+            <a class="card" href="{{ route('clubs.fonctions.index') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Fonctions club</div>
                 </div>
             </a>
-            <a class="card" href="{{ route('clubs.gestion_reglements') }}">
+            <a class="card" href="{{ route('clubs.reglements.index') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Bordereaux & Réglements</div>
                 </div>

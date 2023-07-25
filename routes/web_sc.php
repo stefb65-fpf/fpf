@@ -1,10 +1,14 @@
 <?php
 //Route::get('/clubs/gestion_adherents', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.gestion_adherents');
 
-Route::get('/clubs/gestion_fonctions', [App\Http\Controllers\ClubController::class, 'gestionFonctions'])->name('clubs.gestion_fonctions');
-Route::get('/clubs/gestion_reglements', [App\Http\Controllers\ClubController::class, 'gestionReglements'])->name('clubs.gestion_reglements');
+Route::get('/clubs/gestion_fonctions', [App\Http\Controllers\ClubController::class, 'gestionFonctions'])->name('clubs.fonctions.index');
+Route::get('/clubs/gestion_reglements', [App\Http\Controllers\ClubController::class, 'gestionReglements'])->name('clubs.reglements.index');
 Route::get('/clubs/infos_club', [App\Http\Controllers\ClubController::class, 'infosClub'])->name('clubs.infos_club');
 
+Route::get('/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\ClubController::class, 'editAdherent'])->name('clubs.adherents.edit');
+Route::get('/clubs/adherents/create', [App\Http\Controllers\ClubController::class, 'createAdherent'])->name('clubs.adherents.create');
+Route::post('/clubs/adherents/store', [App\Http\Controllers\ClubController::class, 'storeAdherent'])->name('clubs.adherents.store');
+Route::put('/clubs/adherents/{utilisateur_id}/update', [App\Http\Controllers\ClubController::class, 'updateAdherent'])->name('clubs.adherents.update');
 
 Route::get('/urs/infos_ur', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
 

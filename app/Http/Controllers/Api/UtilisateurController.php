@@ -132,6 +132,20 @@ class UtilisateurController extends Controller
         return new JsonResponse(['file' => $filename], 200);
     }
 
+
+    public function checkBeforeInsertion(Request $request) {
+        $personne = Personne::where('email', trim($request->email))->first();
+        if ($personne) {
+            return new JsonResponse(['code' => '10', 'personne' => $personne], 200);
+        }
+        $personnes = Personne::where('nom', trim($request->nom))->where('prenom', trim($request->prenom))->get();
+        if (sizeof($personnes) > 0) {
+            return new JsonResponse(['code' => '20', 'personnes' => $personnes], 200);
+        }
+        return new JsonResponse(['code' => '0'], 200);
+
+    }
+
     protected function getMontantRenouvellementClub($club_id, $abo_club) {
         $club = Club::where('id', $club_id)->first();
         if (!$club) {

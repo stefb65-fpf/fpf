@@ -7,3 +7,4 @@ Route::post('/ajax/checkRenouvellementAdherents', [App\Http\Controllers\Api\Util
 Route::post('/ajax/validRenouvellementAdherents', [App\Http\Controllers\Api\UtilisateurController::class,'validRenouvellementAdherents']);
 Route::post('/ajax/validReglement', [App\Http\Controllers\Api\ReglementController::class,'validReglement']);
 Route::post('/ajax/editCartes', [App\Http\Controllers\Api\ReglementController::class,'editCartes']);
+Route::post('/ajax/utilisateurs/checkBeforeInsertion', [App\Http\Controllers\Api\UtilisateurController::class,'checkBeforeInsertion']);
