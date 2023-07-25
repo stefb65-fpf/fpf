@@ -25,6 +25,26 @@ function searchClub(term) {
         }
     });
 }
+function searchPerson(term){
+    const url = '/api/ajax/isAdmin'
+    $.ajax({
+        url: url,
+        dataType: 'JSON',
+        success: function (data) {
+            let target=""
+            if (data.isAdmin) {
+                target =  "/admin/personnes/recherche/all/all/all/all/"+term;
+            } else {
+                target = "/urs/recherche/"+data.ur_id+"/all/all/all/"+term;
+            }
+// console.log(target)
+            window.location.href = target;
+        },
+        error: function (e) {
+            console.log(e)
+        }
+    });
+}
 $('.searchBox.club input').on('keypress', function (e) {
     // e.preventDefault()
     if (e.which === 13) {
@@ -32,3 +52,9 @@ $('.searchBox.club input').on('keypress', function (e) {
     }
 })
 
+$('.searchBox.person input').on('keypress', function (e) {
+    // e.preventDefault()
+    if (e.which === 13) {
+        searchPerson($(this).val());
+    }
+})
