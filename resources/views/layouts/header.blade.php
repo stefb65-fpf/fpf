@@ -101,6 +101,6 @@
         </div>
     </div>
 </div>
-{{--@section('js')--}}
-{{--    <script src="{{ asset('js/topbar_searchbox.js') }}?t=<?= time() ?>"></script>--}}
-{{--@endsection--}}
+@section('js')
+    <script src="{{ asset('js/topbar_searchbox.js') }}?t=<?= time() ?>"></script>
+@endsection
