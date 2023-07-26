@@ -47,7 +47,7 @@ Route::delete('/admin/droits/deleteFonction/{droit_id}/{fonction_id}', [App\Http
 Route::delete('/admin/droits/deleteUtilisateur/{droit_id}/{utilisateur_id}', [App\Http\Controllers\Admin\DroitController::class, 'deleteUtilisateur'])->name('droits.deleteUtilisateur');
 
 Route::get('/admin/reglements/cartes', [App\Http\Controllers\Admin\ReglementController::class, 'editionCartes'])->name('reglements.cartes');
-Route::resource('/admin/reglements', App\Http\Controllers\Admin\ReglementController::class);
+//Route::resource('/admin/reglements', App\Http\Controllers\Admin\ReglementController::class);
 
 Route::resource('/admin/urs', App\Http\Controllers\Admin\UrController::class);
 Route::get('/admin/fonctions/ca', [App\Http\Controllers\Admin\FonctionController::class, 'ca'])->name('admin.fonctions.ca');

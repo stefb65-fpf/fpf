@@ -16,7 +16,7 @@ class ReglementController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($term=null)
     {
         $reglements = Reglement::orderByDesc('id')->paginate(100);
         foreach ($reglements as $reglement) {

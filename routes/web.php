@@ -102,3 +102,8 @@ Route::put('/urs/clubs/update-club-reunion/{club}', [App\Http\Controllers\UrCont
 //gestion admin personnes
 Route::get('/admin/personnes/{view_type}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\Admin\PersonneController::class, 'listeUtilisateurs'])->name('personnes.liste_personnes_template');
 Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::class,'index'])->name('personnes.index');
+
+
+//gestion admin reglements
+Route::get('/admin/reglements/{term?}', [App\Http\Controllers\Admin\ReglementController::class, 'index']);
+Route::resource('/admin/reglements', App\Http\Controllers\Admin\ReglementController::class);

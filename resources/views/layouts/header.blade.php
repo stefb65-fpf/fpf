@@ -1,4 +1,5 @@
 <div class="topbar">
+
     <div class="logoMobile">
         <img src="{{ env('APP_URL').'storage/app/public/FPF-100-Logo-Seul.webp' }}"
              alt="Fédération Photographique de France">
@@ -61,7 +62,6 @@
                     </div>
                     <div class="searchBox club">
                         <input type="text" placeholder="identifiant ou nom">
-
                     </div>
                 </div>
                 <div class="searchItem" data-target="3">
@@ -101,6 +101,6 @@
         </div>
     </div>
 </div>
-@section('js')
-    <script src="{{ asset('js/topbar_searchbox.js') }}?t=<?= time() ?>"></script>
-@endsection
+{{--@section('js')--}}
+{{--    <script src="{{ asset('js/topbar_searchbox.js') }}?t=<?= time() ?>"></script>--}}
+{{--@endsection--}}

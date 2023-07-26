@@ -321,36 +321,3 @@ $("button[name=showSelect]").on('click', function(e){
     $(this).parent().find('select').removeClass('hidden')
 })
 
-
-//searchbox topbar
-$('.icon[name=searchBtn]').on("click", function () {
-    $(this).parent().toggleClass('active')
-    $('.searchContainer').toggleClass('searching')
-    $(this).parent().parent().find('input').trigger( "focus" )
-})
-
-function searchClub(term) {
-    const url = '/api/ajax/getClubs'
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: {
-            term: term
-        },
-        dataType: 'JSON',
-        success: function (data) {
-            if (data.length > 0) {
-            } else {
-
-            }
-        },
-        error: function (e) {
-        }
-    });
-}
-$('.searchBox.club input').on('keypress', function (e) {
-    // e.preventDefault()
-    if (e.which === 13) {
-      searchClub($(this).val());
-    }
-})
