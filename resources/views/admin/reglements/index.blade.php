@@ -10,7 +10,16 @@
                 </svg>
             </a>
         </h1>
-
+        @if($term)
+            <div class="searchedTerm mt25">
+                <div class="title mt25">Vous avez cherché les règlements contenant l'expression :</div>
+                <div class="d-flex mt25 center">
+                    <div class="value">{{$term}}</div>
+                    <div class="close">X</div>
+                </div>
+            </div>
+        @endif
+@if(sizeof($reglements))
         <div style="width: 100%">
             <table class="styled-table">
                 <thead>
@@ -56,6 +65,9 @@
         <div class="pagination">
             {{ $reglements->render( "pagination::default") }}
         </div>
+        @else
+<div class="mt25">Nous n'avons pas trouvé de résultat correspondant à votre recherche de règlements.</div>
+        @endif
     </div>
     <div class="modalEdit d-none" id="modalValidationRenouvellement">
         <div class="modalEditHeader">

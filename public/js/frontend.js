@@ -77,21 +77,21 @@ formIcons.forEach((formIcon) => {
 
 //autosuggest
 
-if (autosuggestContainer) {
-    window.addEventListener('click', (e) => {
-        let inputs = autosuggestContainer.querySelectorAll('.autosuggestCFA')
-        let outside = true
-        inputs.forEach((input) => {
-            if (e.target == input) {
-                autosuggestContainer.classList.add('active')
-                outside = false
-            }
-        })
-        if (outside) {
-            autosuggestContainer.classList.remove('active')
-        }
-    })
-}
+// if (autosuggestContainer) {
+//     window.addEventListener('click', (e) => {
+//         let inputs = autosuggestContainer.querySelectorAll('.autosuggestCFA')
+//         let outside = true
+//         inputs.forEach((input) => {
+//             if (e.target == input) {
+//                 autosuggestContainer.classList.add('active')
+//                 outside = false
+//             }
+//         })
+//         if (outside) {
+//             autosuggestContainer.classList.remove('active')
+//         }
+//     })
+// }
 
 
 //search in topBar

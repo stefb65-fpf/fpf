@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\Reglement;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 
 class ReglementController extends Controller
 {
+    use Tools;
     public function __construct() {
         $this->middleware(['checkLogin', 'adminAccess']);
     }
@@ -18,7 +20,12 @@ class ReglementController extends Controller
      */
     public function index($term=null)
     {
-        $reglements = Reglement::orderByDesc('id')->paginate(100);
+        $query = Reglement::orderByDesc('reglements.id');
+        //TODO:filtre par term
+        if($term){
+            $this->getReglementsByTerm($term,$query);
+        }
+        $reglements = $query->paginate(100);
         foreach ($reglements as $reglement) {
             if ($reglement->clubs_id) {
                 $club = Club::where('id', $reglement->clubs_id)->first();
@@ -32,7 +39,8 @@ class ReglementController extends Controller
                 }
             }
         }
-        return view('admin.reglements.index', compact('reglements'));
+
+        return view('admin.reglements.index', compact('reglements', 'term'));
     }
 
     public function editionCartes() {

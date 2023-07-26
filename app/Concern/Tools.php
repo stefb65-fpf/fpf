@@ -7,7 +7,10 @@ namespace App\Concern;
 use App\Models\Historique;
 use App\Models\Historiquemail;
 use App\Models\Personne;
+use App\Models\Reglement;
+use App\Models\Utilisateur;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 trait Tools
 {
@@ -142,7 +145,6 @@ return $number;
         return $query;
     }
     public function getPersonsByTerm($term,$query){
-
         $query = $query->where(
             function($query) use ($term){
                 $query->where('utilisateurs.identifiant', 'LIKE', '%'.$term.'%')
@@ -151,7 +153,49 @@ return $number;
                   ->orWhere('personnes.prenom', 'LIKE', '%'.$term.'%');
             }
         );
-
+        return $query;
+    }
+    public function isReference($e){
+        if(!(strlen($e)==15)){
+            return false;
+        }
+        $a = str_split($e);
+        $potential_numbers = [$a[0],$a[1],$a[3],$a[4],$a[6],$a[7],$a[8],$a[9],$a[11],$a[12],$a[13],$a[14]];
+        $potential_separators = [$a[2],$a[5],$a[10]];
+        foreach ($potential_separators as $char){
+            if(!($char == "-")){
+                return false;
+            }
+        }
+        foreach ($potential_numbers as $char){
+            if(!is_numeric($char)){
+                return false;
+            }
+        }
+        return true;
+    }
+    public function getReglementsByTerm($term, $query){
+        if (is_numeric($term)) {
+            $club = Club::where('numero', $term)->first();
+            if ($club) {
+                $query->where('clubs_id', $club->id);
+            }
+        }else{
+            if ($this->isReference($term)) {
+                $query->where('reference', $term);
+            }else{
+                $reglements_id = Utilisateur::join('reglementsutilisateurs', 'reglementsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                    ->where(
+                        function($query) use ($term){
+              $query->where('nom', 'LIKE', '%'.$term.'%')
+                  ->orWhere('prenom', 'LIKE', '%'.$term.'%');
+          }
+                    )
+                    ->selectRaw('reglementsutilisateurs.reglements_id')
+                    ->get();
+                $query->whereIn('id', $reglements_id); // à vérifier ici s'il faut transformer en array
+            }
+        }
         return $query;
     }
 }

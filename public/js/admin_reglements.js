@@ -59,3 +59,9 @@ $('#editerCartes').on('click', function(e){
         }
     });
 })
+//reload page  without term
+$('.searchedTerm .close').on('click', function(){
+    $(this).parent().parent().addClass('d-none')
+    let url = "/admin/reglements";
+    window.location.href = url;
+})
