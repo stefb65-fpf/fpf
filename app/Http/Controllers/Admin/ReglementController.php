@@ -28,6 +28,7 @@ class ReglementController extends Controller
                         list($tmp, $dir_club) = explode('htdocs/', $dir);
                         $reglement->bordereau = env('APP_URL').$dir_club.'/'.$reglement->reference.'.pdf';
                     }
+                    $reglement->nom_club = $club->nom;
                 }
             }
         }

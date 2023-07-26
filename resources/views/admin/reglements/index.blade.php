@@ -16,6 +16,7 @@
                 <thead>
                 <tr>
                     <th>Référence</th>
+                    <th>Club / Adhérent</th>
                     <th>Statut</th>
                     <th>Date de création</th>
                     <th>Montant</th>
@@ -28,6 +29,7 @@
                 @foreach($reglements as $reglement)
                     <tr>
                         <td>{{ $reglement->reference }}</td>
+                        <td>{{ $reglement->clubs_id ? $reglement->nom_club : '' }}</td>
                         <td>{{ $reglement->statut === 0 ? 'En attente' : 'Traité' }}</td>
                         <td>{{ $reglement->created_at }}</td>
                         <td>{{ $reglement->montant }}€</td>
