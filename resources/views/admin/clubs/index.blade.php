@@ -151,7 +151,7 @@
                         </td>
                         <td>
                             <div style="margin-bottom: 3px;">
-                                <a href="{{ route('FPFGestion_updateClub', $club) }}" class="adminPrimary btnSmall">Éditer</a>
+                                <a href="{{ route('admin.clubs.edit', $club) }}" class="adminPrimary btnSmall">Éditer</a>
                             </div>
                             <div style="margin-bottom: 3px;">
                                 <a href="{{route('admin.clubs.liste_adherents_club',$club)}}" class="adminSuccess btnSmall">Liste des adhérents</a>

@@ -2,7 +2,7 @@ $('input[name=ceFonction]').on('click', function() {
     const ref = $(this).data('ref')
     const checked = $(this).is(':checked') ? 1 : 0
     $.ajax({
-        url:'/api/ajax/updateFonctionCe',
+        url:'/api/updateFonctionCe',
         type: 'POST',
         data: {
             ref: ref,

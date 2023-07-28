@@ -9,7 +9,7 @@ $('select[name=filter]').on('change',function (e) {
     let abonnement = $('select[data-ref=abonnement]').val()
 
     if(typeof club === 'undefined'){
-        url = rootUrl.split('gestion_adherents')[0]+"gestion_adherents"+"/"+statut+"/"+abonnement
+        url = rootUrl.split('adherents')[0]+"adherents"+"/"+statut+"/"+abonnement
     }else{
         url = rootUrl.split(club)[0]+club+"/"+statut+"/"+abonnement;
     }
@@ -102,7 +102,7 @@ $('#renouvellementAdherents').on('click',function (e) {
     const aboClub = $('#abonnementClub').is(':checked') ? 1 : 0
     $('#renouvellementListe').html('')
     $.ajax({
-        url:'/api/ajax/checkRenouvellementAdherents',
+        url:'/api/checkRenouvellementAdherents',
         type: 'POST',
         data: {
             adherents: idAdherents,
@@ -185,7 +185,7 @@ $('#btnRenouvellement').on('click',function (e) {
     })
     const aboClub = $('#abonnementClub').is(':checked') ? 1 : 0
     $.ajax({
-        url:'/api/ajax/validRenouvellementAdherents',
+        url:'/api/validRenouvellementAdherents',
         type: 'POST',
         data: {
             adherents: idAdherents,
@@ -197,6 +197,8 @@ $('#btnRenouvellement').on('click',function (e) {
         success: function (reponse) {
             $('#modalRenouvellement').addClass('d-none')
             $('#lienBordereauClub').attr('href', $('#app_url').html() + reponse.file)
+            $('#clubPayVirement').data('ref', reponse.reglement_id)
+            $('#clubPayCb').data('ref', reponse.reglement_id)
             $('#modalRenouvellementOk').removeClass('d-none')
         },
         error: function (e) {

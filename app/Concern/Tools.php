@@ -4,6 +4,10 @@
 namespace App\Concern;
 
 
+use App\Mail\ValidationReglement;
+use App\Models\Abonnement;
+use App\Models\Club;
+use App\Models\Configsaison;
 use App\Models\Historique;
 use App\Models\Historiquemail;
 use App\Models\Personne;
@@ -11,6 +15,7 @@ use App\Models\Reglement;
 use App\Models\Utilisateur;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 trait Tools
 {
@@ -83,9 +88,9 @@ trait Tools
     public function format_phone_number_visual($string)
     {
         $phone_number = $string;
-        if(strlen($string)){
+        if (strlen($string)) {
             //si $string commence par un 0 et contient des espaces, on les enleve
-            $phone_number = ltrim(str_replace( " ","",$string),"0");
+            $phone_number = ltrim(str_replace(" ", "", $string), "0");
             //séparer avant et après le "."
             $tab = explode('.', $string);
             if (sizeof($tab) > 1) {
@@ -100,96 +105,109 @@ trait Tools
     public function format_phone_number_callable($string)
     {
         $phone_number = $string;
-        if(strlen($string)){
+        if (strlen($string)) {
             //si $string commence par un 0 et contient des espaces, on les enleve
-            $phone_number = ltrim(str_replace( " ","",$string),"0");
+            $phone_number = ltrim(str_replace(" ", "", $string), "0");
             //enlever le '.'
-            $phone_number = str_replace('.', "",$string);
+            $phone_number = str_replace('.', "", $string);
         }
         return $phone_number;
     }
+
     public function format_web_url($string)
     {
-        $array = ['https://', 'www','http://'];
-        if(strlen($string)){
-            $string = "https://".ltrim(str_replace($array, "",$string),".");
+        $array = ['https://', 'www', 'http://'];
+        if (strlen($string)) {
+            $string = "https://" . ltrim(str_replace($array, "", $string), ".");
         }
         return $string;
     }
-    public function format_fixe_for_base($number, $indicatif){
+
+    public function format_fixe_for_base($number, $indicatif)
+    {
         if ($number) {
             $number = str_replace(" ", "", $number);
-            $number= ltrim($number, '0');
+            $number = ltrim($number, '0');
             $number = '+' . $indicatif . '.' . $number;
         }
         return $number;
     }
-    public function format_mobile_for_base($number){
+
+    public function format_mobile_for_base($number, $indicatif = '33')
+    {
         if ($number) {
             $first_two_numbers = substr($number, 0, 2);
             if ($first_two_numbers == "06" || $first_two_numbers == "07") {
                 // remove "0" and add "+33."
                 $number = str_replace(" ", "", $number);
                 $number = ltrim($number, '0');
-                $number = '+33.' . $number;
+                $number = '+' . $indicatif . '.' . $number;
             }
         }
-return $number;
+        return $number;
     }
-    public function getClubsByTerm($term,$query){
+
+    public function getClubsByTerm($term, $query)
+    {
         if (is_numeric($term)) {
-            $query =$query->where('numero', 'LIKE', '%'.$term.'%')->get();
+            $query = $query->where('numero', 'LIKE', '%' . $term . '%')->get();
         } else {
-            $query = $query->where('nom', 'LIKE','%'. $term.'%')->get();
+            $query = $query->where('nom', 'LIKE', '%' . $term . '%')->get();
         }
         return $query;
     }
-    public function getPersonsByTerm($term,$query){
+
+    public function getPersonsByTerm($term, $query)
+    {
         $query = $query->where(
-            function($query) use ($term){
-                $query->where('utilisateurs.identifiant', 'LIKE', '%'.$term.'%')
-                    ->orWhere('personnes.email', 'LIKE', '%'.$term.'%')
-                   ->orWhere('personnes.nom', 'LIKE', '%'.$term.'%')
-                  ->orWhere('personnes.prenom', 'LIKE', '%'.$term.'%');
+            function ($query) use ($term) {
+                $query->where('utilisateurs.identifiant', 'LIKE', '%' . $term . '%')
+                    ->orWhere('personnes.email', 'LIKE', '%' . $term . '%')
+                    ->orWhere('personnes.nom', 'LIKE', '%' . $term . '%')
+                    ->orWhere('personnes.prenom', 'LIKE', '%' . $term . '%');
             }
         );
         return $query;
     }
-    public function isReference($e){
-        if(!(strlen($e)==15)){
+
+    public function isReference($e)
+    {
+        if (!(strlen($e) == 15)) {
             return false;
         }
         $a = str_split($e);
-        $potential_numbers = [$a[0],$a[1],$a[3],$a[4],$a[6],$a[7],$a[8],$a[9],$a[11],$a[12],$a[13],$a[14]];
-        $potential_separators = [$a[2],$a[5],$a[10]];
-        foreach ($potential_separators as $char){
-            if(!($char == "-")){
+        $potential_numbers = [$a[0], $a[1], $a[3], $a[4], $a[6], $a[7], $a[8], $a[9], $a[11], $a[12], $a[13], $a[14]];
+        $potential_separators = [$a[2], $a[5], $a[10]];
+        foreach ($potential_separators as $char) {
+            if (!($char == "-")) {
                 return false;
             }
         }
-        foreach ($potential_numbers as $char){
-            if(!is_numeric($char)){
+        foreach ($potential_numbers as $char) {
+            if (!is_numeric($char)) {
                 return false;
             }
         }
         return true;
     }
-    public function getReglementsByTerm($term, $query){
+
+    public function getReglementsByTerm($term, $query)
+    {
         if (is_numeric($term)) {
             $club = Club::where('numero', $term)->first();
             if ($club) {
                 $query->where('clubs_id', $club->id);
             }
-        }else{
+        } else {
             if ($this->isReference($term)) {
                 $query->where('reference', $term);
-            }else{
+            } else {
                 $reglements_id = Utilisateur::join('reglementsutilisateurs', 'reglementsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
                     ->where(
-                        function($query) use ($term){
-              $query->where('nom', 'LIKE', '%'.$term.'%')
-                  ->orWhere('prenom', 'LIKE', '%'.$term.'%');
-          }
+                        function ($query) use ($term) {
+                            $query->where('nom', 'LIKE', '%' . $term . '%')
+                                ->orWhere('prenom', 'LIKE', '%' . $term . '%');
+                        }
                     )
                     ->selectRaw('reglementsutilisateurs.reglements_id')
                     ->get();
@@ -197,5 +215,105 @@ return $number;
             }
         }
         return $query;
+    }
+
+    protected function saveReglement($reglement) {
+        $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
+        $numeroencours = $config->numeroencours;
+
+        // on traite tous les utilisateurs en passant leur statut à 2 et / ou en prologeant ou créant leur abonnement
+        $utilisateurs = Utilisateur::join('reglementsutilisateurs', 'utilisateurs.id', '=', 'reglementsutilisateurs.utilisateurs_id')
+            ->where('reglementsutilisateurs.reglements_id', $reglement->id)
+            ->get();
+
+        foreach ($utilisateurs as $utilisateur) {
+            $datap = array(); // données à mettre à jour sur la personne
+            $datau = array(); // données à mettre à jour sur l'utilisateur
+            if ($utilisateur->adhesion == 1) {
+                $datau = array('statut' => 2, 'saison' => date('Y'));
+                $datap['is_adherent'] = 1;
+                $utilisateur->update($datau);
+            }
+            if ($utilisateur->abonnement == 1) {
+                $datap['is_abonne'] = 1;
+
+                // on regarde si l'utilisateur a déjà un abonnement en cours
+                $abonnement = Abonnement::where('personne_id', $utilisateur->personne_id)->where('etat', 1)->first();
+                if ($abonnement) {
+                    // on crée un abonnement avec état 0
+                    $debut = $abonnement->fin + 1;
+                    $fin = $abonnement->fin + 5;
+                    $dataa = array('personne_id' => $utilisateur->personne_id, 'etat' => 0, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
+                } else {
+                    // on crée un abonnement avec état 1
+                    $debut = $numeroencours;
+                    $fin = $numeroencours + 4;
+                    $dataa = array('personne_id' => $utilisateur->personne_id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
+                }
+                Abonnement::create($dataa);
+            }
+            $personne = Personne::where('id', $utilisateur->personne_id)->first();
+            $personne->update($datap);
+        }
+
+        // on met à jour le club si besoin
+        if ($reglement->aboClub == 1 || $reglement->adhClub == 1) {
+            $club = Club::where('id', $reglement->clubs_id)->first();
+            $datac = array('statut' => 2);
+            if ($club->ct == 'N') {
+                $datac['ct'] = '1';
+                $datac['second_year'] = 1;
+            }
+            if ($club->second_year == 1) {
+                $datac['second_year'] = 0;
+            }
+            if ($reglement->aboClub == 1) {
+                if ($numeroencours > $club->numerofinabonnement) {
+                    $datac['numerofinabonnement'] = $numeroencours + 5;
+                } else {
+                    $datac['numerofinabonnement'] = $club->numerofinabonnement + 5;
+                }
+            }
+            $club->update($datac);
+        }
+
+        if ($reglement->clubs_id) {
+            // on récupère le contact du club et on luie envoie le mail de validation
+            $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                ->where('fonctionsutilisateurs.fonctions_id', 97)
+                ->where('utilisateurs.clubs_id', $reglement->clubs_id)
+                ->whereNotNull('utilisateurs.personne_id')
+                ->first();
+            if ($contact) {
+                $this->sendMailValidationRegelement($contact, $reglement);
+            }
+        } else {
+            // on envoie à tous les utilisateurs concernés par le règlement
+            foreach ($utilisateurs as $utilisateur) {
+                $this->sendMailValidationRegelement($utilisateur, $reglement);
+            }
+        }
+        return true;
+    }
+
+    protected function sendMailValidationRegelement($utilisateur, $reglement) {
+//        $email = $utilisateur->personne->email;
+        $email = 'contact@envolinfo.com'; // TODO remove this line
+        $mailSent = Mail::to($email)->send(new ValidationReglement($reglement));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+        $mail = new \stdClass();
+        $mail->titre = "Validation de votre règlement FPF";
+        $mail->destinataire = $email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($utilisateur->personne->id, $mail);
+        return true;
+    }
+
+    public function generateRandomPassword() {
+        $letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*";
+        $shuffle_letters = str_shuffle($letters);
+        $random_password = substr($shuffle_letters, 0, 8);
+        return hash('sha512', $random_password);
     }
 }

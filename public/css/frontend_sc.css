@@ -174,3 +174,12 @@
     cursor: pointer;
     font-weight: bold;
 }
+.btnRegister {
+    font-size: 0.9rem;
+    display: block;
+    text-align: center;
+    width: 300px;
+    border-radius: 5px;
+    padding: 20px 0;
+    margin: 10px auto;
+}

@@ -65,8 +65,7 @@ Route::put('/update-club-reunion/{club}', [App\Http\Controllers\ClubController::
 Route::delete('/delete-club-fonction/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\ClubController::class,'deleteFonction'])->name('deleteFonctionClub');
 Route::put('/update-club-fonction/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\ClubController::class,'updateFonction'])->name('updateFonctionClub');
 Route::put('/add-club-fonction/{fonction_id}',[App\Http\Controllers\ClubController::class,'addFonction'])->name('addFonctionClub');
-//gestion des adhésions et abonnements club par responsable de clubs
-Route::get('/clubs/gestion_adherents/{statut?}/{abonnement?}', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.gestion_adherents');
+
 
 // gestion des urs par responsable ur
 Route::get('/urs/gestion', [App\Http\Controllers\UrController::class, 'gestion'])->name('urs.gestion');
@@ -79,20 +78,18 @@ Route::get('/admin/urs/{ur}/edit', [App\Http\Controllers\Admin\UrController::cla
 Route::put('/urs/update-ur/{ur}', [App\Http\Controllers\Admin\UrController::class, 'updateUr'])->name('updateUr');
 
 //Gestion clubs par responsable fpf
-Route::put('/admin/update-generalite/{club}', [App\Http\Controllers\Admin\ClubController::class, 'updateGeneralite'])->name('FPFGestion_updateGeneralite');
-Route::put('/admin/update-club-address/{club}', [App\Http\Controllers\Admin\ClubController::class, 'updateClubAddress'])->name('FPFGestion_updateClubAddress');
-Route::put('/admin/update-club-reunion/{club}', [App\Http\Controllers\Admin\ClubController::class, 'updateReunion'])->name('FPFGestion_updateReunion');
-
-Route::get('/admin/clubs/club/{club}', [App\Http\Controllers\Admin\ClubController::class, 'update'])->name('FPFGestion_updateClub');
-Route::get('/admin/clubs/ajouter', [App\Http\Controllers\Admin\ClubController::class, 'create'])->name('admin.clubs.create');
-//Route::get('/admin/clubs/store', [App\Http\Controllers\Admin\AdminController::class, 'store'])->name('admin.clubs.store');
+Route::put('/admin/clubs/{club}/update-generalite', [App\Http\Controllers\Admin\ClubController::class, 'updateGeneralite'])->name('admin.clubs.updateGeneralite');
+Route::put('/admin/clubs/{club}/update-club-addresses', [App\Http\Controllers\Admin\ClubController::class, 'updateClubAddress'])->name('admin.clubs.updateClubAddress');
+Route::put('/admin/clubs/{club}/update-club-reunion', [App\Http\Controllers\Admin\ClubController::class, 'updateReunion'])->name('admin.clubs.updateReunion');
+Route::get('/admin/clubs/{club}/edit', [App\Http\Controllers\Admin\ClubController::class, 'edit'])->name('admin.clubs.edit');
+Route::get('/admin/clubs/create', [App\Http\Controllers\Admin\ClubController::class, 'create'])->name('admin.clubs.create');
+Route::post('/admin/clubs/store', [App\Http\Controllers\Admin\ClubController::class, 'store'])->name('admin.clubs.store');
 Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}/{term?}', [App\Http\Controllers\Admin\ClubController::class, 'index'])->name('admin.clubs.index');
 Route::get('/admin/liste_adherent/{club}/{statut?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'listeAdherent'])->name('admin.clubs.liste_adherents_club');
-Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
+//Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
 
 //gestion clubs par responsable ur
 Route::get('/urs/liste_clubs/{statut?}/{type_carte?}/{abonnement?}/{term?}', [App\Http\Controllers\UrController::class, 'listeClubs'])->name('urs.liste_clubs');
-//Route::post('/urs/liste_clubs/search')->name('urs.searchClub');
 Route::get('/urs/clubs/liste_adherents/{club}/{statut?}/{abonnement?}',[App\Http\Controllers\UrController::class, 'listeAdherentsClub'])->name('urs.liste_adherents_club');
 Route::get('/urs/clubs/{club}', [App\Http\Controllers\UrController::class, 'updateClub'])->name('UrGestion_updateClub');
 Route::put('/urs/clubs/update-generalite/{club}', [App\Http\Controllers\UrController::class, 'updateGeneralite'])->name('UrGestion_updateGeneralite');

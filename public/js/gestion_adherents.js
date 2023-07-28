@@ -46,7 +46,7 @@ $('#checkBeforeInsertion').on('click', function(e) {
 
     // on contrôle l'existence de l'email dans la BDD ou la présence d'un homonyme nom / prénom
     $.ajax({
-        url: '/api/ajax/utilisateurs/checkBeforeInsertion',
+        url: '/api/utilisateurs/checkBeforeInsertion',
         type: 'POST',
         data: {
             nom: $('#personneNom').val(),

@@ -16,7 +16,7 @@ $('#validRenouvellement').on('click', function(e){
     }
     const id = $(this).data('id')
     $.ajax({
-        url:'/api/ajax/validReglement',
+        url:'/api/validReglement',
         type: 'POST',
         data: {
             ref: id,
@@ -35,7 +35,7 @@ $('#validRenouvellement').on('click', function(e){
 $('#editerCartes').on('click', function(e){
     e.preventDefault()
     $.ajax({
-        url:'/api/ajax/editCartes',
+        url:'/api/editCartes',
         type: 'POST',
         data: {
         },

@@ -134,5 +134,4 @@
 @endsection
 @section('js')
     <script src="{{ asset('js/autocompleteCommune.js') }}"></script>
-    <script src="{{ asset('js/admin_votes.js') }}"></script>
 @endsection

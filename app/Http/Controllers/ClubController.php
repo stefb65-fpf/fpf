@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Concern\Api;
 use App\Concern\ClubTools;
 use App\Concern\Tools;
 use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubAbonnementRequest;
 use App\Http\Requests\ClubReunionRequest;
+use App\Models\Abonnement;
 use App\Models\Adresse;
 use App\Models\Club;
 use App\Models\Configsaison;
@@ -22,6 +24,7 @@ class ClubController extends Controller
 {
     use Tools;
     use ClubTools;
+    use Api;
     public function __construct()
     {
         $this->middleware(['checkLogin', 'clubAccess']);
@@ -82,8 +85,17 @@ class ClubController extends Controller
         }
         $adherents = $query->get();
         foreach ($adherents as $adherent) {
+            $fin = '';
+            if ($adherent->personne->is_abonne) {
+                $personne_abonnement = Abonnement::where('personne_id', $adherent->personne_id)->where('etat', 1)->first();
+                if ($personne_abonnement) {
+                    $fin = $personne_abonnement->fin;
+                }
+            }
+            $adherent->fin = $fin;
+
             // si la personne est abonnée, on récupère le numéro de fin de son abonnement
-            $adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[1]['fin'] : '';
+            //$adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[1]['fin'] : '';
         }
         return view('clubs.adherents.index', compact('club','statut','abonnement','adherents'));
     }
@@ -181,18 +193,18 @@ class ClubController extends Controller
             'statut' => 0
         );
         $utilisateur = Utilisateur::create($datau);
-        return redirect()->route('clubs.gestion_adherents')->with('success', "L'adhérent a bien  été ajouté");
+        return redirect()->route('clubs.adherents.index')->with('success', "L'adhérent a bien  été ajouté");
     }
 
     public function editAdherent($utilisateur_id) {
         $club = $this->getClub();
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
         if ($utilisateur->clubs_id != $club->id) {
-            return redirect()->route('clubs.gestion_adherents')->with('error', "Cet utilisateur ne fait pas partie des adhérents du club");
+            return redirect()->route('clubs.adherents.index')->with('error', "Cet utilisateur ne fait pas partie des adhérents du club");
         }
         $countries = Pays::all();
         if (!$utilisateur) {
-            return redirect()->route('clubs.gestion_adherents')->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+            return redirect()->route('clubs.adherents.index')->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
         }
         $pays = Pays::where('nom', strtoupper(strtolower($utilisateur->personne->adresses[0]->pays)))->first();
         if ($pays) {
@@ -250,7 +262,7 @@ class ClubController extends Controller
             $adresse2->update($dataa2);
         }
 
-        return redirect()->route('clubs.gestion_adherents')->with('success', "Les informations de l'adhérent ont été mises à jour");
+        return redirect()->route('clubs.adherents.index')->with('success', "Les informations de l'adhérent ont été mises à jour");
 
     }
 
@@ -350,6 +362,32 @@ class ClubController extends Controller
         return view('clubs.reglements.index', compact('club', 'reglements', 'dir_club', 'dir'));
     }
 
+    public function attentePaiementValidation() {
+        $club = $this->getClub();
+        return view('clubs.reglements.attente_paiement_validation', compact('club'));
+    }
+
+    public function validationPaiementCarte(Request $request) {
+        $club = $this->getClub();
+        $result = $this->getMonextResult($request->token);
+        if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
+            // on regarde si on doit traiter un règlement
+            $reglement = Reglement::where('monext_token', $request->token)->where('statut', 0)->first();
+            if ($reglement) {
+                // on fait le traitement
+                if ($this->saveReglement($reglement)) {
+                    $data =array('statut' => 1, 'numerocheque' => 'Monext '.$reglement->monext_token, 'dateenregistrement' => date('Y-m-d H:i:s'),
+                        'monext_token' => null, 'monext_link' => null);
+                    $reglement->update($data);
+                }
+            }
+            $code = 'ok';
+
+        } else {
+            $code = 'ko';
+        }
+        return view('clubs.reglements.validation_paiement_carte', compact('club', 'code'));
+    }
 
     protected function getClub()
     {

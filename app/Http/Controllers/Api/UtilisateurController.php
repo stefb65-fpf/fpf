@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 
+use App\Concern\Api;
+use App\Concern\Tools;
 use App\Exports\RoutageListAdherents;
 use App\Http\Controllers\Controller;
 
@@ -23,6 +25,8 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class UtilisateurController extends Controller
 {
+    use Api;
+    use Tools;
     public function createListAdherents(Request $request)
     {
         $club = $request->club;
@@ -124,12 +128,21 @@ class UtilisateurController extends Controller
             ->where('clubs_id', $club->id)->where('fonctionsutilisateurs.fonctions_id', 97)->whereNotNull('utilisateurs.personne_id')->first();
         if ($contact) {
             // TODO : changer l'adresse email
-//            $mail = $contact->personne->email;
-            $mail = 'contact@envolinfo.com';
-            Mail::to($mail)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant));
+//            $email = $contact->personne->email;
+            $email = 'contact@envolinfo.com';
+            $mailSent = Mail::to($email)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant));
+            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+            $this->registerAction($contact->personne->id, 1, "Validation du bordereau pour renouvellement FPF");
+
+            $mail = new \stdClass();
+            $mail->titre = "Demande de renouvellement d'adhésion FPF";
+            $mail->destinataire = $email;
+            $mail->contenu = $htmlContent;
+            $this->registerMail($contact->personne->id, $mail);
         }
 
-        return new JsonResponse(['file' => $filename], 200);
+        return new JsonResponse(['file' => $filename, 'reglement_id' => $reglement->id], 200);
     }
 
 
@@ -144,6 +157,101 @@ class UtilisateurController extends Controller
         }
         return new JsonResponse(['code' => '0'], 200);
 
+    }
+
+    public function getTarifForNewUser(Request $request) {
+        $tarif = $this->getTarifAdhesion($request->datenaissance);
+//        $date_naissance = new \DateTime($request->datenaissance);
+//        $date_now = new \DateTime();
+//        $age = $date_now->diff($date_naissance)->y;
+//        if ($age <= 0) {
+//            return new JsonResponse(['code' => '20'], 200);
+//        }
+//        $tarif_id = 13;
+//        if ($age < 18) {
+//            $tarif_id = 15;
+//        } else {
+//            if($age < 25) {
+//                $tarif_id = 14;
+//            }
+//        }
+//        $tarif = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
+        return new JsonResponse(['code' => '0', 'tarif' => $tarif], 200);
+    }
+
+    protected function getTarifAdhesion($datenaissance) {
+        $date_naissance = new \DateTime($datenaissance);
+        $date_now = new \DateTime();
+        $age = $date_now->diff($date_naissance)->y;
+        if ($age <= 0) {
+            return new JsonResponse(['code' => '20'], 200);
+        }
+        $tarif_id = 13;
+        if ($age < 18) {
+            $tarif_id = 15;
+        } else {
+            if($age < 25) {
+                $tarif_id = 14;
+            }
+        }
+        $tarif = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
+        return $tarif ? $tarif->tarif : 0;
+    }
+
+    public function register(Request $request) {
+        // on vérifie si la personne existe déjà
+        if (!filter_var(trim($request->email), FILTER_VALIDATE_EMAIL)) {
+            return new JsonResponse(['erreur' => 'email invalide'], 400);
+        }
+        $personne = Personne::where('email', trim($request->email))->first();
+        if ($personne) {
+            return new JsonResponse(['erreur' => 'cette personne existe déjà'], 400);
+        }
+        // on enregistre la personne
+        $password = hash('sha512', $request->password);
+        $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'email' => trim($request->email), 'sexe' => $request->sexe,
+            'datenaissance' => $request->datenaissance, 'phone_mobile' => $request->phone_mobile, 'is_adherent' => 1, 'password' => $password,
+            'attente_paiement' => 1, 'action_paiement' => 'ADD_INDIVIDUEL');
+        $personne = Personne::create($datap);
+
+        // on redirige vers le paiement
+//        if ($request->paiement == 1) {
+
+            $url = 'https://api.bridgeapi.io/v2/payment-links';
+            $transaction = new \stdClass();
+            $transaction->amount = floatval($this->getTarifAdhesion($personne->datenaissance));
+            $transaction->currency = 'EUR';
+            $transaction->label = 'Adhésion individuelle';
+
+            $expired_date = new \DateTime(date('Y-m-d H:i:s'));
+            $expired_date->add(new \DateInterval('P1D'));
+
+            $bridge_datas = [
+                "user" => [
+                    "first_name" => $personne->prenom,
+                    "last_name" => $personne->nom
+                ],
+                "expired_date" => $expired_date->format('c'),
+                "client_reference" => strval($personne->id),
+                "transactions" => [
+                    $transaction
+                ],
+                "callback_url" => env('APP_URL') . "registerAttente",
+            ];
+
+            list($status, $reponse) = $this->callBridge($url, 'POST', json_encode($bridge_datas));
+            if ($status == 200) {
+                $reponse = json_decode($reponse);
+                $personne->update(['bridge_id' => $reponse->id, 'bridge_link' => $reponse->url]);
+                return new JsonResponse(['url' => $reponse->url], 200);
+            } else {
+                $personne->delete();
+                return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
+            }
+//        }
+
+
+        // le retour du paiement créera les infos adhérents, abonnés, ...
     }
 
     protected function getMontantRenouvellementClub($club_id, $abo_club) {

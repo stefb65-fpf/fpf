@@ -4,7 +4,7 @@
     <div class="pageCanva">
         <h1 class="pageTitle">
             Informations pour l'adhérent {{ $utilisateur->identifiant }}
-            <a class="previousPage" title="Retour page précédente" href="{{ route('clubs.gestion_adherents') }}">
+            <a class="previousPage" title="Retour page précédente" href="{{ route('clubs.adherents.index') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                      class="bi bi-reply-fill" viewBox="0 0 16 16">
                     <path

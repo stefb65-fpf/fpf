@@ -1,21 +1,23 @@
 <?php
 //Route::get('/clubs/gestion_adherents', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.gestion_adherents');
+Route::get('/registerAdhesion', [App\Http\Controllers\LoginController::class, 'registerAdhesion'])->name('registerAdhesion');
 
-Route::get('/clubs/gestion_fonctions', [App\Http\Controllers\ClubController::class, 'gestionFonctions'])->name('clubs.fonctions.index');
-Route::get('/clubs/gestion_reglements', [App\Http\Controllers\ClubController::class, 'gestionReglements'])->name('clubs.reglements.index');
-Route::get('/clubs/infos_club', [App\Http\Controllers\ClubController::class, 'infosClub'])->name('clubs.infos_club');
-
+//gestion des adhésions et abonnements club par responsable de clubs
 Route::get('/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\ClubController::class, 'editAdherent'])->name('clubs.adherents.edit');
 Route::get('/clubs/adherents/create', [App\Http\Controllers\ClubController::class, 'createAdherent'])->name('clubs.adherents.create');
 Route::post('/clubs/adherents/store', [App\Http\Controllers\ClubController::class, 'storeAdherent'])->name('clubs.adherents.store');
 Route::put('/clubs/adherents/{utilisateur_id}/update', [App\Http\Controllers\ClubController::class, 'updateAdherent'])->name('clubs.adherents.update');
+Route::get('/clubs/adherents/{statut?}/{abonnement?}', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.adherents.index');
+Route::get('/clubs/fonctions', [App\Http\Controllers\ClubController::class, 'gestionFonctions'])->name('clubs.fonctions.index');
+Route::get('/clubs/reglements', [App\Http\Controllers\ClubController::class, 'gestionReglements'])->name('clubs.reglements.index');
+Route::get('/clubs/infos_club', [App\Http\Controllers\ClubController::class, 'infosClub'])->name('clubs.infos_club');
+Route::get('/clubs/attente_paiement_validation', [App\Http\Controllers\ClubController::class, 'attentePaiementValidation'])->name('clubs.attente_paiement_validation');
+Route::get('/clubs/validation_paiement_carte', [App\Http\Controllers\ClubController::class, 'validationPaiementCarte'])->name('clubs.validation_paiement_carte');
+Route::get('/reglements/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiement'])->name('reglements.notification_paiement');
 
 Route::get('/urs/infos_ur', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
-
 Route::get('/urs/liste_adherents', [App\Http\Controllers\UrController::class, 'listeAdherents'])->name('urs.liste_adherents');
 Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class, 'listeReversements'])->name('urs.liste_reversements');
-
-
 Route::get('/urs/fonctions/liste', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.fonctions.liste');
 Route::get('/urs/{fonction}/change_attribution', [App\Http\Controllers\UrController::class, 'changeAttribution'])->name('urs.fonctions.change_attribution');
 Route::delete('/urs/{fonction}/destroy_fonction', [App\Http\Controllers\UrController::class, 'destroyFonction'])->name('urs.fonctions.destroy');
@@ -32,8 +34,6 @@ Route::post('/admin/votes/elections/{vote}/store', [App\Http\Controllers\Admin\V
 Route::get('/admin/votes/elections/{vote}/edit/{election}', [App\Http\Controllers\Admin\VoteController::class, 'electionsEdit'])->name('votes.elections.edit');
 Route::put('/admin/votes/elections/{vote}/update/{election}', [App\Http\Controllers\Admin\VoteController::class, 'electionsUpdate'])->name('votes.elections.update');
 Route::delete('/admin/votes/elections/{vote}/delete/{election}', [App\Http\Controllers\Admin\VoteController::class, 'electionsDestroy'])->name('votes.elections.delete');
-
-
 Route::get('/admin/votes/{vote}/elections/{election}/candidats', [App\Http\Controllers\Admin\VoteController::class, 'candidatsList'])->name('votes.elections.candidats.index');
 Route::post('/admin/votes/{vote}/elections/{election}/candidats', [App\Http\Controllers\Admin\VoteController::class, 'candidatsStore'])->name('votes.elections.candidats.store');
 Route::delete('/admin/votes/{vote}/elections/{election}/candidats/{candidat}', [App\Http\Controllers\Admin\VoteController::class, 'candidatsDestroy'])->name('votes.elections.candidats.delete');

@@ -16,7 +16,7 @@
                     <div class="cardTitle">Urs</div>
                 </div>
             </a>
-            <a class="card" href="{{ route('clubs.index') }}">
+            <a class="card" href="{{ route('admin.clubs.index') }}">
                 <div class="wrapper">
                     <div class="cardTitle">Clubs</div>
                 </div>

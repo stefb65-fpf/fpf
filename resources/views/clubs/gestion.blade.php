@@ -11,7 +11,7 @@
                         <div class="cardTitle">Infos club</div>
                     </div>
                 </a>
-                <a class="card" href="{{ route('clubs.gestion_adherents') }}">
+                <a class="card" href="{{ route('clubs.adherents.index') }}">
                     <div class="wrapper">
                         <div class="cardTitle">Gestion adhésions et abonnements</div>
                     </div>

@@ -10,19 +10,6 @@
                 </svg>
             </a>
         </h1>
-
-{{--        <div class="alertDanger" style="width: 80% !important">--}}
-{{--            <p>--}}
-{{--                <span class="bold">Attention !</span>--}}
-{{--                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.--}}
-{{--            </p>--}}
-{{--            <p style="margin-top: 20px">--}}
-{{--                on affiche ici les bordereaux générés par le club et les règlements effectués sous fomre de liste.<br>--}}
-{{--                On différencies visuellement les bordereaux non réglés des bordereaux réglés.<br>--}}
-{{--                on permet la récupération du bordereau au format PDF--}}
-{{--            </p>--}}
-{{--        </div>--}}
-
         @if(sizeof($reglements) == 0)
             <div class="center">Aucun borderau de renouvellement n'a été généré pour le club actuellement</div>
         @else
@@ -48,9 +35,15 @@
                         <td>{{ $reglement->dateenregistrement ?? '' }}</td>
                         <td>{{ $reglement->numerocheque ?? '' }}</td>
                         <td>
+                            <div style="display: flex">
                             @if(file_exists($dir.'/'.$reglement->reference.'.pdf'))
-                                <a class="adminPrimary btnSmall" target="_blank" href="{{ $dir_club.'/'.$reglement->reference.'.pdf' }}">bordereau</a>
+                                <a class="adminPrimary btnSmall mr10" target="_blank" href="{{ $dir_club.'/'.$reglement->reference.'.pdf' }}">bordereau</a>
                             @endif
+                            @if($reglement->statut === 0)
+                                <a class="adminPrimary btnSmall mr10" id="clubPayVirement" data-ref="{{ $reglement->id }}">payer par virement</a>
+                                <a class="adminPrimary btnSmall" id="clubPayCb" data-ref="{{ $reglement->id }}">payer par CB</a>
+                            @endif
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -61,4 +54,7 @@
 @endsection
 @section('css')
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
+@endsection
+@section('js')
+    <script src="{{ asset('js/club_paiement.js') }}?t=<?= time() ?>"></script>
 @endsection

@@ -205,16 +205,21 @@
         </div>
         <div class="modalEditBody">
             <div class="alertSuccess" style="margin: 10px auto 0">
-                Le bordereau pour le renouvellement a bien été généré. Vous pouvez le télécharger en cliquant sur le lien suivant: <a id="lienBordereauClub" target="_blank">bordreau de renouvellement</a>.<br>
-                Le bordereau vous a également été transmis par mail et vous pouvez le retrouver dans votre espace "Bordereaux et règlements".
+                Le bordereau pour le renouvellement a bien été généré. Vous pouvez le télécharger en cliquant sur le lien suivant: <a id="lienBordereauClub" target="_blank" style="color: #003d77;">bordreau de renouvellement</a>.<br>
+                Le bordereau vous a également été transmis par mail et vous pouvez le retrouver dans votre espace "Bordereaux et règlements".<br><br>
+                Vous pouvez régler directement  en ligne, par virement instantanné ou CB, votre règlement en cliquant sur les boutons ci-dessous.<br>
+                Si ce n'est pas possible, vous pouvez régler par chèque ou virement en nous transmettant le bordereau. Vous pouvez également règler plus tard en vous rendant dans votre espace "Bordereaux et règlements".<br>
             </div>
         </div>
         <div class="modalEditFooter">
             <div class="adminDanger btnMedium mr10 modalEditCloseReload">Fermer</div>
+            <div class="adminPrimary btnMedium mr10" id="clubPayVirement" data-ref="">Payer par virement</div>
+            <div class="adminPrimary btnMedium mr10" id="clubPayCb" data-ref="">Payer par CB</div>
         </div>
     </div>
 @endif
 @section('js')
     <script src="{{ asset('js/filters-club-liste-adherent.js') }}?t=<?= time() ?>"></script>
     <script src="{{ asset('js/excel_adherent_file.js') }}?t=<?= time() ?>"></script>
+    <script src="{{ asset('js/club_paiement.js') }}?t=<?= time() ?>"></script>
 @endsection

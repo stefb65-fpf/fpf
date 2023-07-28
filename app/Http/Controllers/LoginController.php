@@ -15,6 +15,7 @@ use App\Models\Commune;
 use App\Models\Fonction;
 use App\Models\Historique;
 use App\Models\Personne;
+use App\Models\Tarif;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -249,6 +250,13 @@ class LoginController extends Controller
     {
         $communes = Commune::orderBy('nom')->get();
         return view('auth.registerAbonnement', compact('communes'));
+    }
+
+    public function registerAdhesion()
+    {
+//        $communes = Commune::orderBy('nom')->get();
+        $countries = DB::table('pays')->orderBy('nom')->get();
+        return view('auth.registerAdhesion', compact('countries'));
     }
 
     protected function getSituation($personne) {

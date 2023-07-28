@@ -123,6 +123,14 @@
 .w75 {
     width: 75%;
 }
+.indicatif {
+    padding: 1px 8px;
+    font-size: 0.9rem;
+    border: none;
+    background: grey;
+    color: white;
+    width: max-content;
+}
 /*.modalEdit {*/
 /*    left: 50%;*/
 /*    top: 50%;*/
