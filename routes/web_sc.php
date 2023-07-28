@@ -14,6 +14,9 @@ Route::get('/clubs/infos_club', [App\Http\Controllers\ClubController::class, 'in
 Route::get('/clubs/attente_paiement_validation', [App\Http\Controllers\ClubController::class, 'attentePaiementValidation'])->name('clubs.attente_paiement_validation');
 Route::get('/clubs/validation_paiement_carte', [App\Http\Controllers\ClubController::class, 'validationPaiementCarte'])->name('clubs.validation_paiement_carte');
 Route::get('/reglements/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiement'])->name('reglements.notification_paiement');
+Route::get('/personnes/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiementPersonne'])->name('personnes.notification_paiement');
+
+Route::get('/utilisateurs/attente_paiement_validation', [App\Http\Controllers\UtilisateurController::class, 'attentePaiementValidation'])->name('utilisateurs.attente_paiement_validation');
 
 Route::get('/urs/infos_ur', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
 Route::get('/urs/liste_adherents', [App\Http\Controllers\UrController::class, 'listeAdherents'])->name('urs.liste_adherents');

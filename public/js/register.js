@@ -192,26 +192,57 @@ $('#checkTarifForNewUser').on('click', function () {
         $('#phoneRegister').parent().parent().parent().find('div[name=error]').addClass('visible')
         return
     }
-    if ($('#datenaissanceRegister').val() == '') {
-        $('#datenaissanceRegister').parent().find('div[name=error]').html('Veuillez saisir votre date de naissance')
-        $('#datenaissanceRegister').parent().find('div[name=error]').addClass('visible')
-        return
+    let datas;
+    if (type == 'adhesion') {
+        if ($('#datenaissanceRegister').val() == '') {
+            $('#datenaissanceRegister').parent().find('div[name=error]').html('Veuillez saisir votre date de naissance')
+            $('#datenaissanceRegister').parent().find('div[name=error]').addClass('visible')
+            return
+        }
+        datas = {
+            type: type,
+            datenaissance: $('#datenaissanceRegister').val()
+        }
+    }
+    if (type == 'abonnement') {
+        datas = {
+            type: type,
+            pays: $('#paysRegister option:selected').val()
+        }
     }
     $.ajax({
         url: '/api/utilisateurs/getTarifForNewUser',
         type: 'POST',
-        data: {
-            type: type,
-            datenaissance: $('#datenaissanceRegister').val()
-        },
+        data: datas,
         success: function (data) {
             if (data.code == 0) {
-                $('#tarifAdhesion').html(data.tarif)
-                $('#checkTarifForNewUser').addClass('d-none')
-                $('#registerPart3').removeClass('d-none')
+                if (type == 'adhesion') {
+                    $('#tarifAdhesion').html(data.tarif)
+                    if (data.aboSupp == 1) {
+                        $('#prixAboFp').html(data.tarifAboSupp)
+                        $('#aboSuppAdhesion').removeClass('d-none')
+                    } else {
+                        $('#aboSuppAdhesion').addClass('d-none')
+                    }
+                    $('#checkTarifForNewUser').addClass('d-none')
+                    $('#registerPart3').removeClass('d-none')
+                    return
+                }
+                if (type == 'abonnement') {
+                    $('#tarifAbonnement').html(data.tarif)
+                    $('#checkTarifForNewUser').addClass('d-none')
+                    $('#registerPart3').removeClass('d-none')
+                    return
+                }
             } else {
-                alert("L'âge indiqué est incorrect. Nous ne pouvons pas déterminer le tarif lié à votre adhésion.")
-                return
+                if (type == 'adhesion') {
+                    alert("L'âge indiqué est incorrect. Nous ne pouvons pas déterminer le tarif lié à votre adhésion.")
+                    return
+                }
+                if (type == 'abonnement') {
+                    alert("Nous ne pouvons pas déterminer le tarif lié à votre abonnement.")
+                    return
+                }
             }
         },
         error: function (err) {
@@ -220,8 +251,9 @@ $('#checkTarifForNewUser').on('click', function () {
     })
 })
 
-$('#payByVirement').on('click', function () {
+$('button[name=payByVirement]').on('click', function () {
     const type = $(this).data('type')
+    const paiement = $(this).data('paiement')
     $('div[name=error]').removeClass('visible')
     $('div[name=error]').html('')
     if ($('#lastnameRegister').val() == '') {
@@ -290,10 +322,33 @@ $('#payByVirement').on('click', function () {
         $('#phoneRegister').parent().parent().parent().find('div[name=error]').addClass('visible')
         return
     }
-    if ($('#datenaissanceRegister').val() == '') {
-        $('#datenaissanceRegister').parent().find('div[name=error]').html('Veuillez saisir votre date de naissance')
-        $('#datenaissanceRegister').parent().find('div[name=error]').addClass('visible')
-        return
+    let aboPlus = 0;
+    if ($('#aboFpRegister').is(':checked')) {
+        aboPlus = 1;
+    }
+    let datas = {
+        type: type,
+        paiement: paiement,
+        sexe: $('input[type=radio][name=sexe]:checked').val(),
+        nom: $('#lastnameRegister').val(),
+        prenom: $('#firstnameRegister').val(),
+        email: $('#emailRegister').val(),
+        password: $('#passwordRegister').val(),
+        libelle1: $('#libelle1Register').val(),
+        libelle2: $('#libelle2Register').val(),
+        codepostal: $('#codepostalRegister').val(),
+        ville: $('#villeRegister').val(),
+        pays: $('#paysRegister option:selected').val(),
+        phone_mobile: $('#phoneRegister').val(),
+        aboPlus: aboPlus
+    };
+    if (type == 'adhesion') {
+        if ($('#datenaissanceRegister').val() == '') {
+            $('#datenaissanceRegister').parent().find('div[name=error]').html('Veuillez saisir votre date de naissance')
+            $('#datenaissanceRegister').parent().find('div[name=error]').addClass('visible')
+            return
+        }
+        datas.datenaissance = $('#datenaissanceRegister').val()
     }
 
 
@@ -301,26 +356,12 @@ $('#payByVirement').on('click', function () {
     $.ajax({
         url: '/api/utilisateurs/register',
         type: 'POST',
-        data: {
-            type: type,
-            sexe: $('input[type=radio][name=sexe]:checked').val(),
-            nom: $('#lastnameRegister').val(),
-            prenom: $('#firstnameRegister').val(),
-            email: $('#emailRegister').val(),
-            password: $('#passwordRegister').val(),
-            libelle1: $('#libelle1Register').val(),
-            libelle2: $('#libelle2Register').val(),
-            codepostal: $('#codepostalRegister').val(),
-            ville: $('#villeRegister').val(),
-            pays: $('#paysRegister option:selected').val(),
-            phone_mobile: $('#phoneRegister').val(),
-            datenaissance: $('#datenaissanceRegister').val(),
-        },
+        data: datas,
         success: function (data) {
             $(location).attr('href', data.url)
         },
         error: function (err) {
-
+            alert('Une erreur est survenue lors de l\'enregistrement de votre paiement. Veuillez réessayer plus tard.')
         }
     })
 })

@@ -36,6 +36,8 @@ Route::post('/forgotPassword', [App\Http\Controllers\LoginController::class, 'se
 Route::put('/resetPassword/{personne}', [App\Http\Controllers\LoginController::class, 'resetPassword'])->name('resetPassword');
 
 Route::get('/registerAbonnement', [App\Http\Controllers\LoginController::class, 'registerAbonnement']);
+Route::get('/cancel_paiement', [App\Http\Controllers\UtilisateurController::class, 'cancelPaiement']);
+Route::get('/validation_paiement_carte', [App\Http\Controllers\UtilisateurController::class, 'validationPaiementCarte']);
 
 
 

@@ -248,8 +248,8 @@ class LoginController extends Controller
 
     public function registerAbonnement()
     {
-        $communes = Commune::orderBy('nom')->get();
-        return view('auth.registerAbonnement', compact('communes'));
+        $countries = DB::table('pays')->orderBy('nom')->get();
+        return view('auth.registerAbonnement', compact('countries'));
     }
 
     public function registerAdhesion()

@@ -22,12 +22,12 @@
                     <div class="type">Je reçois 5 numéros de la revue</div>
                 </a>
             </div>
-            <div class="card">
-                <a href="/registerFormation" class="wrapper">
-                    <div class="cardTitle">Je souhaite m'inscrire à une formation</div>
-                    <div class="type">J'accède à la liste des formations dans toute la France</div>
-                </a>
-            </div>
+{{--            <div class="card">--}}
+{{--                <a href="/registerFormation" class="wrapper">--}}
+{{--                    <div class="cardTitle">Je souhaite m'inscrire à une formation</div>--}}
+{{--                    <div class="type">J'accède à la liste des formations dans toute la France</div>--}}
+{{--                </a>--}}
+{{--            </div>--}}
         </div>
     </div>
 @endsection

@@ -124,31 +124,52 @@
             </div>
             <div name="error" class="error"></div>
         </div>
-        <div class="customField" style="width: 100%; min-width: 100%; padding-right: 20px;">
-            <label>Date de naissance</label>
-            <input type="date" name="name" id="datenaissanceRegister" />
-            <div name="error" class="error"></div>
-        </div>
-    {{--    <div class="separator"></div>--}}
-    {{--    <div class="customField" style="width: 100%; min-width: 100%; padding-right: 20px;">--}}
-    {{--        <div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px">--}}
-    {{--            <input type="checkbox" name="name" id="lastnameRegister" style="width: max-content" />--}}
-    {{--            <div style="font-size: 0.9rem; color: #003d77; margin-left: 10px">Je souhaite m'abonner à la revue France Phot pour 5 numéros (€)</div>--}}
-    {{--        </div>--}}
+        @if($type == 'adhesion')
+            <div class="customField" style="width: 100%; min-width: 100%; padding-right: 20px;">
+                <label>Date de naissance</label>
+                <input type="date" name="name" id="datenaissanceRegister" />
+                <div name="error" class="error"></div>
+            </div>
+        {{--    <div class="separator"></div>--}}
+        {{--    <div class="customField" style="width: 100%; min-width: 100%; padding-right: 20px;">--}}
+        {{--        <div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px">--}}
+        {{--            <input type="checkbox" name="name" id="lastnameRegister" style="width: max-content" />--}}
+        {{--            <div style="font-size: 0.9rem; color: #003d77; margin-left: 10px">Je souhaite m'abonner à la revue France Phot pour 5 numéros (€)</div>--}}
+        {{--        </div>--}}
 
-    {{--        <div name="error" class="error"></div>--}}
-    {{--    </div>--}}
+        {{--        <div name="error" class="error"></div>--}}
+        {{--    </div>--}}
+        @endif
     </div>
     <div class="button customBtn" id="checkTarifForNewUser" data-type="{{ $type }}">Continuer</div>
 </div>
-<div class="d-none" id="registerPart3">
-    <div style="font-weight: bolder; margin-top: 30px">
-        Pour votre adhésion, vous devez vous acquitter de la cotisation annuelle de <span style="font-size: large" id="tarifAdhesion"></span>€. <br>
-        Veuillez choisir votre mode de paiement ci-dessous pour terminer votre adhésion.<br>
-    </div>
+
+    <div class="d-none" id="registerPart3">
+        @if($type == 'adhesion')
+            <div style="font-weight: bolder; margin-top: 30px">
+                Pour votre adhésion, vous devez vous acquitter de la cotisation annuelle de <span style="font-size: large" id="tarifAdhesion"></span>€. <br>
+                Veuillez choisir votre mode de paiement ci-dessous pour terminer votre adhésion.<br>
+            </div>
+            <div class="d-none" id="aboSuppAdhesion">
+                <div class="customField" style="width: 100%; min-width: 100%; padding-right: 20px;">
+                    <div style="display: flex; justify-content: flex-start; align-items: center; margin-top: 20px">
+                        <input type="checkbox" name="aboFpRegister" id="aboFpRegister" style="width: max-content" />
+                        <div style="font-size: 0.9rem; color: #003d77; margin-left: 10px; font-weight: bolder;">Je souhaite également m'abonner à la revue France Photo pour 5 numéros (<span id="prixAboFp"></span>€)</div>
+                    </div>
+
+                    <div name="error" class="error"></div>
+                </div>
+            </div>
+        @endif
+        @if($type == 'abonnement')
+            <div style="font-weight: bolder; margin-top: 30px">
+                Pour votre abonnement, vous devez vous acquitter du montant de <span style="font-size: large" id="tarifAbonnement"></span>€. <br>
+                Veuillez choisir votre mode de paiement ci-dessous pour terminer votre abonnement.<br>
+            </div>
+        @endif
 
     <div style="margin-bottom: 50px;">
-        <button class="primary btnRegister" data-type="{{ $type }}">Carte bancaire</button>
-        <button class="primary btnRegister" id="payByVirement" data-type="{{ $type }}">Virement instantanné</button>
+        <button class="primary btnRegister" name="payByVirement" data-paiement="cb" data-type="{{ $type }}">Carte bancaire</button>
+        <button class="primary btnRegister" name="payByVirement" data-paiement="bridge" data-type="{{ $type }}">Virement instantanné</button>
     </div>
 </div>

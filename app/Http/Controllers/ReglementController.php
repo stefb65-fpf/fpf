@@ -28,4 +28,14 @@ class ReglementController extends Controller
         // sinon on ne fait rien
         echo 'ok';
     }
+
+    public function notificationPaiementPersonne(Request $request) {
+        $result = $this->getMonextResult($request->token);
+        if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
+            // on traite le règlement
+            // TODO : on traite le règlement pour la personne
+        }
+        // sinon on ne fait rien
+        echo 'ok';
+    }
 }

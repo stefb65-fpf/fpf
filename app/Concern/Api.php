@@ -72,6 +72,5 @@ trait Api
         $payline = new PaylineSDK(env('PAYLINE_MERCHANT_ID'), env('PAYLINE_ACCESS_KEY'), null, null, null, null, env('PAYLINE_PRODUCTION'));
         $getWebPaymentDetailsResponse = $payline->getWebPaymentDetails(['token' => $token]);
         return array('code' => $getWebPaymentDetailsResponse['result']['code'], 'message' => $getWebPaymentDetailsResponse['result']['shortMessage']);
-
     }
 }

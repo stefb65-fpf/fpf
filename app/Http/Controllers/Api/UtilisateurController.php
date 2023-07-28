@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Concern\Api;
+use App\Concern\Hash;
 use App\Concern\Tools;
 use App\Exports\RoutageListAdherents;
 use App\Http\Controllers\Controller;
@@ -12,6 +13,7 @@ use App\Mail\SendEmailReinitPassword;
 use App\Mail\SendRenouvellementMail;
 use App\Models\Adresse;
 use App\Models\Club;
+use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Tarif;
@@ -27,6 +29,7 @@ class UtilisateurController extends Controller
 {
     use Api;
     use Tools;
+    use Hash;
     public function createListAdherents(Request $request)
     {
         $club = $request->club;
@@ -160,23 +163,22 @@ class UtilisateurController extends Controller
     }
 
     public function getTarifForNewUser(Request $request) {
-        $tarif = $this->getTarifAdhesion($request->datenaissance);
-//        $date_naissance = new \DateTime($request->datenaissance);
-//        $date_now = new \DateTime();
-//        $age = $date_now->diff($date_naissance)->y;
-//        if ($age <= 0) {
-//            return new JsonResponse(['code' => '20'], 200);
-//        }
-//        $tarif_id = 13;
-//        if ($age < 18) {
-//            $tarif_id = 15;
-//        } else {
-//            if($age < 25) {
-//                $tarif_id = 14;
-//            }
-//        }
-//        $tarif = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
-        return new JsonResponse(['code' => '0', 'tarif' => $tarif], 200);
+        $tarif = 0; $aboSupp = 0; $tarif_supp = 0;
+        if ($request->type == 'adhesion') {
+            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($request->datenaissance);
+            if ($tarif_supp > 0) {
+                $aboSupp = 1;
+            }
+        }
+        if ($request->type == 'abonnement') {
+            $tarif = $this->getTarifAbonnement($request->pays);
+        }
+
+        if ($tarif == 0) {
+            return new JsonResponse(['code' => '10'], 200);
+        } else {
+            return new JsonResponse(['code' => '0', 'tarif' => $tarif, 'aboSupp' => $aboSupp, 'tarifAboSupp' => $tarif_supp], 200);
+        }
     }
 
     protected function getTarifAdhesion($datenaissance) {
@@ -184,16 +186,34 @@ class UtilisateurController extends Controller
         $date_now = new \DateTime();
         $age = $date_now->diff($date_naissance)->y;
         if ($age <= 0) {
-            return new JsonResponse(['code' => '20'], 200);
+            return [0, 0];
         }
         $tarif_id = 13;
+        $tarif_id_supp = 0;
+        $ct = 2;
         if ($age < 18) {
             $tarif_id = 15;
+            $tarif_id_supp = 23;
+            $ct = 4;
         } else {
             if($age < 25) {
                 $tarif_id = 14;
+                $tarif_id_supp = 23;
+                $ct = 3;
             }
         }
+        $tarif_adhesion = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
+        $tarif = $tarif_adhesion ? $tarif_adhesion->tarif : 0;
+        $tarif_abo = 0;
+        if ($tarif_id_supp) {
+            $tarif_supp = Tarif::where('statut', 0)->where('id', $tarif_id_supp)->first();
+            $tarif_abo = $tarif_supp ? $tarif_supp->tarif : 0;
+        }
+        return [$tarif, $tarif_abo, $ct];
+    }
+
+    protected function getTarifAbonnement($pays) {
+        $tarif_id = $pays == 78 ? 19 : 20;
         $tarif = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
         return $tarif ? $tarif->tarif : 0;
     }
@@ -210,18 +230,63 @@ class UtilisateurController extends Controller
         // on enregistre la personne
         $password = hash('sha512', $request->password);
         $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'email' => trim($request->email), 'sexe' => $request->sexe,
-            'datenaissance' => $request->datenaissance, 'phone_mobile' => $request->phone_mobile, 'is_adherent' => 1, 'password' => $password,
-            'attente_paiement' => 1, 'action_paiement' => 'ADD_INDIVIDUEL');
+            'phone_mobile' => $request->phone_mobile, 'password' => $password,
+            'attente_paiement' => 1);
+        if ($request->type == 'adhesion') {
+            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($request->datenaissance);
+            if ($request->aboPlus == 1 || $ct == 2) {
+                $datap['is_abonne'] = 1;
+            }
+            $datap['is_adherent'] = 1;
+            $datap['datenaissance'] = $request->datenaissance;
+            $datap['action_paiement'] = 'ADD_INDIVIDUEL';
+        }
+        if ($request->type == 'abonnement') {
+            $datap['is_abonne'] = 1;
+            $datap['action_paiement'] = 'ADD_ABONNEMENT';
+        }
         $personne = Personne::create($datap);
 
-        // on redirige vers le paiement
-//        if ($request->paiement == 1) {
+        // on enregistre l'adresse
+        $pays = Pays::where('id', $request->pays)->first();
+        if ($pays) {
+            $dataa = array('libelle1' => $request->libelle1, 'libelle2' => $request->libelle2, 'codepostal' => $request->codepostal,
+                'ville' => $request->ville, 'pays' => $pays->nom);
+            $adresse = Adresse::create($dataa);
 
+            // on lie l'adresse à la personne
+            $personne->adresses()->attach($adresse->id);
+
+        }
+
+
+        $montant = 0;
+        $ref = '';
+        if ($request->type == 'adhesion') {
+            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($request->datenaissance);
+            $montant = floatval($tarif);
+            if ($request->aboPlus == 1) {
+                $montant += floatval($tarif_supp);
+            }
+            $ref = 'ADH-NEW-'.$personne->id;
+        }
+        if ($request->type == 'abonnement') {
+            $montant = floatval($this->getTarifAbonnement($request->pays));
+            $ref = 'ABO-NEW-'.$personne->id;
+        }
+        $montant_cents = intval($montant * 100);
+
+        // on redirige vers le paiement
+        if ($request->paiement == 'bridge') {
             $url = 'https://api.bridgeapi.io/v2/payment-links';
             $transaction = new \stdClass();
-            $transaction->amount = floatval($this->getTarifAdhesion($personne->datenaissance));
+            $transaction->amount = $montant;
+            if ($transaction->amount == 0) {
+                return new JsonResponse(['erreur' => 'impossible de récupérer le montant'], 400);
+            }
+
             $transaction->currency = 'EUR';
-            $transaction->label = 'Adhésion individuelle';
+            $transaction->label = $ref;
 
             $expired_date = new \DateTime(date('Y-m-d H:i:s'));
             $expired_date->add(new \DateInterval('P1D'));
@@ -236,8 +301,9 @@ class UtilisateurController extends Controller
                 "transactions" => [
                     $transaction
                 ],
-                "callback_url" => env('APP_URL') . "registerAttente",
+                "callback_url" => env('APP_URL') . "utilisateurs/attente_paiement_validation",
             ];
+
 
             list($status, $reponse) = $this->callBridge($url, 'POST', json_encode($bridge_datas));
             if ($status == 200) {
@@ -245,10 +311,35 @@ class UtilisateurController extends Controller
                 $personne->update(['bridge_id' => $reponse->id, 'bridge_link' => $reponse->url]);
                 return new JsonResponse(['url' => $reponse->url], 200);
             } else {
+                $personne->adresses()->detach();
                 $personne->delete();
+                $adresse->delete();
                 return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
             }
-//        }
+        } else {
+            // paiement CB
+            $urls = [
+                'cancelURL' => env('APP_URL') . "cancel_paiement",
+                'returnURL' => env('APP_URL') . "validation_paiement_carte",
+                'notificationURL' => env('APP_URL') . "personnes/notification_paiement",
+            ];
+            $user = [
+                'email' => $personne->email,
+                'prenom' => $personne->prenom,
+                'nom' => $personne->nom,
+            ];
+            $result = $this->callMonext($montant_cents, $urls, $ref, $user);
+            if ($result['code'] == '00000') {
+                $personne->update(['monext_token' => $result['token'], 'monext_link' => $result['redirectURL']]);
+                return new JsonResponse(['url' => $result['redirectURL']], 200);
+            } else {
+                $personne->adresses()->detach();
+                $personne->delete();
+                $adresse->delete();
+                return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
+            }
+        }
+
 
 
         // le retour du paiement créera les infos adhérents, abonnés, ...
