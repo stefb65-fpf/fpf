@@ -6,6 +6,7 @@
         </h1>
         <div class="badgesWrapper">
             @if($user->is_adherent === 1)
+                @if(in_array($cartes[0]->statut, [2,3]))
                 <div class="badge green">
                     <div class="img">
                         <svg width="30" height="24" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -14,6 +15,16 @@
                     </div>
                     <div class="label">Adhésion en cours</div>
                 </div>
+                @else
+                    <div class="badge grey">
+                        <div class="img">
+                            <svg width="30" height="24" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M26.4825 0H2.9425C1.31971 0 0 1.31971 0 2.9425V20.5975C0 22.2203 1.31971 23.54 2.9425 23.54H26.4825C28.1053 23.54 29.425 22.2203 29.425 20.5975V2.9425C29.425 1.31971 28.1053 0 26.4825 0ZM9.87944 5.885C11.5729 5.885 12.8219 7.13409 12.8219 8.8275C12.8219 10.5209 11.5729 11.77 9.87944 11.77C8.18603 11.77 6.93694 10.5209 6.93694 8.8275C6.93694 7.13409 8.18456 5.885 9.87944 5.885ZM15.3451 17.655H4.41375V16.9709C4.41375 14.9508 6.87956 12.8734 9.87944 12.8734C12.8793 12.8734 15.3451 14.9508 15.3451 16.9709V17.655ZM25.0112 16.1838H19.1262V13.2413H25.0112V16.1838ZM25.0112 10.2988H17.655V7.35625H25.0112V10.2988Z" fill="white"/>
+                            </svg>
+                        </div>
+                        <div class="label">Adhésion à renouveler</div>
+                    </div>
+                @endif
             @elseif($user->is_adherent === 2)
                 <div class="badge grey">
                     <div class="img">

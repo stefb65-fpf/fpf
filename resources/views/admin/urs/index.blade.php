@@ -59,7 +59,7 @@
                                 <a href="{{ route('urs.edit', $ur) }}" class="adminPrimary btnSmall">Modifier</a>
                             </div>
                             <div style="margin-bottom: 3px;">
-                                <a href="{{ route('urs.edit', $ur) }}" class="adminSuccess btnSmall">Fonctions</a>
+                                <a href="{{ route('admin.urs.fonctions', $ur) }}" class="adminSuccess btnSmall">Fonctions</a>
                             </div>
                         </td>
                     </tr>

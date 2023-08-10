@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Concern\Hash;
+use App\Concern\Tools;
 use App\Mail\CommandeMail;
 use App\Mail\SendEmailReinitPassword;
 use App\Models\Abonnement;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Mail;
 class initPersonnes extends Command
 {
     use Hash;
+    use Tools;
     /**
      * The name and signature of the console command.
      *
@@ -84,7 +86,7 @@ class initPersonnes extends Command
             $shuffle_letters = str_shuffle($letters);
 //            $random_password = substr($shuffle_letters, 0, 8);
             $random_password = 'Az123456';
-            $password = hash('sha512', $random_password);
+            $password = $this->encodePwd($random_password);
             $datap = array(
                 'nom' => $nom,
                 'prenom' => $prenom,
@@ -148,6 +150,8 @@ class initPersonnes extends Command
 
                 // on insère la personne
                 $personne = Personne::create($datap);
+                $this->insertWpUser($personne->prenom, $personne->nom, $personne->email, $random_password);
+
 
                 // on insère la relation adresse_personne
                 if ($adresse_user) {

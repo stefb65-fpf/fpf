@@ -18,7 +18,7 @@
             <div class="formBlockTitle">Informations d'Ur</div>
             <div class="formBlockWrapper">
                 <h2 class="formSubtitle">Généralités</h2>
-                <form action="{{route('updateUr', $ur)}}" method="POST">
+                <form action="{{route('urs.update', $ur)}}" method="POST">
                     <input type="hidden" name="_method" value="PUT">
                     {{ csrf_field() }}
                     <div class="formBlockWrapper inline">

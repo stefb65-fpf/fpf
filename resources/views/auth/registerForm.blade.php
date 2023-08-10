@@ -170,6 +170,6 @@
 
     <div style="margin-bottom: 50px;">
         <button class="primary btnRegister" name="payByVirement" data-paiement="cb" data-type="{{ $type }}">Carte bancaire</button>
-        <button class="primary btnRegister" name="payByVirement" data-paiement="bridge" data-type="{{ $type }}">Virement instantanné</button>
+        <button class="primary btnRegister" name="payByVirement" data-paiement="bridge" data-type="{{ $type }}">Virement instantané</button>
     </div>
 </div>

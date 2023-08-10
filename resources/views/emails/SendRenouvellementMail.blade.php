@@ -5,9 +5,9 @@
             Vous venez d'initier un renouvellement pour le club {{ $club->nom }} pour un montant de {{ $montant }}€.
             <br>
             <br>
-            Pour rendre effectif les adhésions et abonnements, vous devez régler par CB ou virement instantannée le montant de votre adhésion à partir de votre espace FPF.
+            Pour rendre effectif les adhésions et abonnements, vous devez régler par CB ou virement instantané le montant de votre adhésion à partir de votre espace FPF.
             <br>
-            Si toutefois vous ne pouvez pas régler par CB ou virement instantannée, vous pouvez régler par chèque ou virement  en suivant les consignes indiquées dans le bordereau ci-joint.
+            Si toutefois vous ne pouvez pas régler par CB ou virement instantané, vous pouvez régler par chèque ou virement  en suivant les consignes indiquées dans le bordereau ci-joint.
             <br>
             <br>
             Pout tout règlement, indiquez le numéro de bordereau ({{ $ref }}) ou joignez celui-ci à votre envoi.

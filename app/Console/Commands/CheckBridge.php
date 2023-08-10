@@ -3,15 +3,19 @@
 namespace App\Console\Commands;
 
 use App\Concern\Api;
+use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Souscription;
+use App\Models\Utilisateur;
 use Illuminate\Console\Command;
 
 class CheckBridge extends Command
 {
     use Api;
     use Tools;
+    use Invoice;
     /**
      * The name and signature of the console command.
      *
@@ -44,6 +48,8 @@ class CheckBridge extends Command
                         $data =array('statut' => 1, 'bridge_id' => null, 'bridge_link' => null,
                             'numerocheque' => 'Bridge '.$reglement->bridge_id, 'dateenregistrement' => date('Y-m-d H:i:s'));
                         $reglement->update($data);
+
+                        $this->saveInvoiceForReglement($reglement);
                     }
                 }
 
@@ -54,7 +60,6 @@ class CheckBridge extends Command
                 }
             }
         }
-        dd($reglements);
 
 
         $personnes = Personne::where('attente_paiement', 1)->whereNotNull('bridge_id')->get();
@@ -64,24 +69,64 @@ class CheckBridge extends Command
 
             if ($status == 200) {
                 $tab_reponse = json_decode($reponse);
-                dd($tab_reponse);
                 if ($tab_reponse->status == 'REVOKED' || $tab_reponse->status == 'EXPIRED') {
                     // le paiement n'a pas été effectué
-                    if ($personne->action_paiement == 'ADD_INDIVIDUEL') {
+                    if ($personne->action_paiement == 'ADD_INDIVIDUEL' || $personne->action_paiement == 'ADD_ABONNEMENT') {
                         // on supprime la personne
+                        $this->deleteWpUser($personne->email);
                         $personne->delete();
                     }
-                    $data =array('attend_paiement' => 0, 'bridge_id' => null, 'bridge_link' => null, 'action_paiement' => null);
-                    $personne->update($data);
                 }
 
                 if ($tab_reponse->status == 'COMPLETED') {
                     // le paiement a été effectué
-                    if ($personne->action_paiement == 'ADD_INDIVIDUEL') {
+                    if ($personne->action_paiement == 'ADD_INDIVIDUEL' || $personne->action_paiement == 'ADD_ABONNEMENT') {
                         // on crée l'adhérent
+                        if ($personne->action_paiement == 'ADD_INDIVIDUEL') {
+                            $description = "Adhésion individuelle à la FPF";
+                        } else {
+                            $description = "Abonnement à la revue France Photo";
+                        }
+                        list($code, $reglement) = $this->saveNewPersonne($personne, 'Bridge');
+
+
+                        $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
+                        $this->createAndSendInvoice($datai);
                     }
-                    $data =array('attend_paiement' => 0, 'bridge_id' => null, 'bridge_link' => null, 'action_paiement' => null);
-                    $personne->update($data);
+                }
+            }
+        }
+
+
+        $souscriptions = Souscription::where('statut', 0)->whereNotNull('bridge_id')->get();
+        foreach($souscriptions as $souscription) {
+            $url = 'https://api.bridgeapi.io/v2/payment-links/'. $souscription->bridge_id;
+            list($status, $reponse) = $this->callBridge($url, 'GET', null);
+
+            if ($status == 200) {
+                $tab_reponse = json_decode($reponse);
+                if ($tab_reponse->status == 'COMPLETED') {
+                    // le paiement a été effectué
+                    $data =array('statut' => 1, 'bridge_id' => null, 'bridge_link' => null,
+                        'ref_reglement' => 'Bridge '.$souscription->bridge_id);
+                    $souscription->update($data);
+
+                    if ($souscription->personne_id) {
+                        $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
+                        $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->personne_id];
+                        $this->createAndSendInvoice($datai);
+                    } else {
+                        if ($souscription->clubs_id) {
+                            $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
+                            $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->clubs_id];
+                            $this->createAndSendInvoice($datai);
+                        }
+                    }
+                }
+
+                if ($tab_reponse->status == 'REVOKED' || $tab_reponse->status == 'EXPIRED') {
+                    // le paiement n'a pas été effectué
+                    $souscription->delete();
                 }
             }
         }

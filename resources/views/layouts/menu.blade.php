@@ -1,17 +1,19 @@
 <nav class="navbar hidden">
     <div class="navbarWrapper">
+        <a href="https://fpf-new.federation-photo.fr">
         <div class="top">
             <div class="logo"><img src="{{ env('APP_URL').'storage/app/public/FPF-100-Logo-Seul.webp' }}"
                                    alt="Fédération Photographique de France"></div>
             <div class="topTitle">Fédération Photographique de France</div>
         </div>
+        </a>
         <div class="coords">
             <div>5 rue Jules Vallès 75011 PARIS</div>
             <div><a href="tel: +33143713040">(+33) 01 43 71 30 40</a></div>
             <div><a href="mailto:fpf@federation-photo.fr">fpf@federation-photo.fr</a></div>
         </div>
         <div class="bottom">
-            @if($user->is_abonne)
+
                 <div class="memberCard">
                     <div class="memberCardTop">
                         <div>
@@ -23,42 +25,53 @@
                             </svg>
                         </div>
                         <div class="memberCardRight">
-                            <div>01-0024-0036</div>
+                            @if($cartes && sizeof($cartes) > 0)
+                                <div>{{ $cartes[0]->identifiant }}</div>
+                            @endif
+                            @if($user->is_abonne == 1)
                             <div style="font-weight: 500;font-style: italic;text-transform: uppercase;font-size: 12px">
-                                abonné jusqu'au n°285
+                                abonné jusqu'au n°{{ $user->abonnement->fin }}
                             </div>
+                            @endif
                         </div>
                     </div>
-                    <div class="memberCardBottom dropdownParent" data-dropdown-id="12">
-                        <div class="fosterChange dropdownCall " data-dropdown-id="12">changer de carte
+                    @if($cartes && sizeof($cartes) > 1)
+                    <div class="memberCardBottom dropdownParent">
+{{--                    <div class="memberCardBottom dropdownParent" data-dropdown-id="12">--}}
+                        <div class="fosterChange dropdownCall" id="dropdownLink">changer de carte
                             <svg class="dropdownCall" data-dropdown-id="12" width="13" height="9" viewBox="0 0 13 9"
                                  fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M6.5 9L0.870834 0.75L12.1292 0.75L6.5 9Z" fill="#003d77"/>
                             </svg>
                         </div>
+{{--                        <div class="fosterChange dropdownCall" data-dropdown-id="12">changer de carte--}}
+{{--                            <svg class="dropdownCall" data-dropdown-id="12" width="13" height="9" viewBox="0 0 13 9"--}}
+{{--                                 fill="none" xmlns="http://www.w3.org/2000/svg">--}}
+{{--                                <path d="M6.5 9L0.870834 0.75L12.1292 0.75L6.5 9Z" fill="#003d77"/>--}}
+{{--                            </svg>--}}
+{{--                        </div>--}}
                         <div class="dropdown">
                             <ul>
-                                <li>
-                                    <a href=""> Carte n° 10-0026-0003</a>
-
-                                </li>
-                                <li>
-                                    <a href=""> Carte n° 06-0036-0017</a>
-
-                                </li>
+                                @foreach($cartes as $k => $carte)
+                                    @if($k > 0)
+                                        <li>
+                                            <a name="changeCardUser" data-ref="{{ $carte->id }}">{{ $carte->identifiant }}</a>
+                                        </li>
+                                    @endif
+                                @endforeach
                             </ul>
                         </div>
                     </div>
+                        @endif
                 </div>
-            @endif
             <ul class="leftMenu" id="navMenu">
-                @if($menu['formation'])
-                <li class="leftMenuItem{{ Request::is('formations')?" active":""}}">
-                    <a href="{{ route('formations.accueil') }}">
-                        catalogue formations
-                    </a>
-                </li>
-                @endif
+{{--                @if($menu['formation'])--}}
+{{--                <li class="leftMenuItem{{ Request::is('formations')?" active":""}}">--}}
+{{--                    <a href="{{ route('formations.accueil') }}">--}}
+{{--                        catalogue formations--}}
+{{--                    </a>--}}
+{{--                </li>--}}
+{{--                @endif--}}
                 @if($menu['club'])
                     <li class="leftMenuItem{{ Request::is('gestion-club')?" active":""}}">
                         <a href="{{ route('clubs.gestion') }}">

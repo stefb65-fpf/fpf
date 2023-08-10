@@ -9,8 +9,8 @@
             Vous avez procédé au paiement par virement de votre adhésion / abonnement. Votre règlement sera validé par la FPF dès confirmation de votre virement, ce qui ne devrait prendre que quelques minutes.<br>
             Dès réception, vous recevrez un mail de confirmation de la FPF.
         </div>
-        <div>
-            <a class="customBtn" href="/login"> Connectez-vous !</a>
-        </div>
+{{--        <div>--}}
+{{--            <a class="customBtn" href="/login">Connectez-vous !</a>--}}
+{{--        </div>--}}
     </div>
 @endsection

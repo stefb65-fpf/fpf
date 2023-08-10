@@ -89,7 +89,7 @@ class UtilisateurController extends Controller
         $nb_reglements = Reglement::where('reference', 'LIKE', $ref_club.'%')->count();
         $ref = $ref_club.'-'.str_pad($nb_reglements+1, 4, '0', STR_PAD_LEFT);
 
-        $data = array('clubs_id' => $club->id, 'montant' => $total_montant, 'statut' => 0, 'moyenpaiement' => 0, 'reference' => $ref);
+        $data = array('clubs_id' => $club->id, 'montant' => $total_montant, 'statut' => 0, 'reference' => $ref);
         if ($montant_adhesion_club > 0) {
             $data['adhClub'] = 1;
         }
@@ -130,9 +130,7 @@ class UtilisateurController extends Controller
         $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
             ->where('clubs_id', $club->id)->where('fonctionsutilisateurs.fonctions_id', 97)->whereNotNull('utilisateurs.personne_id')->first();
         if ($contact) {
-            // TODO : changer l'adresse email
-//            $email = $contact->personne->email;
-            $email = 'contact@envolinfo.com';
+            $email = $contact->personne->email;
             $mailSent = Mail::to($email)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant));
             $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
@@ -181,43 +179,6 @@ class UtilisateurController extends Controller
         }
     }
 
-    protected function getTarifAdhesion($datenaissance) {
-        $date_naissance = new \DateTime($datenaissance);
-        $date_now = new \DateTime();
-        $age = $date_now->diff($date_naissance)->y;
-        if ($age <= 0) {
-            return [0, 0];
-        }
-        $tarif_id = 13;
-        $tarif_id_supp = 0;
-        $ct = 2;
-        if ($age < 18) {
-            $tarif_id = 15;
-            $tarif_id_supp = 23;
-            $ct = 4;
-        } else {
-            if($age < 25) {
-                $tarif_id = 14;
-                $tarif_id_supp = 23;
-                $ct = 3;
-            }
-        }
-        $tarif_adhesion = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
-        $tarif = $tarif_adhesion ? $tarif_adhesion->tarif : 0;
-        $tarif_abo = 0;
-        if ($tarif_id_supp) {
-            $tarif_supp = Tarif::where('statut', 0)->where('id', $tarif_id_supp)->first();
-            $tarif_abo = $tarif_supp ? $tarif_supp->tarif : 0;
-        }
-        return [$tarif, $tarif_abo, $ct];
-    }
-
-    protected function getTarifAbonnement($pays) {
-        $tarif_id = $pays == 78 ? 19 : 20;
-        $tarif = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
-        return $tarif ? $tarif->tarif : 0;
-    }
-
     public function register(Request $request) {
         // on vérifie si la personne existe déjà
         if (!filter_var(trim($request->email), FILTER_VALIDATE_EMAIL)) {
@@ -228,7 +189,7 @@ class UtilisateurController extends Controller
             return new JsonResponse(['erreur' => 'cette personne existe déjà'], 400);
         }
         // on enregistre la personne
-        $password = hash('sha512', $request->password);
+        $password = $this->encodePwd($request->password);
         $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'email' => trim($request->email), 'sexe' => $request->sexe,
             'phone_mobile' => $request->phone_mobile, 'password' => $password,
             'attente_paiement' => 1);
@@ -246,6 +207,8 @@ class UtilisateurController extends Controller
             $datap['action_paiement'] = 'ADD_ABONNEMENT';
         }
         $personne = Personne::create($datap);
+
+        $this->insertWpUser($request->prenom, $request->nom, $trim($request->email), $request->password);
 
         // on enregistre l'adresse
         $pays = Pays::where('id', $request->pays)->first();
@@ -312,6 +275,7 @@ class UtilisateurController extends Controller
                 return new JsonResponse(['url' => $reponse->url], 200);
             } else {
                 $personne->adresses()->detach();
+                $this->deleteWpUser($personne->email);
                 $personne->delete();
                 $adresse->delete();
                 return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
@@ -334,15 +298,112 @@ class UtilisateurController extends Controller
                 return new JsonResponse(['url' => $result['redirectURL']], 200);
             } else {
                 $personne->adresses()->detach();
+                $this->deleteWpUser($personne->email);
                 $personne->delete();
                 $adresse->delete();
                 return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
             }
         }
+    }
+
+    public function renewIndividuel(Request $request) {
+        $personne = Personne::where('id', $request->personne_id)->first();
+        if (!$personne) {
+            return new JsonResponse(['erreur' => 'Personne non trouvée'], 400);
+        }
+//        if ($personne->is_adherent !== 2) {
+//            return new JsonResponse(['erreur' => 'Pas de renouvellement pour cet individuel'], 400);
+//        }
+        $utilisateur = Utilisateur::where('id', $request->carte)->first();
+        if ($utilisateur->personne_id != $personne->id) {
+            return new JsonResponse(['erreur' => 'Personne et carte non concordante'], 400);
+        }
+
+        // on récupère le montant dur enouvellement pour l'année en cours:
+        list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+        $montant = $request->adhesion === 'adh' ? floatval($tarif) : floatval($tarif_supp) + floatval($tarif);
+        if ($montant != $request->montant) {
+            return new JsonResponse(['erreur' => 'Pas de renouvellement pour cet individuel'], 400);
+        }
+        $montant_cents = intval($montant * 100);
+        $ref = 'ADH-REN-'.$utilisateur->identifiant;
+        $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
+        $num = $last_reglement ? intval(substr($last_reglement->reference, -4)) + 1 : 1;
+        $ref .= '-'.str_pad($num, 4, '0', STR_PAD_LEFT);
+
+        // on crée un règlement
+        $reglement = Reglement::create(['montant' => $montant, 'reference' => $ref, 'statut' => 0]);
+
+        // on crée la liaison reglements utilisateurs
+        $dataru = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $utilisateur->id, 'adhesion' => 1);
+        if ($tarif_supp == 0 || $request->adhesion === 'all') {
+            $dataru['abonnement'] = 1;
+        }
+        DB::table('reglementsutilisateurs')->insert($dataru);
+
+        $datau = array('statut' => 1);
+        $utilisateur->update($datau);
 
 
+        if ($request->type == 'bridge') {
+            $url = 'https://api.bridgeapi.io/v2/payment-links';
+            $transaction = new \stdClass();
+            $transaction->amount = $montant;
+            $transaction->currency = 'EUR';
+            $transaction->label = $ref;
+            $expired_date = new \DateTime(date('Y-m-d H:i:s'));
+            $expired_date->add(new \DateInterval('P1D'));
 
-        // le retour du paiement créera les infos adhérents, abonnés, ...
+            $bridge_datas = [
+                "user" => [
+                    "first_name" => $personne->prenom,
+                    "last_name" => $personne->nom
+                ],
+                "expired_date" => $expired_date->format('c'),
+                "client_reference" => strval($personne->id),
+                "transactions" => [
+                    $transaction
+                ],
+                "callback_url" => env('APP_URL') . "utilisateurs/attente_paiement_validation",
+            ];
+
+
+            list($status, $reponse) = $this->callBridge($url, 'POST', json_encode($bridge_datas));
+            if ($status == 200) {
+                $reponse = json_decode($reponse);
+                $reglement->update(['bridge_id' => $reponse->id, 'bridge_link' => $reponse->url]);
+                return new JsonResponse(['url' => $reponse->url], 200);
+            } else {
+                $reglement->delete();
+                DB::table('reglementsutilisateurs')->where('reglements_id', $reglement->id)->delete();
+                $datau = array('statut' => 0);
+                $utilisateur->update($datau);
+
+                return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
+            }
+        } else {
+            $urls = [
+                'cancelURL' => env('APP_URL') . "cancel_paiement_renew",
+                'returnURL' => env('APP_URL') . "personnes/validation_paiement_carte_renew",
+                'notificationURL' => env('APP_URL') . "reglements/notification_paiement",
+            ];
+            $user = [
+                'email' => $personne->email,
+                'prenom' => $personne->prenom,
+                'nom' => $personne->nom,
+            ];
+            $result = $this->callMonext($montant_cents, $urls, $ref, $user);
+            if ($result['code'] == '00000') {
+                $reglement->update(['monext_token' => $result['token'], 'monext_link' => $result['redirectURL']]);
+                return new JsonResponse(['url' => $result['redirectURL']], 200);
+            } else {
+                $reglement->delete();
+                DB::table('reglementsutilisateurs')->where('reglements_id', $reglement->id)->delete();
+                $datau = array('statut' => 0);
+                $utilisateur->update($datau);
+                return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
+            }
+        }
     }
 
     protected function getMontantRenouvellementClub($club_id, $abo_club) {

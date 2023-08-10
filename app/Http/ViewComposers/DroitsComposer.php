@@ -2,6 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Models\Droit;
 use Illuminate\View\View;
 
 class DroitsComposer
@@ -17,8 +18,23 @@ class DroitsComposer
     {
         $cartes = session()->get('cartes');
         $tab_droits = []; // tableau des droits de l'utilisateur
-        foreach($cartes[0]->droits as $droit) {
-            $tab_droits[] = $droit->label;
+        if ($cartes) {
+            foreach($cartes[0]->droits as $droit) {
+                $tab_droits[] = $droit->label;
+            }
+            foreach (session()->get('cartes')[0]->fonctions as $fonction) {
+                foreach ($fonction->droits as $droit) {
+                    $tab_droits[] = $droit->label;
+                }
+            }
+        } else {
+            $user = session()->get('user');
+            if ($user->is_administratif) {
+                $droits = Droit::all();
+                foreach ($droits as $droit) {
+                    $tab_droits[] = $droit->label;
+                }
+            }
         }
         $view->with('droits_fpf', $tab_droits);
     }

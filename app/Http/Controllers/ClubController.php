@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Concern\Api;
 use App\Concern\ClubTools;
+use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
@@ -16,6 +17,7 @@ use App\Models\Configsaison;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Souscription;
 use App\Models\Utilisateur;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -25,9 +27,10 @@ class ClubController extends Controller
     use Tools;
     use ClubTools;
     use Api;
+    use Invoice;
     public function __construct()
     {
-        $this->middleware(['checkLogin', 'clubAccess']);
+        $this->middleware(['checkLogin', 'clubAccess'])->except(['updateAdherent']);
     }
 
     // fonctions de gestion du club
@@ -93,9 +96,6 @@ class ClubController extends Controller
                 }
             }
             $adherent->fin = $fin;
-
-            // si la personne est abonnée, on récupère le numéro de fin de son abonnement
-            //$adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[1]['fin'] : '';
         }
         return view('clubs.adherents.index', compact('club','statut','abonnement','adherents'));
     }
@@ -110,7 +110,8 @@ class ClubController extends Controller
         $utilisateur->personne = $personne;
         $utilisateur->personne->adresses = [$adresse];
         $countries = Pays::all();
-        return view('clubs.adherents.create', compact('club', 'countries', 'utilisateur'));
+        $prev = 'clubs';
+        return view('clubs.adherents.create', compact('club', 'countries', 'utilisateur', 'prev'));
     }
 
     public function storeAdherent(AdherentRequest $request) {
@@ -129,12 +130,13 @@ class ClubController extends Controller
                 return redirect()->route('clubs.adherents.create')->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
             }
             $news = $request->news ? 1 : 0;
+            $password = $this->generateRandomPassword();
             $datap = array(
                 'nom' => trim(strtoupper($request->nom)),
                 'prenom' => trim($request->prenom),
                 'sexe' => $request->sexe,
                 'email' => trim($request->email),
-                'password' => $this->generateRandomPassword(),
+                'password' => $password,
                 'phone_mobile' => $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif),
                 'datenaissance' => $request->datenaissance,
                 'news' => $news,
@@ -142,6 +144,8 @@ class ClubController extends Controller
                 'premiere_connexion'  => 1
             );
             $personne = Personne::create($datap);
+
+            $this->insertWpUser(trim($request->nom), trim($request->prenom), trim($request->email), $password);
 
             // on crée l'adresse
             $dataa = array(
@@ -220,7 +224,8 @@ class ClubController extends Controller
                 $utilisateur->personne->adresses[1]->indicatif = "";
             }
         }
-        return view('clubs.adherents.edit', compact('club', 'utilisateur', 'countries'));
+        $prev = 'clubs';
+        return view('clubs.adherents.edit', compact('club', 'utilisateur', 'countries', 'prev'));
     }
 
     public function updateAdherent(AdherentRequest $request, $utilisateur_id) {
@@ -228,42 +233,11 @@ class ClubController extends Controller
         if (!$utilisateur) {
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
         }
-        $pays = Pays::where('id', $request->pays)->first();
-        if (!$pays) {
-            return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+        if ($this->updateClubAdherent($request, $utilisateur)) {
+            return redirect()->route('clubs.adherents.index')->with('success', "Les informations de l'adhérent ont été mises à jour");
+        } else {
+            return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent");
         }
-
-        // on récupère les infos personne à mettre à jour
-        $personne = $utilisateur->personne;
-        $datap = $request->only('nom', 'prenom', 'datenaissance', 'phone_mobile', 'sexe');
-        $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
-        $datap['news'] = $request->news ? 1 : 0;
-        $personne->update($datap);
-
-        // on récupère les infos adresse à mettre à jour
-        $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
-        $dataa['pays'] = $pays->nom;
-        $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
-        $adresse = $personne->adresses[0];
-        $adresse->update($dataa);
-
-        // on récupère les infos adresse2 à mettre à jour
-        if (sizeof($personne->adresses) > 1) {
-            $dataa2 = [];
-            $dataa2['libelle1'] = $request->adresse2_libelle1;
-            $dataa2['libelle2'] = $request->adresse2_libelle2;
-            $dataa2['codepostal'] = $request->adresse2_codepostal;
-            $dataa2['ville'] = $request->adresse2_ville;
-            $pays2 = Pays::where('id', $request->adresse2_pays)->first();
-            $dataa2['telephonedomicile'] = $this->format_fixe_for_base($request->adresse2_telephonedomicile, $pays2->indicatif);
-            $dataa2['pays'] = $pays2->nom;
-
-            $adresse2 = $personne->adresses[1];
-            $adresse2->update($dataa2);
-        }
-
-        return redirect()->route('clubs.adherents.index')->with('success', "Les informations de l'adhérent ont été mises à jour");
-
     }
 
 
@@ -367,6 +341,11 @@ class ClubController extends Controller
         return view('clubs.reglements.attente_paiement_validation', compact('club'));
     }
 
+    public function attentePaiementValidationFlorilege() {
+        $club = $this->getClub();
+        return view('clubs.florilege.attente_paiement_validation', compact('club'));
+    }
+
     public function validationPaiementCarte(Request $request) {
         $club = $this->getClub();
         $result = $this->getMonextResult($request->token);
@@ -379,6 +358,8 @@ class ClubController extends Controller
                     $data =array('statut' => 1, 'numerocheque' => 'Monext '.$reglement->monext_token, 'dateenregistrement' => date('Y-m-d H:i:s'),
                         'monext_token' => null, 'monext_link' => null);
                     $reglement->update($data);
+
+                    $this->saveInvoiceForReglement($reglement);
                 }
             }
             $code = 'ok';
@@ -387,6 +368,79 @@ class ClubController extends Controller
             $code = 'ko';
         }
         return view('clubs.reglements.validation_paiement_carte', compact('club', 'code'));
+    }
+
+    public function florilege() {
+        $club = $this->getClub();
+        $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
+        if (!(date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege)) {
+            return redirect()->route('accueil');
+        }
+        $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('utilisateurs.clubs_id', $club->id)
+            ->where('fonctionsutilisateurs.fonctions_id', 97)
+            ->first();
+        if ($contact) {
+            if (sizeof($contact->personne->adresses) > 1) {
+                $adresse = $contact->personne->adresses[1];
+            } else {
+                $adresse = $contact->personne->adresses[0];
+            }
+        } else {
+            $adresse = $club->adresse;
+        }
+        return view('clubs.florilege.index', compact('club', 'config', 'adresse', 'contact'));
+    }
+
+    public function cancelPaiementFlorilege(Request $request) {
+        $souscription = Souscription::where('monext_token', $request->token)->first();
+        if ($souscription) {
+            $souscription->delete();
+        }
+        return redirect()->route('clubs.florilege')->with('error', "Votre paiement a été annulé");
+    }
+
+    public function validationPaiementCarteFlorilege(Request $request) {
+        $result = $this->getMonextResult($request->token);
+        $souscription = Souscription::where('monext_token', $request->token)->first();
+        if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
+            if ($souscription) {
+                // on enregistre la validation de la souscription
+                $data = ['statut' => 1, 'monext_token' => null, 'monext_link' => null, 'ref_reglement' => 'Monext '.$souscription->monext_token];
+                $souscription->update($data);
+
+                if ($souscription->personne_id) {
+                    $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
+                    $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->personne_id];
+                    $this->createAndSendInvoice($datai);
+                } else {
+                    if ($souscription->clubs_id) {
+                        $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
+                        $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->clubs_id];
+                        $this->createAndSendInvoice($datai);
+                    }
+                }
+
+                return redirect()->route('clubs.florilege')->with('success', "Votre paiement a été accepté et votre souscription a été enregistrée avec succès. Vous allez recevoir un mail récapitulatif de votre souscription.");
+            }
+            return redirect()->route('clubs.florilege')->with('error', "Votre paiement a été validé mais une erreur est survenue lors de l'enregistrement de votre souscription. Veuillez contacter le secrétariat");
+        } else {
+            if ($souscription) {
+                $souscription->delete();
+            }
+            return redirect()->route('clubs.florilege')->with('error', "Votre paiement n'a pas été validé");
+        }
+    }
+
+    public function factures() {
+        $club = $this->getClub();
+        $invoices = \App\Models\Invoice::where('club_id', $club->id)->orderByDesc('created_at')->get();
+        foreach ($invoices as $invoice) {
+            list($tmp, $path) = explode('htdocs',  $invoice->getStorageDir());
+            $path .= '/'.$invoice->numero.'.pdf';
+            $invoice->path = $path;
+        }
+        return view('clubs.factures.index', compact('club', 'invoices'));
     }
 
     protected function getClub()

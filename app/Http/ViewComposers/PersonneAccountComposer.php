@@ -16,6 +16,7 @@ class PersonneAccountComposer
     public function compose(View $view)
     {
         $user = session()->get('user');
-        $view->with('user', $user);
+        $cartes = session()->get('cartes');
+        $view->with('user', $user)->with('cartes', $cartes);
     }
 }

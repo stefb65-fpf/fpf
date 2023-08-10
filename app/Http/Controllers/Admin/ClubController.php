@@ -8,6 +8,7 @@ use App\Exports\RoutageFedeExport;
 use App\Exports\RoutageListAdherents;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddClubRequest;
+use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
 use App\Models\Abonnement;
@@ -79,8 +80,9 @@ class ClubController extends Controller
             //changer les url des adresses web
         }
         $urs = Ur::orderBy('nom')->get();
+        $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
 
-        return view('admin.clubs.index',compact('clubs','urs','ur_id','statut','type_carte','abonnement','term'));
+        return view('admin.clubs.index',compact('clubs','urs','ur_id','statut','type_carte','abonnement','term', 'numeroencours'));
     }
 
     /**
@@ -160,16 +162,21 @@ class ClubController extends Controller
             $adresseContact = Adresse::create($dataac);
 
             // on crée la personne contact
+            $password = $this->generateRandomPassword();
+            $firstname = ucfirst($request->prenomContact);
+            $lastname = strtoupper($request->nomContact);
             $datapc = [
-                'nom' => strtoupper($request->nomContact),
-                'prenom' => ucfirst($request->prenomContact),
+                'nom' => $lastname,
+                'prenom' => $firstname,
                 'sexe' => $request->sexeContact,
                 'email' => $request->emailContact,
-                'password' => $this->generateRandomPassword(),
+                'password' => $password,
                 'phone_mobile' => $phoneMobileContact,
                 'is_adherent' => 1
             ];
             $personne = Personne::create($datapc);
+
+            $this->insertWpUser($firstname, $lastname, $request->emailContact, $password);
 
             // on lie l'adresse à la personne
             $personne->adresses()->attach($adresseContact->id);
@@ -237,53 +244,58 @@ class ClubController extends Controller
             DB::rollBack();
             return redirect()->route('admin.clubs.create')->with('error', "Une erreur est survenue lors de la création du club");
         }
-
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-//    public function storeGeneralite(Request $request)
-//    {
-//        dd($request);
-//        return view('admin.clubs.create');
-//    }
-//    public function storeAddress(Request $request)
-//    {
-//        dd($request);
-//        return view('admin.clubs.create');
-//    }
-//    public function storeReunion(Request $request)
-//    {
-//        dd($request);
-//        return view('admin.clubs.create');
-//    }
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Club $club)
     {
-
         list($club, $activites, $equipements, $countries) = $this->getClubFormParameters($club);
         return view('admin.clubs.edit',compact('club','activites', 'equipements', 'countries'));
     }
 
+    public function createAdherent() {
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
+
+    public function editAdherent($utilisateur_id) {
+        $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
+        $countries = Pays::all();
+        if (!$utilisateur) {
+            return redirect()->route('clubs.adherents.index')->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+        }
+        $club = Club::where('id', $utilisateur->clubs_id)->first();
+        if (!$club) {
+            return redirect()->route('clubs.adherents.index')->with('error', "Un problème est survenu lors de la récupération des informations club");
+        }
+        $pays = Pays::where('nom', strtoupper(strtolower($utilisateur->personne->adresses[0]->pays)))->first();
+        if ($pays) {
+            $utilisateur->personne->adresses[0]->indicatif = $pays->indicatif;
+        } else {
+            $utilisateur->personne->adresses[0]->indicatif = "";
+        }
+        if (isset($utilisateur->personne->adresses[1])) {
+            $pays = Pays::where('nom', strtoupper(strtolower($utilisateur->personne->adresses[1]->pays)))->first();
+            if ($pays) {
+                $utilisateur->personne->adresses[1]->indicatif = $pays->indicatif;
+            } else {
+                $utilisateur->personne->adresses[1]->indicatif = "";
+            }
+        }
+        $prev = 'admin';
+        return view('clubs.adherents.edit', compact('club', 'utilisateur', 'countries', 'prev'));
+    }
+
+    public function updateAdherent(AdherentRequest $request, $utilisateur_id) {
+        $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
+        if (!$utilisateur) {
+            return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+        }
+        if ($this->updateClubAdherent($request, $utilisateur)) {
+            return redirect()->route('admin.clubs.liste_adherents_club', [$utilisateur->clubs_id])->with('success', "Les informations de l'adhérent ont été mises à jour");
+        } else {
+            return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent");
+        }
+    }
+
     public function updateGeneralite(ClubReunionRequest $request, Club $club)
     {
         $this->updateClubGeneralite($club, $request);
@@ -302,7 +314,9 @@ class ClubController extends Controller
         return redirect()->route('admin.clubs.edit', $club)->with('success', "Les informations de réunion du club ont été mises à jour");
     }
     public function listeAdherent(Club $club, $statut = null,$abonnement = null){
-//        dd($club);
+        $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+        $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
+        $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
         $statut = $statut ?? "all";
         $abonnement = $abonnement ?? "all";
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
@@ -316,20 +330,18 @@ class ClubController extends Controller
         }
         $adherents = $query->get();
         foreach ($adherents as $adherent) {
-            // si la personne est abonnée, on récupère le numéro de fin de son abonnement
-            if($adherent->personne->is_abonne ){
-                $adherent->fin = "";
-
-                if($adherent->personne->abonnements->where('etat', 1) && isset($adherent->personne->abonnements->where('etat', 1)[0])){
-                    $adherent->fin = $adherent->personne->abonnements->where('etat', 1)[0]['fin'];
-                }elseif ($adherent->personne->abonnements->where('etat', 1) &&  isset($adherent->personne->abonnements->where('etat', 1)[1])){
-                    $adherent->fin = $adherent->personne->abonnements->where('etat', 1)[1]['fin'];
+            $fin = '';
+            if ($adherent->personne->is_abonne) {
+                $personne_abonnement = Abonnement::where('personne_id', $adherent->personne_id)->where('etat', 1)->first();
+                if ($personne_abonnement) {
+                    $fin = $personne_abonnement->fin;
                 }
             }
+            $adherent->fin = $fin;
 //            $adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[0]['fin'] : '';
         }
 
-        return view('admin.clubs.liste_adherents_club',compact('club','adherents', 'statut','abonnement'));
+        return view('admin.clubs.liste_adherents_club',compact('club','adherents', 'statut', 'abonnement'));
     }
 
 }

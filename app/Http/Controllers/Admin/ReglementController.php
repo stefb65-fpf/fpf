@@ -21,9 +21,8 @@ class ReglementController extends Controller
     public function index($term=null)
     {
         $query = Reglement::orderByDesc('reglements.id');
-        //TODO:filtre par term
         if($term){
-            $this->getReglementsByTerm($term,$query);
+            $this->getReglementsByTerm($term, $query);
         }
         $reglements = $query->paginate(100);
         foreach ($reglements as $reglement) {

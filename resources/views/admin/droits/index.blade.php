@@ -63,9 +63,16 @@
                             <div>
                                 <select name="fonction" class="selectFormAction">
                                     <option value="-1">-- Fonction à choisir --</option>
-                                    @foreach($fonctions as $fonction)
-                                        <option value="{{ $fonction->id }}">{{ $fonction->libelle }}</option>
-                                    @endforeach
+                                    @if(in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])))
+                                        @foreach($fonctions_urs as $fonction)
+                                            <option value="{{ $fonction->id }}">{{ $fonction->libelle }}</option>
+                                        @endforeach
+                                    @else
+                                        @foreach($fonctions as $fonction)
+                                            <option value="{{ $fonction->id }}">{{ $fonction->libelle }}</option>
+                                        @endforeach
+                                    @endif
+
                                 </select>
                                 <input type="text" name="utilisateur" value="" placeholder="identifiant utilisateur" class="inputFormAction" maxlength="12">
                                 <input type="hidden" name="droit" value="{{ $droit->id }}">

@@ -23,9 +23,23 @@
             </a>
             <a class="card" href="{{ route('clubs.reglements.index') }}">
                 <div class="wrapper">
-                    <div class="cardTitle">Bordereaux & Réglements</div>
+                    <div class="cardTitle">Bordereaux</div>
                 </div>
             </a>
+            @if($florilege->active)
+                <a class="card" href="{{ route('clubs.florilege') }}">
+                    <div class="wrapper">
+                        <div class="cardTitle">Florilège</div>
+                    </div>
+                </a>
+            @endif
+            @if($club_invoices > 0)
+                <a class="card" href="{{ route('clubs.factures') }}">
+                    <div class="wrapper">
+                        <div class="cardTitle">Factures</div>
+                    </div>
+                </a>
+            @endif
             <div class="card invisible">
                 <div class="wrapper">
                     <div class="cardTitle"></div>

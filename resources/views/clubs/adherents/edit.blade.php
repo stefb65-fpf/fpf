@@ -4,7 +4,14 @@
     <div class="pageCanva">
         <h1 class="pageTitle">
             Informations pour l'adhérent {{ $utilisateur->identifiant }}
-            <a class="previousPage" title="Retour page précédente" href="{{ route('clubs.adherents.index') }}">
+            @if($prev == 'clubs')
+                <a class="previousPage" title="Retour page précédente" href="{{ route('clubs.adherents.index') }}">
+            @elseif($prev == 'admin')
+                <a class="previousPage" title="Retour page précédente" href="{{ route('admin.clubs.liste_adherents_club', $club->id) }}">
+            @else
+                <a class="previousPage" title="Retour page précédente" href="{{ route('urs.liste_adherents_club', $club->id) }}">
+            @endif
+
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                      class="bi bi-reply-fill" viewBox="0 0 16 16">
                     <path
@@ -13,7 +20,7 @@
             </a>
         </h1>
         <div style="width: 100%">
-            @include('clubs.adherents.form', ['action' => 'update'])
+            @include('clubs.adherents.form', ['action' => 'update', 'prev' => $prev])
         </div>
 
     </div>

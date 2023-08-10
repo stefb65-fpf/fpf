@@ -23,8 +23,13 @@ class ComposerServiceProvider extends ServiceProvider
         );
 
         view()->composer(
-            ['admin.accueil'],
+            ['admin.accueil', 'admin.personnes.form', 'urs.gestion'],
             'App\Http\ViewComposers\DroitsComposer'
+        );
+
+        view()->composer(
+            ['layouts.accountMenu', 'clubs.gestion'],
+            'App\Http\ViewComposers\FlorilegeMenuComposer'
         );
     }
 

@@ -15,19 +15,19 @@
                 <div class="formLabel mr10 bold">Statut :</div>
                 <select class="formValue modifying" name="filter" data-ref="statut">
                     <option value="all">Tous</option>
-                    <option value="2" {{$statut == 2? "selected":""}}>Validés</option>
-                    <option value="1" {{$statut == 1? "selected":""}}>Pré-inscrits</option>
-                    <option value="0" {{$statut == 0? "selected":""}}>Non renouvelés</option>
-                    <option value="3" {{$statut == 3? "selected":""}}>Carte éditée</option>
-                    <option value="4" {{$statut == 4? "selected":""}}>Anciens</option>
+                    <option value="2" {{$statut == 2 ? "selected" : ""}}>Validés</option>
+                    <option value="1" {{$statut == 1 ? "selected" : ""}}>Pré-inscrits</option>
+                    <option value="0" {{$statut == 0 ? "selected" : ""}}>Non renouvelés</option>
+                    <option value="3" {{$statut == 3 ? "selected" : ""}}>Carte éditée</option>
+                    <option value="4" {{$statut == 4 ? "selected" : ""}}>Anciens</option>
                 </select>
             </div>
             <div class="formUnit mb0">
                 <div class="formLabel mr10 bold">Abonnement :</div>
                 <select class="formValue modifying" name="filter" data-ref="abonnement">
                     <option value="all">Tous</option>
-                    <option value="1" {{$abonnement== 1? "selected":""}}>Avec</option>
-                    <option value="0" {{$abonnement== 0? "selected":""}}>Sans</option>
+                    <option value="1" {{$abonnement == 1 ? "selected" : ""}}>Avec</option>
+                    <option value="0" {{$abonnement == 0 ? "selected" : ""}}>Sans</option>
                 </select>
             </div>
         </div>
@@ -137,7 +137,7 @@
                     </div>
                 </td>
                 <td>
-                    <a href="{{ route('clubs.adherents.edit', $adherent->id_utilisateur) }}" class="adminPrimary btnSmall">éditer</a>
+                    <a href="{{ route($prefix.'clubs.adherents.edit', $adherent->id_utilisateur) }}" class="adminPrimary btnSmall">éditer</a>
                 </td>
             </tr>
         @endforeach
@@ -207,7 +207,7 @@
             <div class="alertSuccess" style="margin: 10px auto 0">
                 Le bordereau pour le renouvellement a bien été généré. Vous pouvez le télécharger en cliquant sur le lien suivant: <a id="lienBordereauClub" target="_blank" style="color: #003d77;">bordreau de renouvellement</a>.<br>
                 Le bordereau vous a également été transmis par mail et vous pouvez le retrouver dans votre espace "Bordereaux et règlements".<br><br>
-                Vous pouvez régler directement  en ligne, par virement instantanné ou CB, votre règlement en cliquant sur les boutons ci-dessous.<br>
+                Vous pouvez régler directement  en ligne, par virement instantané ou CB, votre règlement en cliquant sur les boutons ci-dessous.<br>
                 Si ce n'est pas possible, vous pouvez régler par chèque ou virement en nous transmettant le bordereau. Vous pouvez également règler plus tard en vous rendant dans votre espace "Bordereaux et règlements".<br>
             </div>
         </div>

@@ -26,6 +26,11 @@
                     <div class="cardTitle">&Eacute;tiquettes</div>
                 </div>
             </a>
+            <a class="card" href="{{ route('admin.florilege') }}">
+                <div class="wrapper">
+                    <div class="cardTitle">Florilège</div>
+                </div>
+            </a>
             <div class="card invisible">
             </div>
             <div class="card invisible">

@@ -9,31 +9,34 @@
                           id="emailForm">
                         <input type="hidden" name="_method" value="put">
                         {{ csrf_field() }}
-                                <div class="formLabel">Email</div>
-                                <div class="currentValue" >{{ $personne->email }}</div>
-                                <div class="hiddenFields hidden">
-                                    <div class="fields">
-                                        <input class="formValue" placeholder="nouvel email" type="email" name="email" maxlength="100"/>
-                                        {{--                            <div class="formLineModify">Changement sécurisé</div>--}}
-                                    </div>
-                                </div>
+                        <div class="formLabel">Email</div>
+                        <div class="currentValue">{{ $personne->email }}</div>
+                        <div class="hiddenFields hidden">
+                            <div class="fields">
+                                <input class="formValue" placeholder="nouvel email" type="email" name="email"
+                                       maxlength="100"/>
+                                {{--                            <div class="formLineModify">Changement sécurisé</div>--}}
+                            </div>
+                        </div>
                     </form>
                     <div data-formId="emailForm">
-                        <button class="formBtn relative d-none success" name="enableBtn"  id="resetEmailBtn"
+                        <button class="formBtn relative d-none success" name="enableBtn" id="resetEmailBtn"
                         >Valider
                         </button>
                         <button class="formBtn relative primary showFields" name="updateForm">Modifier</button>
                     </div>
                 </div>
 
-                    @if($personne->nouvel_email)
+                @if($personne->nouvel_email)
                     <div class="formLine">
-                            <div class="formLabel">Validation en attente</div>
-                            <div class="currentValue">{{ $personne->nouvel_email }}</div>
-                            <div class="comment">Nous vous avons envoyé un mail à l'adresse {{ $personne->email }} pour valider ce changement.</div>
+                        <div class="formLabel">Validation en attente</div>
+                        <div class="currentValue">{{ $personne->nouvel_email }}</div>
+                        <div class="comment">Nous vous avons envoyé un mail à l'adresse {{ $personne->email }} pour
+                            valider ce changement.
                         </div>
+                    </div>
 
-                    @endif
+                @endif
 
                 <div class="formLine">
                     <div class="formLabel">Mot de Passe</div>
@@ -212,7 +215,7 @@
                     </form>
                     <div data-formId="pswdForm">
                         <button class="formBtn relative d-none success" name="enableBtn" disabled id="resetPasswordBtn"
-                                >Valider
+                        >Valider
                         </button>
                         <button class="formBtn relative primary showFields" name="updateForm">Modifier</button>
                     </div>
@@ -248,7 +251,7 @@
                 </div>
             </form>
             <div data-formId="civiliteForm">
-                <button class="formBtn d-none success" name="enableBtn" >Valider</button>
+                <button class="formBtn d-none success" name="enableBtn">Valider</button>
                 <button class="formBtn primary" name="updateForm">Modifier</button>
             </div>
         </div>
@@ -256,7 +259,9 @@
             <div class="formBlockTitle">Adresses</div>
             <div class="formBlockWrapper">
                 @if(!$nbadresses)
-                    <div class="addAddress" name="addAddress" data-formId="adresse1Form">Vous voulez rajouter une adresse ?</div>
+                    <div class="addAddress" name="addAddress" data-formId="adresse1Form">Vous voulez rajouter une
+                        adresse ?
+                    </div>
                 @endif
                 <div class="formValueGroup {{ !$nbadresses ?" hideForm":""}}">
                     @if($nbadresses==2)
@@ -307,7 +312,8 @@
                                         <option value="{{$country->id}}"
                                                 {{strtolower($country->nom) == strtolower($personne->adresses[0]->pays)? "selected":""}} data-indicator="{{$country->indicatif}}">{{$country->nom}}</option>
                                     @else
-                                        <option value="{{$country->id}}" data-indicator="{{$country->indicatif}}">{{$country->nom}}</option>
+                                        <option value="{{$country->id}}"
+                                                data-indicator="{{$country->indicatif}}">{{$country->nom}}</option>
                                     @endif
                                 @endforeach
                             </select>
@@ -331,16 +337,17 @@
                 </div> {{-- end formvaluegroup--}}
             </div>{{-- end formBlockWrapper--}}
             @if($nbadresses)
-                    <div class="formBlockWrapper" data-form="3">
-                        @if(!($nbadresses == 2))
-                            <div class="addAddress" name="addAddress" data-formId="adresse2Form">Vous voulez rajouter une adresse de livraison ?
-                            </div>
-                        @endif
-                        <div class="formValueGroup {{ $nbadresses < 2 ?" hideForm":""}}">
-                            <div class="formTitle">Adresse de Livraison</div>
-                            <form action="{{ route('updateAdresse', [$personne,2]) }}" method="POST" id="adresse2Form">
-                                <input type="hidden" name="_method" value="PUT">
-                                {{ csrf_field() }}
+                <div class="formBlockWrapper" data-form="3">
+                    @if(!($nbadresses == 2))
+                        <div class="addAddress" name="addAddress" data-formId="adresse2Form">Vous voulez rajouter une
+                            adresse de livraison ?
+                        </div>
+                    @endif
+                    <div class="formValueGroup {{ $nbadresses < 2 ?" hideForm":""}}">
+                        <div class="formTitle">Adresse de Livraison</div>
+                        <form action="{{ route('updateAdresse', [$personne,2]) }}" method="POST" id="adresse2Form">
+                            <input type="hidden" name="_method" value="PUT">
+                            {{ csrf_field() }}
                             <div class="formLine">
                                 <div class="formLabel">Rue</div>
                                 <input name="libelle1" type="text" class="formValue"
@@ -381,7 +388,8 @@
                                             <option value="{{$country->id}}"
                                                     {{strtolower($country->nom) == strtolower($personne->adresses[1]->pays)? "selected":""}} data-indicator="{{$country->indicatif}}">{{$country->nom}}</option>
                                         @else
-                                            <option value="{{$country->id}}" data-indicator="{{$country->indicatif}}">{{$country->nom}}</option>
+                                            <option value="{{$country->id}}"
+                                                    data-indicator="{{$country->indicatif}}">{{$country->nom}}</option>
                                         @endif
                                     @endforeach
                                 </select>
@@ -397,20 +405,18 @@
                                            disabled="true" name="telephonedomicile"/>
                                 </div>
                             </div>
-                            </form>
-                            <div data-formId="adresse2Form">
-                                <button class="formBtn success d-none" name="enableBtn" >
-                                    Valider
-                                </button>
-                                <button class="formBtn primary" name="updateForm">Modifier</button>
-                            </div>
-                        </div> {{-- end formvaluegroup--}}
-                    </div>{{-- end formBlockWrapper--}}
+                        </form>
+                        <div data-formId="adresse2Form">
+                            <button class="formBtn success d-none" name="enableBtn">
+                                Valider
+                            </button>
+                            <button class="formBtn primary" name="updateForm">Modifier</button>
+                        </div>
+                    </div> {{-- end formvaluegroup--}}
+                </div>{{-- end formBlockWrapper--}}
 
             @endif
         </div>
-
-
     </div>
     <div class="formLine newsletter" style="display: flex; justify-content: center; align-content: center">
         <div class="switch">
@@ -428,16 +434,25 @@
                 de la fédé)
             </div>
             @if($personne->blacklist_date)
-                <div class="blacklist {{$personne->news?'d-none':''}}">Vous vous êtes désinscrits des nouvelles de la FPF depuis le {{($personne->blacklist_date)}} </div>
+                <div class="blacklist {{$personne->news?'d-none':''}}">Vous vous êtes désinscrits des nouvelles de la
+                    FPF depuis le {{($personne->blacklist_date)}} </div>
             @endif</label>
 
         <label class="subscribing {{$personne->news?'':'d-none'}}" for="subscribeNews"> Vous <span>recevez actuellement les nouvelles</span>
             de la FPF.<br> (Hors
             lettre
             de la fédé)</label>
-
     </div>
 
+    <div class="formBlock" style="margin-top: 50px">
+        <div class="formBlockTitle">Désactivation de compte - Anonymisation</div>
+            <div style="width: 75%; font-size: 14px;">
+                Dans le cadre du respect des règles RGPD, vous pouvez demander la désactivation de votre compte. Cela aura pour effet de supprimer toutes vos données personnelles de notre base de données. <b>Vos données seront anonymisées</b> et il ne sera plus possible de vous identifier. <b>Vous ne pourrez plus vous connecter à votre compte sur aucun des outils de la FPF (concours, site fédéral, ...)</b>.
+            </div>
+            <div>
+                <a href="anonymize" class="formBtn danger" data-method="delete" data-confirm="Voulez-vous vraiment anonymiser vos données ? Toutes les cartes et autres informations liées perdront les informations d'identité. Il ne sera plus possible de voir apparaître les noms, prénoms, email et téléphone de votre compte et cette action est irréversible"  style="width: max-content">Désactiver le compte</a>
+            </div>
+        </div>
     </div>
 @endsection
 @section('js')

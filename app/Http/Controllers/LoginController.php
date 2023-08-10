@@ -38,22 +38,88 @@ class LoginController extends Controller
         if (!$personne) {
             return redirect()->route('login')->with('error', "Email incorrect");
         }
+        if (hash('sha512', env('SALT_KEY').$request->password) !== $personne->password) {
+            return redirect()->route('login')->with('error', "Mot de passe incorrect");
+        }
         unset($personne->password);
 
         list($menu, $cartes) = $this->getMenu($personne);
-
-        $request->session()->put('user', $personne);
-        $request->session()->put('menu', $menu);
-
         if (!$personne->is_administratif) {
             $personne = $this->getSituation($personne);
         }
 
-        $request->session()->put('cartes', $cartes);
+        $request->session()->put('user', $personne);
+        $request->session()->put('menu', $menu);
+
+
 
         if ($personne->is_administratif) {
             return redirect()->route('admin');
         }
+
+        $request->session()->put('cartes', $cartes);
+
+        $action = 'Connexion au site';
+        $this->registerAction($personne->id, 3, $action);
+
+        return redirect()->route('accueil');
+    }
+
+    public function autoload(Request $request) {
+        $personne = Personne::where('email', $request->email)->where('password', $request->password)->first();
+        if (!$personne) {
+            return redirect()->route('login')->with('error', "Email incorrect");
+        }
+        unset($personne->password);
+        session()->forget('user');
+        session()->forget('menu');
+        session()->forget('cartes');
+
+        list($menu, $cartes) = $this->getMenu($personne);
+        if (!$personne->is_administratif) {
+            $personne = $this->getSituation($personne);
+        }
+
+        $request->session()->put('user', $personne);
+        $request->session()->put('menu', $menu);
+
+        if ($personne->is_administratif) {
+            return redirect()->route('admin');
+        }
+
+        $request->session()->put('cartes', $cartes);
+
+        $action = 'Connexion au site';
+        $this->registerAction($personne->id, 3, $action);
+
+        return redirect()->route('accueil');
+    }
+
+
+
+    public function autloadFromWp($secure_code, $id) {
+        $personne = $this->getUserFromWp($secure_code, $id);
+        if (!$personne) {
+            return redirect()->route('login')->with('error', "Email incorrect");
+        }
+        unset($personne->password);
+        session()->forget('user');
+        session()->forget('menu');
+        session()->forget('cartes');
+
+        list($menu, $cartes) = $this->getMenu($personne);
+        if (!$personne->is_administratif) {
+            $personne = $this->getSituation($personne);
+        }
+
+        request()->session()->put('user', $personne);
+        request()->session()->put('menu', $menu);
+
+        if ($personne->is_administratif) {
+            return redirect()->route('admin');
+        }
+
+        request()->session()->put('cartes', $cartes);
 
         $action = 'Connexion au site';
         $this->registerAction($personne->id, 3, $action);
@@ -73,7 +139,7 @@ class LoginController extends Controller
             $personne = $this->getSituation($personne);
         }
 
-        list($menu, $cartes) = $this->getMenu($personne);;
+        list($menu, $cartes) = $this->getMenu($personne);
 
         request()->session()->put('user', $personne);
         request()->session()->put('menu', $menu);
@@ -90,75 +156,7 @@ class LoginController extends Controller
         return redirect()->route('accueil');
     }
 
-    protected function getMenu($personne) {
-        // on doit déterminer les accès de l'utilisateur et les pousser dans la session
-        $menu_club = false;
-        $menu_ur = false;
-        $menu_admin = $personne->is_administratif;
-        $menu_formation = !$personne->is_administratif;
 
-        $cartes = [];
-        if (!$personne->is_administratif && $personne->is_adherent) {
-            // on regarde les functions sur chaque carte
-            $utilisateurs = Utilisateur::where('personne_id', $personne->id)->orderBy('statut')->selectRaw('id, urs_id, clubs_id, identifiant, statut')->get();
-            $prec_statut3 = 4;
-            foreach ($utilisateurs as $utilisateur) {
-                $fonctions = Fonction::join('fonctionsutilisateurs', 'fonctionsutilisateurs.fonctions_id', '=', 'fonctions.id')
-                    ->where('fonctionsutilisateurs.utilisateurs_id', $utilisateur->id)
-                    ->selectRaw('fonctions.id, fonctions.libelle, fonctions.instance')
-                    ->orderBy('fonctions.instance')
-                    ->orderBy('fonctions.ordre')
-                    ->get();
-                $utilisateur->fonctions = $fonctions;
-                if ($utilisateur->statut == 3) {
-                    if (sizeof($fonctions) > 0) {
-                        if ($fonctions[0]->instance < $prec_statut3) {
-                            array_unshift($cartes, $utilisateur);
-                        } else {
-                            $cartes[] = $utilisateur;
-                        }
-                        $prec_statut3 = $fonctions[0]->instance;
-                    } else {
-                        $cartes[] = $utilisateur;
-                    }
-                } else {
-                    $cartes[] = $utilisateur;
-                }
-            }
-            if (sizeof($cartes[0]->fonctions) > 0) {
-                foreach ($cartes[0]->fonctions as $fonction) {
-                    if (in_array($fonction->id, config('app.club_functions'))) {
-                        $menu_club = true;
-                    }
-                    if (in_array($fonction->id, config('app.ur_functions'))) {
-                        $menu_ur = true;
-                    }
-                    if ($fonction->instance == 1) {
-                        // on contrôle les droits liés à la fonction
-                        if (sizeof($fonction->droits)) {
-                            $menu_admin = true;
-                        }
-                    }
-                }
-            }
-
-            if (!$menu_admin) {
-                // TODO on contrôle les droits liés à l'utilisateur
-                if (sizeof($cartes[0]->droits) > 0) {
-                    $menu_admin = true;
-                }
-            }
-        }
-
-        $menu = [
-            'club' => $menu_club,
-            'ur' => $menu_ur,
-            'admin' => $menu_admin,
-            'formation' => $menu_formation,
-        ];
-
-        return [$menu, $cartes];
-    }
 
     /**
      * Suppression de la session et déconnexion de l'utilisateur
@@ -171,6 +169,7 @@ class LoginController extends Controller
         $this->registerAction($user->id, 3, $action);
         session()->forget('user');
         session()->forget('menu');
+        session()->forget('cartes');
         return redirect()->route('login');
     }
 
@@ -259,58 +258,7 @@ class LoginController extends Controller
         return view('auth.registerAdhesion', compact('countries'));
     }
 
-    protected function getSituation($personne) {
-        if ($personne->is_adherent) {
-            // on recherche les cartes actives
-            $tab_cartes = [];
-            $cartes_actives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [2,3])->selectRaw('id, identifiant')->get();
-            foreach ($cartes_actives as $carte) {
-                $carte->actif = true;
-                // on cherche les focntions de la carte
-                $fonctions = Fonction::join('fonctionsutilisateurs', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
-                    ->select('fonctions.id', 'fonctions.libelle')
-                    ->where('fonctionsutilisateurs.utilisateurs_id', $carte->id)->get();
-                $droits = []; $tab_fonctions = [];
-                foreach ($fonctions as $fonction) {
-                    if ($fonction->droits) {
-                        foreach ($fonction->droits as $droit) {
-                            $droits[] = $droit->label;
-                        }
-                    }
-                    $tab_fonctions[] = array('id' => $fonction->id, 'libelle' => $fonction->libelle);
-                }
-                $carte->fonctions = $tab_fonctions;
 
-                foreach ($carte->droits as $droit) {
-                    $droits[] = $droit->label;
-                }
-
-                $carte->droits = $droits;
-                $tab_cartes[] = $carte;
-            }
-
-            $cartes_inactives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [0,4])->selectRaw('id, identifiant')->get();
-            foreach ($cartes_inactives as $carte) {
-                $carte->actif = false;
-                $tab_cartes[] = $carte;
-            }
-            $personne->cartes = $tab_cartes;
-        }
-
-        if ($personne->is_abonne) {
-            // on recherche son abonnement en cours
-            $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
-            if ($abonnement) {
-                $personne->abonnement = $abonnement;
-            }
-        }
-
-        if ($personne->is_formateur) {
-            // on recherche les infos formateur
-        }
-
-        return $personne;
-    }
 
 //    protected function getDroits($personne)
 //    {
@@ -350,8 +298,11 @@ class LoginController extends Controller
   */
     public function resetEmail(Request $request, Personne $personne){
         //on enregistre le nouvel email
+        $old_email = $personne->email;
         $datap = array('email' => $personne->nouvel_email, 'secure_code' => null,"nouvel_email"=>null);
         $personne->update($datap);
+
+        $this->updateWpUserEmail($old_email, $personne->email);
 
         //on enregistre la modification dans l'historique des actions
         $this->registerAction(1, 4, "Modification se l'email");

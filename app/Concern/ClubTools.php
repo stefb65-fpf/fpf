@@ -10,6 +10,7 @@ use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Equipement;
 use App\Models\Pays;
+use App\Models\Utilisateur;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
@@ -126,5 +127,51 @@ trait ClubTools
         unset($datap['enableBtn']);
 //        dd($datap);
         $club->update($datap);
+    }
+
+    protected function updateClubAdherent($request, $utilisateur) {
+        $pays = Pays::where('id', $request->pays)->first();
+        if (!$pays) {
+            return false;
+        }
+
+        try {
+            DB::beginTransaction();
+            // on récupère les infos personne à mettre à jour
+            $personne = $utilisateur->personne;
+            $datap = $request->only('nom', 'prenom', 'datenaissance', 'phone_mobile', 'sexe');
+            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            $datap['news'] = $request->news ? 1 : 0;
+            $personne->update($datap);
+
+            // on récupère les infos adresse à mettre à jour
+            $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
+            $dataa['pays'] = $pays->nom;
+            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+            $adresse = $personne->adresses[0];
+            $adresse->update($dataa);
+
+            // on récupère les infos adresse2 à mettre à jour
+            if (sizeof($personne->adresses) > 1) {
+                $dataa2 = [];
+                $dataa2['libelle1'] = $request->adresse2_libelle1;
+                $dataa2['libelle2'] = $request->adresse2_libelle2;
+                $dataa2['codepostal'] = $request->adresse2_codepostal;
+                $dataa2['ville'] = $request->adresse2_ville;
+                $pays2 = Pays::where('id', $request->adresse2_pays)->first();
+                $dataa2['telephonedomicile'] = $this->format_fixe_for_base($request->adresse2_telephonedomicile, $pays2->indicatif);
+                $dataa2['pays'] = $pays2->nom;
+
+                $adresse2 = $personne->adresses[1];
+                $adresse2->update($dataa2);
+            }
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
+
+
     }
 }

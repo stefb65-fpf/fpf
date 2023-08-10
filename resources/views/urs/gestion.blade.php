@@ -16,7 +16,7 @@
                     <div class="cardTitle">Clubs</div>
                 </div>
             </a>
-            <a class="card" href="ur_adherents/{{$ur->id}}/">
+            <a class="card" href="/urs/personnes/ur_adherents">
                 <div class="wrapper">
                     <div class="cardTitle">Adhérents</div>
                 </div>
@@ -31,11 +31,13 @@
                     <div class="cardTitle">Trésorerie, Reversements</div>
                 </div>
             </a>
-            <a class="card">
-                <div class="wrapper">
-                    <div class="cardTitle">Newsletter</div>
-                </div>
-            </a>
+            @if(in_array('GESNEWUR', $droits_fpf) || in_array('GESNEWURCA', $droits_fpf))
+                <a class="card" id="connectNewsletter">
+                    <div class="wrapper">
+                        <div class="cardTitle">Newsletter</div>
+                    </div>
+                </a>
+            @endif
             <div class="card invisible">
             </div>
         </div>

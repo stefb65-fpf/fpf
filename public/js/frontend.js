@@ -25,36 +25,36 @@ window.addEventListener("resize", () => {
 })
 
 // dropdown menu
-let dropdownCalls = document.querySelectorAll('.dropdownCall')
-let dropdownParents = document.querySelectorAll('.dropdownParent')
+// let dropdownCalls = document.querySelectorAll('.dropdownCall')
+// let dropdownParents = document.querySelectorAll('.dropdownParent')
 let body = document.querySelector('body')
-if (dropdownCalls) {
-    body.addEventListener('click', (e) => {
-        let isDropDownClicked = false;
-        dropdownCalls.forEach((dropdown) => {
-            if (e.target == dropdown) {
-                isDropDownClicked = true
-            }
-        })
-        if (!isDropDownClicked) {
-            dropdownParents.forEach((parent) => {
-                parent.classList.remove('active')
-            })
-        }
-    })
-    dropdownCalls.forEach((dropdown) => {
-        dropdown.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownParents.forEach((parent) => {
-                if (parent.dataset.dropdownId === dropdown.dataset.dropdownId) {
-                    parent.classList.toggle('active')
-                } else {
-                    parent.classList.remove('active')
-                }
-            })
-        })
-    })
-}
+// if (dropdownCalls) {
+//     body.addEventListener('click', (e) => {
+//         let isDropDownClicked = false;
+//         dropdownCalls.forEach((dropdown) => {
+//             if (e.target == dropdown) {
+//                 isDropDownClicked = true
+//             }
+//         })
+//         if (!isDropDownClicked) {
+//             dropdownParents.forEach((parent) => {
+//                 parent.classList.remove('active')
+//             })
+//         }
+//     })
+//     dropdownCalls.forEach((dropdown) => {
+//         dropdown.addEventListener('click', (e) => {
+//             e.stopPropagation();
+//             dropdownParents.forEach((parent) => {
+//                 if (parent.dataset.dropdownId === dropdown.dataset.dropdownId) {
+//                     parent.classList.toggle('active')
+//                 } else {
+//                     parent.classList.remove('active')
+//                 }
+//             })
+//         })
+//     })
+// }
 // form show password
 let formIcon = document.querySelector(".customField .icons.eye")
 let formIcons = document.querySelectorAll(".customField .icons.eye")
@@ -308,16 +308,144 @@ $('select.pays').on('change', function(e) {
 });
 //input file change image
 $('input[name=logo]').on('change', function(e){
-    console.log($(this).val(),e.currentTarget, e.target.files[0])
     $(this).parent().find('img').attr("src","https://fpf-new.federation-photo.fr/storage/app/public/FPF-default-image.jpg")
-    // $(this).attr("value", e.target.files[0])
-
 })
 
 //show select on click
 $("button[name=showSelect]").on('click', function(e){
     e.preventDefault()
-    console.log("aa")
     $(this).parent().find('select').removeClass('hidden')
 })
+
+
+
+
+
+
+// -- CODE From FRONTEND_SC.JS --
+
+
+$('.modalEditClose').on('click', function(e){
+    e.preventDefault()
+    $(this).parent().parent().addClass('d-none')
+})
+$('.modalEditCloseReload').on('click', function(e){
+    e.preventDefault()
+    $(location).attr('href', $(location).attr('href'))
+})
+
+$('#dropdownLink').on('click', function(e){
+    e.preventDefault()
+    if ($(this).parent().hasClass('active')) {
+        $(this).parent().removeClass('active')
+    } else {
+        $(this).parent().addClass('active')
+    }
+})
+
+$('#dropdownHeader').on('click', function(e){
+    e.preventDefault()
+    if ($(this).hasClass('active')) {
+        $(this).removeClass('active')
+    } else {
+        $(this).addClass('active')
+    }
+})
+$('a[name=changeCardUser]').on('click', function(e){
+    const ref = $(this).data('ref')
+    $.ajax({
+        url: '/api/personnes/updateSession',
+        type: 'POST',
+        data: {
+            ref: ref
+        },
+        success: function(data) {
+            $(location).attr('href', $(location).attr('href'))
+        },
+        error: function(err) {
+            alert("Erreur lors de la prise en compte du changement de carte")
+        }
+    })
+})
+
+$('a[name=linkDropdownHeader]').on('click', function(e){
+    e.stopPropagation()
+})
+
+$('#connectConcours').on('click', function(e){
+    e.preventDefault()
+    $.ajax({
+        url: '/api/personnes/getSession',
+        success: function(data) {
+            const email = data.email
+            const password = data.password
+            const cartes = data.cartes
+            // on appel en POST l'autoload de l'outil concours
+            let form = '';
+            form += '<input type="hidden" name="email" value="'+email+'">';
+            form += '<input type="hidden" name="password" value="'+password+'">';
+            form += '<input type="hidden" name="cartes" value="'+cartes+'">';
+            // TODO change URL to prod
+            $('<form action="https://copain-dev.federation-photo.fr/webroot/utilisateurs/autoload" method="POST">' + form + '</form>').appendTo($(document.body)).submit();
+        },
+        error: function(err) {
+            alert("Erreur lors de la redirection vers l'outil concours")
+        }
+    })
+})
+
+$('#connectNewsletter').on('click', function(e){
+    e.preventDefault()
+    $.ajax({
+        url: '/api/personnes/setCookiesForNewsletter',
+        success: function(data) {
+            if (data.droit_news == 1) {
+                $(location).attr('href', 'https://newsletters.federation-photo.fr/autologin')
+            } else {
+                alert("Vous n'avez pas les droits suffisants pour accéder à la gestion de la newsletter")
+            }
+        },
+        error: function(err) {
+            alert("Erreur lors de la redirection vers l'outil newsletter")
+        }
+    })
+})
+
+$('select[name=selectAffectationUr]').on('change', function(e){
+    const ur = $(this).val()
+    $(this).parent().parent().find('button[name=validAffectationUr]').data('ur', ur)
+})
+
+$('button[name=validAffectationUr]').on('click', function(e){
+    const ur = $(this).data('ur')
+    const identifiant = $(this).data('identifiant')
+    $('#urAffectation').html(ur)
+    $('#confirmAffectationUr').data('ur', ur)
+    $('#confirmAffectationUr').data('identifiant', identifiant)
+    $('#modalAffectation').removeClass('d-none')
+})
+$('#confirmAffectationUr').on('click', function(e){
+    const ur = $(this).data('ur')
+    const identifiant = $(this).data('identifiant')
+    $.ajax({
+        url: '/api/personnes/affectationUr',
+        type: 'POST',
+        data: {
+            ur: ur,
+            identifiant: identifiant,
+        },
+        success: function(data) {
+            $(location).attr('href', $(location).attr('href'))
+        },
+        error: function(err) {
+            alert("Erreur lors de l'affectation de l'adhérent à l'UR")
+        }
+    })
+})
+
+
+
+
+
+
 

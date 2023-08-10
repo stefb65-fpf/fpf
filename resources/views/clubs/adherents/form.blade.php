@@ -1,11 +1,12 @@
 @if($action === 'update')
-    <form action="{{ route('clubs.adherents.update', $utilisateur) }}" method="POST">
+    <form action="{{ route($prev.'.adherents.update', $utilisateur) }}" method="POST">
         <input type="hidden" name="_method" value="put">
 @else
-    <form action="{{ route('clubs.adherents.store') }}" method="POST" id="storeNewAdherent">
+    <form action="{{ route($prev.'.adherents.store') }}" method="POST" id="storeNewAdherent">
 @endif
     {{ csrf_field() }}
     <div class="formBlock">
+        <input type="hidden" name="prev" value="{{ $prev }}">
         <div class="formBlockTitle">Civilité</div>
         <div class="formBlockWrapper">
             <div class="formLine">

@@ -35,7 +35,7 @@ function searchPerson(term){
             if (data.isAdmin) {
                 target =  "/admin/personnes/recherche/all/all/all/all/"+term;
             } else {
-                target = "/urs/recherche/"+data.ur_id+"/all/all/all/"+term;
+                target = "/urs/personnes/recherche/all/all/all/"+term;
             }
 // console.log(target)
             window.location.href = target;

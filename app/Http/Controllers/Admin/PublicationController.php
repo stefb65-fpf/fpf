@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\FlorilegeExport;
 use App\Exports\RoutageFedeExport;
 use App\Exports\RoutageFpExport;
 use App\Http\Controllers\Controller;
@@ -10,6 +11,7 @@ use App\Models\Adresse;
 use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Personne;
+use App\Models\Souscription;
 use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
@@ -219,6 +221,59 @@ class PublicationController extends Controller
             return new JsonResponse(['erreur' => 'impossible de récupérer le fichier'], 400);
         }
 
+    }
+
+    public function florilege() {
+        // on rcupère le nb d'exemplaires à imprimer
+        $total = Souscription::where('statut', 1)->selectRaw('SUM(nbexemplaires) as nb')->first();
+        $nb_exemplaires = $total->nb;
+        $souscriptions = Souscription::orderByDesc('id')->where('statut', 1)->paginate(100);
+        foreach ($souscriptions as $souscription) {
+            if ($souscription->personne_id) {
+                $personne = Personne::where('id', $souscription->personne_id)->first();
+                if ($personne) {
+                    $souscription->destinataire = $personne->prenom.' '.$personne->nom;
+                }
+            } else {
+                $club = Club::where('id', $souscription->clubs_id)->first();
+                if ($club) {
+                    $souscription->destinataire = $club->nom;
+                }
+            }
+        }
+        return view('admin.publications.florilege', compact('souscriptions', 'nb_exemplaires'));
+    }
+
+
+    public function generateSouscriptionsList() {
+        $souscriptions = Souscription::orderBy('id')->where('statut', 1)->get();
+        foreach ($souscriptions as $souscription) {
+            $personne = null; $club = null;
+            if ($souscription->personne_id) {
+                $personne = Personne::where('id', $souscription->personne_id)->first();
+            } else {
+                $club = Club::where('id', $souscription->clubs_id)->first();
+                if ($club) {
+                    $user = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                        ->where('fonctionsutilisateurs.fonctions_id', 97)
+                        ->where('utilisateurs.clubs_id', $club->id)
+                        ->first();
+                    if ($user) {
+                        $personne = Personne::where('id', $user->personne_id)->first();
+                    }
+                }
+            }
+            $souscription->destinataire = $personne;
+            $souscription->club = $club;
+
+        }
+        $fichier = 'florilege_' . date('YmdHis') . '.xls';
+        if (Excel::store(new FlorilegeExport($souscriptions), $fichier, 'xls')) {
+            $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
+            return new JsonResponse(['file' => $file_to_download], 200);
+        } else {
+            return new JsonResponse(['erreur' => 'impossible de récupérer le fichier'], 400);
+        }
     }
 
     protected function getIndividuels() {

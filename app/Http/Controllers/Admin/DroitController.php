@@ -24,7 +24,8 @@ class DroitController extends Controller
         }
         $droits = Droit::orderBy('position')->get();
         $fonctions = Fonction::where('instance', 1)->orderBy('ordre')->selectRaw('libelle, id')->get();
-        return view('admin.droits.index', compact('droits', 'fonctions'));
+        $fonctions_urs = Fonction::where('instance', 2)->orderBy('ordre')->selectRaw('libelle, id')->get();
+        return view('admin.droits.index', compact('droits', 'fonctions', 'fonctions_urs'));
     }
 
     public function deleteUtilisateur($droit_id, $utilisateurs_id) {
@@ -152,6 +153,11 @@ class DroitController extends Controller
         $droits = [];
         foreach($cartes[0]->droits as $droit) {
             $droits[] = $droit->label;
+        }
+        foreach ($cartes[0]->fonctions as $fonction) {
+            foreach ($fonction->droits as $droit) {
+                $droits[] = $droit->label;
+            }
         }
         if (!in_array($strdroit, $droits)) {
             return false;

@@ -36,10 +36,10 @@
                         <div class="formLabel mr10 bold">Statut :</div>
                         <select class="formValue modifying" name="filter" data-ref="statut">
                             <option value="all">Tous</option>
-                            <option value="2" {{$statut == 2? "selected":""}}>Validé</option>
                             <option value="1" {{$statut == 1? "selected":""}}>Pré-inscrit</option>
+                            <option value="2" {{$statut == 2? "selected":""}}>Validé</option>
                             <option value="0" {{$statut == 0? "selected":""}}>Non renouvelé</option>
-                            <option value="3" {{$statut == 3? "selected":""}}>Désactivé</option>
+                            <option value="3" {{$statut == 3? "selected":""}}>Anciens (> 1 an)</option>
                         </select>
                     </div>
                     <div class="formUnit mb0">
@@ -109,7 +109,7 @@
                                 @break
                                 @case(1)
                                 <div class="d-flex">
-                                    <div class="sticker yellow" title="Préinscrit"></div>
+                                    <div class="sticker yellow" title="Pré-inscrit"></div>
                                 </div>
                                 @break
                                 @case(2)
@@ -119,7 +119,7 @@
                                 @break
                                 @case(3)
                                 <div class="d-flex">
-                                    <div class="sticker" title="Désactivé"></div>
+                                    <div class="sticker" title="Non renouvelé depuis plus d'un an"></div>
                                 </div>
                                 @break
                                 @default
@@ -147,7 +147,7 @@
                             @endif
                         </td>
                         <td>
-                            {{ $club->numerofinabonnement?:"" }}
+                            {{ $club->numerofinabonnement && $club->numerofinabonnement >= $numeroencours ? $club->numerofinabonnement : "" }}
                         </td>
                         <td>
                             <div style="margin-bottom: 3px;">
