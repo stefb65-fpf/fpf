@@ -13,7 +13,7 @@ function handleClick(e, suggestionDiv, divIndicator,optionPaysFrance){
     $('.suggestion').html("")
 }
 function autocomplete(term, suggestionDiv) {
-    const url = '/api/ajax/getAutocompleteCommune'
+    const url = '/api/getAutocompleteCommune'
     $.ajax({
         url: url,
         type: 'POST',

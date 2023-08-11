@@ -16,6 +16,7 @@ class DroitsComposer
      */
     public function compose(View $view)
     {
+        // on récupère les droits utilisateurs pour affichage dans les pages de gestion
         $cartes = session()->get('cartes');
         $tab_droits = []; // tableau des droits de l'utilisateur
         if ($cartes) {

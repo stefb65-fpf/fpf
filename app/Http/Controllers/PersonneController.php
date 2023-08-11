@@ -38,28 +38,31 @@ class PersonneController extends Controller
         $this->middleware(['checkLogin', 'userAccessOnly']);
     }
 
+    // affichage de la page mon compte (accueil pour toute personne non adminsitrative)
     public function accueil()
     {
         $personne = session()->get('user');
         $cartes = session()->get('cartes');
 
-//        dd(session()->get('user')->abonnement->fin);
-        $tarif = 0; $tarif_supp = 0; $ct = 0;
-        if (in_array($personne->is_adherent, [1,2])) {
+        $tarif = 0;
+        $tarif_supp = 0;
+        $ct = 0;
+        if (in_array($personne->is_adherent, [1, 2])) {
             // on récupère le montant dur enouvellement pour l'année en cours:
             list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
         }
         return view('personnes.mon_compte', compact('personne', 'tarif', 'tarif_supp', 'ct', 'cartes'));
     }
 
+    // affichage des informations liées à la personne connectée
     public function monProfil()
     {
         $user = session()->get('user');
         $personne = Personne::where('id', $user->id)->first();
         $nbadresses = sizeof($personne->adresses);
-        if($personne->blacklist_date){
+        if ($personne->blacklist_date) {
             $personne->blacklist_date = date('d/m/Y', (strtotime($personne->blacklist_date)));
-        }else{
+        } else {
             $personne->blacklist_date = null;
         }
         if (!$nbadresses) {
@@ -73,7 +76,6 @@ class PersonneController extends Controller
                 if ($adresse->pays) {
                     $country = Pays::where('nom', strtoupper(strtolower($adresse->pays)))->first();
                     $adresse->indicatif = $country->indicatif;
-//                dd( $adresse->indicatif);
                 } else {
                     $adresse->indicatif = "";
                 }
@@ -84,6 +86,7 @@ class PersonneController extends Controller
         return view('personnes.mon_profil', compact('personne', 'nbadresses', 'countries'));
     }
 
+    // affcihage de l'historique des actions effectuées par la personne
     public function mesActions()
     {
         $user = session()->get('user');
@@ -96,6 +99,7 @@ class PersonneController extends Controller
         return view('personnes.mes_formations');
     }
 
+    // affichage de l'historique des meils envoyés à la personne
     public function mesMails()
     {
         $user = session()->get('user');
@@ -108,6 +112,7 @@ class PersonneController extends Controller
         return view('personnes.mes_mails', compact('mails'));
     }
 
+    // mise à jour du mot de passe à partir de la page profil
     public function updatePassword(ResetPasswordRequest $request, Personne $personne)
     {
         $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null);
@@ -129,35 +134,38 @@ class PersonneController extends Controller
         return redirect()->route('mon-profil')->with('success', "Votre mot de passe a été modifié avec succès");
     }
 
- public function updateEmail(EmailRequest $request,Personne $personne){
-    //on crée un code sécurisé unique et on l'enregistre dans le champ secure_code de l'utilisateur
-     $crypt = $this->encodeShortReinit();
-     $personne->secure_code = $crypt;
-     $personne->save();
+    // mise à jour de l'email à partir de la page profil
+    public function updateEmail(EmailRequest $request, Personne $personne)
+    {
+        //on crée un code sécurisé unique et on l'enregistre dans le champ secure_code de l'utilisateur
+        $crypt = $this->encodeShortReinit();
+        $personne->secure_code = $crypt;
+        $personne->save();
 
-     //on enregistre le nouvel email provisoire
-     $datap = array('nouvel_email' => $request->email);
-     $personne->update($datap);
-     $request->session()->put('user', $personne);
+        //on enregistre le nouvel email provisoire
+        $datap = array('nouvel_email' => $request->email);
+        $personne->update($datap);
+        $request->session()->put('user', $personne);
 
-     //on enregistre l'action dans l'historique
-     $this->registerAction($personne->id, 4, "Demande de modification d'email");
+        //on enregistre l'action dans l'historique
+        $this->registerAction($personne->id, 4, "Demande de modification d'email");
 
-     // on envoie un mail à l'utilisateur avec le lien de confirmation de modification de l'adresse amil
-     $link = "https://fpf-new.federation-photo.fr/changeEmail/" . $crypt;
-     $mailSent = Mail::to($personne->email)->send(new SendEmailChangeEmailAddress($link));
+        // on envoie un mail à l'utilisateur avec le lien de confirmation de modification de l'adresse amil
+        $link = "https://fpf-new.federation-photo.fr/changeEmail/" . $crypt;
+        $mailSent = Mail::to($personne->email)->send(new SendEmailChangeEmailAddress($link));
 
-     //on enregistre le mail dans l'historique des mails
-     $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
-     $mail = new \stdClass();
-     $mail->titre = "Demande de modification de votre adresse email";
-     $mail->destinataire = $personne->email;
-     $mail->contenu = $htmlContent;
-     $this->registerMail($personne->id, $mail);
+        //on enregistre le mail dans l'historique des mails
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+        $mail = new \stdClass();
+        $mail->titre = "Demande de modification de votre adresse email";
+        $mail->destinataire = $personne->email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($personne->id, $mail);
 
-     return redirect()->route('mon-profil')->with('success', "Nous avons pris en compte votre demande de modification d'email. Pour valider ce changement, rendez-vous sur votre boîte mail actuelle");
- }
+        return redirect()->route('mon-profil')->with('success', "Nous avons pris en compte votre demande de modification d'email. Pour valider ce changement, rendez-vous sur votre boîte mail actuelle");
+    }
 
+    // mise à jour de la partie Civilité à partir de la page profil
     public function updateCivilite(CiviliteRequest $request, Personne $personne)
     {
         $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'datenaissance' => $request->datenaissance, "phone_mobile" => $request->phone_mobile);
@@ -167,6 +175,7 @@ class PersonneController extends Controller
         return redirect()->route('mon-profil')->with('success', "Vos informations de civilité ont été modifiées avec succès");
     }
 
+    // mise à jour de l'adresse à partir de la page profil
     public function updateAdresse(AdressesRequest $request, Personne $personne, $form)
     {
         $selected_pays = Pays::where('id', $request->pays)->first();
@@ -215,7 +224,8 @@ class PersonneController extends Controller
         return redirect()->route('mon-profil')->with('success', "Votre adresse a été modifiée avec succès");
     }
 
-    public function cancelPaiementRenew(Request $request) {
+    public function cancelPaiementRenew(Request $request)
+    {
         $reglement = Reglement::where('monext_token', $request->token)->first();
         if ($reglement) {
             $reglementutilisateur = DB::table('reglementsutilisateurs')->where('reglements_id', $reglement->id)->first();
@@ -232,14 +242,15 @@ class PersonneController extends Controller
         return redirect()->route('accueil')->with('error', "Votre paiement a été annulé");
     }
 
-    public function validationPaiementCarteRenew(Request $request) {
+    public function validationPaiementCarteRenew(Request $request)
+    {
         $result = $this->getMonextResult($request->token);
         $code = 'ko';
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
             $reglement = Reglement::where('monext_token', $request->token)->first();
             if ($reglement) {
                 if ($this->saveReglement($reglement)) {
-                    $data =array('statut' => 1, 'numerocheque' => 'Monext '.$reglement->monext_token, 'dateenregistrement' => date('Y-m-d H:i:s'),
+                    $data = array('statut' => 1, 'numerocheque' => 'Monext ' . $reglement->monext_token, 'dateenregistrement' => date('Y-m-d H:i:s'),
                         'monext_token' => null, 'monext_link' => null);
                     $reglement->update($data);
 
@@ -256,7 +267,7 @@ class PersonneController extends Controller
                                 $request->session()->put('user', $personne);
                                 $request->session()->put('menu', $menu);
                                 $request->session()->put('cartes', $cartes);
-                                $description = "Renouvellement adhésion FPF référence ".$reglement->reference;
+                                $description = "Renouvellement adhésion FPF référence " . $reglement->reference;
                                 $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
                                 $this->createAndSendInvoice($datai);
                             }
@@ -270,7 +281,8 @@ class PersonneController extends Controller
         return redirect()->route('accueil')->with('error', "Votre paiement n'a pas été validé");
     }
 
-    public function florilege() {
+    public function florilege()
+    {
         $personne = session()->get('user');
         // on vérifie que le florilège est bien dispo à la commande
         $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
@@ -280,7 +292,8 @@ class PersonneController extends Controller
         return view('personnes.florilege', compact('config', 'personne'));
     }
 
-    public function cancelPaiementFlorilege(Request $request) {
+    public function cancelPaiementFlorilege(Request $request)
+    {
         $souscription = Souscription::where('monext_token', $request->token)->first();
         if ($souscription) {
             $souscription->delete();
@@ -288,13 +301,14 @@ class PersonneController extends Controller
         return redirect()->route('florilege')->with('error', "Votre paiement a été annulé");
     }
 
-    public function validationPaiementCarteFlorilege(Request $request) {
+    public function validationPaiementCarteFlorilege(Request $request)
+    {
         $result = $this->getMonextResult($request->token);
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
             $souscription = Souscription::where('monext_token', $request->token)->first();
             if ($souscription) {
                 // on enregistre la validation de la souscription
-                $data = ['statut' => 1, 'monext_token' => null, 'monext_link' => null, 'ref_reglement' => 'Monext '.$souscription->monext_token];
+                $data = ['statut' => 1, 'monext_token' => null, 'monext_link' => null, 'ref_reglement' => 'Monext ' . $souscription->monext_token];
                 $souscription->update($data);
 
                 if ($souscription->personne_id) {
@@ -316,25 +330,27 @@ class PersonneController extends Controller
         return redirect()->route('florilege')->with('error', "Votre paiement n'a pas été validé");
     }
 
-    public function factures() {
+    public function factures()
+    {
         $personne = session()->get('user');
         $invoices = \App\Models\Invoice::where('personne_id', $personne->id)->orderByDesc('created_at')->get();
         foreach ($invoices as $invoice) {
-            list($tmp, $path) = explode('htdocs',  $invoice->getStorageDir());
-            $path .= '/'.$invoice->numero.'.pdf';
+            list($tmp, $path) = explode('htdocs', $invoice->getStorageDir());
+            $path .= '/' . $invoice->numero . '.pdf';
             $invoice->path = $path;
         }
 
         return view('personnes.factures', compact('invoices'));
     }
 
-    public function anonymize() {
+    public function anonymize()
+    {
         $user = session()->get('user');
         $personne = Personne::where('id', $user->id)->first();
         try {
             DB::beginTransaction();
             $prev_email = $personne->email;
-            $email = uniqid('anonyme_').'@federationphoto.fr';
+            $email = uniqid('anonyme_') . '@federationphoto.fr';
             $datau = array('nom' => 'anonyme', 'prenom' => 'anonyme', 'courriel' => $email);
             foreach ($personne->utilisateurs as $utilisateur) {
                 $utilisateur->update($datau);

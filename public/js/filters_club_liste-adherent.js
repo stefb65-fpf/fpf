@@ -3,21 +3,21 @@ let rootUrl = window.location.href
 let club = $('.pageTitle').attr('data-club')
 
 
-$('select[name=filter]').on('change',function (e) {
+$('select[name=filter]').on('change', function (e) {
     e.preventDefault()
     let statut = $('select[data-ref=statut]').val()
     let abonnement = $('select[data-ref=abonnement]').val()
-
-    if(typeof club === 'undefined'){
-        url = rootUrl.split('adherents')[0]+"adherents"+"/"+statut+"/"+abonnement
-    }else{
-        url = rootUrl.split(club)[0]+club+"/"+statut+"/"+abonnement;
+    let url
+    if (typeof club === 'undefined') {
+        url = rootUrl.split('adherents')[0] + "adherents" + "/" + statut + "/" + abonnement
+    } else {
+        url = rootUrl.split(club)[0] + club + "/" + statut + "/" + abonnement;
     }
     window.location.href = url;
 })
 
 
-$('select[name=selectCt]').on('change',function (e) {
+$('select[name=selectCt]').on('change', function (e) {
     if ($(this).val() == 5 || $(this).val() == 6) {
         $(this).parent().find('div[name=divSecondeCarte]').removeClass('d-none')
     } else {
@@ -25,8 +25,8 @@ $('select[name=selectCt]').on('change',function (e) {
     }
 })
 
-$('input[name=adherer]').on('click',function (e) {
-    if($(this).is(':checked')) {
+$('input[name=adherer]').on('click', function (e) {
+    if ($(this).is(':checked')) {
         $('#renouvellementAdherents').removeAttr('disabled')
     } else {
         let selected = false
@@ -45,8 +45,8 @@ $('input[name=adherer]').on('click',function (e) {
         }
     }
 })
-$('input[name=abonner]').on('click',function (e) {
-    if($(this).is(':checked')) {
+$('input[name=abonner]').on('click', function (e) {
+    if ($(this).is(':checked')) {
         $('#renouvellementAdherents').removeAttr('disabled')
     } else {
         let selected = false
@@ -66,7 +66,7 @@ $('input[name=abonner]').on('click',function (e) {
     }
 })
 
-$('#renouvellementAdherents').on('click',function (e) {
+$('#renouvellementAdherents').on('click', function (e) {
     // on récupère tous les id des adhérents sélectionnés
     let idAdherents = []
     const regIdentifiant = /^[0-9]{2}-[0-9]{4}-[0-9]{4}$/
@@ -102,7 +102,7 @@ $('#renouvellementAdherents').on('click',function (e) {
     const aboClub = $('#abonnementClub').is(':checked') ? 1 : 0
     $('#renouvellementListe').html('')
     $.ajax({
-        url:'/api/checkRenouvellementAdherents',
+        url: '/api/checkRenouvellementAdherents',
         type: 'POST',
         data: {
             adherents: idAdherents,
@@ -114,7 +114,7 @@ $('#renouvellementAdherents').on('click',function (e) {
         success: function (reponse) {
             $.each(reponse.adherents, function (index, item) {
                 let chaine = '<div class="d-flex w100 justify-around line-bordereau">'
-                chaine += '<div class="flex-2 small">' +  item.adherent.identifiant + ' ' + item.adherent.nom + ' ' + item.adherent.prenom + '</div>'
+                chaine += '<div class="flex-2 small">' + item.adherent.identifiant + ' ' + item.adherent.nom + ' ' + item.adherent.prenom + '</div>'
                 chaine += '<div class="flex-1 small">'
                 chaine += typeof item.adherent.ct !== 'undefined' ? item.adherent.ct : ''
                 chaine += '</div>'
@@ -150,7 +150,7 @@ $('#renouvellementAdherents').on('click',function (e) {
     });
 })
 
-$('#btnRenouvellement').on('click',function (e) {
+$('#btnRenouvellement').on('click', function (e) {
     // on valide les données saisies
     let idAdherents = []
     const regIdentifiant = /^[0-9]{2}-[0-9]{4}-[0-9]{4}$/
@@ -185,7 +185,7 @@ $('#btnRenouvellement').on('click',function (e) {
     })
     const aboClub = $('#abonnementClub').is(':checked') ? 1 : 0
     $.ajax({
-        url:'/api/validRenouvellementAdherents',
+        url: '/api/validRenouvellementAdherents',
         type: 'POST',
         data: {
             adherents: idAdherents,

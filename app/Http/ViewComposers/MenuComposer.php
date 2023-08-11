@@ -15,6 +15,7 @@ class MenuComposer
      */
     public function compose(View $view)
     {
+        // on passe le menu ç la vue d'affichage du menu
         $menu = session()->get('menu');
         $view->with('menu', $menu);
     }

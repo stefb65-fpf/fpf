@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Models\Personne;
+use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -178,5 +179,32 @@ class PersonneController extends Controller
         $identifiant = $request->ur.'-0000-'.str_pad($numero, 4, '0', STR_PAD_LEFT);
         $utilisateur->update(['numeroutilisateur' => $numero, 'urs_id' => $request->ur, 'identifiant' => $identifiant]);
         return new JsonResponse(['success' => 'Utilisateur modifié'], 200);
+    }
+
+    public function isAdmin()
+    {
+        $isAdmin = (bool)session()->get('menu')['admin'];
+        return new JsonResponse(['isAdmin' => $isAdmin], 200);
+//        $ur_id="0";
+//        if(!$isAdmin){
+//            $cartes = session()->get('cartes');
+//            if (!$cartes || count($cartes) == 0) {
+//                return redirect()->route('accueil')->with('error', "Un problème est survenu lors de la récupération des informations UR");
+//            }
+//            $active_carte = $cartes[0];
+//            $ur = Ur::where('id', $active_carte->urs_id)->first();
+//            $ur_id=$ur->id;
+//        }
+//        return compact('isAdmin','ur_id');
+    }
+
+    public function newsPreferences(Request $request)
+    {
+        $personne = Personne::where('id', $request->personne)->first();
+        $datap = array('news' => $request->newspreference);
+        $personne->update($datap);
+//        $request->session()->put('user', $personne); session store not set on request...normal mais comment passer la session en ajax?
+        $this->registerAction($personne->id, 4, "Modification de vos préférences concernant les nouvelles FPF");
+        return [true];
     }
 }

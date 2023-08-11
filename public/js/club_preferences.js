@@ -1,13 +1,13 @@
-function submitNewsPreferences(preference, clubId, form,clickedElement){
-    let url= ""
-    if(form === "activites"){
-        url = '/api/ajax/submitClubActivites'
+function submitNewsPreferences(preference, clubId, form, clickedElement) {
+    let url = ""
+    if (form === "activites") {
+        url = '/api/submitClubActivites'
     }
-    if(form === "equipements"){
-        url = '/api/ajax/submitClubEquipements'
+    if (form === "equipements") {
+        url = '/api/submitClubEquipements'
     }
     $.ajax({
-        url:url,
+        url: url,
         type: 'POST',
         data: {
             clubPreferences: preference,
@@ -18,7 +18,7 @@ function submitNewsPreferences(preference, clubId, form,clickedElement){
             if (data.length > 0) {
                 // console.log(data[0]= true)
                 clickedElement.parent().parent().find('.message').addClass('show')
-                setTimeout(()=> {
+                setTimeout(() => {
                     clickedElement.parent().parent().find('.message').removeClass('show')
                 }, "3000")
             }
@@ -28,19 +28,19 @@ function submitNewsPreferences(preference, clubId, form,clickedElement){
     });
 }
 
-$('div[name=ajaxCheckbox]').on('click',function(e){
-        let clubId = $(this).parent().data("club")
-        let form = $(this).parent().data("form")
-        let activite = $(this).find('input').val()
+$('div[name=ajaxCheckbox]').on('click', function (e) {
+    let clubId = $(this).parent().data("club")
+    let form = $(this).parent().data("form")
+    let activite = $(this).find('input').val()
     // console.log(clubId, form,activite,$(this))
-    if(!(e.target ==   $(this).find("input")[0])){
+    if (!(e.target == $(this).find("input")[0])) {
         //clic ailleurs que sur l'input
-        if($(this).find("input")[0].checked == true){
+        if ($(this).find("input")[0].checked == true) {
             $(this).find("input").prop('checked', false)
-        }else{
+        } else {
             $(this).find("input").prop('checked', true)
         }
     }
-        submitNewsPreferences(activite, clubId, form, $(this))
+    submitNewsPreferences(activite, clubId, form, $(this))
 })
 

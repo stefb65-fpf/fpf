@@ -14,6 +14,7 @@ class ReglementController extends Controller
     use Api;
     use Tools;
     use Invoice;
+    // notification de paiement sur renouvellement - méthode appelée par Monext si l'utilisateur a payé mais n'est pas revenu sur le site
     public function notificationPaiement(Request $request) {
         $result = $this->getMonextResult($request->token);
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
@@ -34,6 +35,7 @@ class ReglementController extends Controller
         echo 'ok';
     }
 
+    // notification de paiement sur première adhésion individuelle - méthode appelée par Monext si l'utilisateur a payé mais n'est pas revenu sur le site
     public function notificationPaiementPersonne(Request $request) {
         $result = $this->getMonextResult($request->token);
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
@@ -55,6 +57,7 @@ class ReglementController extends Controller
         echo 'ok';
     }
 
+    // notification de paiement sur sosucriptions Folrilège - méthode appelée par Monext si l'utilisateur a payé mais n'est pas revenu sur le site
     public function notificationPaiementFlorilege(Request $request) {
         $result = $this->getMonextResult($request->token);
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {

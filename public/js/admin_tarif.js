@@ -9,7 +9,7 @@ $('input[name="tarif"]').on('keydown', function(e) {
         const ref = $(this).data('ref')
         const statut = $(this).data('statut')
         $.ajax({
-            url:'/api/ajax/updateTarif',
+            url:'/api/updateTarif',
             type: 'POST',
             data: {
                 tarif: tarif,
@@ -33,7 +33,7 @@ $('input[name="config"]').on('keydown', function(e) {
         const id = $(this).data('id')
         const value = $(this).val()
         $.ajax({
-            url:'/api/ajax/updateConfig',
+            url:'/api/updateConfig',
             type: 'POST',
             data: {
                 id: id,

@@ -11,7 +11,7 @@ $('a[name=editEtiquettes]').on('click', function() {
         datas.ur = $('#etiquettesContact').data('ur')
     }
     $.ajax({
-        url:'/api/ajax/editEtiquettes',
+        url:'/api/editEtiquettes',
         type: 'POST',
         data: datas,
         dataType: 'JSON',
@@ -38,7 +38,7 @@ $('#btnRoutageFede').on('click', function() {
         return
     }
     $.ajax({
-        url:'/api/ajax/editRoutageFede',
+        url:'/api/editRoutageFede',
         type: 'POST',
         data: {
             tab: tab

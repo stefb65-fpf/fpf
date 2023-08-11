@@ -15,6 +15,7 @@ class UrAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // on vérifie que l'utilisateur a bien un accès UR
         $menu = $request->session()->get('menu');
         if (!$menu || !$menu['ur']) {
             return redirect('/');

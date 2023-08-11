@@ -30,12 +30,14 @@ class UrController extends Controller
         $this->middleware(['checkLogin', 'urAccess']);
     }
 
+    // affichage de la page d'accueil pour les URS
     public function gestion()
     {
         $ur = $this->getUr();
         return view('urs.gestion', compact('ur'));
     }
 
+    // affichage de la iste des adéhrents d'une UR
     public function list($view_type, $statut = null, $type_carte = null, $type_adherent = null, $term = null)
     {
         $statut = $statut ?? "all";
@@ -69,6 +71,7 @@ class UrController extends Controller
         return view('admin.personnes.liste', compact('view_type', 'utilisateurs', 'level', 'statut', 'type_carte', 'type_adherent', 'ur_id', 'urs', 'ur', 'term'));
     }
 
+    // affichage des informations d'un adhérent de l'UR
     public function editPersonne($personne_id, $view_type = null) {
         $ur = $this->getUr();
         $personne = Personne::where('id', $personne_id)->first();
@@ -98,6 +101,7 @@ class UrController extends Controller
         return view('admin.personnes.edit', compact('personne', 'view_type', 'countries', 'level'));
     }
 
+    // mise à jour des informations d'un adhérent par un responsable UR
     public function updatePersonne(PersonneRequest $request, Personne $personne, $view_type) {
         $datap = $request->only('nom', 'prenom', 'datenaissance', 'email', 'phone_mobile', 'sexe');
         $personne->update($datap);
@@ -122,6 +126,7 @@ class UrController extends Controller
         return redirect('/urs/personnes/'.$view_type)->with('success', "La personne a bien été mise à jour");
     }
 
+    // affichage des informations de l'UR
     public function infosUr()
     {
         $ur = $this->getUr();
@@ -134,6 +139,7 @@ class UrController extends Controller
         return view('urs.infos_ur', compact('ur', 'countries'));
     }
 
+    // affichage de la liste des clibs de l'UR
     public function listeClubs($statut = null, $type_carte = null, $abonnement = null, $term = null) {
         $ur = $this->getUr();
         $statut = $statut ?? "all";
@@ -173,12 +179,14 @@ class UrController extends Controller
         return view('urs.liste_clubs', compact('ur', 'clubs', 'statut', 'type_carte', 'abonnement', 'term', 'numeroencours'));
     }
 
+    // Gabrielle, cette fonction ne me semble pas utiliser. Si c'est le cas, il faut la supprimer et la route qui va avec
     public function listeAdherents()
     {
         $ur = $this->getUr();
         return view('urs.liste_adherents', compact('ur'));
     }
 
+    // liste des adhérents d'un club par responsable UR
     public function listeAdherentsClub(Club $club, $statut = null, $abonnement = null)
     {
         $ur = $this->getUr();
@@ -213,6 +221,7 @@ class UrController extends Controller
         return view('urs.liste_adherents_club', compact('ur', 'club', 'adherents', 'statut', 'abonnement'));
     }
 
+    // affichage de la liste des fonctions de l'UR
     public function listeFonctions()
     {
         $ur = $this->getUr();
@@ -239,12 +248,14 @@ class UrController extends Controller
         return view('urs.fonctions.liste', compact('ur', 'fonctions'));
     }
 
+    // affichage de la liste des reversements de l'UR TODO
     public function listeReversements()
     {
         $ur = $this->getUr();
         return view('urs.liste_reversements', compact('ur'));
     }
 
+    // fonction pour récupérer l'UR de l'adhérent
     protected function getUr()
     {
         $cartes = session()->get('cartes');
@@ -260,6 +271,7 @@ class UrController extends Controller
         return $ur;
     }
 
+    // affichage des infos club pour un responsable UR
     public function updateClub(Club $club)
     {
         $ur = $this->getUr();
@@ -276,19 +288,21 @@ class UrController extends Controller
         return redirect()->route('UrGestion_updateClub', compact('club'))->with('success', "Les informations générales du club a été mise à jour");;
     }
 
+    // mise à jour des informations de l'adresse du club par un responsable UR
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
         $this->updateClubAdress($club, $request);
         return redirect()->route('UrGestion_updateClub', compact('club'))->with('success', "L'adresse du club a été mise à jour");
     }
 
+    // mise à jour des informations de réunion du club par un responsable UR
     public function updateReunion(ClubReunionRequest $request, Club $club)
     {
         $this->updateClubReunion($club, $request);
         return redirect()->route('UrGestion_updateClub', compact('club'))->with('success', "Les informations de réunion du club ont été mises à jour");
     }
 
-
+    // affichage de la vue pour créer une fonction UR et l'attribuer ou attribuer une fonction général des URs
     public function createFonction()
     {
         $ur = $this->getUr();
@@ -304,6 +318,7 @@ class UrController extends Controller
         return view('urs.fonctions.create', compact('ur', 'fonctions'));
     }
 
+    // enregistrement d'une fonction UR et son attribution
     public function storeFonction(Request $request)
     {
         if ($request->fonction_fpf != 0 && $request->libelle != '') {
@@ -346,6 +361,7 @@ class UrController extends Controller
         return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été créée");
     }
 
+    // suppression d'une fonction spécifique UR
     public function destroyFonction(Fonction $fonction)
     {
         DB::table('fonctionsurs')->where('fonctions_id', $fonction->id)->delete();
@@ -354,12 +370,14 @@ class UrController extends Controller
         return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été supprimée");
     }
 
+    // affichage de la vue pour changer l'attributuion d'une fonction UR
     public function changeAttribution(Fonction $fonction)
     {
         $ur = $this->getUr();
         return view('urs.fonctions.change_attribution', compact('fonction', 'ur'));
     }
 
+    // changement de l'attribution de la fonction UR
     public function updateFonction(Request $request, Fonction $fonction)
     {
         $ur = $this->getUr();
@@ -388,6 +406,7 @@ class UrController extends Controller
         return redirect()->route('urs.fonctions.liste')->with('success', "L'attribution de la fonction a été modifiée");
     }
 
+    // affichage des informations d'un adhérent
     public function editAdherent($utilisateur_id)
     {
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
@@ -417,6 +436,7 @@ class UrController extends Controller
         return view('clubs.adherents.edit', compact('club', 'utilisateur', 'countries', 'prev'));
     }
 
+    // mise à jour d'un adhérent
     public function updateAdherent(AdherentRequest $request, $utilisateur_id) {
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
         if (!$utilisateur) {

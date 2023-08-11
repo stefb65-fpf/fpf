@@ -219,7 +219,7 @@
     </div>
 @endif
 @section('js')
-    <script src="{{ asset('js/filters-club-liste-adherent.js') }}?t=<?= time() ?>"></script>
+    <script src="{{ asset('js/filters_club_liste-adherent.js') }}?t=<?= time() ?>"></script>
     <script src="{{ asset('js/excel_adherent_file.js') }}?t=<?= time() ?>"></script>
     <script src="{{ asset('js/club_paiement.js') }}?t=<?= time() ?>"></script>
 @endsection

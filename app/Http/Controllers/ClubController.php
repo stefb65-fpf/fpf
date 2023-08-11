@@ -33,13 +33,14 @@ class ClubController extends Controller
         $this->middleware(['checkLogin', 'clubAccess'])->except(['updateAdherent']);
     }
 
-    // fonctions de gestion du club
+    // affichage de la page d'accueil de gestion des clubs
     public function gestion()
     {
         $club = $this->getClub();
         return view('clubs.gestion', compact('club'));
     }
 
+    // affichage de la vue d'informations générales du club
     public function infosClub()
     {
         $club = $this->getClub();
@@ -47,20 +48,22 @@ class ClubController extends Controller
         return view('clubs.infos_club', compact('club', 'activites', 'equipements', 'countries'));
     }
 
+    // Mise a jour des infos générales du club (nom, logo, courriel, ..)
     public function updateGeneralite( ClubReunionRequest $request, Club $club)
     {
-
         $this->updateClubGeneralite($club,$request);
         return redirect()->route('clubs.infos_club')->with('success', "Les informations générales du club ont été mises à jour");
 
     }
 
+    // mise à jour de l'adresse du club
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
         $this->updateClubAdress($club,$request);
         return redirect()->route('clubs.infos_club')->with('success', "L'adresse du club a été mise à jour");
     }
 
+    // mise à jour des informations de réunion du club
     public function updateReunion(ClubReunionRequest $request, Club $club)
     {
         $this->updateClubReunion($club,$request);
@@ -68,7 +71,7 @@ class ClubController extends Controller
     }
 
 
-    // fonctions de gestion des adhérents du club
+    // affichage de la vue de gestion des adhérents du club
     public function gestionAdherents($statut = null,$abonnement = null)
     {
         $club = $this->getClub();
@@ -100,6 +103,7 @@ class ClubController extends Controller
         return view('clubs.adherents.index', compact('club','statut','abonnement','adherents'));
     }
 
+    // affichage de la vue permettant la saisie pour la création d'un adhérent par responsable de club
     public function createAdherent() {
         $club = $this->getClub();
         $utilisateur = new Utilisateur();
@@ -114,6 +118,7 @@ class ClubController extends Controller
         return view('clubs.adherents.create', compact('club', 'countries', 'utilisateur', 'prev'));
     }
 
+    // enregistrement des informations pour la création d'un adhérent par responsable de club
     public function storeAdherent(AdherentRequest $request) {
         $club = $this->getClub();
         if ($request->personne_id != null) {
@@ -196,10 +201,11 @@ class ClubController extends Controller
             'ct' => $ct,
             'statut' => 0
         );
-        $utilisateur = Utilisateur::create($datau);
+        Utilisateur::create($datau);
         return redirect()->route('clubs.adherents.index')->with('success', "L'adhérent a bien  été ajouté");
     }
 
+    // affichage de la vue des informations d'un adhérent du club
     public function editAdherent($utilisateur_id) {
         $club = $this->getClub();
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
@@ -228,6 +234,7 @@ class ClubController extends Controller
         return view('clubs.adherents.edit', compact('club', 'utilisateur', 'countries', 'prev'));
     }
 
+    // Mise à jour des infoamtions d'un adhérent du club
     public function updateAdherent(AdherentRequest $request, $utilisateur_id) {
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
         if (!$utilisateur) {
@@ -241,7 +248,7 @@ class ClubController extends Controller
     }
 
 
-    // fonction de gestion des fonctions du club
+    // affichage des fonctions du club
     public function gestionFonctions()
     {
         $club = $this->getClub();
@@ -267,6 +274,7 @@ class ClubController extends Controller
         return view('clubs.fonctions.index', compact('club', 'adherents', 'tab_fonctions'));
     }
 
+    // mise à jour d'une fonction club
     public function updateFonction(Request $request, $current_utilisateur_id, $fonction_id)
     {
         //on vérifie que le nouvel utilisateur appartient au club
@@ -293,6 +301,7 @@ class ClubController extends Controller
         return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été attribuée à un nouvel utilisateur");
     }
 
+    // ajout d'une fonction club
     public function addFonction(Request $request, $fonction_id)
     {
         //on vérifie que le nouvel utilisateur appartient au club
@@ -317,6 +326,7 @@ class ClubController extends Controller
         return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été ajoutée à cet utilisateur");
     }
 
+    // suppression d'une fonction Club
     public function deleteFonction($current_utilisateur_id, $fonction_id)
     {
         DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
@@ -324,7 +334,7 @@ class ClubController extends Controller
     }
 
 
-    // fonction de gestion des règlements du club
+    // affichage des bordereaux de règlements du club
     public function gestionReglements()
     {
         $club = $this->getClub();
@@ -335,6 +345,8 @@ class ClubController extends Controller
         $dir_club = env('APP_URL') . '/' . $dir_club;
         return view('clubs.reglements.index', compact('club', 'reglements', 'dir_club', 'dir'));
     }
+
+
 
     public function attentePaiementValidation() {
         $club = $this->getClub();
@@ -370,6 +382,7 @@ class ClubController extends Controller
         return view('clubs.reglements.validation_paiement_carte', compact('club', 'code'));
     }
 
+    // affichage de la page de commande des Florilège pour le club
     public function florilege() {
         $club = $this->getClub();
         $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
@@ -432,6 +445,7 @@ class ClubController extends Controller
         }
     }
 
+    // affichage des factures liées au club
     public function factures() {
         $club = $this->getClub();
         $invoices = \App\Models\Invoice::where('club_id', $club->id)->orderByDesc('created_at')->get();
@@ -443,6 +457,7 @@ class ClubController extends Controller
         return view('clubs.factures.index', compact('club', 'invoices'));
     }
 
+    // fonction de récupération des infos club en fonction de l'identifiant de l'utilisateur
     protected function getClub()
     {
         $cartes = session()->get('cartes');

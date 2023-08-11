@@ -457,5 +457,5 @@
 @endsection
 @section('js')
     <script src="{{ asset('js/autocompleteCommune.js') }}?t=<?= time() ?>"></script>
-    <script src="{{ asset('js/newsPreferences.js') }}?t=<?= time() ?>"></script>
+    <script src="{{ asset('js/news_preferences.js') }}?t=<?= time() ?>"></script>
 @endsection

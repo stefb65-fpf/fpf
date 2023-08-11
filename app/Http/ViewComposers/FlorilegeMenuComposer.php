@@ -17,6 +17,7 @@ class FlorilegeMenuComposer
      */
     public function compose(View $view)
     {
+        // on vérifie sir le menu Folrilège est à afficher
         $florilege = Configsaison::where('id', 1)->selectRaw('datedebutflorilege, datefinflorilege')->first();
         $florilege->active = (date('Y-m-d') >= $florilege->datedebutflorilege && date('Y-m-d') <= $florilege->datefinflorilege);
 

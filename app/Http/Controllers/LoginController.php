@@ -51,8 +51,6 @@ class LoginController extends Controller
         $request->session()->put('user', $personne);
         $request->session()->put('menu', $menu);
 
-
-
         if ($personne->is_administratif) {
             return redirect()->route('admin');
         }
@@ -65,6 +63,7 @@ class LoginController extends Controller
         return redirect()->route('accueil');
     }
 
+    // autoload d'un adhérent à partir de l'outil concours Copain
     public function autoload(Request $request) {
         $personne = Personne::where('email', $request->email)->where('password', $request->password)->first();
         if (!$personne) {
@@ -96,7 +95,7 @@ class LoginController extends Controller
     }
 
 
-
+    // autoload d'un adhérent à partir du site fédéral wordpress
     public function autloadFromWp($secure_code, $id) {
         $personne = $this->getUserFromWp($secure_code, $id);
         if (!$personne) {
@@ -128,12 +127,11 @@ class LoginController extends Controller
     }
 
     /**
-     * autoconnexion d'un utilisateur au site, récupération des droits et redirectction vers son espace
+     * autoconnexion d'un utilisateur au site après validation de son enregitrement, récupération des droits et redirectction vers son espace
      * @param Personne $personne
      * @return void
      */
     public function autologin(Personne $personne) {
-//        $historiques = Historique::where()->paginate(25);
         unset($personne->password);
         if (!$personne->is_administratif) {
             $personne = $this->getSituation($personne);
@@ -174,7 +172,7 @@ class LoginController extends Controller
     }
 
     /*
-     * envoi d'un mail pour réibnitialiser le mot de passe avec un lein crypté
+     * envoi d'un mail pour réibnitialiser le mot de passe avec un lien crypté
      */
     public function sendResetAccountPasswordLink(SendResetLinkRequest $request)
     {
@@ -205,7 +203,7 @@ class LoginController extends Controller
     }
 
     /*
-     * réinitialisation du mot de passe
+     * affichage de la vue pour réinitialisation du mot de passe
      * @param $securecode
      */
     public function reinitPassword($securecode)
@@ -240,39 +238,26 @@ class LoginController extends Controller
 
         $this->autologin($personne);
         return redirect()->route('accueil');
-//        return redirect()->route('accueil')->with('success', "Votre mot de passe a été modifié avec succès");
     }
 
 
-
+    // affichage de la vue pour nouvel abonnement seul
     public function registerAbonnement()
     {
         $countries = DB::table('pays')->orderBy('nom')->get();
         return view('auth.registerAbonnement', compact('countries'));
     }
 
+    // affichage de la vue pour adhésion individuelle
     public function registerAdhesion()
     {
-//        $communes = Commune::orderBy('nom')->get();
         $countries = DB::table('pays')->orderBy('nom')->get();
         return view('auth.registerAdhesion', compact('countries'));
     }
 
 
-
-//    protected function getDroits($personne)
-//    {
-//        $droits = [];
-//        $droits['admin'] = $personne->admin;
-//        $droits['gestionnaire'] = $personne->gestionnaire;
-//        $droits['adherent'] = $personne->adherent;
-//        $droits['membre'] = $personne->membre;
-//        $droits['contributeur'] = $personne->contributeur;
-//        $droits['visiteur'] = $personne->visiteur;
-//        return $droits;
-//    }
     /*
-    * réinitialisation de l'email
+    * affichage de la vue pour mise à jour de l'email
     * @param $securecode
     */
     public function changeEmail($securecode)
@@ -293,7 +278,7 @@ class LoginController extends Controller
         return view('personnes.changeEmail', compact("personne"));
     }
     /*
-  * enregistrement de nouvel_email à la place de email
+  * enregistrement de nouvel_email à la place de l'ancien
   * @param $personne $request
   */
     public function resetEmail(Request $request, Personne $personne){

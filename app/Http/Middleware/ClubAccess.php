@@ -15,6 +15,7 @@ class ClubAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // on vérifie que l'utilisateur a bien un accès Club
         $menu = $request->session()->get('menu');
         if (!$menu || !$menu['club']) {
             return redirect('/');

@@ -266,5 +266,5 @@
 </div>
 @section('js')
     <script src="{{ asset('js/autocompleteCommune.js') }}?t=<?= time() ?>"></script>
-    <script src="{{ asset('js/clubPreferences.js') }}?t=<?= time() ?>"></script>
+    <script src="{{ asset('js/club_preferences.js') }}?t=<?= time() ?>"></script>
 @endsection

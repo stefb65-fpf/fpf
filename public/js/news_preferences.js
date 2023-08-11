@@ -1,11 +1,12 @@
 //profile news switch toggle
-let  newsSwitchBtn = document.querySelector('.newsletter .switch input')
-let  newsNotSubscribingLabel = document.querySelector('.newsletter label.notSubscribing')
-let  newsSubscribingLabel = document.querySelector('.newsletter label.subscribing')
+let newsSwitchBtn = document.querySelector('.newsletter .switch input')
+let newsNotSubscribingLabel = document.querySelector('.newsletter label.notSubscribing')
+let newsSubscribingLabel = document.querySelector('.newsletter label.subscribing')
 let blacklistDate = document.querySelector('.newsletter .blacklist')
-function submitNewsPreferences(preference, personneId){
+
+function submitNewsPreferences(preference, personneId) {
     $.ajax({
-        url:'/api/ajax/submitNewsPreferences',
+        url: '/api/submitNewsPreferences',
         type: 'POST',
         data: {
             newspreference: preference,
@@ -14,9 +15,9 @@ function submitNewsPreferences(preference, personneId){
         dataType: 'JSON',
         success: function (data) {
             if (data.length > 0) {
-                console.log(data[0]= true)
+                console.log(data[0] = true)
                 $('input[name=newspreference]').parent().find('.message').addClass('show')
-                setTimeout(()=> {
+                setTimeout(() => {
                     $('input[name=newspreference]').parent().find('.message').removeClass('show')
                 }, "2000")
             }
@@ -26,22 +27,22 @@ function submitNewsPreferences(preference, personneId){
     });
 }
 
-if(newsSwitchBtn){
-    newsSwitchBtn.addEventListener('click',function(){
+if (newsSwitchBtn) {
+    newsSwitchBtn.addEventListener('click', function () {
         let personneId = this.dataset.personne
-        if(parseInt(this.value)){
+        if (parseInt(this.value)) {
             this.value = 0
             newsNotSubscribingLabel.classList.remove("d-none")
             newsSubscribingLabel.classList.add("d-none")
-            if(blacklistDate){
+            if (blacklistDate) {
                 blacklistDate.classList.remove("d-none")
             }
 
-        } else{
+        } else {
             this.value = 1
             newsNotSubscribingLabel.classList.add("d-none")
             newsSubscribingLabel.classList.remove("d-none")
-            if(blacklistDate){
+            if (blacklistDate) {
                 blacklistDate.classList.add("d-none")
             }
         }

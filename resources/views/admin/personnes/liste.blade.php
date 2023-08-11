@@ -251,5 +251,5 @@
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection
 @section('js')
-    <script src="{{ asset('js/filters-personnes.js') }}?t=<?= time() ?>"></script>
+    <script src="{{ asset('js/filters_personnes.js') }}?t=<?= time() ?>"></script>
 @endsection

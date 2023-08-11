@@ -83,7 +83,7 @@ $('input[class=autosuggestCFA]').on('keyup', function () {
     ul.html('')
     if ($(this).val().length > 1) {
         $.ajax({
-            url: '/api/ajax/getAutocompleteCommune',
+            url: '/api/getAutocompleteCommune',
             type: 'POST',
             data: {
                 term: $(this).val()

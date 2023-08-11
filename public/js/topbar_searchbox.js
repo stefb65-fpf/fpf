@@ -6,7 +6,7 @@ $('.icon[name=searchBtn]').on("click", function () {
 })
 
 function searchClub(term) {
-    const url = '/api/ajax/isAdmin'
+    const url = '/api/isAdmin'
     $.ajax({
         url: url,
         dataType: 'JSON',
@@ -17,7 +17,6 @@ function searchClub(term) {
             } else {
                 target = "/urs/liste_clubs/all/all/all/"+term;
             }
-// console.log(target)
             window.location.href = target;
         },
         error: function (e) {
@@ -26,7 +25,7 @@ function searchClub(term) {
     });
 }
 function searchPerson(term){
-    const url = '/api/ajax/isAdmin'
+    const url = '/api/isAdmin'
     $.ajax({
         url: url,
         dataType: 'JSON',
@@ -37,7 +36,6 @@ function searchPerson(term){
             } else {
                 target = "/urs/personnes/recherche/all/all/all/"+term;
             }
-// console.log(target)
             window.location.href = target;
         },
         error: function (e) {

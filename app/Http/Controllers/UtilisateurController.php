@@ -23,6 +23,7 @@ class UtilisateurController extends Controller
         return view('utilisateurs.attente_paiement_validation');
     }
 
+    // affichage de la vue lors de l'annulation d'un paiement par carte pour une première adhésion FPF
     public function cancelPaiement(Request $request) {
         $personne = Personne::where('monext_token', $request->token)->first();
         if ($personne) {
@@ -33,6 +34,7 @@ class UtilisateurController extends Controller
         return view('auth/register');
     }
 
+    // affichage de la vue lors de la validation d'un paiement par carte pour uen première adhésion FPF
     public function validationPaiementCarte(Request $request) {
         $result = $this->getMonextResult($request->token);
         $code = 'ko';
