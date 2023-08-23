@@ -10,14 +10,14 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <p>
                 <span class="bold">Informations !</span>
                 Vous pouvez éditer un fichier PDF avec les étiquettes par groupe d'utilisateurs
             </p>
         </div>
 
-        <table class="styled-table" style="width: 100%">
+        <table class="styled-table w100">
             <thead>
                 <tr>
                     <th>Groupe d'utilisateurs</th>
@@ -33,8 +33,8 @@
 {{--                <td>--}}
 {{--                    <a name="editEtiquettes" data-ref="0" class="adminPrimary btnSmall">Éditer les étiquettes</a>--}}
 {{--                </td>--}}
-{{--                <td style="width: 220px">--}}
-{{--                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none">Visualiser le ficher</a>--}}
+{{--                <td class="w220">--}}
+{{--                    <a name="viewEtiquettes" class="adminSuccess btnSmall d-none">Visualiser le ficher</a>--}}
 {{--                </td>--}}
 {{--            </tr>--}}
             <tr>
@@ -46,7 +46,7 @@
                     <a name="editEtiquettes" data-ref="1" class="adminPrimary btnSmall">Éditer les étiquettes</a>
                 </td>
                 <td>
-                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall d-none" target="_blank">Visualiser le ficher</a>
                 </td>
             </tr>
             <tr>
@@ -58,7 +58,7 @@
                     <a name="editEtiquettes" data-ref="2" class="adminPrimary btnSmall">Éditer les étiquettes</a>
                 </td>
                 <td>
-                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall d-none" target="_blank">Visualiser le ficher</a>
                 </td>
             </tr>
             <tr>
@@ -70,7 +70,7 @@
                     <a name="editEtiquettes" data-ref="3" class="adminPrimary btnSmall">Éditer les étiquettes</a>
                 </td>
                 <td>
-                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall d-none" target="_blank">Visualiser le ficher</a>
                 </td>
             </tr>
             <tr>
@@ -82,7 +82,7 @@
                     <a name="editEtiquettes" data-ref="4" class="adminPrimary btnSmall">Éditer les étiquettes</a>
                 </td>
                 <td>
-                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall d-none" target="_blank">Visualiser le ficher</a>
                 </td>
             </tr>
             <tr>
@@ -101,7 +101,7 @@
                     <a id="etiquettesContact" name="editEtiquettes" data-ref="5" data-ur="0" class="adminPrimary btnSmall">Éditer les étiquettes</a>
                 </td>
                 <td>
-                    <a name="viewEtiquettes" class="adminSuccess btnSmall" style="display: none" target="_blank">Visualiser le ficher</a>
+                    <a name="viewEtiquettes" class="adminSuccess btnSmall d-none" target="_blank">Visualiser le ficher</a>
                 </td>
             </tr>
             </tbody>

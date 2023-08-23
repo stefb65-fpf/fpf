@@ -29,7 +29,7 @@
                                 <div>{{ $cartes[0]->identifiant }}</div>
                             @endif
                             @if($user->is_abonne == 1)
-                            <div style="font-weight: 500;font-style: italic;text-transform: uppercase;font-size: 12px">
+                            <div class="bold italic uppercase fs12px">
                                 abonné jusqu'au n°{{ $user->abonnement->fin }}
                             </div>
                             @endif

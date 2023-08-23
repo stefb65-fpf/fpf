@@ -22,7 +22,7 @@
 </head>
 <body>
 @include('layouts.headerLogin')
-<div class="mainContainer fullWidth fullHeight">
+<div class="mainContainer fullWidth fullHeight ">
     @include('layouts.flash')
     @yield('content')
 </div>

@@ -10,21 +10,21 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Vous pouvez saisir un identifiant adhérent pour attribuer la fonction à un nouvel adhérent de votre UR.
         </div>
         <div class="formBlock">
             <div class="formBlockTitle">Gestion de fonctions régionales</div>
-            <form action="{{ route('urs.fonctions.update', $fonction) }}" method="POST" style="width: 100%">
+            <form class="w100" action="{{ route('urs.fonctions.update', $fonction) }}" method="POST">
                 {{ csrf_field() }}
                 <div class="formBlockWrapper inline">
                     <div class="formUnit">
-                        <div class="formLabel" style="width: 300px">Identifiant adhérent</div>
-                        <input value="" class="inputFormAction" type="text" placeholder="Identifiant adhérent" name="identifiant" maxlength="12" style="padding: 5px;width: 300px" />
+                        <div class="formLabel w300">Identifiant adhérent</div>
+                        <input value="" class="inputFormAction p5 w300" type="text" placeholder="Identifiant adhérent" name="identifiant" maxlength="12"/>
                     </div>
                 </div>
-                <div style="display: flex; justify-content: center;">
+                <div class="d-flex justify-center">
                     <button class="adminSuccess btnMedium">
                         Attribuer la fonction
                     </button>

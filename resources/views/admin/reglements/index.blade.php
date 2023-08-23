@@ -20,7 +20,7 @@
             </div>
         @endif
 @if(sizeof($reglements))
-        <div style="width: 100%">
+        <div class="w100">
             <table class="styled-table">
                 <thead>
                 <tr>
@@ -46,12 +46,12 @@
                         <td>{{ $reglement->numerocheque ?? '' }}</td>
                         <td>
                             @if($reglement->bordereau)
-                                <div style="margin-bottom: 3px;">
+                                <div class="mb3">
                                     <a class="adminPrimary btnSmall" target="_blank" href="{{ $reglement->bordereau }}">bordereau</a>
                                 </div>
                             @endif
                             @if($reglement->statut === 0)
-                                <div style="margin-bottom: 3px;">
+                                <div class="mb3">
                                     <a class="adminSuccess btnSmall" target="_blank" name="validerReglement" data-id="{{ $reglement->id }}" data-reference="{{ $reglement->reference }}" data-montant="{{ $reglement->montant }}">valider</a>
                                 </div>
                             @endif
@@ -81,7 +81,7 @@
             <br>
             Saisir les information de règlement dans le champ ci-dessous. Ne validez que si le montant correspond à celui attendu.<br>
             <br>
-            <div style="text-align: center">
+            <div class="text-center">
                 <label for="infoValidationRenouvellement">Informations de règlement</label>
                 <input type="text" id="infoValidationRenouvellement">
             </div>
@@ -100,7 +100,7 @@
             </div>
         </div>
         <div class="modalEditBody">
-            <div class="alertSuccess"  style="margin: 10px auto 0">
+            <div class="alertSuccess mt10 mb0 mxauto" >
                 Le règlement a bien pris en compte
             </div>
         </div>

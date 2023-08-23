@@ -19,7 +19,7 @@ class ClubController extends Controller
 
     public function clubActivite(Request $request, Club $club)
     {
-        $club = Club::where('id', $request->club);
+        $club = Club::where('id', $request->club)->first();
         $club_activites = DB::table('activitesclubs')->where('clubs_id', $request->club)->get();
         $activites = [];
         $isInArray = false;
@@ -37,12 +37,15 @@ class ClubController extends Controller
             $data_ap = array('activites_id' => $request->clubPreferences, 'clubs_id' => $request->club);
             DB::table('activitesclubs')->insert($data_ap);
         }
-
-        return [true];
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Modification des activités du club \"".$club->nom."\"");
+        }
+        return new JsonResponse(true, 200);
     }
     public function clubEquipement(Request $request, Club $club)
     {
-        $club = Club::where('id', $request->club);
+        $club = Club::where('id', $request->club)->first();
         $club_equipements = DB::table('equipementsclubs')->where('clubs_id', $request->club)->get();
         $equipements = [];
         $isInArray = false;
@@ -60,7 +63,11 @@ class ClubController extends Controller
             $data_ap = array('equipements_id' => $request->clubPreferences, 'clubs_id' => $request->club);
             DB::table('equipementsclubs')->insert($data_ap);
         }
-        return [true];
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Modification des équipements du club \"".$club->nom."\"");
+        }
+        return new JsonResponse(true, 200);
     }
 
     public function payByVirement(Request $request) {

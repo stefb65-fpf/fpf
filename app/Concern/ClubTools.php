@@ -10,6 +10,7 @@ use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Equipement;
 use App\Models\Pays;
+use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -97,6 +98,10 @@ trait ClubTools
         $datap = array('nom' => $request->nom, 'courriel' => $request->courriel, 'web' => $request->web, "logo" => $request->logo);
         $club = Club::where('id', $club->id)->first();
         $club->update($datap);
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Modification des informations générales du club \"".$club->nom."\"");
+        }
     }
     public function updateClubAdress(Club $club,$request)
     {
@@ -117,6 +122,10 @@ trait ClubTools
         } else { //la club a déjà une adresse en base. On met à jour l'adresse par defaut.
             $club->adresse->update($datap_adresse);
         }
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Modification de l'adresse du club \"".$club->nom."\"");
+        }
     }
 
     public function updateClubReunion( Club $club,$request)
@@ -127,6 +136,10 @@ trait ClubTools
         unset($datap['enableBtn']);
 //        dd($datap);
         $club->update($datap);
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Modification des réunions du club \"".$club->nom."\"");
+        }
     }
 
     protected function updateClubAdherent($request, $utilisateur) {
@@ -171,7 +184,5 @@ trait ClubTools
             DB::rollBack();
             return false;
         }
-
-
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubAbonnementRequest;
 use App\Http\Requests\ClubReunionRequest;
+use App\Mail\SendModificationEmail;
 use App\Models\Abonnement;
 use App\Models\Adresse;
 use App\Models\Club;
@@ -21,6 +22,7 @@ use App\Models\Souscription;
 use App\Models\Utilisateur;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ClubController extends Controller
 {
@@ -28,6 +30,7 @@ class ClubController extends Controller
     use ClubTools;
     use Api;
     use Invoice;
+
     public function __construct()
     {
         $this->middleware(['checkLogin', 'clubAccess'])->except(['updateAdherent']);
@@ -52,6 +55,7 @@ class ClubController extends Controller
     public function updateGeneralite( ClubReunionRequest $request, Club $club)
     {
         $this->updateClubGeneralite($club,$request);
+
         return redirect()->route('clubs.infos_club')->with('success', "Les informations générales du club ont été mises à jour");
 
     }
@@ -202,6 +206,10 @@ class ClubController extends Controller
             'statut' => 0
         );
         Utilisateur::create($datau);
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Ajout d'un adhérent ". trim(strtoupper($request->nom))." ".trim(strtoupper($request->prenom)." au club ".$club->nom));
+        }
         return redirect()->route('clubs.adherents.index')->with('success', "L'adhérent a bien  été ajouté");
     }
 
@@ -234,13 +242,17 @@ class ClubController extends Controller
         return view('clubs.adherents.edit', compact('club', 'utilisateur', 'countries', 'prev'));
     }
 
-    // Mise à jour des infoamtions d'un adhérent du club
+    // Mise à jour des informations d'un adhérent du club
     public function updateAdherent(AdherentRequest $request, $utilisateur_id) {
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
         if (!$utilisateur) {
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
         }
         if ($this->updateClubAdherent($request, $utilisateur)) {
+            $user = session()->get('user');
+            if ($user) {
+                $this->MailAndHistoricize($user,"Modification des informations de l'adhérent ". $utilisateur->nom);
+            }
             return redirect()->route('clubs.adherents.index')->with('success', "Les informations de l'adhérent ont été mises à jour");
         } else {
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent");
@@ -270,7 +282,6 @@ class ClubController extends Controller
         foreach ($fonctions as $fonction) {
             $tab_fonctions[$fonction->id] = $fonction;
         }
-
         return view('clubs.fonctions.index', compact('club', 'adherents', 'tab_fonctions'));
     }
 
@@ -298,6 +309,12 @@ class ClubController extends Controller
         DB::table('fonctionsutilisateurs')->insert($data_ap);
         //on supprime l'ancien utilisateur
         DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+
+        $user = session()->get('user');
+        if ($user) {
+        $this->MailAndHistoricize($user,"Modification des fonctions du club");
+        }
+
         return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été attribuée à un nouvel utilisateur");
     }
 
@@ -323,6 +340,10 @@ class ClubController extends Controller
         //on ajoute la ligne correspondant à la table pivot
         $data_ap = array('utilisateurs_id' => $new_utilisateur_id, 'fonctions_id' => $fonction_id);
         DB::table('fonctionsutilisateurs')->insert($data_ap);
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Ajout d'une fonction du club");
+        }
         return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été ajoutée à cet utilisateur");
     }
 
@@ -330,6 +351,10 @@ class ClubController extends Controller
     public function deleteFonction($current_utilisateur_id, $fonction_id)
     {
         DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Suppression d'une fonction du club");
+        }
         return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été ôtée à cet utilisateur");
     }
 

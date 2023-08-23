@@ -1,14 +1,14 @@
-<div class="alertInfo" style="width: 80% !important">
+<div class="alertInfo w80">
     <span class="bold">Informations !</span>
     Vous pouvez gérer le renouvellement des adhésions et abonnements des membres de votre club. Pour cela, cochez les adhérents que vous souhaitez renouveler ou abonner puis cliquez sur le bouton "Renouveler".<br>
     Le club est automatiquement renouvelé lors du premier renouvellement des adhérents dans la saison.<br>
     Vous pouvez également abonner votre club au France Photo à tout moment.
 </div>
-<div class="alertSuccess" style="width: 80% !important; display: none;" id="alertAdherentsList">
-    Le fichier des adhérents a bien été généré. Vous pouvez le télécharger en cliquant sur le lient suivant: <a id="linkAdherentsList" target="_blank" style="cursor: pointer;text-decoration: underline;">Télécharger le fichier</a>
+<div class="alertSuccess w80" style="display: none;" id="alertAdherentsList">
+    Le fichier des adhérents a bien été généré. Vous pouvez le télécharger en cliquant sur le lient suivant: <a class="underline pointer" id="linkAdherentsList" target="_blank">Télécharger le fichier</a>
 </div>
 <div class="filters d-flex">
-    <div class="formBlock" style="max-width: 100%">
+    <div class="formBlock maxW100">
         <div class="formBlockTitle">Filtres</div>
         <div class="d-flex flexWrap">
             <div class="formUnit mb0">
@@ -54,16 +54,18 @@
                 <div class="statutClub">Non abonné</div>
             @endif
         <button class="adminPrimary btnMedium" type="text" id="btnAdherentsList" data-club="{{$club->id}}">Liste des adhérents au format Excel</button>
-        <button class="adminPrimary btnMedium" type="text" id="btnAdherentsAjout" data-club="{{$club->id}}" style="margin-left: 10px">Ajouter un adhérent</button>
-        <button class="adminPrimary btnMedium" type="text" id="renouvellementAdherents" data-club="{{$club->id}}" disabled style="margin-left: 10px">Renouveler</button>
-    </div>
-    <div style="display: flex; justify-content: space-between; margin-top: 20px; width: 100%;">
-        <div>
-            <input type="checkbox" class="mr10" id="abonnementClub"> Abonner le club jusqu'au numéro {{ $club->numero_fin_reabonnement }}
-        </div>
-        <div>
-            <a class="adminPrimary btnMedium" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>
-        </div>
+{{--        <button class="adminPrimary btnMedium ml10" type="text" id="btnAdherentsAjout" data-club="{{$club->id}}" >Ajouter un adhérent</button>--}}
+                {{--TODO: faut-il laisser ce bouton apparaître pour la gestion UR ? --}}
+                 <a class="adminPrimary btnMedium ml10" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>
+         <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-club="{{$club->id}}" disabled >Renouveler</button>
+     </div>
+     <div class="d-flex justify-between mt20 w100">
+         <div>
+             <input type="checkbox" class="mr10" id="abonnementClub"> Abonner le club jusqu'au numéro {{ $club->numero_fin_reabonnement }}
+         </div>
+ {{--        <div>--}}
+{{--            <a class="adminPrimary btnMedium" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>--}}
+{{--        </div>--}}
     </div>
     <table class="styled-table">
         <thead>
@@ -125,7 +127,7 @@
                     {{ $adherent->fin?:"" }}
                 </td>
                 <td>
-                    <select name="selectCt" id="selectCt_{{ $adherent->id_utilisateur }}" style="padding-left: 5px; font-size: small; width: 120px">
+                    <select name="selectCt" id="selectCt_{{ $adherent->id_utilisateur }}" class="pl5 small w120">
                         <option value="2" {{ $adherent->ct == 2 ? 'selected' : '' }}>>25 ans</option>
                         <option value="3" {{ $adherent->ct == 3 ? 'selected' : '' }}>18 - 25 ans</option>
                         <option value="4" {{ $adherent->ct == 4 ? 'selected' : '' }}><18 ans</option>
@@ -133,7 +135,7 @@
                         <option value="6" {{ $adherent->ct == 6 ? 'selected' : '' }}>2eme club</option>
                     </select>
                     <div name="divSecondeCarte" {{ !in_array($adherent->ct, [5,6]) ? 'class=d-none' : '' }}>
-                        <input name="inputSecondeCarte" maxlength="12" id="secondeCarte_{{ $adherent->id_utilisateur }}" data-ref="{{ $adherent->id_utilisateur }}" type="text" value="{{ $adherent->premierecarte }}" style="width: 120px; margin-top: 5px; padding-left: 5px; font-size: small;" placeholder="première carte">
+                        <input name="inputSecondeCarte" maxlength="12" id="secondeCarte_{{ $adherent->id_utilisateur }}" data-ref="{{ $adherent->id_utilisateur }}" type="text" value="{{ $adherent->premierecarte }}" class="w120 mt5 pl5 pl5 small" placeholder="première carte">
                     </div>
                 </td>
                 <td>
@@ -153,7 +155,7 @@
             </div>
         </div>
         <div class="modalEditBody">
-            <div class="alertDanger" style="margin: 10px auto 0">
+            <div class="alertDanger mt10 mxauto mb0">
                 Veuillez contrôler attentivement les informations ci-dessous. Pour l'instant, aucune donnée n'a été enregistrée.
                 Si vous annulez, votre saisie ne sera pas prise en compte. Si vous validez le renouvellement, les informations seront enregistrées et vous
                 pourrez télécharger le bordereau club. Tout autre bordereau créé et n'ayant pas été validé par un règlement enregistré par la FPF sera supprimé.
@@ -204,8 +206,8 @@
             </div>
         </div>
         <div class="modalEditBody">
-            <div class="alertSuccess" style="margin: 10px auto 0">
-                Le bordereau pour le renouvellement a bien été généré. Vous pouvez le télécharger en cliquant sur le lien suivant: <a id="lienBordereauClub" target="_blank" style="color: #003d77;">bordreau de renouvellement</a>.<br>
+            <div class="alertSuccess mt10 mb0 mxauto">
+                Le bordereau pour le renouvellement a bien été généré. Vous pouvez le télécharger en cliquant sur le lien suivant: <a class="blue " id="lienBordereauClub" target="_blank">bordreau de renouvellement</a>.<br>
                 Le bordereau vous a également été transmis par mail et vous pouvez le retrouver dans votre espace "Bordereaux et règlements".<br><br>
                 Vous pouvez régler directement  en ligne, par virement instantané ou CB, votre règlement en cliquant sur les boutons ci-dessous.<br>
                 Si ce n'est pas possible, vous pouvez régler par chèque ou virement en nous transmettant le bordereau. Vous pouvez également règler plus tard en vous rendant dans votre espace "Bordereaux et règlements".<br>

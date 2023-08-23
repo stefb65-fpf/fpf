@@ -12,7 +12,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Vous pouvez ici paramétrer les élections FPF qui sont organisées comme suit:
         </div>

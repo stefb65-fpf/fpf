@@ -12,14 +12,14 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Ici vous avez la possibilité d'afficher la liste des clubs de toutes les UR de France et de les filtrer en fonction des Ur, de leur statut, de leur type de carte et de leur abonnement.
             <br>
             Vous pouvez également ajouter un club qui n'est pas encore présent dans cette liste, modifier les informations d'un club déjà existant et afficher la liste de ses abonnés.
         </div>
         <div class="filters d-flex">
-            <div class="formBlock" style="max-width: 100%">
+            <div class="formBlock maxW100">
                 <div class="formBlockTitle">Filtres</div>
                 <div class="d-flex flexWrap">
                     <div class="formUnit mb0">
@@ -150,10 +150,10 @@
                             {{ $club->numerofinabonnement && $club->numerofinabonnement >= $numeroencours ? $club->numerofinabonnement : "" }}
                         </td>
                         <td>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 <a href="{{ route('admin.clubs.edit', $club) }}" class="adminPrimary btnSmall">Éditer</a>
                             </div>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 <a href="{{route('admin.clubs.liste_adherents_club',$club)}}" class="adminSuccess btnSmall">Liste des adhérents</a>
                             </div>
                         </td>

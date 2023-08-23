@@ -1,7 +1,7 @@
 @extends('layouts.default')
 
 @section('content')
-    <div class="pageCanva" style="display: block !important;">
+    <div class="pageCanva d-block">
         <h1 class="pageTitle">
             Espace de gestion des paramétrages pour la FPF
             <a class="previousPage" title="Retour page précédente" href="{{ route('admin') }}">
@@ -10,7 +10,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <p>
                 <span class="bold">Informations !</span>
                 Vous pouvez modifier les paramètres et tarifs de la saison en cours et de la saison prochaine. L'application des paramètres est immédiate.<br>

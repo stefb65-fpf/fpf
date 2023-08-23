@@ -12,7 +12,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Vous pouvez ici ajouter les élections pour une session de vote. Vous pouvez paramétrer l'ordre de présentation des élections. Elles seront alors présentées dans cet ordre à l'ensemble des votants.
             Pour chaque élection, vous allez pouvoir ajouter un descriptif du sujet concerné et, le cas échéant, saisir les candidats.
@@ -20,8 +20,8 @@
         <div class="mt25 flexEnd">
             <a href="{{ route('votes.elections.create', $vote) }}" class="adminPrimary btnMedium">Créer une nouvelle élection</a>
         </div>
-        <div style="width: 100%">
-            <table class="styled-table" style="width: 100%">
+        <div class="w100">
+            <table class="styled-table" class="w100">
                 <thead>
                 <tr>
                     <th>&Eacute;lection</th>
@@ -39,11 +39,11 @@
                         <td>{{ $election->type == 1 ? 'Motion' : 'Election de candidats' }}</td>
                         <td>{{ $election->type == 1 ? '' : $election->nb_postes }}</td>
                         <td>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 <a href="{{ route('votes.elections.edit', [$vote, $election]) }}" class="adminPrimary btnSmall">Modifier</a>
                             </div>
                             @if($election->type == 2)
-                                <div style="margin-bottom: 3px;">
+                                <div class="mb3">
                                     <a href="{{ route('votes.elections.candidats.index', [$vote, $election]) }}" class="adminSuccess btnSmall">Candidats</a>
                                 </div>
                             @endif

@@ -1,7 +1,8 @@
 let navbar = document.querySelector(".navbar")
 let hamburger = document.querySelector('.hamburgerIcon')
-let autosuggestContainer = document.querySelector(".autosuggestContainer")
-let autosuggestCFA = document.querySelector(".autosuggestCFA")
+// let autosuggestContainer = document.querySelector(".autosuggestContainer")
+// let autosuggestCFA = document.querySelector(".autosuggestCFA")
+let body = document.querySelector('body')
 
 const navbarManagement = function () {
     navbar.classList.toggle('hidden')
@@ -24,37 +25,6 @@ window.addEventListener("resize", () => {
     }
 })
 
-// dropdown menu
-// let dropdownCalls = document.querySelectorAll('.dropdownCall')
-// let dropdownParents = document.querySelectorAll('.dropdownParent')
-let body = document.querySelector('body')
-// if (dropdownCalls) {
-//     body.addEventListener('click', (e) => {
-//         let isDropDownClicked = false;
-//         dropdownCalls.forEach((dropdown) => {
-//             if (e.target == dropdown) {
-//                 isDropDownClicked = true
-//             }
-//         })
-//         if (!isDropDownClicked) {
-//             dropdownParents.forEach((parent) => {
-//                 parent.classList.remove('active')
-//             })
-//         }
-//     })
-//     dropdownCalls.forEach((dropdown) => {
-//         dropdown.addEventListener('click', (e) => {
-//             e.stopPropagation();
-//             dropdownParents.forEach((parent) => {
-//                 if (parent.dataset.dropdownId === dropdown.dataset.dropdownId) {
-//                     parent.classList.toggle('active')
-//                 } else {
-//                     parent.classList.remove('active')
-//                 }
-//             })
-//         })
-//     })
-// }
 // form show password
 let formIcon = document.querySelector(".customField .icons.eye")
 let formIcons = document.querySelectorAll(".customField .icons.eye")
@@ -69,30 +39,9 @@ formIcons.forEach((formIcon) => {
             } else {
                 inputPassword.type = "password"
             }
-
         })
     }
 })
-
-
-//autosuggest
-
-// if (autosuggestContainer) {
-//     window.addEventListener('click', (e) => {
-//         let inputs = autosuggestContainer.querySelectorAll('.autosuggestCFA')
-//         let outside = true
-//         inputs.forEach((input) => {
-//             if (e.target == input) {
-//                 autosuggestContainer.classList.add('active')
-//                 outside = false
-//             }
-//         })
-//         if (outside) {
-//             autosuggestContainer.classList.remove('active')
-//         }
-//     })
-// }
-
 
 //search in topBar
 let searchIconBtns = document.querySelectorAll(".searchItem .icon .iconBtn")
@@ -245,9 +194,8 @@ let modalClose = document.querySelector(".modalWrapper .close .clickable")
 let modalTriggers = document.querySelectorAll(".modalTrigger")
 
 if(modalBackground){
-    modalBackground.addEventListener('click', (e)=>{
+    modalBackground.addEventListener('click', (e) => {
         e.preventDefault()
-        // console.log( e.target == modalBackground?"true":"false",e.target == modalClose?"true":"false")
         if(e.target == modalBackground || e.target == modalClose){
             body.classList.remove("modalVisible")
         }
@@ -257,16 +205,12 @@ if(modalTriggers.length){
     modalTriggers.forEach((trigger) => {
         trigger.addEventListener('click', function(){
             body.classList.add("modalVisible")
-            console.log(trigger.dataset.modalContenu,trigger.dataset.modalStyle)
-
-            // modalContent.innerHTML = "<style>"+trigger.dataset.modalStyle +"</style>"+ trigger.dataset.modalContenu
             modalContent.innerHTML =   '<div class="mail">'+trigger.dataset.modalContenu+'</div>'
         })
     })
 }
+
 // show form address
-// let addDefaultAddressBtn = document.querySelector(".addDefaultAddress")
-// let addLivraisonAddressBtn = document.querySelector(".addFacturationAddress")
 $('div[name=addAddress]').on('click',function(e){
     e.preventDefault()
     $(this).addClass('d-none')
@@ -318,12 +262,7 @@ $("button[name=showSelect]").on('click', function(e){
 })
 
 
-
-
-
-
 // -- CODE From FRONTEND_SC.JS --
-
 
 $('.modalEditClose').on('click', function(e){
     e.preventDefault()

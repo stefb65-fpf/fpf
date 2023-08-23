@@ -1,22 +1,22 @@
 {{--@if($action == 'store')--}}
-{{--    <form action="{{ route('admin.personnes.store') }}" method="POST" style="width: 100%;">--}}
+{{--    <form class="w100" action="{{ route('admin.personnes.store') }}" method="POST">--}}
 {{--@else--}}
-<form action="{{ route($level.'.personnes.update', [$personne, $view_type]) }}" method="POST" style="width: 100%;">
+<form class="w100" action="{{ route($level.'.personnes.update', [$personne, $view_type]) }}" method="POST" >
     <input type="hidden" name="_method" value="PUT">
 {{--@endif--}}
 
     {{ csrf_field() }}
-    <div class="formBlock" style="min-width: 100%">
+    <div class="formBlock minW100" >
         <div class="formBlockTitle">Civilité</div>
         <div class="formBlockWrapper">
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Genre *</div>
-                <div style="display: flex;">
-                    <div style="display: flex; justify-content: flex-start;">
-                        <input type="radio" name="sexe" value="0" {{ $personne->sexe == 0 ? 'checked' : '' }} /> <span style="margin-left: 5px;">Mr</span>
+                <div class="d-flex justify-start">
+                    <div class="d-flex justify-start">
+                        <input type="radio" name="sexe" value="0" {{ $personne->sexe == 0 ? 'checked' : '' }} /> <span class="ml5">Mr</span>
                     </div>
-                    <div style="display: flex; justify-content: flex-start; margin-left: 20px">
-                        <input type="radio" name="sexe" value="1" {{ $personne->sexe == 1 ? 'checked' : '' }} /> <span style="margin-left: 5px;">Mme</span>
+                    <div  class="d-flex justify-start ml20">
+                        <input type="radio" name="sexe" value="1" {{ $personne->sexe == 1 ? 'checked' : '' }} /> <span class="ml5">Mme</span>
                     </div>
                 </div>
             </div>
@@ -36,7 +36,7 @@
             @endif
         </div>
     </div>
-    <div class="formBlock" style="min-width: 100%">
+    <div class="formBlock minW100">
         <div class="formBlockTitle">Adresses</div>
         @if($personne->adresses[0])
             <div class="formBlockWrapper">
@@ -66,7 +66,7 @@
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Téléphone fixe</div>
-                    <div class="inputGroup" style="display: flex; justify-content: flex-start; align-items: flex-start;">
+                    <div class="inputGroup d-flex justify-start align-start">
                         <div class="indicatif" name="indicatifDomicile" id="indicatifDomicile">+{{ $personne->adresses[0]->indicatif }}</div>
                         <input class="formValue formValueAdmin w75" type="text" value="{{ old('telephonedomicile', $personne->adresses[0]->telephonedomicile) }}" name="telephonedomicile"/>
                     </div>
@@ -76,7 +76,7 @@
 
         @if(isset($utilisateur->personne->adresses[1]))
             <div class="formBlockWrapper">
-                <div class="formTitle" style="text-align: left; border-top: 1px solid #003d77; padding-top: 10px;">Adresse de livraison</div>
+                <div class="formTitle text-left borderTopBlue pt10">Adresse de livraison</div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Adresse</div>
                     <input class="formValue formValueAdmin w75" type="text" value="{{ old('libelle1Livraison', $personne->adresses[1]->libelle1) }}" name="libelle1Livraison" />
@@ -103,7 +103,7 @@
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Téléphone fixe</div>
-                    <div class="inputGroup" style="display: flex; justify-content: flex-start; align-items: flex-start;">
+                    <div class="inputGroup d-flex justify-start align-start">
                         <div class="indicatif" name="indicatifDomicile" id="indicatifDomicileLivraison">+{{ $personne->adresses[1]->indicatif }}</div>
                         <input class="formValue formValueAdmin w75" type="text" value="{{ old('telephonedomicileLivraison', $personne->adresses[1]->telephonedomicile) }}" name="telephonedomicileLivraison"/>
                     </div>
@@ -111,7 +111,7 @@
             </div>
         @endif
     </div>
-    <div class="formBlock" style="min-width: 100%">
+    <div class="formBlock minW100">
         <div class="formBlockTitle">Coorodonnées numériques</div>
         <div class="formBlockWrapper">
             <div class="formUnit formUnitAdmin">
@@ -120,7 +120,7 @@
             </div>
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Téléphone mobile *</div>
-                <div class="inputGroup" style="display: flex; justify-content: flex-start; align-items: flex-start;">
+                <div class="inputGroup d-flex justify-start align-start">
                     <div class="indicatif" name="indicatifMobile" id="indicatifMobile">+{{ $personne->adresses[0]->indicatif }}</div>
                     <input class="formValue formValueAdmin w75" type="text" value="{{ old('phone_mobile', $personne->phone_mobile) }}" name="phone_mobile"/>
                 </div>
@@ -128,7 +128,7 @@
         </div>
     </div>
 
-                <div style="display: flex; align-items: flex-start;">
+                <div class="d-flex align-start">
                     <button class="adminPrimary btnMedium" type="submit">
                         @if($action == 'store')
                             Ajouter la personne
@@ -137,7 +137,7 @@
                         @endif
                     </button>
                     @if($level == 'admin' && $action == 'update' && in_array('ANONYM', $droits_fpf))
-                        <a href="{{ route('admin.personnes.anonymize', [$personne, $view_type]) }}" class="adminDanger btnMedium" style="margin-left: 50px" href="" data-method="delete" data-confirm="Voulez-vous vraiment anonymiser cette personne ? Toutes les cartes et autres informations liées perdront les informations d'identité. Il ne sera plus possible de voir apparaître les noms, prénoms, email et téléphone de la personne et cette action est irréversible">Anonymiser l'utilisateur</a>
+                        <a href="{{ route('admin.personnes.anonymize', [$personne, $view_type]) }}" class="adminDanger btnMedium ml50"  href="" data-method="delete" data-confirm="Voulez-vous vraiment anonymiser cette personne ? Toutes les cartes et autres informations liées perdront les informations d'identité. Il ne sera plus possible de voir apparaître les noms, prénoms, email et téléphone de la personne et cette action est irréversible">Anonymiser l'utilisateur</a>
                     @endif
                 </div>
 </form>

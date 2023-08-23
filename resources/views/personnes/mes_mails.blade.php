@@ -9,7 +9,7 @@
                        <div class="listMailReceiver italic">{{$mail->destinataire}}</div>
                    </div>
                    <div class="listLineRight">
-                       <div class="seeMore underline  underlineBlue blue modalTrigger" data-modal-contenu='{{$mail->contenu}}'   >Voir le contenu</div>
+                       <div class="seeMore underline underlineBlue blue modalTrigger" data-modal-contenu='{{$mail->contenu}}'>Voir le contenu</div>
                        <div class="date dark">
                            <div>{{ $mail->created_at }}</div>
 {{--                           <div class="day">{{$mail->date}}</div>--}}

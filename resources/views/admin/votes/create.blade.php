@@ -12,11 +12,11 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Vous allez ajouter une session de vote. Une fois fait, vous pourrez éditer cette session à partir de la liste, ajouter plusieurs élections et les hiérarchiser.
             Vous pouvez saisir plusieurs types de sessions:
-            <ul style="margin-left: 30px">
+            <ul class="ml30">
                 <li>une session classique, nationale ou régionale, lors de laquelle tout le public cible (adhérents, présidents de clubs ou présidents d'UR) peut voter en même temps</li>
                 <li>une session 3 phases pour les votes de type motion AG nationale pour laquelle les votes vont s'enchaîner en focntion des catégories: adhérents puis responsables de club puis présidents d'UR</li>
             </ul>

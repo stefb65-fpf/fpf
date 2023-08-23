@@ -12,10 +12,10 @@
             </a> <div class="separator"></div>
             <a  href="/register" class="fosterRegister">
                 <div class="foster">Vous n'avez pas encore de compte ?</div>
-                <span style="text-decoration: underline; font-weight: 600">Enregistrez-vous !</span>
+                <span class="underline bold">Enregistrez-vous !</span>
             </a>
         </div>
-        <form action="{{ action('App\Http\Controllers\LoginController@login') }}" method="POST" class="authForm">
+        <form action="{{ action('App\Http\Controllers\LoginController@login') }}" method="POST" class="authForm align-center">
             {{ csrf_field() }}
             <div class="customField">
                 <label>E-mail</label>

@@ -9,11 +9,11 @@
         {{ csrf_field() }}
             <div class="formBlockWrapper inline">
                 <div class="formUnit">
-                    <div class="formLabel" style="width: 300px">* Libellé de la fonction</div>
-                    <input value="{{ $fonction->libelle }}" class="inputFormAction" type="text" placeholder="Libellé de la fonction à ajouter / modifier" name="libelle" style="width: 300px" />
+                    <div class="formLabel w300">* Libellé de la fonction</div>
+                    <input value="{{ $fonction->libelle }}" class="inputFormAction w300" type="text" placeholder="Libellé de la fonction à ajouter / modifier" name="libelle"/>
                 </div>
             </div>
-            <div style="display: flex; justify-content: center;">
+            <div class="d-flex justify-center">
                 <button class="adminSuccess btnMedium">
                     @if($action == 'update')
                         Modifier la fonction

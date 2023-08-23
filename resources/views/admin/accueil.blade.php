@@ -6,13 +6,12 @@
             Espace de gestion FPF
         </h1>
         @if(sizeof($affectations) > 0)
-            <div class="alertDanger" style="width: 80% !important">
+            <div class="alertDanger w80">
                 <span class="bold">Informations !</span>
-                Il existe des adhérents de la région parisienne en attente d'affecation. Veuillez les affecter à une UR
+                Il existe des adhérents de la région parisienne en attente d'affectation. Veuillez les affecter à une UR
                 avant d'éditer les cartes.
                 @foreach($affectations as $affectation)
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid darkred; margin-top: 10px; margin-bottom: 5px;padding-bottom: 5px;">
+                    <div class="alertList d-flex justify-between align-start mt10 mb10 pb5">
                         <div>
                             {{ $affectation->personne->prenom.' '.$affectation->personne->nom }}
                         </div>
@@ -27,7 +26,7 @@
                             <br>
                         </div>
                         <div>
-                            <select name="selectAffectationUr" style="padding: 5px">
+                            <select class="p5" name="selectAffectationUr" >
                                 <option value="15" selected>UR 15</option>
                                 <option value="16">UR 16</option>
                                 <option value="17">UR 17</option>

@@ -10,12 +10,12 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger" style="width: 80% !important">
+        <div class="alertDanger w80">
             <p>
                 <span class="bold">Attention !</span>
                 Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
             </p>
-            <p style="margin-top: 20px">
+            <p class="mt20">
                 On affiche ici la liste des reversements effectués par la FPF
             </p>
         </div>

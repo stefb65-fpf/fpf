@@ -56,7 +56,7 @@
         @endif
         @if($view_type == "adherents" || $view_type == "ur_adherents")
             <div class="filters d-flex">
-                <div class="formBlock" style="max-width: 100%">
+                <div class="formBlock maxW100">
                     <div class="formBlockTitle">Filtres</div>
                     <div class="d-flex flexWrap">
                         @if($view_type == "adherents")
@@ -220,7 +220,7 @@
                             @endif
                         @endif
                         <td>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 @if($level == 'admin')
                                     @if (in_array($view_type, ["adherents", "recherche"]))
                                         <a href="{{ route('admin.personnes.edit', [$utilisateur->personne_id, 'adherents']) }}" class="adminPrimary btnSmall">Editer</a>
@@ -228,7 +228,7 @@
 {{--                                        @if($view_type == "recherche")--}}
 {{--                                            <a href="{{ route('admin.personnes.edit', [$utilisateur->personne_id, 'adherents']) }}" class="adminPrimary btnSmall">Editer</a>--}}
 {{--                                        @else--}}
-                                            <a href="{{ route('admin.personnes.edit', [$utilisateur->id, $view_type]) }}" class="adminPrimary btnSmall">Editer</a>
+                                            <a href="{{ route('urs.personnes.edit', [$utilisateur->id, $view_type]) }}" class="adminPrimary btnSmall">Editer</a>
 {{--                                        @endif--}}
                                     @endif
                                 @else

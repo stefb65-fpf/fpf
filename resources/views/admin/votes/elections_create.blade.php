@@ -12,7 +12,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Vous allez ajouter une élection. Une fois fait, si votre élection n'est pas une motion, vous pourrez ajouter des cnadidats.
         </div>

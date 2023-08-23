@@ -10,7 +10,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <p>
                 <span class="bold">Informations !</span>
                 Vous pouvez ajouter des droits d'accès à l'amdinistration de la base en ligne pour les utilisateurs via leur identifiant ou les fonctions qu'ils occupent.

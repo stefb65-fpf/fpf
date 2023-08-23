@@ -12,7 +12,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Ici vous avez la possibilité de modifier les informations relative au club sélectionné : informations générales, coordonnées, réunions, activités et équipement.
             <br>

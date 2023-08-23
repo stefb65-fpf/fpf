@@ -147,7 +147,7 @@ class PersonneController extends Controller
     public function getUserForAutoload(Request $request) {
         $personne =  $this->getUserFromWp($request->pass, $request->id);
         if (!$personne) {
-            return new JsonResponse(['success' => 'KO'], 200);
+            return new JsonResponse(['success' => 'OK'], 200);
         } else {
             return new JsonResponse(['success' => 'OK', 'personne' => $personne], 200);
         }
@@ -185,17 +185,7 @@ class PersonneController extends Controller
     {
         $isAdmin = (bool)session()->get('menu')['admin'];
         return new JsonResponse(['isAdmin' => $isAdmin], 200);
-//        $ur_id="0";
-//        if(!$isAdmin){
-//            $cartes = session()->get('cartes');
-//            if (!$cartes || count($cartes) == 0) {
-//                return redirect()->route('accueil')->with('error', "Un problème est survenu lors de la récupération des informations UR");
-//            }
-//            $active_carte = $cartes[0];
-//            $ur = Ur::where('id', $active_carte->urs_id)->first();
-//            $ur_id=$ur->id;
-//        }
-//        return compact('isAdmin','ur_id');
+
     }
 
     public function newsPreferences(Request $request)

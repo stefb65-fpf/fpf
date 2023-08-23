@@ -164,7 +164,10 @@ class LoginController extends Controller
     public function logout(Request $request) {
         $user = $request->session()->get('user');
         $action = 'Déconnexion du site';
-        $this->registerAction($user->id, 3, $action);
+        if($user){
+            $this->registerAction($user->id, 3, $action);
+        }
+
         session()->forget('user');
         session()->forget('menu');
         session()->forget('cartes');

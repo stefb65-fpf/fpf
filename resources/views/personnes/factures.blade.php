@@ -2,7 +2,7 @@
 @section('contentaccount')
     <div class="accountContent">
         <h1 class="mt25">FACTURES</h1>
-        <div style="width: 100%">
+        <div class="w100">
             <table class="styled-table">
                 <thead>
                 <tr>
@@ -20,7 +20,7 @@
                             <td>{{ $invoice->numero }}</td>
                             <td>{{ $invoice->reference }}</td>
                             <td>{{ $invoice->description }}</td>
-                            <td style="text-align: right">{{ number_format($invoice->montant, 2, ',', ' ') }}€</td>
+                            <td class="text-right">{{ number_format($invoice->montant, 2, ',', ' ') }}€</td>
                             <td>{{ $invoice->created_at->format('d/m/Y') }}</td>
                             <td>
                                 <a href="{{ url($invoice->path) }}" target="_blank">

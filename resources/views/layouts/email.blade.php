@@ -11,56 +11,9 @@
         rel="stylesheet">
 </head>
 <style>
-    body.mail {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: 'Poppins', sans-serif;
-        max-width: 100%;
-        overflow: scroll;
-        max-width: min(750px, 100%);
-        margin: auto;
-    }
-    .mail .mainContent {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        /*text-align: center;*/
-        width: 100%;
-        padding: 20px 0;
-    }
-    .mail .authLogo {
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        text-align: center;
-        flex-direction: column;
-    }
     .mail .authLogo img {
         object-fit: contain;
         height: 60px;
-    }
-    .mail .borderTop {
-        height: 30px;
-        background-color: #003d77;
-        -webkit-box-shadow: 0px 5px 25px 0px rgba(45, 46, 92, 0.15);
-        box-shadow: 0px 5px 25px 0px rgba(45, 46, 92, 0.15);
-        width: 100%;
-        margin-bottom: 20px;
-        margin-top: 10px;
-    }
-    .mail footer {
-        position: relative;
-        background-color: #e2e2e2;
-        color: #212121d4;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 10px;
-        font-size: 13px;
-        width: 100%;
-        margin-top: 20px;
     }
     .mail .coords {
         font-size: small;
@@ -74,30 +27,49 @@
         text-align: center;
         font-weight: 600;
         color: #3c3c3c;
+        margin: auto;
     }
     /*    style other mails*/
     .mail .mailContent{
         padding: 10px;
         margin: 20px 0;
     }
-    .mail .mailContent .text{
-        font-size: 16px;
-    }
+    /*.mail .mailContent .text{*/
+    /*    font-size: 16px;*/
+    /*}*/
     .mail  .mailContent .link{
         font-weight: 600;
     }
-    .mail .mailContent .notWorking{
-        color: #9a9a9a;
-        font-size: 14px;
-        margin-top: 15px;
+    /*.mail .mailContent .notWorking{*/
+    /*    color: #9a9a9a;*/
+    /*    font-size: 14px;*/
+    /*    margin-top: 15px;*/
+    /*}*/
+    .mail .im{
+        color: black!important;
     }
 </style>
-<body class="mail">
-@include('layouts.headerEmail')
-<div class="mainContent">
-    @yield('content')
-</div>
-@include('layouts.footerEmail')
-</div>
+<body class="mail" style=" box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Poppins', sans-serif;
+        max-width: 100%;
+        /*overflow: scroll;*/
+        max-width: min(750px, 100%);
+        margin: auto;">
+
+<main>
+    @include('layouts.headerEmail')
+    <div class="mainContent" style="      display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 20px 0;">
+        @yield('content')
+    </div>
+    @include('layouts.footerEmail')
+
+</main>
+
 </body>
 </html>

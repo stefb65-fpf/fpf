@@ -16,7 +16,7 @@
                 <div>
                     Sélectionnez le nombre d'exemplaires à commander
                     <div class="text-center mt25">
-                        <select id="selectFlorilege" style="padding: 10px;">
+                        <select class="p10" id="selectFlorilege">
                             @for($i=1; $i<21; $i++)
                                 <option value="{{ $i }}">{{ $i }} exemplaire{{ $i > 1 ? 's' : '' }}</option>
                             @endfor
@@ -24,7 +24,7 @@
                     </div>
                     <div class="mt25">
                         <div>
-                            Vous allez commander à titre individuel <span id="nbFlorilege" style="font-weight: bolder;">1</span> exemplaires pour un montant de <span name="priceFlorilege" style="font-weight: bolder">{{ $config->prixflorilegefrance }}</span> €.
+                            Vous allez commander à titre individuel <span id="nbFlorilege" class="bolder">1</span> exemplaires pour un montant de <span name="priceFlorilege" style="font-weight: bolder">{{ $config->prixflorilegefrance }}</span> €.
                         </div>
                         <div>
                             <button class="primary btnRegister" name="orderFlorilege" data-type="monext" data-personne="{{ $personne->id }}">Payer <span name="priceFlorilege">{{ $config->prixflorilegefrance }}</span>€ par carte bancaire</button>

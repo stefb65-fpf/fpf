@@ -35,7 +35,7 @@
                         <td>{{ $reglement->dateenregistrement ?? '' }}</td>
                         <td>{{ $reglement->numerocheque ?? '' }}</td>
                         <td>
-                            <div style="display: flex">
+                            <div class="d-flex">
                             @if(file_exists($dir.'/'.$reglement->reference.'.pdf'))
                                 <a class="adminPrimary btnSmall mr10" target="_blank" href="{{ $dir_club.'/'.$reglement->reference.'.pdf' }}">bordereau</a>
                             @endif

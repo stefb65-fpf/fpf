@@ -25,8 +25,9 @@ Route::get('/florilege/notification_paiement', [App\Http\Controllers\ReglementCo
 
 Route::get('/utilisateurs/attente_paiement_validation', [App\Http\Controllers\UtilisateurController::class, 'attentePaiementValidation'])->name('utilisateurs.attente_paiement_validation');
 
-Route::get('/urs/infos_ur', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
-Route::get('/urs/liste_adherents', [App\Http\Controllers\UrController::class, 'listeAdherents'])->name('urs.liste_adherents');
+Route::get('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
+
+
 Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class, 'listeReversements'])->name('urs.liste_reversements');
 Route::get('/urs/fonctions/liste', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.fonctions.liste');
 Route::get('/urs/{fonction}/change_attribution', [App\Http\Controllers\UrController::class, 'changeAttribution'])->name('urs.fonctions.change_attribution');
@@ -34,6 +35,7 @@ Route::delete('/urs/{fonction}/destroy_fonction', [App\Http\Controllers\UrContro
 Route::get('/urs/fonctions/create', [App\Http\Controllers\UrController::class, 'createFonction'])->name('urs.fonctions.create');
 Route::post('/urs/fonctions/store', [App\Http\Controllers\UrController::class, 'storeFonction'])->name('urs.fonctions.store');
 Route::post('/urs/fonctions/{fonction}/update', [App\Http\Controllers\UrController::class, 'updateFonction'])->name('urs.fonctions.update');
+Route::put('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'updateUr'])->name('urs.infos.update');
 
 Route::resource('/admin/formations', App\Http\Controllers\Admin\FormationController::class);
 
@@ -202,3 +204,7 @@ Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::c
 //gestion admin reglements
 Route::get('/admin/reglements/{term?}', [App\Http\Controllers\Admin\ReglementController::class, 'index']);
 Route::resource('/admin/reglements', App\Http\Controllers\Admin\ReglementController::class);
+
+//Gestion support
+Route::get('/support', [App\Http\Controllers\SupportController::class,'index'])->name('support.index');
+Route::put('/support', [App\Http\Controllers\SupportController::class,'submit'])->name('support.submit');

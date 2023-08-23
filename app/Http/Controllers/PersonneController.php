@@ -106,7 +106,7 @@ class PersonneController extends Controller
         $mails = Historiquemail::where('personne_id', $user->id)->orderByDesc('created_at')->paginate(50);
 
         foreach ($mails as $mail) {
-            $mail->contenu = $this->get_string_between($mail->contenu, '<body class="mail">', '</body>');
+                $mail->contenu = $this->get_string_between($mail->contenu, '<main>', '</main>');
         }
 
         return view('personnes.mes_mails', compact('mails'));

@@ -10,14 +10,14 @@
                 </svg>
             </a>
         </h1>
-        <div style="text-align: center">
-                <div class="bold mt10">Prochain numéro à éditer: <span style="font-size: 2rem;">{{ $numeroencours }}</span></div>
+        <div class="text-center">
+                <div class="bold mt10">Prochain numéro à éditer: <span class="fs2rem">{{ $numeroencours }}</span></div>
                 <div class="bold mt10">Nombre d'adhérents recevant le numéro: {{ $nbabos }}</div>
                 <div class="bold mt10">Nombre de clubs recevant le numéro: {{ $nbclubsAbos }}</div>
                 <div class="bold mt10">Nombre total d'exemplaires à éditer: {{ $nbabos + $nbclubsAbos }}</div>
-                <div style="display: flex; justify-content: space-around; margin-top: 100px;">
-                    <a href="{{ route('admin.generateRoutageFp', 0) }}" class="adminSuccess" style="margin-right: 10px;">Fichier de contrôle</a>
-                    <a data-method="get" data-confirm="Voulez-vous vraiment valider le routage ? Le numéro en cours va être modifié et le statut des abonnements sera affecté" href="{{ route('admin.generateRoutageFp', 1) }}" class="adminPrimary" style="margin-left: 10px;">Valider le routage et éditer le fichier</a>
+                <div class="d-flex justify-around mt100;">
+                    <a href="{{ route('admin.generateRoutageFp', 0) }}" class="adminSuccess mr10">Fichier de contrôle</a>
+                    <a data-method="get" data-confirm="Voulez-vous vraiment valider le routage ? Le numéro en cours va être modifié et le statut des abonnements sera affecté" href="{{ route('admin.generateRoutageFp', 1) }}" class="adminPrimary" class="ml10">Valider le routage et éditer le fichier</a>
                 </div>
 
         </div>

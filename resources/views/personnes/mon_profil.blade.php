@@ -418,7 +418,7 @@
             @endif
         </div>
     </div>
-    <div class="formLine newsletter" style="display: flex; justify-content: center; align-content: center">
+    <div class="formLine newsletter d-flex center flexWrap" >
         <div class="switch">
             <div class="message success">Votre choix a été pris en compte</div>
             {{--                {{$personne->news}}--}}
@@ -428,7 +428,7 @@
             <span class="slider"></span>
         </div>
 
-        <label class="notSubscribing {{$personne->news?'d-none':''}}" for="subscribeNews">
+        <label class="notSubscribing {{$personne->news?'d-none':''}} mb10" for="subscribeNews">
             <div>Souhaitez-vous <span>recevoir les nouvelles</span> de la FPF ?<br> (Hors
                 lettre
                 de la fédé)
@@ -438,20 +438,22 @@
                     FPF depuis le {{($personne->blacklist_date)}} </div>
             @endif</label>
 
-        <label class="subscribing {{$personne->news?'':'d-none'}}" for="subscribeNews"> Vous <span>recevez actuellement les nouvelles</span>
+        <label class="subscribing {{$personne->news?'':'d-none'}} mx16" for="subscribeNews"> Vous <span>recevez actuellement les nouvelles</span>
             de la FPF.<br> (Hors
             lettre
             de la fédé)</label>
     </div>
 
-    <div class="formBlock" style="margin-top: 50px">
+    <div class="formBlock mt50">
         <div class="formBlockTitle">Désactivation de compte - Anonymisation</div>
-            <div style="width: 75%; font-size: 14px;">
+        <div class="d-flex flexWrap">
+            <div class="w75 fs14px md-my-20 md-w100">
                 Dans le cadre du respect des règles RGPD, vous pouvez demander la désactivation de votre compte. Cela aura pour effet de supprimer toutes vos données personnelles de notre base de données. <b>Vos données seront anonymisées</b> et il ne sera plus possible de vous identifier. <b>Vous ne pourrez plus vous connecter à votre compte sur aucun des outils de la FPF (concours, site fédéral, ...)</b>.
             </div>
-            <div>
-                <a href="anonymize" class="formBtn danger" data-method="delete" data-confirm="Voulez-vous vraiment anonymiser vos données ? Toutes les cartes et autres informations liées perdront les informations d'identité. Il ne sera plus possible de voir apparaître les noms, prénoms, email et téléphone de votre compte et cette action est irréversible"  style="width: max-content">Désactiver le compte</a>
+
+                <a href="anonymize" class="formBtn danger wMaxContent" data-method="delete" data-confirm="Voulez-vous vraiment anonymiser vos données ? Toutes les cartes et autres informations liées perdront les informations d'identité. Il ne sera plus possible de voir apparaître les noms, prénoms, email et téléphone de votre compte et cette action est irréversible"  >Désactiver le compte</a>
             </div>
+
         </div>
     </div>
 @endsection

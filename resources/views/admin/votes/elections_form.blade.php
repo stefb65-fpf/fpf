@@ -25,7 +25,7 @@
                 </div>
                 <div class="formUnit formUnitAdmin" id="nbPostesElection">
                     <div class="formLabel">Description</div>
-                    <textarea class="editor" style="width: 75%" name="contenu" rows="10">{!! old('contenu', $election->contenu) !!}</textarea>
+                    <textarea class="editor w75" name="contenu" rows="10">{!! old('contenu', $election->contenu) !!}</textarea>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Ordre d'apparition</div>

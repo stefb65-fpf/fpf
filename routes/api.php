@@ -54,4 +54,4 @@ Route::post('/updateConfig', [App\Http\Controllers\Admin\ConfigController::class
 
 
 //liste adhérents club
-//Route::post('/ajax/editListAdherents', [App\Http\Controllers\Api\UtilisateurController::class,'createListAdherents']);   ??
+Route::post('/ajax/editListAdherents', [App\Http\Controllers\Api\UtilisateurController::class,'createListAdherents']);

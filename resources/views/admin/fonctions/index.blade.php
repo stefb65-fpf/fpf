@@ -10,11 +10,11 @@
                 </svg>
             </a>
         </h1>
-        <div style="width: 100%; padding-top: 60px;" id="fonctions_federales">
-            <div class="pageTitle">Fonctions fédérales <a href="#fonctions_regionales" style="font-size: 1rem; margin-left: 50px;">(fonctions régionales)</a></div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px; width: 100%">
+        <div class="w100 pt60" id="fonctions_federales">
+            <div class="pageTitle">Fonctions fédérales <a href="#fonctions_regionales" class="ml50 fs1rem">(fonctions régionales)</a></div>
+            <div class="d-flex justify-end mt20 w100">
                 <a href="{{ route('fonctions.create') }}" class="adminPrimary btnMedium">Ajouter une fonction fédérale</a>
-            </div>
+            </divclass>
         </div>
 
         <table class="styled-table">
@@ -45,10 +45,10 @@
                         <input type="checkbox" name="ceFonction" {{ $fonction->ce == 1 ? 'checked' : '' }} data-ref="{{ $fonction->id }}">
                     </td>
                     <td>
-                        <div style="margin-bottom: 3px;">
+                        <div class="mb3">
                             <a href="{{ route('fonctions.edit', $fonction) }}" class="adminPrimary btnSmall">Éditer</a>
                         </div>
-                        <div style="margin-bottom: 3px;">
+                        <div class="mb3">
                             <a href="{{route('fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer</a>
                         </div>
                     </td>
@@ -57,9 +57,9 @@
             </tbody>
         </table>
 
-        <div style="width: 100%; padding-top: 60px;" id="fonctions_regionales">
-            <div class="pageTitle">Fonctions régionales <a href="#fonctions_federales" style="font-size: 1rem; margin-left: 50px;">(fonctions fédérales)</a></div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px; width: 100%">
+        <div class="w100 pt60" id="fonctions_regionales">
+            <div class="pageTitle">Fonctions régionales <a href="#fonctions_federales" class="ml50 fs1rem">(fonctions fédérales)</a></div>
+            <div class="d-flex justify-end mt20 w100">
                 <a href="{{ route('fonctions.create_ur') }}" class="adminPrimary btnMedium">Ajouter une fonction régionale</a>
             </div>
             <table class="styled-table">
@@ -76,9 +76,9 @@
                         <td>{{ $fonction->libelle }}</td>
                         <td>
                             <div>
-                                <span>{{ sizeof($fonction->urs) }}</span> <span class="adminPrimary" style="font-size: 0.7rem" data-expand="0" name="toExpandUr">voir</span>
+                                <span>{{ sizeof($fonction->urs) }}</span> <span class="adminPrimary fs07rem" data-expand="0" name="toExpandUr">voir</span>
                             </div>
-                            <div style="display: none; margin-top: 20px;" name="expandUr">
+                            <div class="d-none mt20" name="expandUr">
                                 @if(sizeof($fonction->urs) == 0)
                                     Aucune UR
                                 @else
@@ -86,14 +86,13 @@
                                         {{ $ur->nom }}<br>
                                     @endforeach
                                 @endif
-
                             </div>
                         </td>
                         <td>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 <a href="{{ route('fonctions.edit_ur', $fonction) }}" class="adminPrimary btnSmall">Éditer</a>
                             </div>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 <a href="{{route('fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer</a>
                             </div>
                         </td>

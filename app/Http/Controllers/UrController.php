@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Concern\ClubTools;
 use App\Concern\Tools;
+use App\Concern\UrTools;
 use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
@@ -24,6 +25,7 @@ class UrController extends Controller
 {
     use Tools;
     use ClubTools;
+    use UrTools;
 
     public function __construct()
     {
@@ -37,7 +39,7 @@ class UrController extends Controller
         return view('urs.gestion', compact('ur'));
     }
 
-    // affichage de la iste des adéhrents d'une UR
+    // affichage de la liste des adhérents d'une UR
     public function list($view_type, $statut = null, $type_carte = null, $type_adherent = null, $term = null)
     {
         $statut = $statut ?? "all";
@@ -47,7 +49,6 @@ class UrController extends Controller
         if ($view_type == "recherche" && $term) {
             $query = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
                 ->where('utilisateurs.urs_id', '=', $ur->id);
-
             $this->getPersonsByTerm($term, $query);
         }
 
@@ -98,7 +99,7 @@ class UrController extends Controller
         }
         $countries = DB::table('pays')->orderBy('nom')->get();
         $level = 'urs';
-        return view('admin.personnes.edit', compact('personne', 'view_type', 'countries', 'level'));
+        return view('urs.update_adherent_club', compact('personne', 'view_type', 'countries', 'level'));
     }
 
     // mise à jour des informations d'un adhérent par un responsable UR
@@ -123,23 +124,29 @@ class UrController extends Controller
             $adresse_2 = $personne->adresses[1];
             $adresse_2->update($dataa2);
         }
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Modification de l'adhérent \"".$personne->prenom." ".$personne->nom."\".");
+        }
         return redirect('/urs/personnes/'.$view_type)->with('success', "La personne a bien été mise à jour");
     }
 
     // affichage des informations de l'UR
     public function infosUr()
     {
-        $ur = $this->getUr();
-        $ur->departements = DB::table('departementsurs')->where('urs_id', $ur->id)->get();
-        $ur->adresse->telephonemobile = $this->format_phone_number_visual($ur->adresse->telephonemobile);
-        $ur->adresse->telephonedomicile = $this->format_phone_number_visual($ur->adresse->telephonedomicile);
+       $ur =  $this->getUrInformations($this->getUr());
         $countries = Pays::all();
-
-        $ur->adresse->indicatif_fixe = Pays::where('nom', $ur->adresse->pays)->first()->indicatif;
         return view('urs.infos_ur', compact('ur', 'countries'));
     }
+    //modification des informations de l'Ur
+    public function updateUr(Request $request)
+    {
+       $ur =$this->getUr();
+       $this->updateUrInformations($ur, $request);
+        return redirect()->back()->with('success', "Les informations de l'UR ont été mises à jour");
+    }
 
-    // affichage de la liste des clibs de l'UR
+    // affichage de la liste des clubs de l'UR
     public function listeClubs($statut = null, $type_carte = null, $abonnement = null, $term = null) {
         $ur = $this->getUr();
         $statut = $statut ?? "all";
@@ -179,12 +186,6 @@ class UrController extends Controller
         return view('urs.liste_clubs', compact('ur', 'clubs', 'statut', 'type_carte', 'abonnement', 'term', 'numeroencours'));
     }
 
-    // Gabrielle, cette fonction ne me semble pas utiliser. Si c'est le cas, il faut la supprimer et la route qui va avec
-    public function listeAdherents()
-    {
-        $ur = $this->getUr();
-        return view('urs.liste_adherents', compact('ur'));
-    }
 
     // liste des adhérents d'un club par responsable UR
     public function listeAdherentsClub(Club $club, $statut = null, $abonnement = null)
@@ -357,6 +358,10 @@ class UrController extends Controller
         // on ajoute la fonction à la table fonctionsutilisateurs
         $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
         DB::table('fonctionsutilisateurs')->insert($datafu);
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Ajout d'une fonction pour votre UR. ");
+        }
 
         return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été créée");
     }
@@ -367,10 +372,14 @@ class UrController extends Controller
         DB::table('fonctionsurs')->where('fonctions_id', $fonction->id)->delete();
         DB::table('fonctionsutilisateurs')->where('fonctions_id', $fonction->id)->delete();
         $fonction->delete();
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Suppression de la fonction\"".$fonction->libelle."\" de votre UR.");
+        }
         return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été supprimée");
     }
 
-    // affichage de la vue pour changer l'attributuion d'une fonction UR
+    // affichage de la vue pour changer l'attribution d'une fonction UR
     public function changeAttribution(Fonction $fonction)
     {
         $ur = $this->getUr();
@@ -403,6 +412,10 @@ class UrController extends Controller
         $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
         DB::table('fonctionsutilisateurs')->insert($datafu);
 
+        $user = session()->get('user');
+        if ($user) {
+            $this->MailAndHistoricize($user,"Modification de l'attribution de la fonction\"".$fonction->libelle."\" de votre UR.");
+        }
         return redirect()->route('urs.fonctions.liste')->with('success', "L'attribution de la fonction a été modifiée");
     }
 
@@ -443,6 +456,10 @@ class UrController extends Controller
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
         }
         if ($this->updateClubAdherent($request, $utilisateur)) {
+            $user = session()->get('user');
+            if ($user) {
+                $this->MailAndHistoricize($user,"Modification de l'adhérent \"".$utilisateur->prenom." ".$utilisateur->nom."\".");
+            }
             return redirect()->route('urs.liste_adherents_club', [$utilisateur->clubs_id])->with('success', "Les informations de l'adhérent ont été mises à jour");
         } else {
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent");

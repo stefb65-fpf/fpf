@@ -10,7 +10,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             La liste des membres du Comité Exécuitf est donnée pour information. L'appartenance au CE est liée aux fonctions et doit être gérée dans l'espace de gestion des fonctions.
         </div>

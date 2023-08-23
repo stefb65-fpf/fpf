@@ -12,7 +12,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Vous pouvez créer une fonction générale que les urs pourront utiliser.
         </div>

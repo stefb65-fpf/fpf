@@ -22,7 +22,7 @@
                     .<br>
                     Les commandes seront livrées à l'adresse du contact du club.
                     @if($adresse)
-                        <div style="width: max-content; margin: 10px auto;">
+                        <div class="mt10 mb10 mxauto wMaxContent">
                             @if($contact)
                                 <div>{{ $contact->personne->prenom.' '.$contact->personne->nom }}</div>
                             @else
@@ -37,7 +37,7 @@
                 <div class="mt25">
                     Sélectionnez le nombre d'exemplaires à commander
                     <div class="text-center mt25">
-                        <select id="selectFlorilege" style="padding: 10px;">
+                        <select id="selectFlorilege" class="p10">
                             @for($i=1; $i<21; $i++)
                                 <option value="{{ $i }}">{{ $i }} exemplaire{{ $i > 1 ? 's' : '' }}</option>
                             @endfor
@@ -46,9 +46,9 @@
                     <div class="mt25">
                         <div>
                             Vous allez commander pour le club <span id="nbFlorilege"
-                                                                    style="font-weight: bolder;">1</span> exemplaires
+                                                                    class="bold">1</span> exemplaires
                             pour un montant de <span name="priceFlorilege"
-                                                     style="font-weight: bolder">{{ $config->prixflorilegefrance }}</span>
+                                                     class="bold">{{ $config->prixflorilegefrance }}</span>
                             €.
                         </div>
                         <div>

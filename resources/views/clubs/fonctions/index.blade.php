@@ -12,7 +12,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Ici vous avez la possibilité de modifier les informations relative au différentes fonctions au sein de votre
             club: les fonctions président, contact, trésorier, secrétaire et webmaster sont accessibles. <br> Ces

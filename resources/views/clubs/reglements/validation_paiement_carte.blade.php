@@ -11,14 +11,14 @@
             </a>
         </h1>
         @if($code == 'ok')
-            <div class="alertSuccess" style="width: 80% !important">
+            <div class="alertSuccess w80" >
                 <span class="bold">Informations !</span>
                 Votre paiement par carte bancaire a bien été accepté et votre règlement validé.
                 Un mail de confirmation vous a été envoyé.<br>
                 Les adhérents du club sont désormais inscrits et vont recevoir leur carte prochainement.
             </div>
         @else
-            <div class="alertDanger" style="width: 80% !important">
+            <div class="alertDanger w80">
                 <span class="bold">Informations !</span>
                 Votre paiement par carte bancaire n'a pas été accepté.<br>
                 Vous pouvez retrouver votre bordereau de règlement dans votre espace "Bordereaux et règlements". Vous pourrez alors essayer un autre moyen de paiement.

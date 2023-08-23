@@ -19,7 +19,7 @@
                 </svg>
             </a>
         </h1>
-        <div style="width: 100%">
+        <div class="w100">
             @include('clubs.adherents.form', ['action' => 'update', 'prev' => $prev])
         </div>
 

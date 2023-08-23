@@ -12,7 +12,7 @@
                 </svg>
             </a>
         </h1>
-        <div style="width: 100%">
+        <div class="w100">
             @include('clubs.adherents.form', ['action' => 'store'])
         </div>
     </div>
@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="modalEditBody">
-            <div class="alertDanger" style="margin: 10px auto 0">
+            <div class="alertDanger mt10 mxauto mb0">
                 Cette adresse email est déjà connue dans notre base. Elle correspond à la personne suivante :
                 <span id="nameSameEmail"></span><br><br>
                 Confirmez-vous que l'adhérent que vous souhaitez ajouter est bien cette personne ?<br>
@@ -46,12 +46,12 @@
             </div>
         </div>
         <div class="modalEditBody">
-            <div class="alertDanger" style="margin: 10px auto 0">
+            <div class="alertDanger  mt10 mxauto mb0">
                 Il existe dans la base plusieurs personne avec les mêmes nom et prénom que la personne que vous souhaitez ajouter.<br>
                 Toutefois, les adresses email sont différentes.<br>
                 Vous trouverez ci-dessous la liste des personnes correspondantes. Si l'adhérent que vous souhaitez ajouter est bien l'une de ces personnes, cliquez sur le nom de cette personne.<br>
                 Sinon, cliquez sur "Poursuivre sans sélectionner de personne".
-                <div id="nameSameName" style="margin-left: 20px; margin-top: 20px"></div>
+                <div id="nameSameName" class="ml20 mt20"></div>
             </div>
         </div>
         <div class="modalEditFooter">

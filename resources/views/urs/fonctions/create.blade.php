@@ -13,11 +13,11 @@
 
         <div class="formBlock">
             <div class="formBlockTitle">Gestion de fonctions régionales</div>
-            <form action="{{ route('urs.fonctions.store') }}" method="POST" style="width: 100%">
+            <form class="w100" action="{{ route('urs.fonctions.store') }}" method="POST">
                 {{ csrf_field() }}
                 <div class="formBlockWrapper inline">
                     <div class="formUnit">
-                        <div class="formLabel" style="width: 300px">Fonction FPF non attribuée</div>
+                        <div class="formLabel w300">Fonction FPF non attribuée</div>
                         <select name="fonction_fpf">
                             <option value="0"></option>
                             @foreach($fonctions as $fonction)
@@ -26,22 +26,22 @@
                         </select>
                     </div>
                 </div>
-                <div style="font-weight: bolder">
+                <div class="bold">
                     OU
                 </div>
                 <div class="formBlockWrapper inline">
                     <div class="formUnit">
-                        <div class="formLabel" style="width: 300px">Fonction spécifique à ajouter</div>
-                        <input value="" class="inputFormAction" type="text" placeholder="Libellé de la fonction à ajouter" name="libelle" style="padding: 5px;width: 300px" />
+                        <div class="formLabel w300">Fonction spécifique à ajouter</div>
+                        <input value="" class="inputFormAction p5 w300" type="text" placeholder="Libellé de la fonction à ajouter" name="libelle"/>
                     </div>
                 </div>
                 <div class="formBlockWrapper inline">
                     <div class="formUnit">
-                        <div class="formLabel" style="width: 300px">Identifiant adhérent</div>
-                        <input value="" class="inputFormAction" type="text" placeholder="Identifiant adhérent" name="identifiant" maxlength="12" style="padding: 5px;width: 300px" />
+                        <div class="formLabel w300">Identifiant adhérent</div>
+                        <input value="" class="inputFormAction p5 w300" type="text" placeholder="Identifiant adhérent" name="identifiant" maxlength="12"/>
                     </div>
                 </div>
-                <div style="display: flex; justify-content: center;">
+                <div class="d-flex justify-center">
                     <button class="adminSuccess btnMedium">
                         Ajouter la fonction
                     </button>

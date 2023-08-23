@@ -4,6 +4,7 @@
 namespace App\Concern;
 
 
+use App\Mail\SendModificationEmail;
 use App\Mail\ValidationReglement;
 use App\Models\Abonnement;
 use App\Models\Club;
@@ -728,4 +729,20 @@ trait Tools
         return null;
     }
 
+    protected function MailAndHistoricize($user, $object){
+        //TODO: activer la ligne ci dessous et desactiver l'email par defaut
+        $email = $user->email;
+//        $email ="hellebore-contact@protonmail.com";
+        //enregistrement de l'action de la personne
+        //TODO: définir plus de types d'action
+        $this->registerAction($user->id, 4,$object );
+        // enregistrement du mail de la personne
+        $mailSent = Mail::to($email)->send(new SendModificationEmail($object));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+        $mail = new \stdClass();
+        $mail->titre =$object;
+        $mail->destinataire = $email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($user->id, $mail);
+    }
 }

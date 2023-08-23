@@ -10,11 +10,11 @@
                 </svg>
             </a>
         </h1>
-        <form action="{{ route('fonctions.add_ca') }}" method="POST" style="width: 100%">
+        <form class="w100" action="{{ route('fonctions.add_ca') }}" method="POST">
             {{ csrf_field() }}
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px; width: 100%;">
-                <input type="text" placeholder="Identifiant de l'adhérent à ajouter" style="padding: 5px" maxlength="12" name="identifiant" />
-                <button type="submit" class="adminPrimary btnSmall">Ajouter au CA</button>
+            <div class="d-flex justify-end mt20 w100">
+                <input type="text" placeholder="Identifiant de l'adhérent à ajouter" class="p5" maxlength="12" name="identifiant" />
+                <button type="submit" class="adminPrimary btnSmall ml5">Ajouter au CA</button>
             </div>
         </form>
 

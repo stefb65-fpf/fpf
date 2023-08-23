@@ -20,7 +20,7 @@
         <div class="wrapper-page">
             <div class="title">Renouvellement pour le club {{ str_pad($tab_club['club']->numero, 4, '0', STR_PAD_LEFT) }} - {{ $tab_club['club']->nom }}</div>
             @if($tab_club['contact'])
-                <div style="margin-left: 60%; margin-top: 20px;">
+                <div class="ml60pc mt20">
                     <table>
                         <tr>
                             <td>**C**</td>
@@ -51,8 +51,8 @@
             @endif
 
             @if(isset($tab_club['cartes']))
-                <div style="margin-top: 30px; font-weight: bolder;">Liste des cartes éditées</div>
-                <div style="margin-left: 40px;">
+                <div class="mt30 bolder">Liste des cartes éditées</div>
+                <div class="ml40">
                     @foreach($tab_club['cartes'] as $carte)
                         <div>{{ $carte->identifiant }}: {{ $carte->personne->nom }} {{ $carte->personne->prenom }}</div>
                     @endforeach
@@ -60,8 +60,8 @@
             @endif
 
             @if(isset($tab_club['vignettes']))
-                <div style="margin-top: 30px; font-weight: bolder;">Liste des vignettes ({{ sizeof($tab_club['vignettes']) }})</div>
-                <div style="margin-left: 40px;">
+                <div class="mt30 bolder">Liste des vignettes ({{ sizeof($tab_club['vignettes']) }})</div>
+                <div class="ml40">
                     @foreach($tab_club['vignettes'] as $carte)
                         <div>{{ $carte->identifiant }}: {{ $carte->personne->nom }} {{ $carte->personne->prenom }}</div>
                     @endforeach

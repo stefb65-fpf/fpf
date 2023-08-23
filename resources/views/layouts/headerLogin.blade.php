@@ -6,4 +6,7 @@
             <div class="logoMobileRight">Fédération Photographique de France</div>
         </div>
     </a>
+
+            <a class="mr25 underlineBlue blue relative" name="linkDropdownHeader" href="/support">Support</a>
+
 </div>

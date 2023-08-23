@@ -11,7 +11,7 @@
         p:last-child { page-break-after: never; }
     </style>
 </head>
-<body style="background: transparent">
+<body class="bgTransparent">
     <header>
         <table>
             <tr>

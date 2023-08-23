@@ -10,7 +10,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Ici vous avez la possibilité d'afficher la liste des différentes UR de France et de consulter leur informations.
             <br>
@@ -55,10 +55,10 @@
                             <div>{{ $ur->president->identifiant }}</div>
                         </td>
                         <td>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 <a href="{{ route('urs.edit', $ur) }}" class="adminPrimary btnSmall">Modifier</a>
                             </div>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 <a href="{{ route('admin.urs.fonctions', $ur) }}" class="adminSuccess btnSmall">Fonctions</a>
                             </div>
                         </td>
@@ -67,21 +67,21 @@
                 </tbody>
             </table>
         </div>
-        <div class="alertDanger" style="width: 80% !important">
+        <div class="alertDanger w80">
             <p>
                 <span class="bold">Attention !</span>
                 Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
             </p>
-            <p style="margin-top: 20px">
+            <p class="mt20">
                 On affiche ici la liste des 25 urs avec la possibilité de modifier les informations UR et les fonctions comme le ferait un administrateur de l'UR.<br>
                 Pas de possibilité d'ajout ou de suppression d'urs.<br>
             </p>
         </div>
-        <div class="alertDanger" style="width: 80% !important">
-            <div class="bold">on récupère la liste des urs dans $urs</div>
-            <div>pour chaque ur, on affiche les informations nom UR, email avec lien mailto, site web avec lien,
-                un petit bloc coordonnées + telephone ($ur->adresse), nom, prénom et identifiant du président ($ur->president) plus deux actions Editer et Fonctions</div>
-        </div>
+{{--        <div class="alertDanger w80">--}}
+{{--            <div class="bold">on récupère la liste des urs dans $urs</div>--}}
+{{--            <div>pour chaque ur, on affiche les informations nom UR, email avec lien mailto, site web avec lien,--}}
+{{--                un petit bloc coordonnées + telephone ($ur->adresse), nom, prénom et identifiant du président ($ur->president) plus deux actions Editer et Fonctions</div>--}}
+{{--        </div>--}}
 {{--        @foreach($urs as $ur)--}}
 {{--            {{$ur->president?$ur->president->nom:""}}--}}
 {{--            {{$ur->adresse}}--}}

@@ -10,18 +10,18 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger" style="width: 80% !important">
+        <div class="alertDanger w80">
             <p>
                 <span class="bold">Attention !</span>
                 Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
             </p>
-            <p style="margin-top: 20px">
+            <p class="mt20">
                 On affiche ici la liste des fonctions de l'UR, la possibilité d'ajouter une fonction spécifique à l'UR,
                 de lier un adhérent de l'UR à la fonction, de supprimer la liaison adhérent / fonction, de supprimer une fonction si elle spécifique à l'UR
             </p>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; margin-top: 20px; width: 100%">
+        <div class="d-flex justify-end mt20 w100">
             <a href="{{ route('urs.fonctions.create') }}" class="adminPrimary btnMedium">Ajouter une fonction</a>
         </div>
         <table class="styled-table">
@@ -42,11 +42,11 @@
                     <td>{{ $fonction->utilisateur->personne->prenom.' '.$fonction->utilisateur->personne->nom.' ('.$fonction->utilisateur->identifiant.')' }}</td>
                     <td><a href="mailto:{{ $fonction->utilisateur->personne->email }}">{{ $fonction->utilisateur->personne->email }}</a></td>
                     <td>
-                        <div style="margin-bottom: 3px;">
+                        <div class="mb3">
                             <a href="{{ route('urs.fonctions.change_attribution', $fonction) }}" class="adminPrimary btnSmall">Changer l'attribution</a>
                         </div>
                         @if($fonction->urs_id !== 0)
-                            <div style="margin-bottom: 3px;">
+                            <div  class="mb3">
                                 <a href="{{route('urs.fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer la fonction</a>
                             </div>
                         @endif

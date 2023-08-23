@@ -10,15 +10,15 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <p>
                 <span class="bold">Informations !</span>
                 Vous pouvez sélectionner un ou plusieurs groupes d'utilisateurs pour générer un fichier de routage
             </p>
         </div>
 
-        <div class="alertSuccess" style="width: 80% !important; display: none;" id="alertFedeRoutage">
-            Le fichier de routage a bien été généré. Vous pouvez le télécharger en cliquant sur le lient suivant: <a id="linkFedeRoutage" target="_blank" style="cursor: pointer">Télécharger le fichier</a>
+        <div class="alertSuccess w80 d-none" id="alertFedeRoutage">
+            Le fichier de routage a bien été généré. Vous pouvez le télécharger en cliquant sur le lient suivant: <a id="linkFedeRoutage" target="_blank" class="pointer">Télécharger le fichier</a>
         </div>
 
         <table class="styled-table">

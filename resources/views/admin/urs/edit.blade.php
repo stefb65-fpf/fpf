@@ -12,7 +12,7 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Vous pouvez ici paramétrer les informations de l'UR:
         </div>
@@ -114,7 +114,7 @@
                         </div> {{-- end formvaluegroup--}}
                         <div class="formUnit align-start mt25">
                             <div class="formLabel">Départements</div>
-                            <div style="">
+                            <div>
                                 @foreach($ur->departements as $departement)
                                     <p>
                                         {{$departement->numerodepartement}} - {{$departement->libelle}}

@@ -127,6 +127,7 @@ class PersonneController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit($personne_id, $view_type) {
+
         $personne = Personne::where('id', $personne_id)->first();
         if (!$personne) {
             return redirect('/admin/personnes/'.$view_type)->with('error', "Un problème est survenu lors de la récupération des informations de la personne");

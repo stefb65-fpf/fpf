@@ -30,8 +30,8 @@
             </form>
         </div>
 
-        <div style="width: 100%">
-            <table class="styled-table" style="width: 100%">
+        <div class="w100">
+            <table class="styled-table w100">
                 <thead>
                 <tr>
                     <th>Ordre</th>

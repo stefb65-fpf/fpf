@@ -12,13 +12,13 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Vous pouvez ici ajouter un club
         </div>
-        <form action="{{ route('admin.clubs.store') }}" method="POST" enctype="multipart/form-data" style="width: 100%;">
+        <form action="{{ route('admin.clubs.store') }}" method="POST" enctype="multipart/form-data" class="w100">
             {{ csrf_field() }}
-            <div class="formBlock" style="min-width: 100%">
+            <div class="formBlock minW100" >
                 <div class="formBlockTitle">Club *</div>
                 <div class="formBlockWrapper">
                     <div class="formUnit formUnitAdmin">
@@ -63,35 +63,35 @@
                     </div>
                     <div class="formUnit formUnitAdmin">
                         <div class="formLabel">Téléphone mobile</div>
-                        <div class="inputGroup" style="display: flex; justify-content: flex-start; align-items: flex-start;">
+                        <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicatif" name="indicatifClub">+33</div>
                             <input type="text" name="phoneMobileClub" id="phoneMobileClub" />
                         </div>
                     </div>
                     <div class="formUnit formUnitAdmin">
                         <div class="formLabel">Téléphone fixe</div>
-                        <div class="inputGroup" style="display: flex; justify-content: flex-start; align-items: flex-start;">
+                        <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicatif" name="indicatifClub">+33</div>
                             <input type="text" name="phoneFixeClub" id="phoneFixeClub" />
                         </div>
                     </div>
                     <div class="formUnit formUnitAdmin">
                         <div class="formLabel">Abonnement</div>
-                        <input type="checkbox" name="abonClub" /><span style="margin-left: 10px; color:#003d77">Abonner le club</span>
+                        <input type="checkbox" name="abonClub" /><span class="ml10 blue">Abonner le club</span>
                     </div>
                 </div>
             </div>
-            <div class="formBlock" style="min-width: 100%">
+            <div class="formBlock minW100">
                 <div class="formBlockTitle">Contact</div>
                 <div class="formBlockWrapper">
                     <div class="formUnit formUnitAdmin">
                         <div class="formLabel">Genre *</div>
-                        <div style="display: flex;">
-                            <div style="display: flex; justify-content: flex-start;">
-                                <input type="radio" name="sexeContact" id="sexeContact" value="0" checked /> <span style="margin-left: 5px;">Mr</span>
+                        <div class="d-flex">
+                            <div class="d-flex justify-start">
+                                <input type="radio" name="sexeContact" id="sexeContact" value="0" checked /> <span class="ml5">Mr</span>
                             </div>
-                            <div style="display: flex; justify-content: flex-start; margin-left: 20px">
-                                <input type="radio" name="sexeContact" id="sexeContact" value="1" /> <span style="margin-left: 5px;">Mme</span>
+                            <div class="d-flex justify-start ml20">
+                                <input type="radio" name="sexeContact" id="sexeContact" value="1" /> <span class="ml5">Mme</span>
                             </div>
                         </div>
                     </div>
@@ -133,7 +133,7 @@
                     </div>
                     <div class="formUnit formUnitAdmin">
                         <div class="formLabel">Téléphone mobile *</div>
-                        <div class="inputGroup" style="display: flex; justify-content: flex-start; align-items: flex-start;">
+                        <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicatif" name="indicatifContact">+33</div>
                             <input type="text" name="phoneMobileContact" id="phoneMobileContact" />
                         </div>
@@ -141,14 +141,14 @@
                     </div>
                     <div class="formUnit formUnitAdmin">
                         <div class="formLabel">Téléphone fixe</div>
-                        <div class="inputGroup" style="display: flex; justify-content: flex-start; align-items: flex-start;">
+                        <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicatif" name="indicatifContact">+33</div>
                             <input type="text" name="phoneFixeContact" id="phoneFixeContact" />
                         </div>
                     </div>
                     <div class="formUnit formUnitAdmin">
                         <div class="formLabel">Abonnement</div>
-                        <input type="checkbox" name="abonContact" /><span style="margin-left: 10px; color:#003d77">Abonner le contact</span>
+                        <input type="checkbox" name="abonContact" /><span class="ml10 blue">Abonner le contact</span>
                     </div>
                 </div>
             </div>

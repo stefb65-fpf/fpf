@@ -63,21 +63,21 @@
 
         <div class="identifiant">Adhérent {{ $carte->identifiant }}</div>
         <div>
-            <table style="width: 100%; position: fixed; bottom: 40px; left: 0;">
+            <table class="w100 fixed b40 l0" >
                 <tr>
-                    <td style="width: 33%;">
-                        <div style="height: 30px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center; margin-left: 5px; margin-right: 5px;">
+                    <td class="w33">
+                        <div class="h30 bgLightGrey borderDarkGrey text-center ml5 mr5">
                             {{ in_array(date('m'), ['09', '10', '11', '12']) ? date('y').' - '.(date('y') + 1) : (date('y') - 1).' - '.date('y') }}<br>
-                            <span style="font-size: 8px;">septembre - septembre</span>
+                            <span class="small">septembre - septembre</span>
                         </div>
                     </td>
-                    <td style="width: 33%;">
-                        <div style="height: 30px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center; margin-left: 5px; margin-right: 5px;">
+                    <td class="w33">
+                        <div class="h30 bgLightGrey borderDarkGrey text-center ml5 mr5">
                             &nbsp;
                         </div>
                     </td>
-                    <td style="width: 33%;">
-                        <div style="height: 30px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center; margin-left: 5px; margin-right: 5px;">
+                    <td class="w33">
+                        <div class="h30 bgLightGrey borderDarkGrey text-center ml5 mr5">
                             &nbsp;
                         </div>
                     </td>

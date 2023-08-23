@@ -12,10 +12,10 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <span class="bold">Informations !</span>
             Vous pouvez ici paramétrer les élections FPF qui sont organisées comme suit:
-            <ul style="margin-left: 30px">
+            <ul class="ml30">
                 <li>Une session de votes se déroule sur une période précise et peut comprendre plusieurs élections
                     (approbation rapport moral, élections collège, ...)
                 </li>
@@ -73,10 +73,10 @@
                         <td>{{ ($vote->vote_club == 0) ? 'Non' : 'Vote club' }}</td>
                         <td>{{ $vote->total_votes }}</td>
                         <td>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 <a href="{{ route('votes.edit', $vote) }}" class="adminPrimary btnSmall">Modifier</a>
                             </div>
-                            <div style="margin-bottom: 3px;">
+                            <div class="mb3">
                                 <a href="{{ route('votes.elections.index', $vote) }}" class="adminSuccess btnSmall">Elections liées</a>
                             </div>
                             <div>

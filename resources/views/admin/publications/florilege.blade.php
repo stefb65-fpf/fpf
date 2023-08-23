@@ -10,19 +10,19 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertInfo" style="width: 80% !important">
+        <div class="alertInfo w80">
             <p>
                 <span class="bold">Informations !</span>
                 {{ $nb_exemplaires }} numéro de Florilège commandés et payés
             </p>
         </div>
-        <div id="alertFlorilege" class="alertSuccess d-none mb25" style="width: 80% !important">
-            Le fichier Excel a été généré avec succès. Vous pouvez le <a id="linkAlertFlorilege" style="color: #003d77" target="_blank">télécharger</a>.
+        <div id="alertFlorilege" class="alertSuccess d-none mb25 w80">
+            Le fichier Excel a été généré avec succès. Vous pouvez le <a class="blue" id="linkAlertFlorilege"  target="_blank">télécharger</a>.
         </div>
         <div class="flexEnd">
-            <button class="adminPrimary btnMedium" type="text" id="btnSouscriptionsList">Liste des souscriptions au format Excel</button>
+            <button class="adminPrimary btnMedium mt10" type="text" id="btnSouscriptionsList">Liste des souscriptions au format Excel</button>
         </div>
-        <div style="width: 100%">
+        <div class="w100">
             <table class="styled-table">
                 <thead>
                 <tr>
@@ -39,7 +39,7 @@
                             <td>{{ $souscription->destinataire }}</td>
                             <td>{{ $souscription->reference }}</td>
                             <td>{{ $souscription->nbexemplaires }}</td>
-                            <td style="text-align: right">{{ $souscription->montanttotal }}€</td>
+                            <td class="text-right">{{ $souscription->montanttotal }}€</td>
                             <td>{{ $souscription->created_at->format('d/m/Y H:i') }}</td>
                         </tr>
                     @endforeach

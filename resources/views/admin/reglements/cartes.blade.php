@@ -12,7 +12,7 @@
         </h1>
         @if(sizeof($utilisateurs) > 0)
             <h2>Liste des cartes à éditer</h2>
-            <div style="display: flex; justify-content: flex-end; width: 100%;">
+            <div class="d-flex justify-end w100">
                 <a class="adminPrimary btnSmall" id="editerCartes">Editer les cartes</a>
             </div>
             <table class="styled-table">
@@ -49,9 +49,9 @@
             </div>
         </div>
         <div class="modalEditBody">
-            <div class="alertSuccess"  style="margin: 10px auto 0">
+            <div class="alertSuccess mt10 mxauto mb0">
                 Les cartes ont bien été éditées. Vous pouvez télécharger
-                <ul id="listeCartesEditees" style="margin-left: 30px"></ul>
+                <ul id="listeCartesEditees" class="ml30"></ul>
             </div>
         </div>
         <div class="modalEditFooter">
