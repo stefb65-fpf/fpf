@@ -10,7 +10,7 @@
             <div class="foster">Renseignez ici votre adresse mail de compte FPF. <br> Nous vous enverrons un lien pour réinitialiser votre mot de passe.</div>
 
         </div>
-        <form action="{{ action('App\Http\Controllers\LoginController@sendResetAccountPasswordLink') }}" method="POST"  class="authForm">
+        <form action="{{ action('App\Http\Controllers\LoginController@sendResetAccountPasswordLink') }}" method="POST"  class="authForm align-center">
             {{ csrf_field() }}
             <div class="customField">
                 <label >E-mail</label>

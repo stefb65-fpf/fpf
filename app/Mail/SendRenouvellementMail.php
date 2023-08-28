@@ -36,7 +36,7 @@ class SendRenouvellementMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Renouvellement d\'adhésion FPF',
+            subject: 'FPF // Renouvellement d\'adhésion FPF',
         );
     }
 

@@ -1,8 +1,8 @@
 <div class="authForm mt20 w540 mt10" id="authForm">
-    <div class="customField2 w100 minW100 pr20">
-        <div class="groupCustom w250 mxauto mt10">
+    <div class="customField2 w100 minW100  pr20">
+        <div class="groupCustom mxauto maxW100 w100 mt10 d-flex">
             <label>Genre</label>
-            <div class="d-flex justify-center">
+            <div class="d-flex justify-center w100 text-center">
                 <div class="d-flex justify-start">
                     <input class="w20px h20 pointer" type="radio" name="sexe" id="sexeRegister" value="0" checked/>
                     <span class="ml5">Mr</span>
@@ -16,12 +16,12 @@
             </div>
         </div>
         <div class="doubleInput">
-            <div class="customField">
+            <div class="customField w100 maxW100 m0">
                 <label>Nom</label>
                 <input type="text" name="name" id="lastnameRegister"/>
                 <div name="error" class="error"></div>
             </div>
-            <div class="customField">
+            <div class="customField w100 maxW100 m0">
                 <label>Prénom</label>
                 <input type="text" name="firstName" id="firstnameRegister"/>
                 <div name="error" class="error"></div>
@@ -29,12 +29,12 @@
         </div>
         <div class="separator"></div>
         <div class="doubleInput">
-            <div class="customField">
+            <div class="customField w100 maxW100 m0">
                 <label>E-mail</label>
                 <input type="email" name="email" id="emailRegister"/>
                 <div name="error" class="error"></div>
             </div>
-            <div class="customField">
+            <div class="customField w100 maxW100 m0">
                 <label>Mot de passe *</label>
                 <div class="group">
                     <input type="password" name="password" id="passwordRegister"/>

@@ -32,7 +32,7 @@ class SendSupportNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Enregistrement de votre demande de support',
+            subject: 'FPF // Enregistrement de votre demande de support',
         );
     }
 

@@ -67,6 +67,26 @@
         padding: 20px 0;">
         @yield('content')
     </div>
+    <div style="display: flex; align-items: center">
+        <div style="margin-right: 20px; height: 82px;">
+            <img src="{{ env('APP_URL').'storage/app/public/logo-fpf-mail.jpg' }}" style="object-fit: contain;height: 100%"  alt="logo FPF">
+        </div>
+        <div>
+<div style="font-weight: bold; font-size: 16px;margin-bottom: 15px">Fédération Photographique de France</div>
+            <div style="margin-bottom: 10px">La passion des images partagées</div>
+            <div style="margin-bottom: 10px">5, rue Jules Vallès · 75011 Paris</div>
+            <div style="display: flex; color: grey">
+                <span style="padding-right:5px">Mob. :</span>
+                <a style="color: inherit; text-decoration: underline;cursor: pointer" href="tel:+33143713040"> +33 (0) 1 43 71 30 40</a>
+                <span style="padding:0 5px;"> . </span>
+                <a style="color: inherit; text-decoration: underline;cursor: pointer" href="mailto:fpf@federation-photo.fr"> fpf@federation-photo.fr </a>
+                <span style="padding:0 5px;"> . </span>
+                <a style="color: inherit; text-decoration: underline;cursor: pointer" href="https://federation-photo.fr"> www.federation-photo.fr </a>
+            </div>
+
+        </div>
+    </div>
+
     @include('layouts.footerEmail')
 
 </main>

@@ -29,7 +29,7 @@ class SendEmailReinitPassword extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Demande de réinitialisation de mot de passe',
+            subject: 'FPF // Demande de réinitialisation de mot de passe',
         );
     }
 

@@ -28,7 +28,7 @@ class SendModificationEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nouvelle modification depuis votre compte FPF',
+            subject: 'FPF // Nouvelle modification depuis votre compte FPF',
         );
     }
 

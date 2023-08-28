@@ -29,7 +29,7 @@ class ValidationReglement extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Validation de votre règlement FPF',
+            subject: 'FPF // Validation de votre règlement FPF',
         );
     }
 

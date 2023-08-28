@@ -10,7 +10,7 @@
         <div class="fosterRegister light">
             <div class="foster">Enregistrez votre nouveau mot de passe</div>
         </div>
-        <form action="{{ route('resetPassword', $personne) }}" method="POST" class="authForm">
+        <form action="{{ route('resetPassword', $personne) }}" method="POST" class="authForm align-center">
             <input type="hidden" name="_method" value="put">
             {{ csrf_field() }}
             <div class="customField">

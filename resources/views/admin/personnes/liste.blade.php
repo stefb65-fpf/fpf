@@ -4,7 +4,10 @@
         <h1 class="pageTitle">
             @switch($view_type)
                 @case('ur_adherents')
-                    Espace de gestion des adhérents pour l'UR {{$ur->nom}}
+                <div>
+                    Gestion Union Régionale - Adhérents
+                    <div class="urTitle">{{ $ur->nom }}</div>
+                </div>
                     <div class="currentUr d-none" id="currentUr">{{$ur->id}}</div>
                     <a class="previousPage" title="Retour page précédente" href="{{ route('urs.gestion') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
@@ -35,7 +38,7 @@
                     @endif
                 @break
                 @default
-                    Espace de gestion des {{$view_type}} pour la FPF
+                Gestion Fédérale -  {{$view_type}}
                     <a class="previousPage" title="Retour page précédente" href="{{ route('personnes.index') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                              class="bi bi-reply-fill" viewBox="0 0 16 16">

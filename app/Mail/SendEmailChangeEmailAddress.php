@@ -28,7 +28,7 @@ class SendEmailChangeEmailAddress extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Demande de modification de votre adresse email'
+            subject: 'FPF // Demande de modification de votre adresse email'
         );
     }
 

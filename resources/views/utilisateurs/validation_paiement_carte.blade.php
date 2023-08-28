@@ -11,13 +11,13 @@
                 Un mail de confirmation vous a été envoyé.
             </div>
             <div class="mt30">
-                <a class="customBtn" href="/login">Connectez-vous !</a>
+                <a class="customBtn mxauto" href="/login">Connectez-vous !</a>
             </div>
         @else
             <div class="alertDanger w80">
                 <span class="bold">Informations !</span>
                 Votre paiement par carte bancaire n'a pas été accepté.<br>
-                Vous pouvez renouveler votre demande et choisir un autre moyend e paiement.
+                Vous pouvez renouveler votre demande et choisir un autre moyen de paiement.
             </div>
         @endif
     </div>

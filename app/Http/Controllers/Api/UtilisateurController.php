@@ -208,7 +208,7 @@ class UtilisateurController extends Controller
         }
         $personne = Personne::create($datap);
 
-        $this->insertWpUser($request->prenom, $request->nom, $trim($request->email), $request->password);
+        $this->insertWpUser($request->prenom, $request->nom, trim($request->email), $request->password);
 
         // on enregistre l'adresse
         $pays = Pays::where('id', $request->pays)->first();

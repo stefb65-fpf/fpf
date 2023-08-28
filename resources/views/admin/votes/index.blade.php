@@ -3,7 +3,7 @@
 @section('content')
     <div class="pageCanva">
         <h1 class="pageTitle">
-            Espace de gestion des votes pour la FPF
+            Gestion Fédérale - Votes
             <a class="previousPage" title="Retour page précédente" href="{{ route('admin') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                      class="bi bi-reply-fill" viewBox="0 0 16 16">

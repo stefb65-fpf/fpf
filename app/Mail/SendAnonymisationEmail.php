@@ -27,7 +27,7 @@ class SendAnonymisationEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Anonymisation de vos données personnelles',
+            subject: 'FPF // Anonymisation de vos données personnelles',
         );
     }
 

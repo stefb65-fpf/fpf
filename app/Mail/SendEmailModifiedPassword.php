@@ -27,7 +27,7 @@ class SendEmailModifiedPassword extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirmation de modification de mot de passe'
+            subject: 'FPF // Confirmation de modification de mot de passe'
         );
     }
 

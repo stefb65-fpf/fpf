@@ -32,7 +32,7 @@ class SendInvoice extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Facture émise par la FPF',
+            subject: 'FPF // Facture émise par la FPF',
         );
     }
 
