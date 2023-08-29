@@ -23,7 +23,7 @@
                 <div class="formBlockWrapper">
                     <div class="formUnit formUnitAdmin">
                         <div class="formLabel">Identifiant adhérent</div>
-                        <input class="formValue formValueAdmin" type="text" name="identifiant" maxlength="12"/>
+                        <input class="formValue modifying formValueAdmin" type="text" name="identifiant" maxlength="12"/>
                     </div>
                     <button type="submit" class="formBtn success btnSmall">Ajouter</button>
                 </div>

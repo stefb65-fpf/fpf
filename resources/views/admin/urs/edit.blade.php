@@ -17,66 +17,66 @@
             Vous pouvez ici paramétrer les informations de l'UR:
         </div>
         <div class="formBlock">
-            <div class="formBlockTitle">Informations d'Ur</div>
+            <div class="formBlockTitle">Informations d'union régionale</div>
             <div class="formBlockWrapper">
-                <h2 class="formSubtitle">Généralités</h2>
-                <form action="{{route('urs.update', $ur)}}" method="POST">
+                <h2 class="formSubtitle w100">Généralités</h2>
+                <form class="w100" action="{{route('urs.update', $ur)}}" method="POST">
                     <input type="hidden" name="_method" value="PUT">
                     {{ csrf_field() }}
-                    <div class="formBlockWrapper inline">
-                        <div class="formUnit">
+                    <div class="formBlockWrapper">
+                        <div class="formUnit w100">
                             <div class="formLabel">Nom</div>
-                            <input name="nom" class="formValue modifying"
+                            <input name="nom" class="formValue modifying w70"
                                    type="text" value="{{$ur->nom?$ur->nom:""}}"
                                    maxlength="120" required>
                         </div>
-                        <div class="formUnit">
+                        <div class="formUnit w100">
                             <div class="formLabel">Courriel</div>
-                            <input name="courriel" class="formValue modifying"
+                            <input name="courriel" class="formValue modifying w70"
                                    type="email" value="{{$ur->courriel?$ur->courriel:""}}"
                                    maxlength="120">
                         </div>
-                        <div class="formUnit">
+                        <div class="formUnit w100">
                             <div class="formLabel">Site web</div>
-                            <input name="web" class="formValue modifying"
+                            <input name="web" class="formValue modifying w70"
                                    type="text" value="{{$ur->web?$ur->web:""}}"
                                    maxlength="120">
                         </div>
                     </div>
                     <h2 class="formSubtitle">Adresse</h2>
-                    <div class="formBlockWrapper inline">
-                        <div class="formValueGroup inline">
-                            <div class="formUnit">
-                                <div class="formLabel">Rue</div>
-                                <input name="libelle1" type="text" class="formValue modifying"
+                    <div class="formBlockWrapper">
+                        <div class="formValueGroup">
+                            <div class="formUnit w100">
+                                <div class="formLabel">Adresse</div>
+                                <input name="libelle1" type="text" class="formValue modifying w70"
                                        value="{{$ur->adresse?$ur->adresse->libelle1:""}}"
                                        maxlength="120"/>
                             </div>
-                            <div class="formUnit">
-                                <div class="formLabel"></div>
-                                <input name="libelle2" class="formValue modifying"
+                            <div class="formUnit w100">
+                                <div class="formLabel">Complément</div>
+                                <input name="libelle2" class="formValue modifying w70"
                                        type="text" value="{{$ur->adresse?$ur->adresse->libelle2:""}}"
                                         maxlength="120"/>
                             </div>
-                            <div class="formUnit">
+                            <div class="formUnit w100">
                                 <div class="formLabel">Code Postal</div>
                                 <div class="suggestionWrapper">
                                     <input name="codepostal" type="text" class="formValue modifying"
                                            value="{{$ur->adresse?$ur->adresse->codepostal:""}}"
-                                            maxlength="120" required/>
+                                            maxlength="10" required/>
                                     <div class="suggestion"></div>
                                 </div>
                             </div>
-                            <div class="formUnit">
+                            <div class="formUnit w100">
                                 <div class="formLabel">Ville</div>
                                 <div class="suggestionWrapper">
-                                    <input name="ville" type="text" class="formValue modifying"
+                                    <input name="ville" type="text" class="formValue modifying w70"
                                            value="{{$ur->adresse?$ur->adresse->ville:""}}"
                                             maxlength="50" required/>
                                     <div class="suggestion"></div>
                                 </div>
                             </div>
-                            <div class="formUnit">
+                            <div class="formUnit w100">
                                 <div class="formLabel">Pays</div>
                                 <select class="formValue pays modifying" name="pays" required>
                                     <option value="">Selectionnez un pays</option>
@@ -91,23 +91,23 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="formUnit">
+                            <div class="formUnit w100">
                                 <div class="formLabel">Téléphone fixe</div>
                                 <div class="group">
                                     <div
                                         class="indicator {{$ur->adresse && $ur->adresse->indicatif_fixe!==""?"":"d-none"}}">
                                         +{{$ur->adresse?$ur->adresse->indicatif_fixe:""}}</div>
                                     <input class="formValue phoneInput modifying" type="text"
-                                           value="{{$ur->adresse?$ur->adresse->telephonedomicile:""}}" name="telephonedomicile"/>
+                                           value="{{$ur->adresse?$ur->adresse->telephonedomicile:""}}" name="telephonedomicile" maxlength="25"/>
                                 </div>
                             </div>
-                            <div class="formUnit">
+                            <div class="formUnit w100">
                                 <div class="formLabel">Téléphone mobile</div>
                                 <div class="group">
                                     {{--                                                        <div class="indicator {{$ur->adresse && $ur->adresse->indicatif_mobile!==""?"":"d-none"}}">+{{$ur->adresse?$ur->adresse->indicatif_mobile:""}}</div>--}}
                                     <input class="formValue phoneInput modifying" type="text"
                                            value="{{$ur->adresse?$ur->adresse->telephonemobile:""}}"
-                                        name="telephonemobile"/>
+                                        name="telephonemobile" maxlength="25"/>
                                 </div>
                             </div>
 

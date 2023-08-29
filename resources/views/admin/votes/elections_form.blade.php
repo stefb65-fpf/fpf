@@ -10,18 +10,18 @@
             <div class="formBlockWrapper">
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Nom</div>
-                    <input class="formValue formValueAdmin w75" type="text" value="{{ old('nom', $election->nom) }}" name="nom"/>
+                    <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('nom', $election->nom) }}" name="nom"/>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Type d'élection'</div>
-                    <select class="formValue formValueAdmin" name="type" id="typeElection">
+                    <select class="formValue modifying formValueAdmin" name="type" id="typeElection">
                         <option value="1" {{ $election->type === 1 ? 'selected=selected' : '' }}>Adoption d'une motion</option>
                         <option value="2" {{ $election->type === 2 ? 'selected=selected' : '' }}>&Eacute;lection de candidats</option>
                     </select>
                 </div>
                 <div class="formUnit formUnitAdmin" id="nbPostesElection" style="{{ $action === 'update' && $election->type === 2 ? '' : 'display: none' }}">
                     <div class="formLabel">Nombre de postes</div>
-                    <input class="formValue formValueAdmin" type="number" min="0" value="{{ old('nb_postes', $election->nb_postes) }}" name="nb_postes"/>
+                    <input class="formValue modifying formValueAdmin" type="number" min="0" value="{{ old('nb_postes', $election->nb_postes) }}" name="nb_postes"/>
                 </div>
                 <div class="formUnit formUnitAdmin" id="nbPostesElection">
                     <div class="formLabel">Description</div>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Ordre d'apparition</div>
-                    <input class="formValue formValueAdmin" type="number" min="0" value="{{ old('ordre', $election->ordre) }}" name="ordre"/>
+                    <input class="formValue modifying formValueAdmin" type="number" min="0" value="{{ old('ordre', $election->ordre) }}" name="ordre"/>
                 </div>
             </div>
             <div class="mt25">

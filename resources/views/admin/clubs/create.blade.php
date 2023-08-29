@@ -23,11 +23,11 @@
                 <div class="formBlockWrapper">
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Nom du club *</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="nomClub" />
+                        <input class="formValue modifying modiformValueAdmin w75" type="text" value="" name="nomClub" />
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">UR *</div>
-                        <select class="formValue formValueAdmin" name="urClub">
+                        <select class="formValue modifying formValueAdmin" name="urClub">
                             @foreach($urs as $ur)
                                 <option value="{{$ur->id}}">{{$ur->nom}}</option>
                             @endforeach
@@ -35,23 +35,23 @@
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Adresse</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="libelle1Club"/>
+                        <input class="formValue modifying formValueAdmin w75 " type="text" value="" name="libelle1Club"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
-                        <div class="formLabel">&nbsp;</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="libelle2Club"/>
+                        <div class="formLabel">Complément</div>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="libelle2Club"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Code postal *</div>
-                        <input class="formValue formValueAdmin" type="text" value="" name="codepostalClub"/>
+                        <input class="formValue modifying formValueAdmin" type="text" value="" name="codepostalClub" maxlength="10"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Commune *</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="villeClub"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="villeClub"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Pays</div>
-                        <select class="formValue formValueAdmin" name="paysClub" id="paysClub">
+                        <select class="formValue modifying formValueAdmin" name="paysClub" id="paysClub">
                             @foreach($countries as $country)
                                 <option value="{{ $country->id }}" data-indicatif="{{ $country->indicatif }}" {{ $country->id == 78 ? 'selected' : '' }}>{{ $country->nom }}</option>
                             @endforeach
@@ -59,20 +59,20 @@
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Adresse email *</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="emailClub"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="emailClub"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Téléphone mobile</div>
                         <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicatif" name="indicatifClub">+33</div>
-                            <input type="text" name="phoneMobileClub" id="phoneMobileClub" />
+                            <input type="text" name="phoneMobileClub" id="phoneMobileClub" maxlength="25" class="formValue modifying"/>
                         </div>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Téléphone fixe</div>
                         <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicatif" name="indicatifClub">+33</div>
-                            <input type="text" name="phoneFixeClub" id="phoneFixeClub" />
+                            <input type="text" name="phoneFixeClub" id="phoneFixeClub" maxlength="25" class="formValue modifying"/>
                         </div>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
@@ -97,31 +97,31 @@
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Nom *</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="nomContact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="nomContact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Prénom *</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="prenomContact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="prenomContact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Adresse</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="libelle1Contact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="libelle1Contact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">&nbsp;</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="libelle2Contact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="libelle2Contact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Code postal *</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="codepostalContact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="codepostalContact" maxlength="10"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Commune *</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="villeContact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="villeContact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Pays</div>
-                        <select class="formValue formValueAdmin" name="paysContact" id="paysContact">
+                        <select class="formValue modifying formValueAdmin" name="paysContact" id="paysContact">
                             @foreach($countries as $country)
                                 <option value="{{ $country->id }}" data-indicatif="{{ $country->indicatif }}" {{ $country->id == 78 ? 'selected' : '' }}>{{ $country->nom }}</option>
                             @endforeach
@@ -129,13 +129,13 @@
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Adresse email *</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="" name="emailContact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="emailContact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Téléphone mobile *</div>
                         <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicatif" name="indicatifContact">+33</div>
-                            <input type="text" name="phoneMobileContact" id="phoneMobileContact" />
+                            <input type="text" name="phoneMobileContact" id="phoneMobileContact" class="formValue modifying" maxlength="25"/>
                         </div>
 
                     </div>
@@ -143,7 +143,7 @@
                         <div class="formLabel">Téléphone fixe</div>
                         <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicatif" name="indicatifContact">+33</div>
-                            <input type="text" name="phoneFixeContact" id="phoneFixeContact" />
+                            <input type="text" name="phoneFixeContact" id="phoneFixeContact" maxlength="25" class="formValue modifying"/>
                         </div>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">

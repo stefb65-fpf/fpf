@@ -50,7 +50,7 @@
             </div>
         </div>
         <div class="modalEditBody">
-            <div class="alertDanger  mt10 mxauto mb0">
+            <div class="alertDanger mt10 mxauto mb0">
                 Il existe dans la base plusieurs personne avec les mêmes nom et prénom que la personne que vous souhaitez ajouter.<br>
                 Toutefois, les adresses email sont différentes.<br>
                 Vous trouverez ci-dessous la liste des personnes correspondantes. Si l'adhérent que vous souhaitez ajouter est bien l'une de ces personnes, cliquez sur le nom de cette personne.<br>

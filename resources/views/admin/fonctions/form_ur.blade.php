@@ -7,13 +7,13 @@
             <form method="POST" action="{{ route('fonctions.store_ur') }}">
     @endif
         {{ csrf_field() }}
-            <div class="formBlockWrapper inline">
-                <div class="formUnit">
-                    <div class="formLabel w300">* Libellé de la fonction</div>
-                    <input value="{{ $fonction->libelle }}" class="inputFormAction w300" type="text" placeholder="Libellé de la fonction à ajouter / modifier" name="libelle"/>
+            <div class="formBlockWrapper">
+                <div class="formUnit w100">
+                    <div class="formLabel">* Libellé de la fonction</div>
+                    <input value="{{ $fonction->libelle }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Libellé de la fonction à ajouter / modifier" name="libelle"/>
                 </div>
             </div>
-            <div class="d-flex justify-center">
+            <div class="d-flex justify-start">
                 <button class="adminSuccess btnMedium">
                     @if($action == 'update')
                         Modifier la fonction

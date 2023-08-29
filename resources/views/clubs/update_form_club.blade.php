@@ -1,10 +1,10 @@
 <div class="formBlock">
     <div class="formBlockTitle">Généralités</div>
     <div class="formBlockWrapper">
-        <form action="{{ route($pathPrefixName.'updateGeneralite', $club) }}" method="POST" id="generaliteForm" enctype="multipart/form-data">
+        <form class="w100" action="{{ route($pathPrefixName.'updateGeneralite', $club) }}" method="POST" id="generaliteForm" enctype="multipart/form-data">
             <input type="hidden" name="_method" value="put">
             {{ csrf_field() }}
-            <div class="formBlockWrapper">
+            <div class="formBlockWrapper m0 p0">
                 <div class="formLine center d-flex flex-column">
                     <label class="d-flex flex-column" for="file" style="cursor:pointer">
                         <img class="clubLogo"
@@ -17,46 +17,46 @@
                 </div>
             </div>
             {{--                @endif--}}
-            <div class="formBlockWrapper inline">
-                <div class="formUnit">
+            <div class="formBlockWrapper m0 p0">
+                <div class="formUnit w100">
                     <div class="formLabel">Nom</div>
-                    <input class="formValue capitalize" type="text" value="{{$club->nom?:""}}" disabled="true"
+                    <input class="formValue capitalize w75" type="text" value="{{$club->nom?:""}}" disabled="true"
                            name="nom" maxlength="40" minlength="2" type="text"/>
                 </div>
-                <div class="formUnit">
+                <div class="formUnit w100">
                     <div class="formLabel">Courriel</div>
-                    <input class="formValue" type="email" value="{{$club->courriel?:""}}" disabled="true"
+                    <input class="formValue w75" type="email" value="{{$club->courriel?:""}}" disabled="true"
                            name="courriel" maxlength="250" minlength="2" type="email"/>
                 </div>
-                <div class="formUnit">
+                <div class="formUnit w100">
                     <div class="formLabel">Site web</div>
-                    <input class="formValue" type="text" value="{{$club->web?:""}}"
+                    <input class="formValue w75" type="text" value="{{$club->web?:""}}"
                            disabled="true" name="web" minlength="4"/>
                 </div>
-                <div class="formUnit">
-                    <div class="formLabel">Statut</div>
+                <div class="formUnit w100">
+                    <div class="formLabel mr25">Statut</div>
                     @switch($club->statut)
                         @case(0)
                         <div class="d-flex">
-                            <div class="sticker orange"></div>
+                            <div class="sticker orange ml0"></div>
                             <div>Non renouvelé</div>
                         </div>
                         @break
                         @case(1)
                         <div class="d-flex">
-                            <div class="sticker yellow"></div>
+                            <div class="sticker yellow ml0"></div>
                             <div>Préinscrit</div>
                         </div>
                         @break
                         @case(2)
                         <div class="d-flex">
-                            <div class="sticker green"></div>
+                            <div class="sticker green ml0"></div>
                             <div>Validé</div>
                         </div>
                         @break
                         @case(3)
                         <div class="d-flex">
-                            <div class="sticker"></div>
+                            <div class="sticker ml0"></div>
                             <div>Désactivé</div>
                         </div>
                         @break
@@ -64,8 +64,8 @@
                         <div>Non renseigné</div>
                     @endswitch
                 </div>
-                <div class="formUnit mr25">
-                    <div class="formLabel">Nombre d'adhérents</div>
+                <div class="formUnit w100 ">
+                    <div class="formLabel mr25">Nombre d'adhérents</div>
                     <div>{{$club->nbadherents?:""}}</div>
                 </div>
             </div>
@@ -82,28 +82,28 @@
 <div class="formBlock">
     <div class="formBlockTitle">Coordonnées</div>
     <div class="formBlockWrapper">
-        <form action="{{route($pathPrefixName.'updateClubAddress', $club)}}" method="POST" id="adresseForm">
+        <form class="w100" action="{{route($pathPrefixName.'updateClubAddress', $club)}}" method="POST" id="adresseForm">
             <input type="hidden" name="_method" value="put">
             {{ csrf_field() }}
-            <div class="formBlockWrapper inline">
+            <div class="formBlockWrapper m0 p0">
                 @if(!$club->adresse)
                     <div class="addAddress" name="addAddress">Vous voulez rajouter une adresse ?</div>
                 @endif
-                <div class="formValueGroup inline{{ !$club->adresse ?" hideForm":""}}">
+                <div class="formValueGroup align-start{{ !$club->adresse ?" hideForm":""}}">
 
-                    <div class="formUnit">
-                        <div class="formLabel">Rue</div>
-                        <input name="libelle1" type="text" class="formValue "
+                    <div class="formUnit w100">
+                        <div class="formLabel">Adresse</div>
+                        <input name="libelle1" type="text" class="formValue w75"
                                value="{{$club->adresse?$club->adresse->libelle1:""}}"
                                disabled="true" maxlength="120"/>
                     </div>
-                    <div class="formUnit">
-                        <div class="formLabel"></div>
-                        <input name="libelle2" class="formValue "
+                    <div class="formUnit w100">
+                        <div class="formLabel">Complément</div>
+                        <input name="libelle2" class="formValue w75"
                                type="text" value="{{$club->adresse?$club->adresse->libelle2:""}}"
                                disabled="true" maxlength="120"/>
                     </div>
-                    <div class="formUnit">
+                    <div class="formUnit w100">
                         <div class="formLabel">Code Postal</div>
                         <div class="suggestionWrapper">
                             <input name="codepostal" type="text" class="formValue"
@@ -112,10 +112,10 @@
                             <div class="suggestion"></div>
                         </div>
                     </div>
-                    <div class="formUnit">
+                    <div class="formUnit w100">
                         <div class="formLabel">Ville</div>
                         <div class="suggestionWrapper">
-                            <input name="ville" type="text" class="formValue"
+                            <input name="ville" type="text" class="formValue w75"
                                    value="{{$club->adresse?$club->adresse->ville:""}}"
                                    disabled="true" maxlength="50" required/>
                             <div class="suggestion"></div>
@@ -144,7 +144,7 @@
                                 +{{$club->adresse?$club->adresse->indicatif_fixe:""}}</div>
                             <input class="formValue phoneInput" type="text"
                                    value="{{$club->adresse?$club->adresse->telephonedomicile:""}}"
-                                   disabled="true" name="telephonedomicile"/>
+                                   disabled="true" name="telephonedomicile" maxlength="25"/>
                         </div>
                     </div>
                     <div class="formUnit">
@@ -153,7 +153,7 @@
                             {{--                                                        <div class="indicator {{$club->adresse && $club->adresse->indicatif_mobile!==""?"":"d-none"}}">+{{$club->adresse?$club->adresse->indicatif_mobile:""}}</div>--}}
                             <input class="formValue phoneInput" type="text"
                                    value="{{$club->adresse?$club->adresse->telephonemobile:""}}"
-                                   disabled="true" name="telephonemobile"/>
+                                   disabled="true" name="telephonemobile" maxlength="25"/>
                         </div>
                     </div>
                 </div> {{-- end formvaluegroup--}}
@@ -167,7 +167,7 @@
 </div>
 <div class="formBlock">
     <div class="formBlockTitle">Abonnement</div>
-    <div class="formBlockWrapper inline">
+    <div class="formBlockWrapper">
         <div class="formUnit mr25">
             <div class="formLabel">État de l'abonnement :</div>
             @if($club->is_abonne)
@@ -188,23 +188,23 @@
 <div class="formBlock">
     <div class="formBlockTitle">Réunions</div>
     <div class="formBlockWrapper">
-        <form action="{{route($pathPrefixName .'updateReunion', $club)}}" method="POST" id="reunionForm">
+        <form class="w100" action="{{route($pathPrefixName .'updateReunion', $club)}}" method="POST" id="reunionForm">
             <input type="hidden" name="_method" value="put">
             {{ csrf_field() }}
-            <div class="formBlockWrapper inline">
-                <div class="formUnit mr25">
+            <div class="formBlockWrapper">
+                <div class="formUnit mr25 w100">
                     <div class="formLabel">Réunions</div>
-                    <input class="formValue" value="{{$club->reunions?:""}}"
+                    <input class="formValue w70" value="{{$club->reunions?:""}}"
                            disabled="true" name="reunions"/>
                 </div>
-                <div class="formUnit mr25">
+                <div class="formUnit mr25 w100">
                     <div class="formLabel">Fréquence des réunions</div>
-                    <input class="formValue" value="{{$club->frequencereunions?:""}}"
+                    <input class="formValue w70" value="{{$club->frequencereunions?:""}}"
                            disabled="true" name="frequencereunions"/>
                 </div>
-                <div class="formUnit mr25">
+                <div class="formUnit mr25 w100">
                     <div class="formLabel">Horaires des réunions</div>
-                    <input class="formValue" value="{{$club->horairesreunions?:""}}"
+                    <input class="formValue w70" value="{{$club->horairesreunions?:""}}"
                            disabled="true" name="horairesreunions"/>
                 </div>
             </div>

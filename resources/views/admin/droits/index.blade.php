@@ -61,7 +61,7 @@
                         <form action="{{ route('droits.store') }}"  class="columnDroitAction" method="POST">
                             {{ csrf_field() }}
                             <div>
-                                <select name="fonction" class="selectFormAction">
+                                <select name="fonction" class="selectFormAction formValue modifying">
                                     <option value="-1">-- Fonction à choisir --</option>
                                     @if(in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])))
                                         @foreach($fonctions_urs as $fonction)
@@ -74,7 +74,7 @@
                                     @endif
 
                                 </select>
-                                <input type="text" name="utilisateur" value="" placeholder="identifiant utilisateur" class="inputFormAction" maxlength="12">
+                                <input type="text" name="utilisateur" value="" placeholder="identifiant utilisateur" class="inputFormAction  formValue modifying" maxlength="12">
                                 <input type="hidden" name="droit" value="{{ $droit->id }}">
                             </div>
 

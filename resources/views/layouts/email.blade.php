@@ -84,7 +84,7 @@
             <div style="margin-bottom: 5px">
                 5, rue Jules Vallès · 75011 Paris
             </div>
-            <div style="display: flex; color: grey">
+            <div style="display: block; color: grey">
                 <span style="padding-right:5px">Mob. :</span>
                 <a style="color: inherit; text-decoration: underline;cursor: pointer" href="tel:+33143713040">+33 (0) 1 43 71 30 40</a>
                 <span style="padding:0 5px;"> . </span>

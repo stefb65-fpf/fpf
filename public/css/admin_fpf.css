@@ -116,20 +116,37 @@
     width: 90%;
 }
 .formValueAdmin {
-    background-color: white !important;
-    border-bottom: 1px solid grey !important;
-    min-width: 250px;
+    /*background-color: white !important;*/
+    /*border-bottom: 1px solid grey !important;*/
+    /*min-width: 250px;*/
 }
 .w75 {
     width: 75%;
 }
 .indicatif {
-    padding: 1px 8px;
-    font-size: 0.9rem;
-    border: none;
-    background: grey;
-    color: white;
-    width: max-content;
+    /*padding: 1px 8px;*/
+    /*font-size: 0.9rem;*/
+    /*border: none;*/
+    /*background: grey;*/
+    /*color: white;*/
+    /*width: max-content;*/
+    color: #003d77;
+    background-color: #cce3f9;
+    padding: 05px;
+    border-radius: 5px 0 0 5px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    z-index: 0;
+    right: -3px;
+    position: relative;
+    /* top: 1px; */
+    border: 1px solid #b3b3b3;
+    border-right: none;
+    padding-right: 8px;
+
 }
 /*.modalEdit {*/
 /*    left: 50%;*/

@@ -18,10 +18,10 @@
             <div class="formBlockTitle">Gestion de fonctions régionales</div>
             <form class="w100" action="{{ route('urs.fonctions.update', $fonction) }}" method="POST">
                 {{ csrf_field() }}
-                <div class="formBlockWrapper inline">
-                    <div class="formUnit">
-                        <div class="formLabel w300">Identifiant adhérent</div>
-                        <input value="" class="inputFormAction p5 w300" type="text" placeholder="Identifiant adhérent" name="identifiant" maxlength="12"/>
+                <div class="formBlockWrapper">
+                    <div class="formUnit w100">
+                        <div class="formLabel">Identifiant adhérent</div>
+                        <input value="" class="inputFormAction p5 formValue modifying w75" type="text" placeholder="Identifiant adhérent" name="identifiant" maxlength="12"/>
                     </div>
                 </div>
                 <div class="d-flex justify-center">

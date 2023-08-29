@@ -22,16 +22,16 @@
             </div>
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Prénom *</div>
-                <input class="formValue formValueAdmin w75" type="text" value="{{ old('prenom', $personne->prenom) }}" name="prenom" />
+                <input class="formValue formValueAdmin w75 modifying" type="text" value="{{ old('prenom', $personne->prenom) }}" name="prenom" />
             </div>
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Nom *</div>
-                <input class="formValue formValueAdmin w75" type="text" value="{{ old('nom', $personne->nom) }}" name="nom" />
+                <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('nom', $personne->nom) }}" name="nom" />
             </div>
             @if($view_type == 'adherents')
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Date de naissance</div>
-                    <input class="formValue formValueAdmin w75" type="date" value="{{ old('datenaissance', $personne->datenaissance) }}" name="datenaissance"/>
+                    <input class="formValue modifying formValueAdmin w75" type="date" value="{{ old('datenaissance', $personne->datenaissance) }}" name="datenaissance"/>
                 </div>
             @endif
         </div>
@@ -42,23 +42,23 @@
             <div class="formBlockWrapper">
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Adresse</div>
-                    <input class="formValue formValueAdmin w75" type="text" value="{{ old('libelle1', $personne->adresses[0]->libelle1) }}" name="libelle1" />
+                    <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('libelle1', $personne->adresses[0]->libelle1) }}" name="libelle1" />
                 </div>
                 <div class="formUnit formUnitAdmin">
-                    <div class="formLabel"></div>
-                    <input class="formValue formValueAdmin w75" type="text" value="{{ old('libelle2', $personne->adresses[0]->libelle2) }}" name="libelle2"/>
+                    <div class="formLabel">Complément</div>
+                    <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('libelle2', $personne->adresses[0]->libelle2) }}" name="libelle2"/>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Code postal *</div>
-                    <input class="formValue formValueAdmin" type="text" value="{{ old('codepostal', $personne->adresses[0]->codepostal) }}" name="codepostal"/>
+                    <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostal', $personne->adresses[0]->codepostal) }}" name="codepostal" maxlength="10"/>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Commune *</div>
-                    <input class="formValue formValueAdmin w75" type="text" value="{{ old('ville', $personne->adresses[0]->ville) }}" name="ville"/>
+                    <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('ville', $personne->adresses[0]->ville) }}" name="ville"/>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Pays</div>
-                    <select class="formValue formValueAdmin" name="pays" id="paysPersonne">
+                    <select class="formValue modifying formValueAdmin" name="pays" id="paysPersonne">
                         @foreach($countries as $country)
                             <option value="{{ $country->id }}" data-indicatif="{{ $country->indicatif }}" {{ $country->nom == $personne->adresses[0]->pays ? 'selected' : '' }}>{{ $country->nom }}</option>
                         @endforeach
@@ -68,7 +68,7 @@
                     <div class="formLabel">Téléphone fixe</div>
                     <div class="inputGroup d-flex justify-start align-start">
                         <div class="indicatif" name="indicatifDomicile" id="indicatifDomicile">+{{ $personne->adresses[0]->indicatif }}</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="{{ old('telephonedomicile', $personne->adresses[0]->telephonedomicile) }}" name="telephonedomicile"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('telephonedomicile', $personne->adresses[0]->telephonedomicile) }}" name="telephonedomicile"  maxlength="25"/>
                     </div>
                 </div>
             </div>
@@ -79,23 +79,23 @@
                 <div class="formTitle text-left borderTopBlue pt10">Adresse de livraison</div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Adresse</div>
-                    <input class="formValue formValueAdmin w75" type="text" value="{{ old('libelle1Livraison', $personne->adresses[1]->libelle1) }}" name="libelle1Livraison" />
+                    <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('libelle1Livraison', $personne->adresses[1]->libelle1) }}" name="libelle1Livraison" />
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel"></div>
-                    <input class="formValue formValueAdmin w75" type="text" value="{{ old('libelle2Livraison', $personne->adresses[1]->libelle2) }}" name="libelle2Livraison"/>
+                    <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('libelle2Livraison', $personne->adresses[1]->libelle2) }}" name="libelle2Livraison"/>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Code postal *</div>
-                    <input class="formValue formValueAdmin" type="text" value="{{ old('codepostalLivraison', $personne->adresses[1]->codepostal) }}" name="codepostalLivraison"/>
+                    <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostalLivraison', $personne->adresses[1]->codepostal) }}" name="codepostalLivraison" maxlength="10"/>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Commune *</div>
-                    <input class="formValue formValueAdmin w75" type="text" value="{{ old('villeLivraison', $personne->adresses[1]->ville) }}" name="villeLivraison"/>
+                    <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('villeLivraison', $personne->adresses[1]->ville) }}" name="villeLivraison"/>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Pays</div>
-                    <select class="formValue formValueAdmin" name="paysLivraison" id="paysPersonneLivraison">
+                    <select class="formValue modifying formValueAdmin" name="paysLivraison" id="paysPersonneLivraison">
                         @foreach($countries as $country)
                             <option value="{{ $country->id }}" data-indicatif="{{ $country->indicatif }}" {{ $country->nom == $personne->adresses[1]->pays ? 'selected' : '' }}>{{ $country->nom }}</option>
                         @endforeach
@@ -105,7 +105,7 @@
                     <div class="formLabel">Téléphone fixe</div>
                     <div class="inputGroup d-flex justify-start align-start">
                         <div class="indicatif" name="indicatifDomicile" id="indicatifDomicileLivraison">+{{ $personne->adresses[1]->indicatif }}</div>
-                        <input class="formValue formValueAdmin w75" type="text" value="{{ old('telephonedomicileLivraison', $personne->adresses[1]->telephonedomicile) }}" name="telephonedomicileLivraison"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('telephonedomicileLivraison', $personne->adresses[1]->telephonedomicile) }}" name="telephonedomicileLivraison" maxlength="25"/>
                     </div>
                 </div>
             </div>
@@ -116,13 +116,13 @@
         <div class="formBlockWrapper">
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Adresse email *</div>
-                <input class="formValue formValueAdmin w75" type="email" value="{{ old('email', $personne->email) }}" name="email"/>
+                <input class="formValue modifying formValueAdmin w75" type="email" value="{{ old('email', $personne->email) }}" name="email"/>
             </div>
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Téléphone mobile *</div>
                 <div class="inputGroup d-flex justify-start align-start">
                     <div class="indicatif" name="indicatifMobile" id="indicatifMobile">+{{ $personne->adresses[0]->indicatif }}</div>
-                    <input class="formValue formValueAdmin w75" type="text" value="{{ old('phone_mobile', $personne->phone_mobile) }}" name="phone_mobile"/>
+                    <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('phone_mobile', $personne->phone_mobile) }}" name="phone_mobile"  maxlength="25"/>
                 </div>
             </div>
         </div>
