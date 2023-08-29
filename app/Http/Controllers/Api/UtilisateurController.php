@@ -101,6 +101,18 @@ class UtilisateurController extends Controller
         // pour chaque adhérent, on passe le statut à 1 si l'adhésion est requise
         // on crée un règlement en indiquant l'abonnement et l'adhésion
         foreach ($tab_adherents as $adherent) {
+            // on met à jour le ct des utilisateurs
+            $utilisateurmaj = Utilisateur::where('id', $adherent['adherent']['id'])->first();
+            if ($utilisateurmaj) {
+                $datau = array('ct' => $adherent['adherent']['ctInt']);
+                if (in_array($adherent['adherent']['ctInt'], [5,6])) {
+                    $datau['premierecarte'] = $adherent['adherent']['premierecarte'];
+                } else {
+                    $datau['premierecarte'] = null;
+                }
+                $utilisateurmaj->update($datau);
+            }
+
             $datar = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $adherent['adherent']['id']);
             if (isset($adherent['adhesion'])) {
                 Utilisateur::where('id', $adherent['adherent']['id'])->update(['statut' => 1]);
@@ -167,6 +179,15 @@ class UtilisateurController extends Controller
             if ($tarif_supp > 0) {
                 $aboSupp = 1;
             }
+            if ($request->premiereCarte && $ct == 2) {
+                // on regarde si l'identifiant première carte correspond à un utilisateur valide
+                $firtsUtilisateur = Utilisateur::where('identifiant', $request->premiereCarte)->whereIn('statut', [2,3])->whereIn('ct', [2,7])->first();
+                if ($firtsUtilisateur) {
+                    // on écrase le tarif de base
+                    $tarif_adhesion = Tarif::where('statut', 0)->where('id', 16)->first();
+                    $tarif = $tarif_adhesion->tarif;
+                }
+            }
         }
         if ($request->type == 'abonnement') {
             $tarif = $this->getTarifAbonnement($request->pays);
@@ -197,6 +218,13 @@ class UtilisateurController extends Controller
             list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($request->datenaissance);
             if ($request->aboPlus == 1 || $ct == 2) {
                 $datap['is_abonne'] = 1;
+            }
+            if ($request->premiereCarte && $ct == 2) {
+                // on regarde si l'identifiant première carte correspond à un utilisateur valide
+                $firtsUtilisateur = Utilisateur::where('identifiant', $request->premiereCarte)->whereIn('statut', [2,3])->whereIn('ct', [2,7])->first();
+                if ($firtsUtilisateur) {
+                    $datap['attente_premiere_carte'] = $request->premiereCarte;
+                }
             }
             $datap['is_adherent'] = 1;
             $datap['datenaissance'] = $request->datenaissance;
@@ -452,7 +480,8 @@ class UtilisateurController extends Controller
                 if (!$utilisateur) {
                     return new JsonResponse(['erreur' => 'impossible de récupérer l\'utilisateur'], 400);
                 }
-                switch ($utilisateur->ct) {
+                switch ($adherent['ct']) {
+//                switch ($utilisateur->ct) {
                     case 3 :
                         $ct = '18 - 25 ans';
                         $tarif_id = 9;
@@ -474,9 +503,37 @@ class UtilisateurController extends Controller
                         $tarif_id = 8;
                         break;
                 }
+
+                if ($adherent['ct'] == 5) {
+                    // on vérifie que la seconde acrte indiquée existe bien et est au tarif normal
+                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->whereIn('ct', [2,7])->first();
+                    if (!$autre_carte) {
+                        $ct = '>25 ans';
+                        $tarif_id = 8;
+                        $adherent['ct'] = 2;
+                    }
+                }
+
+                if ($adherent['ct'] == 6) {
+                    // on vérifie l'existence de la carte d'un autre club au tarif plein et appartenant à la même personne
+                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->where('ct', 2)->first();
+                    if (!$autre_carte) {
+                        $ct = '>25 ans';
+                        $tarif_id = 8;
+                        $adherent['ct'] = 2;
+                    } else {
+                        if ($autre_carte->personne_id != $utilisateur->personne_id) {
+                            $ct = '>25 ans';
+                            $tarif_id = 8;
+                            $adherent['ct'] = 2;
+                        }
+                    }
+                }
+
+
                 $tarif = Tarif::where('id', $tarif_id)->where('statut', 0)->first();
                 $line = ['prenom' => $utilisateur->personne->prenom, 'nom' => $utilisateur->personne->nom, 'identifiant' => $utilisateur->identifiant,
-                    'ct' => $ct, 'id' => $utilisateur->id
+                    'ct' => $ct, 'id' => $utilisateur->id, 'ctInt' => $adherent['ct'], 'premierecarte' => $adherent['secondeCarte']
                 ];
 
                 $tab_adherents[$utilisateur->identifiant]['adherent'] = $line;

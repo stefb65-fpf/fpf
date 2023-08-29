@@ -412,6 +412,10 @@ trait Tools
                     'statut' => 2,
                     'saison' => date('Y'),
                 ];
+                if ($personne->attente_premiere_carte) {
+                    $datau['ct'] = 'F';
+                    $datau['premierecarte'] = $personne->attente_premiere_carte;
+                }
                 $utilisateur = Utilisateur::create($datau);
 
                 // on insère une ligne dans la table reglementsutilisateurs
@@ -434,7 +438,8 @@ trait Tools
             }
 
             // on met à jour la personne
-            $datap = ['attente_paiement' => 0, 'action_paiement' => null, 'monext_token' => null, 'monext_link' => null, 'bridge_id' => null, 'bridge_link' => null];
+            $datap = ['attente_paiement' => 0, 'action_paiement' => null, 'monext_token' => null, 'monext_link' => null,
+                'bridge_id' => null, 'bridge_link' => null, 'attente_premiere_carte' => null];
             $personne->update($datap);
 
             // on evoie le mail pour confirmer l'inscription ou l'abonnement

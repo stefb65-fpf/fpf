@@ -199,9 +199,17 @@ $('#checkTarifForNewUser').on('click', function () {
             $('#datenaissanceRegister').parent().find('div[name=error]').addClass('visible')
             return
         }
+        if ($('#premierecarteRegister').val() != '') {
+            if ($('#premierecarteRegister').val().length != 12) {
+                $('#premierecarteRegister').parent().find('div[name=error]').html('Le numéro de carte doit contenir 12 caractères et être au format xx-xxxx-xxxx')
+                $('#premierecarteRegister').parent().find('div[name=error]').addClass('visible')
+                return
+            }
+        }
         datas = {
             type: type,
-            datenaissance: $('#datenaissanceRegister').val()
+            datenaissance: $('#datenaissanceRegister').val(),
+            premiereCarte: $('#premierecarteRegister').val()
         }
     }
     if (type == 'abonnement') {
@@ -349,6 +357,15 @@ $('button[name=payByVirement]').on('click', function () {
             return
         }
         datas.datenaissance = $('#datenaissanceRegister').val()
+
+        if ($('#premierecarteRegister').val() != '') {
+            if ($('#premierecarteRegister').val().length != 12) {
+                $('#premierecarteRegister').parent().find('div[name=error]').html('Le numéro de carte doit contenir 12 caractères et être au format xx-xxxx-xxxx')
+                $('#premierecarteRegister').parent().find('div[name=error]').addClass('visible')
+                return
+            }
+            datas.premiereCarte = $('#premierecarteRegister').val()
+        }
     }
 
 

@@ -11,7 +11,7 @@
                 Un mail de confirmation vous a été envoyé.
             </div>
             <div class="mt30">
-                <a class="customBtn mxauto" href="/login">Connectez-vous !</a>
+                <a class="customBtn mxauto d-block" href="/login">Connectez-vous !</a>
             </div>
         @else
             <div class="alertDanger w80">

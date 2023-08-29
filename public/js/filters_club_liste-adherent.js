@@ -70,6 +70,7 @@ $('#renouvellementAdherents').on('click', function (e) {
     // on récupère tous les id des adhérents sélectionnés
     let idAdherents = []
     const regIdentifiant = /^[0-9]{2}-[0-9]{4}-[0-9]{4}$/
+    let passage = 1
     $('input[name=adherer]').each(function () {
         const item = $(this)
         if (item.is(':checked')) {
@@ -78,10 +79,13 @@ $('#renouvellementAdherents').on('click', function (e) {
             if ($('#selectCt_' + ref).val() == 5 || $('#selectCt_' + ref).val() == 6) {
                 if ($('#secondeCarte_' + ref).val() == '') {
                     alert('Veuillez renseigner le numéro de la seconde carte pour l\'adhérent ' + item.data('identifiant'))
+                    passage = 0
                     return
+                    console.log('bbbbbbbbb')
                 }
                 if (!regIdentifiant.test($('#secondeCarte_' + ref).val())) {
                     alert('le numéro de la seconde carte pour l\'adhérent ' + item.data('identifiant') + ' est incorrect')
+                    passage = 0
                     return
                 }
             }
@@ -93,6 +97,9 @@ $('#renouvellementAdherents').on('click', function (e) {
             idAdherents.push(line)
         }
     })
+    if (passage == 0) {
+        return
+    }
     let idAbonnes = []
     $('input[name=abonner]').each(function () {
         if ($(this).is(':checked')) {

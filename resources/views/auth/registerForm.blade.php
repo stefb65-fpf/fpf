@@ -87,28 +87,28 @@
                 <div name="error" class="error"></div>
             </div>
             <div class="separator"></div>
-            <div class="fs10px ml15">saisir les deux premiers caractères du code postal ou de la ville pour bénéficier
-                de l'autocomplétion
-            </div>
             <div class="doubleInput autosuggestContainer">
                 <div class="customField">
-                    <label>Code postal</label>
+                    <label>Code postal **</label>
                     <div class="autoSuggestWrapper">
                         <input type="text" name="codepostal" id="codepostalRegister" class="autosuggestCFA"/>
                         <ul class="autosuggest">
                         </ul>
                     </div>
-                    <div class="error">message erreur</div>
+                    <div class="error"></div>
                 </div>
                 <div class="customField">
-                    <label>Ville</label>
+                    <label>Ville **</label>
                     <div class="autoSuggestWrapper">
                         <input type="text" name="ville" id="villeRegister" class="autosuggestCFA"/>
                         <ul class="autosuggest">
                         </ul>
                     </div>
-                    <div class="error">message erreur</div>
+                    <div class="error"></div>
                 </div>
+            </div>
+            <div class="fs10px ml15">** saisir les deux premiers caractères du code postal ou de la ville pour bénéficier
+                de l'autocomplétion
             </div>
             <div class="customField w100 minW100 pr20">
                 <label>Pays</label>
@@ -134,18 +134,17 @@
             @if($type == 'adhesion')
                 <div class="customField w100 minW100 pr20">
                     <label>Date de naissance</label>
-                    <input type="date" name="name" id="datenaissanceRegister"/>
+                    <input type="date" name="name" id="datenaissanceRegister" />
                     <div name="error" class="error"></div>
                 </div>
-                {{--    <div class="separator"></div>--}}
-                {{--    <div class="customField w100 minW100 pr20">--}}
-                {{--        <div class="d-flex justify-start align-start mt20">--}}
-                {{--            <input type="checkbox" name="name" id="lastnameRegister" class="wMaxContent" />--}}
-                {{--                    <div class="small blue ml10">Je souhaite m'abonner à la revue France Phot pour 5 numéros (€)</div>--}}
-                {{--        </div>--}}
+                <div class="customField w100 minW100 pr20">
+                    <label>Carte famille - Identifiant première carte ***</label>
+                    <input type="text" name="name" id="premierecarteRegister" maxlength="12" />
+                    <div name="error" class="error"></div>
+                </div>
+                <div class="fs10px ml15">*** Si vous souscrivez une carte famille, indiquez un numéro valide de première carte d'adhérent à tarif normal. La réduction de tarif ne sera prise en compte que si le numéro de première carte est valide.
+                </div>
 
-                {{--        <div name="error" class="error"></div>--}}
-                {{--    </div>--}}
             @endif
         </div>
         <div class="button customBtn" id="checkTarifForNewUser" data-type="{{ $type }}">Continuer</div>

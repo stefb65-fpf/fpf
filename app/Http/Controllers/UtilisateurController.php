@@ -48,8 +48,10 @@ class UtilisateurController extends Controller
                 }
                 list($code, $reglement) = $this->saveNewPersonne($personne, 'Monext');
 
-                $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
-                $this->createAndSendInvoice($datai);
+                if ($code == 'ok') {
+                    $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
+                    $this->createAndSendInvoice($datai);
+                }
             }
         }
         return view('utilisateurs.validation_paiement_carte', compact( 'code'));
