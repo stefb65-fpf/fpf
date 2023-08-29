@@ -52,6 +52,10 @@ Route::post('/getAutocompleteCommune', [App\Http\Controllers\Api\CommuneControll
 Route::post('/updateTarif', [App\Http\Controllers\Admin\ConfigController::class,'updateTarif']);
 Route::post('/updateConfig', [App\Http\Controllers\Admin\ConfigController::class,'updateConfig']);
 
+// mise à jour du sttaut de la demande de support
+Route::post('/updateStatusSupport', [App\Http\Controllers\Admin\SupportController::class,'updateStatus']);
+Route::post('/sendAnswerSupport', [App\Http\Controllers\Admin\SupportController::class,'sendAnswer']);
+
 
 //liste adhérents club
 Route::post('/ajax/editListAdherents', [App\Http\Controllers\Api\UtilisateurController::class,'createListAdherents']);

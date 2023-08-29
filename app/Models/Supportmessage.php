@@ -11,5 +11,4 @@ class Supportmessage extends Model
     use HasFactory;
     protected $guarded = [];
     use DateTime;
-
 }

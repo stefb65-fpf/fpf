@@ -20,7 +20,7 @@
         <div class="wrapper-page">
             <div class="title">Renouvellement pour le club {{ str_pad($tab_club['club']->numero, 4, '0', STR_PAD_LEFT) }} - {{ $tab_club['club']->nom }}</div>
             @if($tab_club['contact'])
-                <div class="ml60pc mt20">
+                <div style="margin-left: 60%; margin-top: 20px;">
                     <table>
                         <tr>
                             <td>**C**</td>
@@ -32,9 +32,9 @@
                             </td>
                         </tr>
                         @if($tab_club['contact']->personne->adresses[0]->libelle1)
-                        <tr>
-                            <td colspan="2">{{ $tab_club['contact']->personne->adresses[0]->libelle1 }}</td>
-                        </tr>
+                            <tr>
+                                <td colspan="2">{{ $tab_club['contact']->personne->adresses[0]->libelle1 }}</td>
+                            </tr>
                         @endif
                         @if($tab_club['contact']->personne->adresses[0]->libelle2)
                             <tr>
@@ -51,8 +51,8 @@
             @endif
 
             @if(isset($tab_club['cartes']))
-                <div class="mt30 bolder">Liste des cartes éditées</div>
-                <div class="ml40">
+                <div style="margin-top: 30px; font-weight: bolder;">Liste des cartes éditées</div>
+                <div style="margin-left: 40px;">
                     @foreach($tab_club['cartes'] as $carte)
                         <div>{{ $carte->identifiant }}: {{ $carte->personne->nom }} {{ $carte->personne->prenom }}</div>
                     @endforeach
@@ -60,8 +60,8 @@
             @endif
 
             @if(isset($tab_club['vignettes']))
-                <div class="mt30 bolder">Liste des vignettes ({{ sizeof($tab_club['vignettes']) }})</div>
-                <div class="ml40">
+                <div style="margin-top: 30px; font-weight: bolder;">Liste des vignettes ({{ sizeof($tab_club['vignettes']) }})</div>
+                <div style="margin-left: 40px;">
                     @foreach($tab_club['vignettes'] as $carte)
                         <div>{{ $carte->identifiant }}: {{ $carte->personne->nom }} {{ $carte->personne->prenom }}</div>
                     @endforeach

@@ -27,7 +27,6 @@ class SupportController extends Controller
     //envoyer la demande de support
     public function  submit(SupportRequest $request){
         $user = session()->get('user');
-//        dd($request);
         $data = $request->all();
         unset($data['_token']);
         unset($data['_method']);

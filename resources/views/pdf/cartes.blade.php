@@ -39,51 +39,51 @@
         }
     </style>
     @foreach($tab_cartes as $carte)
-    <div class="wrapper-page">
-        <div class="title">PHOTOGRAPHE FPF</div>
-        <div class="identite">
-            <div>
-                {{ $carte->personne->sexe == 0 ? 'Mr' : 'Mme' }} {{ $carte->personne->nom }} {{ $carte->personne->prenom }}
+        <div class="wrapper-page">
+            <div class="title">PHOTOGRAPHE FPF</div>
+            <div class="identite">
+                <div>
+                    {{ $carte->personne->sexe == 0 ? 'Mr' : 'Mme' }} {{ $carte->personne->nom }} {{ $carte->personne->prenom }}
+                </div>
+                @if($carte->personne->adresses[0]->libelle1)
+                    <div>{{ $carte->personne->adresses[0]->libelle1 }}</div>
+                @endif
+                @if($carte->personne->adresses[0]->libelle2)
+                    <div>{{ $carte->personne->adresses[0]->libelle2 }}</div>
+                @endif
+                <div>
+                    {{ str_pad($carte->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT) }} {{ strtoupper($carte->personne->adresses[0]->ville) }}
+                </div>
             </div>
-            @if($carte->personne->adresses[0]->libelle1)
-                <div>{{ $carte->personne->adresses[0]->libelle1 }}</div>
+
+
+            @if($carte->clubs_id)
+                <div class="club">{{ $carte->club->nom.' ('.str_pad($carte->club->numero, 4, '0', STR_PAD_LEFT).')' }}</div>
             @endif
-            @if($carte->personne->adresses[0]->libelle2)
-                <div>{{ $carte->personne->adresses[0]->libelle2 }}</div>
-            @endif
+
+            <div class="identifiant">Adhérent {{ $carte->identifiant }}</div>
             <div>
-                {{ str_pad($carte->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT) }} {{ strtoupper($carte->personne->adresses[0]->ville) }}
+                <table style="width: 100%; position: fixed; bottom: 40px; left: 0;">
+                    <tr>
+                        <td style="width: 33%;">
+                            <div style="height: 30px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center; margin-left: 5px; margin-right: 5px;">
+                                {{ in_array(date('m'), ['09', '10', '11', '12']) ? date('y').' - '.(date('y') + 1) : (date('y') - 1).' - '.date('y') }}<br>
+                                <span style="font-size: 8px;">septembre - septembre</span>
+                            </div>
+                        </td>
+                        <td style="width: 33%;">
+                            <div style="height: 30px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center; margin-left: 5px; margin-right: 5px;">
+                                &nbsp;
+                            </div>
+                        </td>
+                        <td style="width: 33%;">
+                            <div style="height: 30px; background-color: #F2F2F2; border: 1px solid #3a3a3a; text-align: center; margin-left: 5px; margin-right: 5px;">
+                                &nbsp;
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
-
-
-        @if($carte->clubs_id)
-            <div class="club">{{ $carte->club->nom.' ('.str_pad($carte->club->numero, 4, '0', STR_PAD_LEFT).')' }}</div>
-        @endif
-
-        <div class="identifiant">Adhérent {{ $carte->identifiant }}</div>
-        <div>
-            <table class="w100 fixed b40 l0" >
-                <tr>
-                    <td class="w33">
-                        <div class="h30 bgLightGrey borderDarkGrey text-center ml5 mr5">
-                            {{ in_array(date('m'), ['09', '10', '11', '12']) ? date('y').' - '.(date('y') + 1) : (date('y') - 1).' - '.date('y') }}<br>
-                            <span class="small">septembre - septembre</span>
-                        </div>
-                    </td>
-                    <td class="w33">
-                        <div class="h30 bgLightGrey borderDarkGrey text-center ml5 mr5">
-                            &nbsp;
-                        </div>
-                    </td>
-                    <td class="w33">
-                        <div class="h30 bgLightGrey borderDarkGrey text-center ml5 mr5">
-                            &nbsp;
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
     @endforeach
 @endsection

@@ -59,6 +59,7 @@ Route::get('/admin/reglements/cartes', [App\Http\Controllers\Admin\ReglementCont
 
 Route::get('/admin/factures', [App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('admin.factures');
 
+Route::get('/admin/supports', [App\Http\Controllers\Admin\SupportController::class, 'index'])->name('supports.index');
 
 Route::get('/admin/urs/{ur}/fonctions', [App\Http\Controllers\Admin\UrController::class, 'fonctions'])->name('admin.urs.fonctions');
 Route::resource('/admin/urs', App\Http\Controllers\Admin\UrController::class);

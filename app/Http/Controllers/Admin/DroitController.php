@@ -146,6 +146,10 @@ class DroitController extends Controller
     protected function checkDroit($strdroit)
     {
         $cartes = session()->get('cartes');
+        $user = session()->get('user');
+        if ($user->is_administratif) {
+            return true;
+        }
         if (!isset($cartes[0])) {
             return false;
 //            return redirect()->route('accueil');
