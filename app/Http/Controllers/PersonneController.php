@@ -120,7 +120,7 @@ class PersonneController extends Controller
 
         $this->updateWpUser($personne->email, $request->password);
 
-        $request->session()->put('user', $personne);
+//        $request->session()->put('user', $personne);
         $this->registerAction($personne->id, 4, "Modification de votre mot de passe");
 
         $mailSent = Mail::to($personne->email)->send(new SendEmailModifiedPassword());
@@ -145,7 +145,7 @@ class PersonneController extends Controller
         //on enregistre le nouvel email provisoire
         $datap = array('nouvel_email' => $request->email);
         $personne->update($datap);
-        $request->session()->put('user', $personne);
+//        $request->session()->put('user', $personne);
 
         //on enregistre l'action dans l'historique
         $this->registerAction($personne->id, 4, "Demande de modification d'email");
@@ -170,7 +170,7 @@ class PersonneController extends Controller
     {
         $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'datenaissance' => $request->datenaissance, "phone_mobile" => $request->phone_mobile);
         $personne->update($datap);
-        $request->session()->put('user', $personne);
+//        $request->session()->put('user', $personne);
         $this->registerAction($personne->id, 4, "Modification de vos informations de civilité");
         return redirect()->route('mon-profil')->with('success', "Vos informations de civilité ont été modifiées avec succès");
     }
@@ -219,7 +219,7 @@ class PersonneController extends Controller
             }
         }
 //dd($personne->id);
-        $request->session()->put('user', $personne);
+//        $request->session()->put('user', $personne);
         $this->registerAction($personne->id, 4, "Modification de vos adresses");
         return redirect()->route('mon-profil')->with('success', "Votre adresse a été modifiée avec succès");
     }

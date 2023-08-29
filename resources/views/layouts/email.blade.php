@@ -15,12 +15,15 @@
         object-fit: contain;
         height: 60px;
     }
+
     .mail .coords {
         font-size: small;
     }
+
     .mail .coords a {
         color: inherit;
     }
+
     .mail .header .topTitle {
         font-size: small;
         max-width: 130px;
@@ -29,24 +32,27 @@
         color: #3c3c3c;
         margin: auto;
     }
+
     /*    style other mails*/
-    .mail .mailContent{
+    .mail .mailContent {
         padding: 10px;
         margin: 20px 0;
     }
+
     /*.mail .mailContent .text{*/
     /*    font-size: 16px;*/
     /*}*/
-    .mail  .mailContent .link{
+    .mail .mailContent .link {
         font-weight: 600;
     }
+
     /*.mail .mailContent .notWorking{*/
     /*    color: #9a9a9a;*/
     /*    font-size: 14px;*/
     /*    margin-top: 15px;*/
     /*}*/
-    .mail .im{
-        color: black!important;
+    .mail .im {
+        color: black !important;
     }
 </style>
 <body class="mail" style=" box-sizing: border-box;
@@ -60,36 +66,36 @@
 
 <main>
     @include('layouts.headerEmail')
-    <div class="mainContent" style="      display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        padding: 20px 0;">
+    <div class="mainContent" style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 20px 0;">
         @yield('content')
     </div>
-    <div style="display: flex; align-items: center">
+    <div style="display: flex; align-items: center; margin-top: 5px;">
         <div style="margin-right: 20px; height: 82px;">
-            <img src="{{ env('APP_URL').'storage/app/public/logo-fpf-mail.jpg' }}" style="object-fit: contain;height: 100%"  alt="logo FPF">
+            <img src="{{ env('APP_URL').'storage/app/public/logo-fpf-mail.jpg' }}"
+                 style="object-fit: contain;height: 100%" alt="logo FPF">
         </div>
-        <div>
-<div style="font-weight: bold; font-size: 16px;margin-bottom: 15px">Fédération Photographique de France</div>
-            <div style="margin-bottom: 10px">La passion des images partagées</div>
-            <div style="margin-bottom: 10px">5, rue Jules Vallès · 75011 Paris</div>
+        <div style="font-size: 13px">
+            <div style="font-weight: bold; font-size: 14px;margin-bottom: 1px">
+                Fédération Photographique de France
+            </div>
+            <div style="margin-bottom: 1px">
+                La passion des images partagées
+            </div>
+            <div style="margin-bottom: 5px">
+                5, rue Jules Vallès · 75011 Paris
+            </div>
             <div style="display: flex; color: grey">
                 <span style="padding-right:5px">Mob. :</span>
-                <a style="color: inherit; text-decoration: underline;cursor: pointer" href="tel:+33143713040"> +33 (0) 1 43 71 30 40</a>
+                <a style="color: inherit; text-decoration: underline;cursor: pointer" href="tel:+33143713040">+33 (0) 1 43 71 30 40</a>
                 <span style="padding:0 5px;"> . </span>
                 <a style="color: inherit; text-decoration: underline;cursor: pointer" href="mailto:fpf@federation-photo.fr"> fpf@federation-photo.fr </a>
                 <span style="padding:0 5px;"> . </span>
                 <a style="color: inherit; text-decoration: underline;cursor: pointer" href="https://federation-photo.fr"> www.federation-photo.fr </a>
             </div>
-
         </div>
     </div>
 
-    @include('layouts.footerEmail')
-
+{{--    @include('layouts.footerEmail')--}}
 </main>
-
 </body>
 </html>

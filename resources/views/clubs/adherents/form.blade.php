@@ -2,7 +2,11 @@
     <form action="{{ route($prev.'.adherents.update', $utilisateur) }}" method="POST">
         <input type="hidden" name="_method" value="put">
 @else
-    <form action="{{ route($prev.'.adherents.store') }}" method="POST" id="storeNewAdherent">
+    @if($prev == 'clubs')
+        <form action="{{ route('clubs.adherents.store') }}" method="POST" id="storeNewAdherent">
+    @else
+        <form action="{{ route($prev.'.adherents.store', $club) }}" method="POST" id="storeNewAdherent">
+    @endif
 @endif
     {{ csrf_field() }}
     <div class="formBlock">

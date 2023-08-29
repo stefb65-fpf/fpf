@@ -252,8 +252,34 @@ class ClubController extends Controller
         return view('admin.clubs.edit',compact('club','activites', 'equipements', 'countries'));
     }
 
-    public function createAdherent() {
+    public function createAdherent($club_id) {
+        $club = Club::where('id', $club_id)->first();
+        if (!$club) {
+            return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
+        }
+        $utilisateur = new Utilisateur();
+        $personne = new Personne();
+        $adresse = new Adresse();
+        $adresse->pays = "france";
+        $adresse->indicatif = "33";
+        $utilisateur->personne = $personne;
+        $utilisateur->personne->adresses = [$adresse];
+        $countries = Pays::all();
+        $prev = 'admin.clubs';
+        return view('clubs.adherents.create', compact('club', 'countries', 'utilisateur', 'prev'));
+    }
 
+    public function storeAdherent(Request $request, $club_id) {
+        $club = Club::where('id', $club_id)->first();
+        if (!$club) {
+            return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
+        }
+
+        if ($this->storeClubAdherent($request, $club)) {
+            return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('success', "L'adhérent a bien  été ajouté");
+        } else {
+            return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de l'ajout de l'adhérent");
+        }
     }
 
     public function editAdherent($utilisateur_id) {

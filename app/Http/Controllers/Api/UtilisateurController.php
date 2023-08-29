@@ -190,7 +190,7 @@ class UtilisateurController extends Controller
         }
         // on enregistre la personne
         $password = $this->encodePwd($request->password);
-        $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'email' => trim($request->email), 'sexe' => $request->sexe,
+        $datap = array('nom' => strtoupper(trim($request->nom)), 'prenom' => trim($request->prenom), 'email' => trim($request->email), 'sexe' => $request->sexe,
             'phone_mobile' => $request->phone_mobile, 'password' => $password,
             'attente_paiement' => 1);
         if ($request->type == 'adhesion') {
@@ -214,7 +214,7 @@ class UtilisateurController extends Controller
         $pays = Pays::where('id', $request->pays)->first();
         if ($pays) {
             $dataa = array('libelle1' => $request->libelle1, 'libelle2' => $request->libelle2, 'codepostal' => $request->codepostal,
-                'ville' => $request->ville, 'pays' => $pays->nom);
+                'ville' => strtoupper(trim($request->ville)), 'pays' => $pays->nom);
             $adresse = Adresse::create($dataa);
 
             // on lie l'adresse à la personne

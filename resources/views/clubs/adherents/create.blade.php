@@ -4,7 +4,11 @@
     <div class="pageCanva">
         <h1 class="pageTitle">
             Ajout d'un adhérent pour le club {{ $club->nom }}
-            <a class="previousPage" title="Retour page précédente" href="{{ route('clubs.adherents.index') }}">
+            @if($prev === 'clubs')
+                <a class="previousPage" title="Retour page précédente" href="{{ route('clubs.adherents.index') }}">
+            @else
+                <a class="previousPage" title="Retour page précédente" href="{{ route($prev.'.liste_adherents_club', $club->id) }}">
+            @endif
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                      class="bi bi-reply-fill" viewBox="0 0 16 16">
                     <path

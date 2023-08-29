@@ -125,92 +125,103 @@ class ClubController extends Controller
     // enregistrement des informations pour la création d'un adhérent par responsable de club
     public function storeAdherent(AdherentRequest $request) {
         $club = $this->getClub();
-        if ($request->personne_id != null) {
-            $personne = Personne::where('id', $request->personne_id)->first();
-            if (!$personne) {
-                return redirect()->route('clubs.adherents.create')->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+
+
+
+
+//        if ($request->personne_id != null) {
+//            $personne = Personne::where('id', $request->personne_id)->first();
+//            if (!$personne) {
+//                return redirect()->route('clubs.adherents.create')->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+//            }
+//        } else {
+//            if (!filter_var(trim($request->email), FILTER_VALIDATE_EMAIL)) {
+//                return redirect()->route('clubs.adherents.create')->with('error', "L'adresse email n'est pas valide");
+//            }
+//            $pays = Pays::where('id', $request->pays)->first();
+//            if (!$pays) {
+//                return redirect()->route('clubs.adherents.create')->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+//            }
+//            $news = $request->news ? 1 : 0;
+//            $password = $this->generateRandomPassword();
+//            $datap = array(
+//                'nom' => trim(strtoupper($request->nom)),
+//                'prenom' => trim($request->prenom),
+//                'sexe' => $request->sexe,
+//                'email' => trim($request->email),
+//                'password' => $password,
+//                'phone_mobile' => $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif),
+//                'datenaissance' => $request->datenaissance,
+//                'news' => $news,
+//                'is_adherent' => 1,
+//                'premiere_connexion'  => 1
+//            );
+//            $personne = Personne::create($datap);
+//
+//            $this->insertWpUser(trim($request->nom), trim($request->prenom), trim($request->email), $password);
+//
+//            // on crée l'adresse
+//            $dataa = array(
+//                'libelle1' => $request->libelle1,
+//                'libelle2' => $request->libelle2,
+//                'codepostal' => $request->codepostal,
+//                'ville' => $request->ville,
+//                'pays' => $pays->nom,
+//                'telephonedomicile' => $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif)
+//            );
+//            $adresse = Adresse::create($dataa);
+//
+//            // on lie l'adresse à la personne
+//            $personne->adresses()->attach($adresse->id);
+//        }
+//
+//        // on cherche le max numeroutilisateur pour le club
+//        $max_numeroutilisateur = Utilisateur::where('clubs_id', $club->id)->max('numeroutilisateur');
+//        $numeroutilisateur = $max_numeroutilisateur + 1;
+//        $identifiant = str_pad($club->urs_id, 2, '0', STR_PAD_LEFT).'-'
+//            .str_pad($club->numero, 4, '0', STR_PAD_LEFT).'-'
+//            .str_pad($numeroutilisateur, 4, '0', STR_PAD_LEFT);
+//
+//        // on calcule le ct par défaut avec la date de naissance
+//        // on calcule l'âge de la personne à partir de sa date de naissance
+//        $date_naissance = new \DateTime($request->datenaissance);
+//        $date_now = new \DateTime();
+//        $age = $date_now->diff($date_naissance)->y;
+//        $ct = 2;
+//        if ($age < 18) {
+//            $ct = 4;
+//        } else {
+//            if($age < 25) {
+//                $ct = 3;
+//            }
+//        }
+//
+//        // on crée un nouvel utilisateur pour la personne dans le club
+//        $datau = array(
+//            'personne_id' => $personne->id,
+//            'urs_id' => $club->urs_id,
+//            'clubs_id' => $club->id,
+//            'adresses_id' => $personne->adresses[0]->id,
+//            'identifiant' => $identifiant,
+//            'numeroutilisateur' => $numeroutilisateur,
+//            'sexe' => $request->sexe,
+//            'nom' => trim(strtoupper($request->nom)),
+//            'prenom' => trim($request->prenom),
+//            'ct' => $ct,
+//            'statut' => 0
+//        );
+//        Utilisateur::create($datau);
+
+
+        if ($this->storeClubAdherent($request, $club)) {
+            $user = session()->get('user');
+            if ($user) {
+                $this->MailAndHistoricize($user,"Ajout d'un adhérent ". trim(strtoupper($request->nom))." ".trim(strtoupper($request->prenom)." au club ".$club->nom));
             }
+            return redirect()->route('clubs.adherents.index')->with('success', "L'adhérent a bien  été ajouté");
         } else {
-            if (!filter_var(trim($request->email), FILTER_VALIDATE_EMAIL)) {
-                return redirect()->route('clubs.adherents.create')->with('error', "L'adresse email n'est pas valide");
-            }
-            $pays = Pays::where('id', $request->pays)->first();
-            if (!$pays) {
-                return redirect()->route('clubs.adherents.create')->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
-            }
-            $news = $request->news ? 1 : 0;
-            $password = $this->generateRandomPassword();
-            $datap = array(
-                'nom' => trim(strtoupper($request->nom)),
-                'prenom' => trim($request->prenom),
-                'sexe' => $request->sexe,
-                'email' => trim($request->email),
-                'password' => $password,
-                'phone_mobile' => $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif),
-                'datenaissance' => $request->datenaissance,
-                'news' => $news,
-                'is_adherent' => 1,
-                'premiere_connexion'  => 1
-            );
-            $personne = Personne::create($datap);
-
-            $this->insertWpUser(trim($request->nom), trim($request->prenom), trim($request->email), $password);
-
-            // on crée l'adresse
-            $dataa = array(
-                'libelle1' => $request->libelle1,
-                'libelle2' => $request->libelle2,
-                'codepostal' => $request->codepostal,
-                'ville' => $request->ville,
-                'pays' => $pays->nom,
-                'telephonedomicile' => $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif)
-            );
-            $adresse = Adresse::create($dataa);
-
-            // on lie l'adresse à la personne
-            $personne->adresses()->attach($adresse->id);
+            return redirect()->route('clubs.adherents.index')->with('error', "Un problème est survenu lors de l'ajout de l'adhérent");
         }
-        // on cherche le max numeroutilisateur pour le club
-        $max_numeroutilisateur = Utilisateur::where('clubs_id', $club->id)->max('numeroutilisateur');
-        $numeroutilisateur = $max_numeroutilisateur + 1;
-        $identifiant = str_pad($club->urs_id, 2, '0', STR_PAD_LEFT).'-'
-            .str_pad($club->numero, 4, '0', STR_PAD_LEFT).'-'
-            .str_pad($numeroutilisateur, 4, '0', STR_PAD_LEFT);
-
-        // on calcule le ct par défaut avec la date de naissance
-        // on calcule l'âge de la personne à partir de sa date de naissance
-        $date_naissance = new \DateTime($request->datenaissance);
-        $date_now = new \DateTime();
-        $age = $date_now->diff($date_naissance)->y;
-        $ct = 2;
-        if ($age < 18) {
-            $ct = 4;
-        } else {
-            if($age < 25) {
-                $ct = 3;
-            }
-        }
-
-        // on crée un nouvel utilisateur pour la personne dans le club
-        $datau = array(
-            'personne_id' => $personne->id,
-            'urs_id' => $club->urs_id,
-            'clubs_id' => $club->id,
-            'adresses_id' => $personne->adresses[0]->id,
-            'identifiant' => $identifiant,
-            'numeroutilisateur' => $numeroutilisateur,
-            'sexe' => $request->sexe,
-            'nom' => trim(strtoupper($request->nom)),
-            'prenom' => trim($request->prenom),
-            'ct' => $ct,
-            'statut' => 0
-        );
-        Utilisateur::create($datau);
-        $user = session()->get('user');
-        if ($user) {
-            $this->MailAndHistoricize($user,"Ajout d'un adhérent ". trim(strtoupper($request->nom))." ".trim(strtoupper($request->prenom)." au club ".$club->nom));
-        }
-        return redirect()->route('clubs.adherents.index')->with('success', "L'adhérent a bien  été ajouté");
     }
 
     // affichage de la vue des informations d'un adhérent du club
