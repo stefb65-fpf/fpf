@@ -131,22 +131,26 @@ trait Tools
 
     public function format_fixe_for_base($number, $indicatif)
     {
-
+        $false_number = false;
         if ($number) {
             $number = str_replace([" ","-","."], "", $number);
             $number = ltrim($number, '0');
             if($indicatif == 33){
                 if (!(strlen($number) == 9)) {
-                    return -1;
+                    $false_number = true;
                 }
             }
             $number = '+' . $indicatif . '.' . $number;
+        }
+        if($false_number){
+            $number = -1;
         }
         return $number;
     }
 
     public function format_mobile_for_base($number, $indicatif = '33')
     {
+        $false_number = false;
         if ($number) {
             $first_two_numbers = substr($number, 0, 2);
             if ($first_two_numbers == "06" || $first_two_numbers == "07") {
@@ -154,10 +158,13 @@ trait Tools
                 $number = str_replace([" ","-","."], "", $number);
                 $number = ltrim($number, '0');
                     if (!(strlen($number) == 9)) {
-                        return -1;
+                        $false_number = true;
                     }
                 $number = '+' . $indicatif . '.' . $number;
             }
+        }
+        if($false_number){
+            $number = -1;
         }
         return $number;
     }

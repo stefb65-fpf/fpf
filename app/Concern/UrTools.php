@@ -23,6 +23,7 @@ trait UrTools
            $datap_adresse["telephonedomicile"] = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
 
            $datap_adresse["telephonemobile"] = $this->format_mobile_for_base($datap_adresse["telephonemobile"]);
+
 //dd($this->format_mobile_for_base($datap_adresse["telephonemobile"]));
 
 
