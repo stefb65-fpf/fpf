@@ -828,7 +828,7 @@ body.modalVisible .modalBackground {
     background-color: white;
     -webkit-box-shadow: 0px 5px 25px 0px rgba(45, 46, 92, 0.15);
     box-shadow: 0px 5px 25px 0px rgba(45, 46, 92, 0.15);
-    z-index: 11;
+    z-index: 200;
     display: flex;
     justify-content: flex-end;
     align-items: center;

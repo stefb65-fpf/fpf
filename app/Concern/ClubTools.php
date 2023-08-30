@@ -75,7 +75,7 @@ trait ClubTools
         return[ $club, $activites, $equipements ,$countries];
     }
     public function updateClubGeneralite(Club $club, $request){
-
+        $error = null;
         if ($_FILES['logo']['name'] != '') {
             // une image a été envoyé, on change donc le media du slider
             list($first, $extension) = explode('.', $_FILES['logo']['name']);
@@ -84,26 +84,36 @@ trait ClubTools
             $target_file = $dir .'/'. $name . '.' . $extension;
             $size = $_FILES['logo']['size'];
             $authrorized_extensions = array('jpeg', 'jpg', 'png');
+//            dd($_FILES['logo']);
+
             if (!in_array($extension, $authrorized_extensions)) {
-                return redirect()->back()->with('error', "L'image n'est pas au bon format. Veuillez télécharger une image au format .jpeg, .jpg ou .png");
+                $error = 1;
             }
             if ($size > 1048576) {
-                return redirect()->back()->with('error', "L'image est trop grande. Veuillez télécharger une image de taille maximum de 1 Mo ");
+                $error = 2;
             }
-            if(!File::isDirectory($dir)){
-                File::makeDirectory($dir);
+            if(!$error){
+                if(!File::isDirectory($dir)){
+                    File::makeDirectory($dir);
+                }
+                if (move_uploaded_file($_FILES["logo"]["tmp_name"], $target_file)) {
+                    $request->logo = $name . '.' . $extension;
+                }
             }
-            if (move_uploaded_file($_FILES["logo"]["tmp_name"], $target_file)) {
-                $request->logo = $name . '.' . $extension;
+
+        }
+        if($error){
+           return $error;
+        }else{
+            $datap = array('nom' => $request->nom, 'courriel' => $request->courriel, 'web' => $request->web, "logo" => $request->logo);
+            $club = Club::where('id', $club->id)->first();
+            $club->update($datap);
+            $user = session()->get('user');
+            if ($user) {
+                $this->MailAndHistoricize($user,"Modification des informations générales du club \"".$club->nom."\"");
             }
         }
-        $datap = array('nom' => $request->nom, 'courriel' => $request->courriel, 'web' => $request->web, "logo" => $request->logo);
-        $club = Club::where('id', $club->id)->first();
-        $club->update($datap);
-        $user = session()->get('user');
-        if ($user) {
-            $this->MailAndHistoricize($user,"Modification des informations générales du club \"".$club->nom."\"");
-        }
+
     }
     public function updateClubAdress(Club $club,$request)
     {

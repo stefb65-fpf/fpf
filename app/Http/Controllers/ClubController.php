@@ -54,8 +54,12 @@ class ClubController extends Controller
     // Mise a jour des infos générales du club (nom, logo, courriel, ..)
     public function updateGeneralite( ClubReunionRequest $request, Club $club)
     {
-        $this->updateClubGeneralite($club,$request);
-
+        $error = $this->updateClubGeneralite($club, $request);
+        if($error == 1){
+            return redirect()->back()->with('error', "L'image n'est pas au bon format. Veuillez télécharger une image au format .jpeg, .jpg ou .png");
+        }elseif( $error == 2){
+            return redirect()->back()->with('error', "L'image est trop grande. Veuillez télécharger une image de taille maximum de 1 Mo ");
+        }
         return redirect()->route('clubs.infos_club')->with('success', "Les informations générales du club ont été mises à jour");
 
     }
