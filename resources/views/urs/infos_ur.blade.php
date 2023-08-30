@@ -20,7 +20,7 @@
         <div class="formBlock">
             <div class="formBlockTitle">Informations d'union régionale</div>
             <div class="formBlockWrapper">
-                <h2 class="formSubtitle">Généralités</h2>
+                <h2 class="formSubtitle w100">Généralités</h2>
                 <form class="w100" action="{{route('urs.infos.update')}}" method="POST">
                     <input type="hidden" name="_method" value="PUT">
                     {{ csrf_field() }}

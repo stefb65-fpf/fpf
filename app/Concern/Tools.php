@@ -133,7 +133,7 @@ trait Tools
     {
         $false_number = false;
         if ($number) {
-            $number = str_replace([" ","-","."], "", $number);
+            $number= preg_replace('/[^0-9]/', '', $number);
             $number = ltrim($number, '0');
             if($indicatif == 33){
                 if (!(strlen($number) == 9)) {
@@ -151,17 +151,25 @@ trait Tools
     public function format_mobile_for_base($number, $indicatif = '33')
     {
         $false_number = false;
+
+//        dd($number);
         if ($number) {
             $first_two_numbers = substr($number, 0, 2);
-            if ($first_two_numbers == "06" || $first_two_numbers == "07") {
-                // remove "0" and add "+33."
-                $number = str_replace([" ","-","."], "", $number);
-                $number = ltrim($number, '0');
+            // remove "0" and add "+33."
+            $number= preg_replace('/[^0-9]/', '', $number);
+            $number = ltrim($number, '0');
+//            dd($number);
+            if($indicatif == '33'){
+//                dd("indicatif frznçais");
+                if ($first_two_numbers == "06" || $first_two_numbers == "07") {
                     if (!(strlen($number) == 9)) {
                         $false_number = true;
                     }
-                $number = '+' . $indicatif . '.' . $number;
+                }else{
+                    $false_number = true;
+                }
             }
+            $number = '+' . $indicatif . '.' . $number;
         }
         if($false_number){
             $number = -1;
