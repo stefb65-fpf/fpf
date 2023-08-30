@@ -115,8 +115,11 @@ trait ClubTools
         $datap_adresse['pays'] = $selected_pays->nom;
 //        dd($datap_adresse);
         $indicatif = $selected_pays->indicatif;
-        $datap_adresse["telephonedomicile"] =$this->format_fixe_for_base($datap_adresse["telephonedomicile"],$indicatif) ;
-        $datap_adresse["telephonemobile"] =$this->format_mobile_for_base($datap_adresse["telephonemobile"]);
+
+        //contrôle et formatage des numéros de téléphone
+            $datap_adresse["telephonedomicile"] = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
+           $datap_adresse["telephonemobile"] = $this->format_mobile_for_base($datap_adresse["telephonemobile"]);
+
         $datap_adresse['pays'] = $selected_pays->nom;
 //        dd($datap_adresse);
         if (!$club->adresses_id) { //le club n'a aucune adresse en base. On en crée une.

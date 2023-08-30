@@ -27,11 +27,11 @@ class AdherentRequest extends FormRequest
             'datenaissance'=>'date|required',
             'libelle1' => 'nullable|string',
             'libelle2' => 'nullable|string',
-            'codepostal'=>'string|required',
+            'codepostal'=>'string|required|max:10',
             'ville'=>'string|required',
             'pays'=>'string|required',
-//            'email'=>'email|required',
-            'phone_mobile'=>'required',
+//            'email'=>'email|required|max:255',
+            'phone_mobile'=>'required|max:25',
         ];
     }
 }

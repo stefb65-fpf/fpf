@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Mail;
 trait Tools
 {
     use Hash;
+
     /**
      * enregistre l'action utilisateur dans la table historique
      * @param $personne_id integer
@@ -130,9 +131,15 @@ trait Tools
 
     public function format_fixe_for_base($number, $indicatif)
     {
+
         if ($number) {
-            $number = str_replace(" ", "", $number);
+            $number = str_replace([" ","-","."], "", $number);
             $number = ltrim($number, '0');
+            if($indicatif == 33){
+                if (!(strlen($number) == 9)) {
+                    return -1;
+                }
+            }
             $number = '+' . $indicatif . '.' . $number;
         }
         return $number;
@@ -144,8 +151,11 @@ trait Tools
             $first_two_numbers = substr($number, 0, 2);
             if ($first_two_numbers == "06" || $first_two_numbers == "07") {
                 // remove "0" and add "+33."
-                $number = str_replace(" ", "", $number);
+                $number = str_replace([" ","-","."], "", $number);
                 $number = ltrim($number, '0');
+                    if (!(strlen($number) == 9)) {
+                        return -1;
+                    }
                 $number = '+' . $indicatif . '.' . $number;
             }
         }
@@ -175,26 +185,6 @@ trait Tools
         return $query;
     }
 
-//    public function isReference($e)
-//    {
-//        if (!(strlen($e) == 15)) {
-//            return false;
-//        }
-//        $a = str_split($e);
-//        $potential_numbers = [$a[0], $a[1], $a[3], $a[4], $a[6], $a[7], $a[8], $a[9], $a[11], $a[12], $a[13], $a[14]];
-//        $potential_separators = [$a[2], $a[5], $a[10]];
-//        foreach ($potential_separators as $char) {
-//            if (!($char == "-")) {
-//                return false;
-//            }
-//        }
-//        foreach ($potential_numbers as $char) {
-//            if (!is_numeric($char)) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
 
     protected function getReglementsByTerm($term, $query)
     {
@@ -224,7 +214,8 @@ trait Tools
         return $query;
     }
 
-    protected function saveReglement($reglement) {
+    protected function saveReglement($reglement)
+    {
         $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
         $numeroencours = $config->numeroencours;
 
@@ -303,7 +294,8 @@ trait Tools
         return true;
     }
 
-    protected function saveInvoiceForReglement($reglement) {
+    protected function saveInvoiceForReglement($reglement)
+    {
         if ($reglement->clubs_id) {
             $description = "Renouvellement des adhésions et abonnements pour le club";
             $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'club_id' => $reglement->clubs_id];
@@ -326,7 +318,8 @@ trait Tools
         return true;
     }
 
-    protected function getTarifAdhesion($datenaissance) {
+    protected function getTarifAdhesion($datenaissance)
+    {
         $date_naissance = new \DateTime($datenaissance);
         $date_now = new \DateTime();
         $age = $date_now->diff($date_naissance)->y;
@@ -341,7 +334,7 @@ trait Tools
             $tarif_id_supp = 23;
             $ct = 4;
         } else {
-            if($age < 25) {
+            if ($age < 25) {
                 $tarif_id = 14;
                 $tarif_id_supp = 23;
                 $ct = 3;
@@ -357,23 +350,26 @@ trait Tools
         return [$tarif, $tarif_abo, $ct];
     }
 
-    protected function getTarifAbonnement($pays) {
+    protected function getTarifAbonnement($pays)
+    {
         $tarif_id = $pays == 78 ? 19 : 20;
         $tarif = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
         return $tarif ? $tarif->tarif : 0;
     }
 
-    protected function saveNewPersonne($personne, $type) {
+    protected function saveNewPersonne($personne, $type)
+    {
         try {
             DB::beginTransaction();
-            $montant = 0; $ct = '';
+            $montant = 0;
+            $ct = '';
             if ($personne->is_adherent == 1) {
                 list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
                 $montant = floatval($tarif);
                 if ($personne->is_abonne == 1) {
                     $montant += floatval($tarif_supp);
                 }
-                $ref = 'ADH-NEW-'.$personne->id;
+                $ref = 'ADH-NEW-' . $personne->id;
             } else {
                 if ($personne->is_abonne == 1) {
                     $nom_pays = $personne->adresses()->first()->pays;
@@ -382,10 +378,10 @@ trait Tools
                         $montant = floatval($this->getTarifAbonnement($pays->id));
                     }
                 }
-                $ref = 'ABO-NEW-'.$personne->id;
+                $ref = 'ABO-NEW-' . $personne->id;
             }
             // on crée le règlement avec la ref passée au paiement
-            $numero_cheque = ($type == 'Bridge') ? 'Bridge '.$personne->bridge_id : 'Monext '.$personne->monext_token;
+            $numero_cheque = ($type == 'Bridge') ? 'Bridge ' . $personne->bridge_id : 'Monext ' . $personne->monext_token;
             $datar = [
                 'montant' => $montant,
                 'numerocheque' => $numero_cheque,
@@ -452,10 +448,11 @@ trait Tools
             $reglement = null;
             DB::rollBack();
         }
-        return  [$code, $reglement];
+        return [$code, $reglement];
     }
 
-    protected function setIdentifiant($codepostal) {
+    protected function setIdentifiant($codepostal)
+    {
         $departement = substr($codepostal, 0, 2);
         $dpt = DB::table('departementsurs')->where('numerodepartement', $departement)->first();
         if ($dpt) {
@@ -472,7 +469,8 @@ trait Tools
         return array($identifiant, $urs_id, $numero);
     }
 
-    protected function sendMailValidationReglement($personne, $reglement) {
+    protected function sendMailValidationReglement($personne, $reglement)
+    {
         $email = $personne->email;
         $mailSent = Mail::to($email)->send(new ValidationReglement($reglement));
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
@@ -485,25 +483,28 @@ trait Tools
         return true;
     }
 
-    public function generateRandomPassword() {
+    public function generateRandomPassword()
+    {
         $letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*";
         $shuffle_letters = str_shuffle($letters);
         $random_password = substr($shuffle_letters, 0, 8);
         return $this->encodePwd($random_password);
     }
 
-    protected function getSituation($personne) {
+    protected function getSituation($personne)
+    {
         if ($personne->is_adherent) {
             // on recherche les cartes actives
             $tab_cartes = [];
-            $cartes_actives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [1,2,3])->selectRaw('id, identifiant, urs_id, clubs_id')->get();
+            $cartes_actives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [1, 2, 3])->selectRaw('id, identifiant, urs_id, clubs_id')->get();
             foreach ($cartes_actives as $carte) {
                 $carte->actif = true;
                 // on cherche les focntions de la carte
                 $fonctions = Fonction::join('fonctionsutilisateurs', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
                     ->select('fonctions.id', 'fonctions.libelle')
                     ->where('fonctionsutilisateurs.utilisateurs_id', $carte->id)->get();
-                $droits = []; $tab_fonctions = [];
+                $droits = [];
+                $tab_fonctions = [];
                 foreach ($fonctions as $fonction) {
                     if ($fonction->droits) {
                         foreach ($fonction->droits as $droit) {
@@ -522,7 +523,7 @@ trait Tools
                 $tab_cartes[] = $carte;
             }
 
-            $cartes_inactives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [0,4])->selectRaw('id, identifiant, urs_id, clubs_id')->get();
+            $cartes_inactives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [0, 4])->selectRaw('id, identifiant, urs_id, clubs_id')->get();
             foreach ($cartes_inactives as $carte) {
                 $carte->actif = false;
                 $tab_cartes[] = $carte;
@@ -545,7 +546,8 @@ trait Tools
         return $personne;
     }
 
-    protected function getMenu($personne) {
+    protected function getMenu($personne)
+    {
         // on doit déterminer les accès de l'utilisateur et les pousser dans la session
         $menu_club = false;
         $menu_ur = false;
@@ -618,8 +620,9 @@ trait Tools
         return [$menu, $cartes];
     }
 
-    protected function insertWpUser($firstname, $lastname, $email, $password) {
-        try{
+    protected function insertWpUser($firstname, $lastname, $email, $password)
+    {
+        try {
             DB::beginTransaction();
             $max_user_before = DB::connection('mysqlwp')->select("SELECT MAX(ID) as max FROM wp_users");
             $max_before = $max_user_before[0]->max;
@@ -627,33 +630,33 @@ trait Tools
             $firstname_wp = ucfirst(strtolower(addslashes($firstname)));
             $lastname_wp = ucfirst(strtolower(addslashes($lastname)));
             $display = $firstname_wp . ' ' . $lastname_wp;
-            $identifiant = strtolower($firstname_wp . '.' . $lastname_wp.'.'.uniqid());
+            $identifiant = strtolower($firstname_wp . '.' . $lastname_wp . '.' . uniqid());
             $now = date('Y-m-d H:i:s');
             $passwp = md5($password);
 
             DB::connection('mysqlwp')->statement("INSERT INTO wp_users (user_login, user_pass, user_nicename, user_email, user_url, user_registered, user_activation_key, user_status,
-                display_name) VALUES ('".$identifiant."', '".$passwp."', '".$identifiant."', '".$email."', '', '".$now."', '', 0, '".$display."')");
+                display_name) VALUES ('" . $identifiant . "', '" . $passwp . "', '" . $identifiant . "', '" . $email . "', '', '" . $now . "', '', 0, '" . $display . "')");
 
             $max_user_after = DB::connection('mysqlwp')->select("SELECT MAX(ID) as max FROM wp_users");
             $max_after = $max_user_after[0]->max;
             if ($max_after != $max_before) {
                 // on insère les user meta
                 $metas = array(
-                    'nickname'          => $identifiant,
-                    'first_name'        => $firstname_wp,
-                    'last_name'         => $lastname_wp,
-                    'description'       => '',
-                    'rich_editing'      => 'true',
+                    'nickname' => $identifiant,
+                    'first_name' => $firstname_wp,
+                    'last_name' => $lastname_wp,
+                    'description' => '',
+                    'rich_editing' => 'true',
                     'comment_shortcuts' => 'false',
-                    'admin_color'       => 'fresh',
-                    'use_ssl'           => '0',
-                    'wp_user_level'     => '0',
-                    'locale'            => '',
-                    'wp_capabilities'   => 'a:2:{s:8:"adhrents";b:1;s:15:"bbp_participant";b:1;}',
+                    'admin_color' => 'fresh',
+                    'use_ssl' => '0',
+                    'wp_user_level' => '0',
+                    'locale' => '',
+                    'wp_capabilities' => 'a:2:{s:8:"adhrents";b:1;s:15:"bbp_participant";b:1;}',
                     'show_admin_bar_front' => 'false'
                 );
                 foreach ($metas as $key => $meta) {
-                    $statement= "INSERT INTO wp_usermeta (user_id, meta_key, meta_value) VALUES ('".$max_after."', '".$key."', '".$meta."')";
+                    $statement = "INSERT INTO wp_usermeta (user_id, meta_key, meta_value) VALUES ('" . $max_after . "', '" . $key . "', '" . $meta . "')";
                     DB::connection('mysqlwp')->statement($statement);
                 }
             }
@@ -665,10 +668,11 @@ trait Tools
         }
     }
 
-    protected function deleteWpUser($email) {
+    protected function deleteWpUser($email)
+    {
         try {
             DB::beginTransaction();
-            $wp_user = DB::connection('mysqlwp')->select("SELECT ID FROM wp_users WHERE user_email = '".$email."'");
+            $wp_user = DB::connection('mysqlwp')->select("SELECT ID FROM wp_users WHERE user_email = '" . $email . "'");
             if (sizeof($wp_user) > 0) {
                 $userId = $wp_user[0]->ID;
 
@@ -684,14 +688,15 @@ trait Tools
         }
     }
 
-    protected function updateWpUser($email, $password) {
+    protected function updateWpUser($email, $password)
+    {
         try {
             DB::beginTransaction();
-            $wp_user = DB::connection('mysqlwp')->select("SELECT ID FROM wp_users WHERE user_email = '".$email."'");
+            $wp_user = DB::connection('mysqlwp')->select("SELECT ID FROM wp_users WHERE user_email = '" . $email . "'");
             if (sizeof($wp_user) > 0) {
                 $userId = $wp_user[0]->ID;
                 $passwp = md5($password);
-                DB::connection('mysqlwp')->statement("UPDATE wp_users SET user_pass = '".$passwp."' WHERE ID = $userId LIMIT 1");
+                DB::connection('mysqlwp')->statement("UPDATE wp_users SET user_pass = '" . $passwp . "' WHERE ID = $userId LIMIT 1");
             }
 
             DB::commit();
@@ -702,13 +707,14 @@ trait Tools
         }
     }
 
-    protected function updateWpUserEmail($email, $new_email) {
+    protected function updateWpUserEmail($email, $new_email)
+    {
         try {
             DB::beginTransaction();
-            $wp_user = DB::connection('mysqlwp')->select("SELECT ID FROM wp_users WHERE user_email = '".$email."'");
+            $wp_user = DB::connection('mysqlwp')->select("SELECT ID FROM wp_users WHERE user_email = '" . $email . "'");
             if (sizeof($wp_user) > 0) {
                 $userId = $wp_user[0]->ID;
-                DB::connection('mysqlwp')->statement("UPDATE wp_users SET user_email = '".$new_email."' WHERE ID = $userId LIMIT 1");
+                DB::connection('mysqlwp')->statement("UPDATE wp_users SET user_email = '" . $new_email . "' WHERE ID = $userId LIMIT 1");
             }
 
             DB::commit();
@@ -719,8 +725,9 @@ trait Tools
         }
     }
 
-    protected function getUserFromWp($pass, $id) {
-        $wp_user = DB::connection('mysqlwp')->select("SELECT user_email FROM wp_users WHERE user_pass = '".$pass."' AND id = $id LIMIT 1");
+    protected function getUserFromWp($pass, $id)
+    {
+        $wp_user = DB::connection('mysqlwp')->select("SELECT user_email FROM wp_users WHERE user_pass = '" . $pass . "' AND id = $id LIMIT 1");
         if (sizeof($wp_user) > 0) {
             $email_user = $wp_user[0]->user_email;
             if ($email_user != '') {
@@ -734,18 +741,19 @@ trait Tools
         return null;
     }
 
-    protected function MailAndHistoricize($user, $object){
+    protected function MailAndHistoricize($user, $object)
+    {
         //TODO: activer la ligne ci dessous et desactiver l'email par defaut
         $email = $user->email;
 //        $email ="hellebore-contact@protonmail.com";
         //enregistrement de l'action de la personne
         //TODO: définir plus de types d'action
-        $this->registerAction($user->id, 4,$object );
+        $this->registerAction($user->id, 4, $object);
         // enregistrement du mail de la personne
         $mailSent = Mail::to($email)->send(new SendModificationEmail($object));
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
         $mail = new \stdClass();
-        $mail->titre =$object;
+        $mail->titre = $object;
         $mail->destinataire = $email;
         $mail->contenu = $htmlContent;
         $this->registerMail($user->id, $mail);

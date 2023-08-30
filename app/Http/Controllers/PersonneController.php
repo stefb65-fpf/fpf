@@ -70,14 +70,23 @@ class PersonneController extends Controller
         } elseif ($nbadresses == 1) {
             $personne->adresses[1] = [];
         }
-
+        if ($personne->phone_mobile) {
+            $personne->phone_mobile = $this->format_phone_number_visual($personne->phone_mobile);
+        }
         foreach ($personne->adresses as $adresse) {
+
             if ($adresse) {
                 if ($adresse->pays) {
                     $country = Pays::where('nom', strtoupper(strtolower($adresse->pays)))->first();
                     $adresse->indicatif = $country->indicatif;
                 } else {
                     $adresse->indicatif = "";
+                }
+                if ($adresse->telephonedomicile) {
+                    $adresse->telephonedomicile = $this->format_phone_number_visual($adresse->telephonedomicile);
+                }
+                if ($adresse->telephonemobile) {
+                    $adresse->telephonemobile = $this->format_phone_number_visual($adresse->telephonemobile);
                 }
             }
         }
@@ -106,7 +115,7 @@ class PersonneController extends Controller
         $mails = Historiquemail::where('personne_id', $user->id)->orderByDesc('created_at')->paginate(50);
 
         foreach ($mails as $mail) {
-                $mail->contenu = $this->get_string_between($mail->contenu, '<main>', '</main>');
+            $mail->contenu = $this->get_string_between($mail->contenu, '<main>', '</main>');
         }
 
         return view('personnes.mes_mails', compact('mails'));
@@ -169,8 +178,9 @@ class PersonneController extends Controller
     public function updateCivilite(CiviliteRequest $request, Personne $personne)
     {
         $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'datenaissance' => $request->datenaissance, "phone_mobile" => $request->phone_mobile);
+        $datap["phone_mobile"] = $this->format_mobile_for_base($datap["phone_mobile"]);
         $personne->update($datap);
-//        $request->session()->put('user', $personne);
+
         $this->registerAction($personne->id, 4, "Modification de vos informations de civilité");
         return redirect()->route('mon-profil')->with('success', "Vos informations de civilité ont été modifiées avec succès");
     }
@@ -187,9 +197,7 @@ class PersonneController extends Controller
         unset($datap_adresse['enableBtn']);
         $datap_adresse['pays'] = $selected_pays->nom;
         if ($datap_adresse["telephonedomicile"]) {
-            $datap_adresse["telephonedomicile"] = str_replace(" ", "", $datap_adresse["telephonedomicile"]);
-            $datap_adresse["telephonedomicile"] = ltrim($datap_adresse["telephonedomicile"], '0');
-            $datap_adresse["telephonedomicile"] = '+' . $indicatif . '.' . $datap_adresse["telephonedomicile"];;
+            $datap_adresse["telephonedomicile"] = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
         }
 //        dd($datap_adresse);
         if ($form == 1) {//$form = 1, c'est le formulaire d'adresse defaut / facturation

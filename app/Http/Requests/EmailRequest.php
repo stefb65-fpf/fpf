@@ -22,7 +22,7 @@ class EmailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'max:100', 'min:8','email'],
+            'email' => ['required', 'string', 'max:255', 'min:8','email'],
         ];
     }
 }

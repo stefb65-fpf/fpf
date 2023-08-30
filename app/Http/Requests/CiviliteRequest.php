@@ -25,7 +25,7 @@ class CiviliteRequest extends FormRequest
             'nom' => ['string','required','max:40', 'min:2'],
             'prenom' => ['string','required','max:40', 'min:2'],
             'datenaissance'=>'date',
-//            'phone_mobile'=>['numeric','max:10', 'min:8']
+            'phone_mobile'=>'nullable|string|max:25',
         ];
     }
 }

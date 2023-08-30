@@ -21,16 +21,16 @@ class UrInformationsRequest extends FormRequest
     {
         return [
             'nom' => ['string','required','max:120', 'min:2'],
-            'courriel' => ['string','max:120', 'min:2'],
+            'courriel' => ['string','max:120', 'min:2', 'max:255'],
             'web' => ['string','max:120', 'min:2'],
             'libelle1' => 'nullable|string',
             'libelle2' => 'nullable|string',
             'libelle3' => 'nullable|string',
-            'codepostal' => 'string|required',
+            'codepostal' => 'string|required|max:10',
             'ville' => 'string',
             'pays' => 'string|required',
-            'telephonedomicile' => 'nullable|string',
-            'telephonemobile' => 'nullable|string',
+            'telephonedomicile' => 'nullable|string|max:25',
+            'telephonemobile' => 'nullable|string|max:25',
         ];
     }
 }

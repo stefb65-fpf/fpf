@@ -23,7 +23,7 @@ class SupportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'email|required',
+            'email' => 'email|required|max:255',
             'identifiant' => 'string|nullable',
             'objet'=> 'required',
             'contenu'=> 'required|string'

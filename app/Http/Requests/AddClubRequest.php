@@ -25,17 +25,17 @@ class AddClubRequest extends FormRequest
             'nomClub'   => 'string|required|max:100',
             'libelle1Club' => 'nullable|string',
             'libelle2Club' => 'nullable|string',
-            'codepostalClub'=>'string|required',
+            'codepostalClub'=>'string|required|max:10',
             'villeClub'=>'string|required|max:50',
-            'emailClub' => 'email|required',
+            'emailClub' => 'email|required|max:255',
             'nomContact' => 'string|required|max:60',
             'prenomContact' => 'string|required|max:60',
             'libelle1Contact' => 'nullable|string',
             'libelle2Contact' => 'nullable|string',
-            'codepostalContact'=>'string|required',
+            'codepostalContact'=>'string|required|max:10',
             'villeContact'=>'string|required|max:50',
             'emailContact' => 'email|required',
-            'phoneMobileContact' => 'required',
+            'phoneMobileContact' => 'required|max:25',
         ];
     }
 }
