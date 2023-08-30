@@ -102,15 +102,17 @@ class UtilisateurController extends Controller
         // on crée un règlement en indiquant l'abonnement et l'adhésion
         foreach ($tab_adherents as $adherent) {
             // on met à jour le ct des utilisateurs
-            $utilisateurmaj = Utilisateur::where('id', $adherent['adherent']['id'])->first();
-            if ($utilisateurmaj) {
-                $datau = array('ct' => $adherent['adherent']['ctInt']);
-                if (in_array($adherent['adherent']['ctInt'], [5,6])) {
-                    $datau['premierecarte'] = $adherent['adherent']['premierecarte'];
-                } else {
-                    $datau['premierecarte'] = null;
+            if (isset($adherent['adherent']['ctInt'])) {
+                $utilisateurmaj = Utilisateur::where('id', $adherent['adherent']['id'])->first();
+                if ($utilisateurmaj) {
+                    $datau = array('ct' => $adherent['adherent']['ctInt']);
+                    if (in_array($adherent['adherent']['ctInt'], [5, 6])) {
+                        $datau['premierecarte'] = $adherent['adherent']['premierecarte'];
+                    } else {
+                        $datau['premierecarte'] = null;
+                    }
+                    $utilisateurmaj->update($datau);
                 }
-                $utilisateurmaj->update($datau);
             }
 
             $datar = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $adherent['adherent']['id']);
@@ -142,17 +144,20 @@ class UtilisateurController extends Controller
         $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
             ->where('clubs_id', $club->id)->where('fonctionsutilisateurs.fonctions_id', 97)->whereNotNull('utilisateurs.personne_id')->first();
         if ($contact) {
+            $user = session()->get('user');
             $email = $contact->personne->email;
-            $mailSent = Mail::to($email)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant));
+            $mailSent = Mail::to($email)->cc($user->email)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant));
             $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
-            $this->registerAction($contact->personne->id, 1, "Validation du bordereau pour renouvellement FPF");
+//            $this->registerAction($contact->personne->id, 1, "Validation du bordereau pour renouvellement FPF");
+            $this->registerAction($user->id, 1, "Validation du bordereau pour renouvellement FPF");
 
             $mail = new \stdClass();
             $mail->titre = "Demande de renouvellement d'adhésion FPF";
             $mail->destinataire = $email;
             $mail->contenu = $htmlContent;
             $this->registerMail($contact->personne->id, $mail);
+            $this->registerMail($user->id, $mail);
         }
 
         return new JsonResponse(['file' => $filename, 'reglement_id' => $reglement->id], 200);
@@ -210,10 +215,21 @@ class UtilisateurController extends Controller
             return new JsonResponse(['erreur' => 'cette personne existe déjà'], 400);
         }
         // on enregistre la personne
+        $dataa = array('libelle1' => $request->libelle1, 'libelle2' => $request->libelle2, 'codepostal' => $request->codepostal,
+            'ville' => strtoupper(trim($request->ville)));
         $password = $this->encodePwd($request->password);
         $datap = array('nom' => strtoupper(trim($request->nom)), 'prenom' => trim($request->prenom), 'email' => trim($request->email), 'sexe' => $request->sexe,
-            'phone_mobile' => $request->phone_mobile, 'password' => $password,
-            'attente_paiement' => 1);
+            'password' => $password, 'attente_paiement' => 1);
+
+        $pays = Pays::where('id', $request->pays)->first();
+        if ($pays) {
+            $dataa['pays'] = $pays->nom;
+            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+        } else {
+            $dataa['pays'] = 'FRANCE';
+            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile);
+        }
+
         if ($request->type == 'adhesion') {
             list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($request->datenaissance);
             if ($request->aboPlus == 1 || $ct == 2) {
@@ -239,17 +255,10 @@ class UtilisateurController extends Controller
         $this->insertWpUser($request->prenom, $request->nom, trim($request->email), $request->password);
 
         // on enregistre l'adresse
-        $pays = Pays::where('id', $request->pays)->first();
-        if ($pays) {
-            $dataa = array('libelle1' => $request->libelle1, 'libelle2' => $request->libelle2, 'codepostal' => $request->codepostal,
-                'ville' => strtoupper(trim($request->ville)), 'pays' => $pays->nom);
-            $adresse = Adresse::create($dataa);
+        $adresse = Adresse::create($dataa);
 
-            // on lie l'adresse à la personne
-            $personne->adresses()->attach($adresse->id);
-
-        }
-
+        // on lie l'adresse à la personne
+        $personne->adresses()->attach($adresse->id);
 
         $montant = 0;
         $ref = '';

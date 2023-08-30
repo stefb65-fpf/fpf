@@ -116,6 +116,20 @@
                     </div>
                 </div>
             </div>
+            <div class="flexEnd">
+                <a href="{{ route('admin.personnes.create', 'adherents') }}" class="adminPrimary btnMedium">Ajout adhérent individuel</a>
+            </div>
+        @else
+            @if($view_type === 'abonnes')
+                <div class="flexEnd">
+                    <a href="{{ route('admin.personnes.create', 'abonnes') }}" class="adminPrimary btnMedium">Ajout abonné seul</a>
+                </div>
+            @endif
+            @if($view_type === 'formateurs')
+                <div class="flexEnd">
+                    <a href="{{ route('admin.personnes.create', 'formateurs') }}" class="adminPrimary btnMedium">Ajout formateur</a>
+                </div>
+            @endif
         @endif
         @if(!sizeof($utilisateurs))
             Aucun résultat ne répond aux critères selectionnés.
@@ -136,6 +150,9 @@
                         @if($view_type != "recherche")
                             <th>Nom de club</th>
                         @endif
+                    @endif
+                    @if(in_array($view_type,["adherents","ur_adherents","recherche", 'abonnes']))
+                        <th>Abonnement</th>
                     @endif
                     <th></th>
                 </tr>
@@ -222,17 +239,16 @@
                                 <td>{{ $utilisateur->club ? $utilisateur->club->nom : '' }}{{$utilisateur->clubs_id}}</td>
                             @endif
                         @endif
+                        @if(in_array($view_type,["adherents","ur_adherents","recherche", 'abonnes']))
+                            <td>Abonnement</td>
+                        @endif
                         <td>
                             <div class="mb3">
                                 @if($level == 'admin')
                                     @if (in_array($view_type, ["adherents", "recherche"]))
                                         <a href="{{ route('admin.personnes.edit', [$utilisateur->personne_id, 'adherents']) }}" class="adminPrimary btnSmall">Editer</a>
                                     @else
-{{--                                        @if($view_type == "recherche")--}}
-{{--                                            <a href="{{ route('admin.personnes.edit', [$utilisateur->personne_id, 'adherents']) }}" class="adminPrimary btnSmall">Editer</a>--}}
-{{--                                        @else--}}
-                                            <a href="{{ route('urs.personnes.edit', [$utilisateur->id, $view_type]) }}" class="adminPrimary btnSmall">Editer</a>
-{{--                                        @endif--}}
+                                        <a href="{{ route('admin.personnes.edit', [$utilisateur->id, $view_type]) }}" class="adminPrimary btnSmall">Editer</a>
                                     @endif
                                 @else
                                     <a href="{{ route('urs.personnes.edit', [$utilisateur->personne_id, $view_type]) }}" class="adminPrimary btnSmall">Editer</a>

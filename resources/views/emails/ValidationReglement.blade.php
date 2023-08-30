@@ -1,6 +1,6 @@
 @extends('layouts.email')
 @section('content')
-    <div class="mailContent" style="text-align: center;">
+    <div class="mailContent">
         <div class="text" style="font-size: 16px;">
             Votre règlement {{ $reglement->reference }} d'un montant de {{ $reglement->montant }}€ a été validé.<br>
             <br>

@@ -1,9 +1,9 @@
-{{--@if($action == 'store')--}}
-{{--    <form class="w100" action="{{ route('admin.personnes.store') }}" method="POST">--}}
-{{--@else--}}
+@if($action == 'store')
+    <form class="w100" action="{{ route($level.'.personnes.store', $view_type) }}" method="POST">
+@else
 <form class="w100" action="{{ route($level.'.personnes.update', [$personne, $view_type]) }}" method="POST" >
     <input type="hidden" name="_method" value="PUT">
-{{--@endif--}}
+@endif
 
     {{ csrf_field() }}
     <div class="formBlock minW100" >

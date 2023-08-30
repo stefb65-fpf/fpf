@@ -115,7 +115,7 @@ class PersonneController extends Controller
         $mails = Historiquemail::where('personne_id', $user->id)->orderByDesc('created_at')->paginate(50);
 
         foreach ($mails as $mail) {
-            $mail->contenu = $this->get_string_between($mail->contenu, '<main>', '</main>');
+                $mail->contenu = $this->get_string_between($mail->contenu, '<main>', '</main>');
         }
 
         return view('personnes.mes_mails', compact('mails'));
@@ -177,10 +177,19 @@ class PersonneController extends Controller
     // mise à jour de la partie Civilité à partir de la page profil
     public function updateCivilite(CiviliteRequest $request, Personne $personne)
     {
-        $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'datenaissance' => $request->datenaissance, "phone_mobile" => $request->phone_mobile);
-        $datap["phone_mobile"] = $this->format_mobile_for_base($datap["phone_mobile"]);
+        // on récupère l'adresse de la personne pour formatter son téléphone
+        $datap = array('nom' => $request->nom, 'prenom' => $request->prenom, 'datenaissance' => $request->datenaissance);
+        $pays = Pays::where('nom', $personne->adresses[0]->pays)->first();
+        if ($pays) {
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+        } else {
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+        }
+        if ($phone_mobile == -1) {
+            return redirect()->route('mon-profil')->with('error', "Le numéro de téléphone saisi est incorrect.");
+        }
+        $datap['phone_mobile'] = $phone_mobile;
         $personne->update($datap);
-
         $this->registerAction($personne->id, 4, "Modification de vos informations de civilité");
         return redirect()->route('mon-profil')->with('success', "Vos informations de civilité ont été modifiées avec succès");
     }
@@ -199,7 +208,6 @@ class PersonneController extends Controller
         if ($datap_adresse["telephonedomicile"]) {
             $datap_adresse["telephonedomicile"] = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
         }
-//        dd($datap_adresse);
         if ($form == 1) {//$form = 1, c'est le formulaire d'adresse defaut / facturation
             if (!sizeof($personne->adresses)) { //la personne n'a aucune adresse en base. On en crée une.
                 $new_adress = Adresse::create($datap_adresse);
@@ -210,7 +218,6 @@ class PersonneController extends Controller
                     DB::table('adresse_personne')->insert($data_ap);
                 }
             } else { //la personne a au moins une adresse en base. On met à jour l'adresse par defaut.
-//                dd($datap_adresse, $personne->adresses[0]);
                 $personne->adresses[0]->update($datap_adresse);
             }
         } else { //$form = 2, c'est le formulaire d'adresse de livraison
@@ -223,11 +230,8 @@ class PersonneController extends Controller
                     $data_ap = array('adresse_id' => $new_adress->id, 'personne_id' => $personne->id, 'defaut' => 2);
                     DB::table('adresse_personne')->insert($data_ap);
                 }
-//                dd($new_adress);
             }
         }
-//dd($personne->id);
-//        $request->session()->put('user', $personne);
         $this->registerAction($personne->id, 4, "Modification de vos adresses");
         return redirect()->route('mon-profil')->with('success', "Votre adresse a été modifiée avec succès");
     }

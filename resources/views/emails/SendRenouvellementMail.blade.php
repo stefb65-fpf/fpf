@@ -1,6 +1,6 @@
 @extends('layouts.email')
 @section('content')
-    <div class="mailContent" style="text-align: center;">
+    <div class="mailContent">
         <div class="text" style="font-size: 16px;">
             Vous venez d'initier un renouvellement pour le club {{ $club->nom }} pour un montant de {{ $montant }}€.
             <br>

@@ -5,6 +5,16 @@
             Votre demande de support a bien été traitée. Veuillez trouver ci-dessous la réponse apportée à votre demande.
         </div>
         <hr>
+        <div class="text"  style="font-size: 14px; font-weight: bolder; text-decoration: underline;">
+            Votre demande
+        </div>
+        <div class="text"  style="font-size: 14px;">
+            {!! $support->contenu !!}
+        </div>
+        <hr>
+        <div class="text"  style="font-size: 14px; font-weight: bolder; text-decoration: underline;">
+            Réponse
+        </div>
         <div class="text"  style="font-size: 14px;">
             {!! $support->answer !!}
         </div>

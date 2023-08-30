@@ -73,7 +73,7 @@
             </div>
         </div>
         @endif
-        <div class="mt25 flexEnd">
+        <div class="flexEnd">
             <a href="{{ route('admin.clubs.create') }}" class="adminPrimary btnMedium">Ajouter un club</a>
         </div>
 

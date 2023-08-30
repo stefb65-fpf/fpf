@@ -8,6 +8,7 @@ use App\Mail\SendInvoice;
 use App\Mail\SendRenouvellementMail;
 use App\Models\Club;
 use App\Models\Personne;
+use App\Models\Utilisateur;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
 
@@ -52,18 +53,38 @@ trait Invoice
             ->setPaper('a4', 'portrait')
             ->save($dir.'/'.$name);
 
-        $email = $personne ? $personne->email : $club->courriel;
-        $mailSent = Mail::to($email)->send(new SendInvoice($invoice, $dir.'/'.$name));
-        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
-
         if ($personne) {
+            $email = $personne->email;
+            $mailSent = Mail::to($email)->send(new SendInvoice($invoice, $dir.'/'.$name));
+            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
             $mail = new \stdClass();
             $mail->titre = "Facture émise par la FPF";
             $mail->destinataire = $email;
             $mail->contenu = $htmlContent;
             $this->registerMail($personne->id, $mail);
-        }
+        } else {
+            if ($club) {
+                // on cherche le contact du club
+                $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                    ->where('utilisateurs.clubs_id', $club->id)
+                    ->where('fonctionsutilisateurs.fonctions_id', 97)
+                    ->first();
+                if ($contact) {
+                    $user = session()->get('user');
+                    $email = $contact->personne->email;
+                    $mailSent = Mail::to($email)->cc($user->email)->send(new SendInvoice($invoice, $dir.'/'.$name));
+                    $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
+                    $mail = new \stdClass();
+                    $mail->titre = "Facture émise par la FPF";
+                    $mail->destinataire = $email;
+                    $mail->contenu = $htmlContent;
+                    $this->registerMail($contact->personne->id, $mail);
+                    $this->registerMail($user->id, $mail);
+                }
+            }
+        }
         return true;
     }
 }

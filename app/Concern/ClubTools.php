@@ -157,7 +157,7 @@ trait ClubTools
             DB::beginTransaction();
             // on récupère les infos personne à mettre à jour
             $personne = $utilisateur->personne;
-            $datap = $request->only('nom', 'prenom', 'datenaissance', 'phone_mobile', 'sexe');
+            $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe');
             $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
             $datap['news'] = $request->news ? 1 : 0;
             $personne->update($datap);

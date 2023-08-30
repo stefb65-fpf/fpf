@@ -3,7 +3,7 @@
 @section('content')
     <div class="pageCanva">
         <h1 class="pageTitle">
-            <div>Gestion Club - Bodereaux & Règlements
+            <div>Gestion Club - Bordereaux & Règlements
                 <div class="urTitle">
                     {{ $club->nom }}
                 </div>

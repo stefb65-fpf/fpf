@@ -46,7 +46,7 @@
                     <tr>
                         <td>{{ $candidat->ordre }}</td>
                         <td>{{ $candidat->utilisateur->identifiant }}</td>
-                        <td>{{ $candidat->utilisateur->personne->prenom.' '.strtoupper($candidat->utilisateur->personne->prenom) }}</td>
+                        <td>{{ $candidat->utilisateur->personne->prenom.' '.strtoupper($candidat->utilisateur->personne->nom) }}</td>
                         <td>{{ $candidat->utilisateur->personne->email }}</td>
                         <td>
                             <div>

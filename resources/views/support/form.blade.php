@@ -16,8 +16,10 @@
             <div class="customField maxW100 w540 ">
                 <label>Objet <span class="bold">(obligatoire)</span></label>
                 <select class="formValue" name="objet" data-ref="objet" required>
-                    <option value="Problème de Connexion">Problème de Connexion</option>
+                    <option value="Problème de Connexion">Problème de connexion</option>
                     <option value="Problème de paiement">Problème de paiement</option>
+                    <option value="Enregistrement adhésion ou abonnement">Enregistrement adhésion ou abonnement</option>
+                    <option value="Anonymisation des données">Anonymisation des données</option>
                     <option value="Autre">Autre</option>
                 </select>
                 <div name="error" class="error"></div>

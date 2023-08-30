@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PersonneRequest;
 use App\Mail\SendAnonymisationEmail;
 use App\Mail\SendInvoice;
+use App\Models\Adresse;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Ur;
@@ -47,17 +48,6 @@ class PersonneController extends Controller
             $query = Personne::where('is_adherent',0)->where('is_formateur' ,'!=', 0);
         } elseif ($view_type == "abonnes"){
             $query = Personne::where('is_adherent',0)->where('is_abonne' ,'!=', 0);
-//        } elseif($view_type == "ur_adherents"){
-//            $cartes = session()->get('cartes');
-//            if (!$cartes || count($cartes) == 0) {
-//                return redirect()->route('accueil')->with('error', "Un problème est survenu lors de la récupération des informations UR");
-//            }
-//            $active_carte = $cartes[0];
-//            $ur = Ur::where('id', $active_carte->urs_id)->first();
-//            if (!$ur || ($active_carte->urs_id != $ur_id)) {
-//                return redirect()->route('accueil')->with('error', "Un problème est survenu lors de la récupération des informations UR");
-//            }
-//            $query = Utilisateur::where('urs_id', '=', $ur->id)->where('personne_id' ,'!=', null);
         } elseif($view_type == "recherche") {
             $query = Personne::join('utilisateurs', 'utilisateurs.personne_id','=','personnes.id' );
             if($term){
@@ -81,11 +71,8 @@ class PersonneController extends Controller
         if ($type_adherent != 'all' && in_array($type_adherent,[1,2])) {
             if($type_adherent == 1) {
                 $query  = $query->whereNull('clubs_id');
-//                $query  = $query->where('clubs_id', null);
             } else {
-//            }elseif($type_adherent == 2){
                 $query  = $query->whereNotNull('clubs_id');
-//                $query  = $query->where('clubs_id','!=', null);
             }
         }
         if ($type_carte != 'all' && (in_array($type_carte,[2,3,4,5,6,7,8,9,"F"]))) {
@@ -97,31 +84,15 @@ class PersonneController extends Controller
         return view('admin.personnes.liste', compact('view_type', 'utilisateurs', 'statut', 'type_carte', 'level', 'type_adherent','ur_id','urs','ur', 'term'));
     }
 
-    public function listeAbonnes()
-    {
-        return view('admin.personnes.liste_abonnes');
-    }
-
-    public function listeFormateurs()
-    {
-        return view('admin.personnes.liste_formateurs');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+//    public function listeAbonnes()
+//    {
+//        return view('admin.personnes.liste_abonnes');
+//    }
+//
+//    public function listeFormateurs()
+//    {
+//        return view('admin.personnes.liste_formateurs');
+//    }
 
     /**
      * Show the form for editing the specified resource.
@@ -146,27 +117,115 @@ class PersonneController extends Controller
         return view('admin.personnes.edit', compact('personne', 'view_type', 'countries', 'level'));
     }
 
+    public function create($view_type) {
+        $countries = DB::table('pays')->orderBy('nom')->get();
+        $personne = new Personne();
+        $personne->adresses[] = new Adresse();
+        $personne->adresses[0]->pays = 'France';
+        $personne->adresses[0]->indicatif = '33';
+        $level = 'admin';
+        return view('admin.personnes.create', compact('view_type', 'countries', 'level', 'personne'));
+    }
+
+    public function store(PersonneRequest $request, $view_type) {
+        $email = trim($request->email);
+        $olduser = Personne::where('email', $email)->first();
+        if ($olduser) {
+            return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà");
+        }
+
+        $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
+        $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe');
+        $pays = Pays::where('id', $request->pays)->first();
+        if ($pays) {
+            $dataa['pays'] = $pays->nom;
+            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+        } else {
+            $dataa['pays'] = 'France';
+            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile);
+            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile);
+        }
+
+        $datap['email'] = $request->email;
+        $datap['password'] = $this->generateRandomPassword();
+        $personne = Personne::create($datap);
+
+        $addresse = Adresse::create($dataa);
+
+        // on lie l'adresse à la personne
+        $personne->adresses()->attach($addresse->id);
+
+        if ($view_type == 'adherents') {
+            $datap2 = array('is_adherent' => 1);
+            $personne->update($datap2);
+
+            // on cherche l'ur pour le nouvel utilisateur
+            list($identifiant, $urs_id, $numero) = $this->setIdentifiant($personne->adresses[0]->codepostal);
+            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+            $datau = [
+                'urs_id' => $urs_id,
+                'adresses_id' => $personne->adresses[0]->id,
+                'personne_id' => $personne->id,
+                'identifiant' => $identifiant,
+                'numeroutilisateur' => $numero,
+                'sexe' => $personne->sexe,
+                'nom' => $personne->nom,
+                'prenom' => $personne->prenom,
+                'ct' => $ct,
+                'statut' => 0,
+                'saison' => date('Y') - 1,
+            ];
+            $utilisateur = Utilisateur::create($datau);
+            return redirect('/admin/personnes/'.$view_type)->with('success', "L'adhérent $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      */
     public function update(PersonneRequest $request, Personne $personne, $view_type)
     {
-        $datap = $request->only('nom', 'prenom', 'datenaissance', 'email', 'phone_mobile', 'sexe');
-        $personne->update($datap);
-
-        $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville', 'telephonedomicile');
+        $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe');
+        $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
         $pays = Pays::where('id', $request->pays)->first();
         if ($pays) {
             $dataa['pays'] = $pays->nom;
+            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+        } else {
+            $dataa['pays'] = 'France';
+            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile);
+            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile);
         }
+        if ($request->email !== $personne->email) {
+            // on regarde si aucun utilisateur n'existe avec le mail saisi
+            $olduser = Personne::where('email', $request->email)->first();
+            if ($olduser) {
+                return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà");
+            }
+            $datap['email'] = $request->email;
+        }
+        $personne->update($datap);
+        if ($personne->utilisateurs) {
+            foreach ($personne->utilisateurs as $utilisateur) {
+                $datau = array('nom' => $request->nom, 'prenom' => $request->prenom, 'courriel' => $request->email);
+                $utilisateur->update($datau);
+            }
+        }
+
         $adresse_1 = $personne->adresses[0];
         $adresse_1->update($dataa);
 
         if (isset($request->villeLivraison) && isset($request->codepostalLivraison) && isset($request->paysLivraison) && isset($personne->adresses[1])) {
-            $dataa2 = $request->only('libelle1Livraison', 'libelle2Livraison', 'codepostalLivraison', 'villeLivraison', 'telephonedomicileLivraison');
+            $dataa2 = $request->only('libelle1Livraison', 'libelle2Livraison', 'codepostalLivraison', 'villeLivraison');
             $pays = Pays::where('id', $request->paysLivraison)->first();
             if ($pays) {
                 $dataa2['pays'] = $pays->nom;
+                $dataa2['telephonedomicileLivraison'] = $this->format_fixe_for_base($request->telephonedomicileLivraison, $pays->indicatif);
+            } else {
+                $dataa2['pays'] = 'France';
+                $dataa2['telephonedomicileLivraison'] = $this->format_fixe_for_base($request->telephonedomicileLivraison);
             }
             $adresse_2 = $personne->adresses[1];
             $adresse_2->update($dataa2);

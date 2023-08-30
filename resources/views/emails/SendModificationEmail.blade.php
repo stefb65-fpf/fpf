@@ -1,6 +1,6 @@
 @extends('layouts.email')
 @section('content')
-    <div class="mailContent"  style="text-align: center;">
+    <div class="mailContent">
         <div class="text" style="font-size: 16px;">
             Nous avons enregistré une action depuis votre compte de gestion concernant le sujet suivant:<br>
            <span style="font-weight: 600;color: #003d77;">{{ $modification_type }} </span><br>

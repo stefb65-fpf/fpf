@@ -199,7 +199,9 @@ Route::get('/urs/personnes/{view_type}/{statut?}/{type_carte?}/{type_adherent?}/
 
 //gestion admin personnes
 Route::get('/admin/personnes/{personne_id}/edit/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'edit'])->name('admin.personnes.edit');
+Route::get('/admin/personnes/create/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'create'])->name('admin.personnes.create');
 Route::put('/admin/personnes/{personne}/update/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'update'])->name('admin.personnes.update');
+Route::post('/admin/personnes/store/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'store'])->name('admin.personnes.store');
 Route::delete('/admin/personnes/{personne}/anonymize/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'anonymize'])->name('admin.personnes.anonymize');
 Route::get('/admin/personnes/{view_type}/{ur_id?}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\Admin\PersonneController::class, 'list']);
 Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::class,'index'])->name('personnes.index');
