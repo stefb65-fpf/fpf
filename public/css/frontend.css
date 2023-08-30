@@ -39,11 +39,11 @@ h1 {
 }
 
 .blue {
-    color: #003d77;
+    color: #003d77!important;
 }
 
 .grey {
-    color: gray;
+    color: gray!important;
 }
 .bgTransparent{
     background-color: transparent;
@@ -303,6 +303,7 @@ a {
     padding: 20px 0;
     margin: 10px auto;
     cursor: pointer;
+    border: none;
 }
 .flex-column {
     flex-direction: column;
@@ -1326,6 +1327,9 @@ body.modalVisible .modalBackground {
     font-weight: 300;
     margin-top: 10px;
     font-style: italic;
+    color: #383838;
+}
+.card:hover .type{
     color: white;
 }
 
@@ -1571,7 +1575,9 @@ body.modalVisible .modalBackground {
     width: 100%;
     cursor: text;
 }
-
+.customField select{
+    padding:10px;
+}
 .customField2 .groupCustom {
     padding: 11px 10px;
     font-size: 0.75rem;
@@ -1592,19 +1598,9 @@ body.modalVisible .modalBackground {
 }
 
 .customField2 .groupCustom .indicatif {
-    /*padding: 8px;*/
-    /*font-size: 1rem;*/
-    /*!*border: none;*!*/
-    /*background: grey;*/
-    /*color: white;*/
-    /*width: max-content;*/
-    /*border: 1px solid #b3b3b3;*/
-    /*border-right: none;*/
-    /*padding-right: 8px;*/
-    /*height: 38px;*/
     color: #003d77;
     background-color: #cce3f9;
-    padding: 05px;
+    padding: 5px;
     border-radius: 5px 0 0 5px;
     height: 38px;
     display: flex;
@@ -1773,6 +1769,7 @@ body.modalVisible .modalBackground {
     font-size: 15px;
     margin: 1.75rem auto 1rem auto;
     cursor: pointer;
+    border: none;
 }
 
 .customBtn[disabled], button[disabled] {
@@ -2211,7 +2208,10 @@ footer .logo img {
     border-radius: 5px;
 }
 
-select.formValue {
+ .phoneInput {
+    max-width: calc(256px - 35px);
+}
+select.formValue{
     max-width: 256px;
 }
 
@@ -2341,7 +2341,7 @@ select.formValue {
 /*    max-width: calc(256px - 37px);*/
 /*}*/
 
-.formLine .group .indicator, .formUnit .group .indicator {
+ .indicator {
     color: #003d77;
     background-color: #cce3f9;
     padding: 05px;
@@ -2533,7 +2533,7 @@ input:checked + .slider:before {
     position: relative;
     display: flex;
     justify-content: center;
-    align-items: center;
+    /*align-items: center;*/
     flex-direction: column;
     max-width: 400px
 }
@@ -3009,7 +3009,7 @@ select.floating.hidden {
     .formLine.newsletter {
         font-size: 15px;
         max-width: 90%;
-        text-align: center;
+        /*text-align: center;*/
     }
 
     .listLine.mr25 {
@@ -3037,6 +3037,12 @@ select.floating.hidden {
         max-width: unset;
         margin-right: 0;
         max-height: unset;
+    }
+    .w70, .w75{
+        width: 100%!important;
+    }
+    .formUnit{
+        margin: 0 0 20px;
     }
 }
 

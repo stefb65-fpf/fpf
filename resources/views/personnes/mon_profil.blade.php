@@ -230,12 +230,12 @@
                 <div class="formBlockWrapper">
                     <div class="formLine">
                         <div class="formLabel">Nom</div>
-                        <input class="formValue capitalize" value="{{$personne->nom}}" disabled="true" name="nom"
+                        <input class="formValue capitalize w75" value="{{$personne->nom}}" disabled="true" name="nom"
                                maxlength="40" minlength="2" type="text"/>
                     </div>
                     <div class="formLine">
                         <div class="formLabel">Prénom</div>
-                        <input class="formValue capitalize" value="{{$personne->prenom}}" disabled="true" name="prenom"
+                        <input class="formValue capitalize w75" value="{{$personne->prenom}}" disabled="true" name="prenom"
                                maxlength="40" minlength="2" type="text"/>
                     </div>
                     <div class="formLine">
@@ -245,8 +245,8 @@
                     </div>
                     <div class="formLine">
                         <div class="formLabel">Téléphone mobile</div>
-                        <input class="formValue" value="{{$personne->phone_mobile?:""}}"
-                               disabled="true" name="phone_mobile"/>
+                        <input class="formValue " value="{{$personne->phone_mobile?:""}}"
+                               disabled="true" name="phone_mobile" maxlength="25"/>
                     </div>
                 </div>
             </form>
@@ -273,14 +273,14 @@
                         <input type="hidden" name="_method" value="PUT">
                         {{ csrf_field() }}
                         <div class="formLine">
-                            <div class="formLabel">Rue</div>
-                            <input name="libelle1" type="text" class="formValue "
+                            <div class="formLabel">Adresse</div>
+                            <input name="libelle1" type="text" class="formValue w75"
                                    value="{{$personne->adresses[0]?$personne->adresses[0]->libelle1:""}}"
                                    disabled="true" maxlength="120"/>
                         </div>
                         <div class="formLine">
-                            <div class="formLabel"></div>
-                            <input name="libelle2" class="formValue "
+                            <div class="formLabel">Complément</div>
+                            <input name="libelle2" class="formValue w75"
                                    type="text" value="{{$personne->adresses[0]?$personne->adresses[0]->libelle2:""}}"
                                    disabled="true" maxlength="120"/>
                         </div>
@@ -326,7 +326,7 @@
                                     +{{$personne->adresses[0]?$personne->adresses[0]->indicatif:""}}</div>
                                 <input class="formValue phoneInput" type="text"
                                        value="{{$personne->adresses[0]?$personne->adresses[0]->telephonedomicile:""}}"
-                                       disabled="true" name="telephonedomicile"/>
+                                       disabled="true" name="telephonedomicile" maxlength="25"/>
                             </div>
                         </div>
                     </form>
@@ -349,14 +349,14 @@
                             <input type="hidden" name="_method" value="PUT">
                             {{ csrf_field() }}
                             <div class="formLine">
-                                <div class="formLabel">Rue</div>
-                                <input name="libelle1" type="text" class="formValue"
+                                <div class="formLabel">Adresse</div>
+                                <input name="libelle1" type="text" class="formValue w75"
                                        value="{{$personne->adresses[1]?$personne->adresses[1]->libelle1:""}}"
                                        disabled="true" maxlength="120"/>
                             </div>
                             <div class="formLine">
-                                <div class="formLabel"></div>
-                                <input name="libelle2" type="text" class="formValue"
+                                <div class="formLabel">Complément</div>
+                                <input name="libelle2" type="text" class="formValue w75"
                                        value="{{$personne->adresses[1]?$personne->adresses[1]->libelle2:""}}"
                                        disabled="true" maxlength="120"/>
                             </div>
@@ -402,7 +402,7 @@
                                         +{{$personne->adresses[1]?$personne->adresses[1]->indicatif:""}}</div>
                                     <input class="formValue phoneInput" type="text"
                                            value="{{$personne->adresses[1]?$personne->adresses[1]->telephonedomicile:""}}"
-                                           disabled="true" name="telephonedomicile"/>
+                                           disabled="true" name="telephonedomicile" maxlength="25"/>
                                 </div>
                             </div>
                         </form>
@@ -419,7 +419,7 @@
         </div>
     </div>
     <div class="formLine newsletter d-flex center flexWrap" >
-        <div class="switch">
+        <div class="switch mb10">
             <div class="message success">Votre choix a été pris en compte</div>
             {{--                {{$personne->news}}--}}
             <input type="checkbox"
@@ -427,21 +427,23 @@
                    data-personne="{{$personne->id}}">
             <span class="slider"></span>
         </div>
+<div class="d-flex flex-column">
+<label class="notSubscribing {{$personne->news?'d-none':''}} mb10" for="subscribeNews">
 
-        <label class="notSubscribing {{$personne->news?'d-none':''}} mb10" for="subscribeNews">
-            <div>Souhaitez-vous <span>recevoir les nouvelles</span> de la FPF ?<br> (Hors
-                lettre
-                de la fédé)
-            </div>
-            @if($personne->blacklist_date)
-                <div class="blacklist {{$personne->news?'d-none':''}}">Vous vous êtes désinscrits des nouvelles de la
-                    FPF depuis le {{($personne->blacklist_date)}} </div>
-            @endif</label>
-
-        <label class="subscribing {{$personne->news?'':'d-none'}} mx16" for="subscribeNews"> Vous <span>recevez actuellement les nouvelles</span>
-            de la FPF.<br> (Hors
+        <div>Souhaitez-vous <span>recevoir les nouvelles</span> de la FPF ?<br> (Hors
             lettre
-            de la fédé)</label>
+            de la fédé)
+        </div>
+        @if($personne->blacklist_date)
+            <div class="blacklist {{$personne->news?'d-none':''}}">Vous vous êtes désinscrits des nouvelles de la
+                FPF depuis le {{($personne->blacklist_date)}} </div>
+        @endif</label>
+    <label class="subscribing {{$personne->news?'':'d-none'}}" for="subscribeNews"> Vous <span>recevez actuellement les nouvelles</span>   de la FPF.<br> (Hors
+        lettre
+        de la fédé)</label>
+</div>
+
+
     </div>
 
     <div class="formBlock mt50">

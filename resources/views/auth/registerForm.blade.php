@@ -124,9 +124,9 @@
             <div class="customField2 w100 minW100 pr20">
                 <div class="groupCustom">
                     <label>Téléphone mobile</label>
-                    <div class="inputGroup d-flex justify-start align-start">
-                        <div class="indicatif" id="indicatifRegister">+33</div>
-                        <input type="text" name="name" id="phoneRegister"/>
+                    <div class="inputGroup d-flex justify-start align-start group">
+                        <div class="indicator" id="indicatifRegister">+33</div>
+                        <input class="phoneInput formValue modifying" type="text" name="name" id="phoneRegister"/>
                     </div>
                 </div>
                 <div name="error" class="error"></div>

@@ -12,7 +12,7 @@
             </a> <div class="separator"></div>
             <a  href="/register" class="fosterRegister">
                 <div class="foster">Vous n'avez pas encore de compte ?</div>
-                <span class="underline bold">Enregistrez-vous !</span>
+                <span class="underlineWhite bold relative">Enregistrez-vous !</span>
             </a>
         </div>
         <form action="{{ action('App\Http\Controllers\LoginController@login') }}" method="POST" class="authForm align-center">

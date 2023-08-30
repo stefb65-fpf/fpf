@@ -24,20 +24,20 @@
                 <form class="w100" action="{{route('urs.infos.update')}}" method="POST">
                     <input type="hidden" name="_method" value="PUT">
                     {{ csrf_field() }}
-                    <div class="formBlockWrapper inline">
-                        <div class="formUnit">
+                    <div class="formBlockWrapper">
+                        <div class="formUnit w100">
                             <div class="formLabel">Nom</div>
                             <input name="nom" class="formValue modifying w70"
                                    type="text" value="{{$ur->nom?$ur->nom:""}}"
                                    maxlength="120" required>
                         </div>
-                        <div class="formUnit">
+                        <div class="formUnit w100">
                             <div class="formLabel">Courriel</div>
                             <input name="courriel" class="formValue modifying w70"
                                    type="email" value="{{$ur->courriel?$ur->courriel:""}}"
                                    maxlength="120">
                         </div>
-                        <div class="formUnit">
+                        <div class="formUnit w100">
                             <div class="formLabel">Site web</div>
                             <input name="web" class="formValue modifying w70"
                                    type="text" value="{{$ur->web?$ur->web:""}}"
@@ -45,16 +45,16 @@
                         </div>
                     </div>
                     <h2 class="formSubtitle">Adresse</h2>
-                    <div class="formBlockWrapper inline">
-                        <div class="formValueGroup inline">
+                    <div class="formBlockWrapper">
+                        <div class="formValueGroup">
                             <div class="formUnit">
-                                <div class="formLabel">Rue</div>
+                                <div class="formLabel">Adresse</div>
                                 <input name="libelle1" type="text" class="formValue modifying w70"
                                        value="{{$ur->adresse?$ur->adresse->libelle1:""}}"
                                        maxlength="120"/>
                             </div>
                             <div class="formUnit">
-                                <div class="formLabel"></div>
+                                <div class="formLabel">Complément</div>
                                 <input name="libelle2" class="formValue modifying w70"
                                        type="text" value="{{$ur->adresse?$ur->adresse->libelle2:""}}"
                                        maxlength="120"/>
@@ -64,7 +64,7 @@
                                 <div class="suggestionWrapper">
                                     <input name="codepostal" type="text" class="formValue modifying w70"
                                            value="{{$ur->adresse?$ur->adresse->codepostal:""}}"
-                                           maxlength="120" required/>
+                                           maxlength="10" required/>
                                     <div class="suggestion"></div>
                                 </div>
                             </div>
@@ -99,16 +99,16 @@
                                         class="indicator {{$ur->adresse && $ur->adresse->indicatif_fixe!==""?"":"d-none"}}">
                                         +{{$ur->adresse?$ur->adresse->indicatif_fixe:""}}</div>
                                     <input class="formValue phoneInput modifying" type="text"
-                                           value="{{$ur->adresse?$ur->adresse->telephonedomicile:""}}" name="telephonedomicile"/>
+                                           value="{{$ur->adresse?$ur->adresse->telephonedomicile:""}}" name="telephonedomicile" maxlength="25"/>
                                 </div>
                             </div>
                             <div class="formUnit">
                                 <div class="formLabel">Téléphone mobile</div>
                                 <div class="group">
                                     {{--                                                        <div class="indicator {{$ur->adresse && $ur->adresse->indicatif_mobile!==""?"":"d-none"}}">+{{$ur->adresse?$ur->adresse->indicatif_mobile:""}}</div>--}}
-                                    <input class="formValue phoneInput modifying" type="text"
+                                    <input class="formValue modifying" type="text"
                                            value="{{$ur->adresse?$ur->adresse->telephonemobile:""}}"
-                                           name="telephonemobile"/>
+                                           name="telephonemobile" maxlength="25"/>
                                 </div>
                             </div>
 
