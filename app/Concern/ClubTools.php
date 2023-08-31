@@ -169,7 +169,7 @@ trait ClubTools
     {
         $pays = Pays::where('id', $request->pays)->first();
         if (!$pays) {
-            return false;
+            return '3';
         }
 
         try {
@@ -180,7 +180,7 @@ trait ClubTools
             $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
             if ($phone_mobile == -1) {
                 DB::rollBack();
-                return false;
+                return '4';
             }
             $datap['phone_mobile'] = $phone_mobile;
             $datap['news'] = $request->news ? 1 : 0;
@@ -192,7 +192,7 @@ trait ClubTools
             $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
             if ($telephonedomicile == -1) {
                 DB::rollBack();
-                return false;
+                return '5';
             }
             $dataa['telephonedomicile'] = $telephonedomicile;
             $adresse = $personne->adresses[0];
@@ -213,10 +213,10 @@ trait ClubTools
                 $adresse2->update($dataa2);
             }
             DB::commit();
-            return true;
+            return '0';
         } catch (\Exception $e) {
             DB::rollBack();
-            return false;
+            return '10';
         }
     }
 
@@ -225,15 +225,15 @@ trait ClubTools
         if ($request->personne_id != null) {
             $personne = Personne::where('id', $request->personne_id)->first();
             if (!$personne) {
-                return false;
+                return '1';
             }
         } else {
             if (!filter_var(trim($request->email), FILTER_VALIDATE_EMAIL)) {
-                return false;
+                return '2';
             }
             $pays = Pays::where('id', $request->pays)->first();
             if (!$pays) {
-                return false;
+                return '3';
             }
             $news = $request->news ? 1 : 0;
             $password = $this->generateRandomPassword();
@@ -250,11 +250,11 @@ trait ClubTools
             );
             $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
             if ($phone_mobile == -1) {
-                return false;
+                return '4';
             }
             $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
             if ($telephonedomicile == -1) {
-                return false;
+                return '5';
             }
             $datap['phone_mobile'] = $phone_mobile;
 
@@ -313,6 +313,6 @@ trait ClubTools
             'statut' => 0
         );
         Utilisateur::create($datau);
-        return true;
+        return '0';
     }
 }

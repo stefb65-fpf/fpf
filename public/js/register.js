@@ -76,7 +76,7 @@ $('#checkNewUser').on('click', function () {
             }
         },
         error: function (err) {
-            console.log(err)
+            alert('Une erreur est survenue lors de la vérification des informations.')
         }
     })
 })
@@ -258,7 +258,7 @@ $('#checkTarifForNewUser').on('click', function () {
             }
         },
         error: function (err) {
-            console.log(err)
+            alert('Une erreur est survenue lors de la détermination du tarif.')
         }
     })
 })
@@ -382,7 +382,7 @@ $('button[name=payByVirement]').on('click', function () {
             $(location).attr('href', data.url)
         },
         error: function (err) {
-            alert('Une erreur est survenue lors de l\'enregistrement de votre paiement. Veuillez réessayer plus tard.')
+            alert('Une erreur est survenue lors de l\'enregistrement de votre paiement. ' + err.responseJSON.erreur)
         }
     })
 })

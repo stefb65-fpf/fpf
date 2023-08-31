@@ -6,6 +6,7 @@ use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PersonneRequest;
 use App\Mail\SendAnonymisationEmail;
+use App\Mail\SendUtilisateurCreateByAdmin;
 use App\Models\Adresse;
 use App\Models\Pays;
 use App\Models\Personne;
@@ -187,6 +188,17 @@ class PersonneController extends Controller
                 'saison' => date('Y') - 1,
             ];
             $utilisateur = Utilisateur::create($datau);
+
+            // on envoie le mail d'information a l'utilisateur
+            $mailSent = Mail::to($personne->email)->send(new SendUtilisateurCreateByAdmin($personne->email));
+            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+            $mail = new \stdClass();
+            $mail->titre = "Création d'un compte adhérent";
+            $mail->destinataire = $email;
+            $mail->contenu = $htmlContent;
+            $this->registerMail($personne->id, $mail);
+
             return redirect('/admin/personnes/'.$view_type)->with('success', "L'adhérent $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
         }
     }

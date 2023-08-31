@@ -204,10 +204,13 @@ class PersonneController extends Controller
         unset($datap_adresse['enableBtn']);
         $datap_adresse['pays'] = $selected_pays->nom;
         if ($datap_adresse["telephonedomicile"]) {
-            $datap_adresse["telephonedomicile"] = str_replace(" ", "", $datap_adresse["telephonedomicile"]);
-            $datap_adresse["telephonedomicile"] = ltrim($datap_adresse["telephonedomicile"], '0');
-            $datap_adresse["telephonedomicile"] = '+' . $indicatif . '.' . $datap_adresse["telephonedomicile"];
-            $datap_adresse["telephonedomicile"] = '+' . $indicatif . '.' . $datap_adresse["telephonedomicile"];
+            $telephonedomicile = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
+            if ($telephonedomicile == -1) {
+                return redirect()->back()->with('error', "Le numéro de téléphone saisi est incorrect.");
+            }
+            $datap_adresse["telephonedomicile"] = $telephonedomicile;
+        } else {
+            $datap_adresse["telephonedomicile"] = null;
         }
         if ($form == 1) {//$form = 1, c'est le formulaire d'adresse defaut / facturation
             if (!sizeof($personne->adresses)) { //la personne n'a aucune adresse en base. On en crée une.

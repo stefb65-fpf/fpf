@@ -9,6 +9,7 @@ use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
 use App\Http\Requests\PersonneRequest;
+use App\Mail\SendUtilisateurCreateByAdmin;
 use App\Models\Abonnement;
 use App\Models\Adresse;
 use App\Models\Club;
@@ -21,6 +22,7 @@ use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
 
 class UrController extends Controller
 {
@@ -150,6 +152,17 @@ class UrController extends Controller
             'saison' => date('Y') - 1,
         ];
         $utilisateur = Utilisateur::create($datau);
+
+        // on envoie le mail d'information a l'utilisateur
+        $mailSent = Mail::to($personne->email)->send(new SendUtilisateurCreateByAdmin($personne->email));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+        $mail = new \stdClass();
+        $mail->titre = "Création d'un compte adhérent";
+        $mail->destinataire = $email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($personne->id, $mail);
+
         return redirect('/urs/personnes/ur_adherents')->with('success', "L'adhérent $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
     }
 
@@ -600,10 +613,18 @@ class UrController extends Controller
             return redirect()->route('urs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
         }
 
-        if ($this->storeClubAdherent($request, $club)) {
+        $code = $this->storeClubAdherent($request, $club);
+        if ($code == '0') {
             return redirect()->route('urs.liste_adherents_club', $club_id)->with('success', "L'adhérent a bien  été ajouté");
         } else {
-            return redirect()->route('urs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de l'ajout de l'adhérent");
+            return match ($code) {
+                '1' => redirect()->back()->with('error', "Problème lors de la récupérartion des informations de la personne")->withInput(),
+                '2' => redirect()->back()->with('error', "L'adresse email est invalide")->withInput(),
+                '3' => redirect()->back()->with('error', "Le pays est invalide")->withInput(),
+                '4' => redirect()->back()->with('error', "Téléphone mobile invalide")->withInput(),
+                '5' => redirect()->back()->with('error', "Téléphone fixe invalide")->withInput(),
+                default => redirect()->route('urs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de l'ajout de l'adhérent"),
+            };
         }
     }
 
@@ -614,14 +635,21 @@ class UrController extends Controller
         if (!$utilisateur) {
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
         }
-        if ($this->updateClubAdherent($request, $utilisateur)) {
+        $code = $this->updateClubAdherent($request, $utilisateur);
+        if ($code == '0') {
             $user = session()->get('user');
             if ($user) {
                 $this->MailAndHistoricize($user, "Modification de l'adhérent \"" . $utilisateur->prenom . " " . $utilisateur->nom . "\".");
             }
             return redirect()->route('urs.liste_adherents_club', [$utilisateur->clubs_id])->with('success', "Les informations de l'adhérent ont été mises à jour");
         } else {
-            return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent");
+            return match ($code) {
+                '3 '=> redirect()->back()->with('error', "Le pays est invalide")->withInput(),
+                '4' => redirect()->back()->with('error', "Téléphone mobile invalide")->withInput(),
+                '5' => redirect()->back()->with('error', "Téléphone fixe invalide")->withInput(),
+                default => redirect()->back()->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent")->withInput(),
+            };
+//            return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent");
         }
     }
 }

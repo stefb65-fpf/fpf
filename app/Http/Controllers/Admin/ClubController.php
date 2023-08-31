@@ -294,10 +294,18 @@ class ClubController extends Controller
             return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
         }
 
-        if ($this->storeClubAdherent($request, $club)) {
+        $code = $this->storeClubAdherent($request, $club);
+        if ($code == '0') {
             return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('success', "L'adhérent a bien  été ajouté");
         } else {
-            return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de l'ajout de l'adhérent");
+            return match ($code) {
+                '1' => redirect()->back()->with('error', "Problème lors de la récupérartion des informations de la personne")->withInput(),
+                '2' => redirect()->back()->with('error', "L'adresse email est invalide")->withInput(),
+                '3' => redirect()->back()->with('error', "Le pays est invalide")->withInput(),
+                '4' => redirect()->back()->with('error', "Téléphone mobile invalide")->withInput(),
+                '5' => redirect()->back()->with('error', "Téléphone fixe invalide")->withInput(),
+                default => redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de l'ajout de l'adhérent"),
+            };
         }
     }
 
@@ -334,10 +342,17 @@ class ClubController extends Controller
         if (!$utilisateur) {
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
         }
-        if ($this->updateClubAdherent($request, $utilisateur)) {
+        $code = $this->updateClubAdherent($request, $utilisateur);
+        if ($code == '01') {
             return redirect()->route('admin.clubs.liste_adherents_club', [$utilisateur->clubs_id])->with('success', "Les informations de l'adhérent ont été mises à jour");
         } else {
-            return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent");
+            return match ($code) {
+                '3 '=> redirect()->back()->with('error', "Le pays est invalide")->withInput(),
+                '4' => redirect()->back()->with('error', "Téléphone mobile invalide")->withInput(),
+                '5' => redirect()->back()->with('error', "Téléphone fixe invalide")->withInput(),
+                default => redirect()->back()->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent")->withInput(),
+            };
+//            return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent");
         }
     }
 

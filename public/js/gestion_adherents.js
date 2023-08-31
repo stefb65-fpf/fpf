@@ -9,7 +9,6 @@ $('#selectPaysAdresse2').on('change', function() {
 })
 $('#checkBeforeInsertion').on('click', function(e) {
     e.preventDefault();
-    console.log($('#personneEmail').val())
     if ($('#personneNom').val() == '') {
         alert('Veuillez renseigner le nom de la personne')
         return
