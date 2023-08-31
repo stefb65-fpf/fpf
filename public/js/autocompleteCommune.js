@@ -2,8 +2,8 @@
 function handleClick(e, suggestionDiv, divIndicator,optionPaysFrance){
     e.stopImmediatePropagation()
     if( e.target.getAttribute("name") == "suggestionItem" && $(e.target).parent()[0] == suggestionDiv[0]){
-        $(suggestionDiv).parent().parent().parent().find('input[name=codepostal]').val(e.target.dataset.zip)
-        $(suggestionDiv).parent().parent().parent().find('input[name=ville]').val(e.target.dataset.name)
+        $(suggestionDiv).parent().parent().parent().find('input[name^=codepostal]').val(e.target.dataset.zip)
+        $(suggestionDiv).parent().parent().parent().find('input[name^=ville]').val(e.target.dataset.name)
         // console.log( $(suggestionDiv).parent().parent().parent().find('input[name=codepostal]'),$(suggestionDiv).parent().parent().parent().find('input[name=codepostal]').val(), $(suggestionDiv).parent().parent().parent().find('input[name=ville]').val())
         divIndicator.innerHTML = "+33"
         divIndicator.classList.remove('d-none')
@@ -51,5 +51,7 @@ function handleZipAndTownDigit(e){
         autocomplete($(this).val(), suggestionDiv)
     }
 }
-$('input[name=codepostal]').bind('keyup', handleZipAndTownDigit)
-$('input[name=ville]').bind('keyup',handleZipAndTownDigit)
+$('input[name^=codepostal]').bind('keyup', handleZipAndTownDigit)
+$('input[name^=ville]').bind('keyup',handleZipAndTownDigit)
+
+

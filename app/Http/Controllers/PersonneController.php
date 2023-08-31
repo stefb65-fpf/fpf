@@ -70,23 +70,14 @@ class PersonneController extends Controller
         } elseif ($nbadresses == 1) {
             $personne->adresses[1] = [];
         }
-        if ($personne->phone_mobile) {
-            $personne->phone_mobile = $this->format_phone_number_visual($personne->phone_mobile);
-        }
-        foreach ($personne->adresses as $adresse) {
 
+        foreach ($personne->adresses as $adresse) {
             if ($adresse) {
                 if ($adresse->pays) {
                     $country = Pays::where('nom', strtoupper(strtolower($adresse->pays)))->first();
                     $adresse->indicatif = $country->indicatif;
                 } else {
                     $adresse->indicatif = "";
-                }
-                if ($adresse->telephonedomicile) {
-                    $adresse->telephonedomicile = $this->format_phone_number_visual($adresse->telephonedomicile);
-                }
-                if ($adresse->telephonemobile) {
-                    $adresse->telephonemobile = $this->format_phone_number_visual($adresse->telephonemobile);
                 }
             }
         }
@@ -206,7 +197,10 @@ class PersonneController extends Controller
         unset($datap_adresse['enableBtn']);
         $datap_adresse['pays'] = $selected_pays->nom;
         if ($datap_adresse["telephonedomicile"]) {
-            $datap_adresse["telephonedomicile"] = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
+            $datap_adresse["telephonedomicile"] = str_replace(" ", "", $datap_adresse["telephonedomicile"]);
+            $datap_adresse["telephonedomicile"] = ltrim($datap_adresse["telephonedomicile"], '0');
+            $datap_adresse["telephonedomicile"] = '+' . $indicatif . '.' . $datap_adresse["telephonedomicile"];
+            $datap_adresse["telephonedomicile"] = '+' . $indicatif . '.' . $datap_adresse["telephonedomicile"];
         }
         if ($form == 1) {//$form = 1, c'est le formulaire d'adresse defaut / facturation
             if (!sizeof($personne->adresses)) { //la personne n'a aucune adresse en base. On en crée une.

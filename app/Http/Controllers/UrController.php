@@ -286,7 +286,12 @@ class UrController extends Controller
 
     public function updateGeneralite(ClubReunionRequest $request, Club $club)
     {
-        $this->updateClubGeneralite($club, $request);
+        $error = $this->updateClubGeneralite($club, $request);
+        if($error == 1){
+            return redirect()->back()->with('error', "L'image n'est pas au bon format. Veuillez télécharger une image au format .jpeg, .jpg ou .png");
+        }elseif( $error == 2){
+            return redirect()->back()->with('error', "L'image est trop grande. Veuillez télécharger une image de taille maximum de 1 Mo ");
+        }
         return redirect()->route('UrGestion_updateClub', compact('club'))->with('success', "Les informations générales du club a été mise à jour");;
     }
 
