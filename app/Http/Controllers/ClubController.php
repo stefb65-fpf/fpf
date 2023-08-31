@@ -67,7 +67,13 @@ class ClubController extends Controller
     // mise à jour de l'adresse du club
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
-        $this->updateClubAdress($club,$request);
+        $code = $this->updateClubAdress($club,$request);
+        if ($code == 1) {
+            return redirect()->route('clubs.infos_club')->with('error', "Le téléphone mobile est incorrect");
+        }
+        if ($code == 2) {
+            return redirect()->route('clubs.infos_club')->with('error', "Le téléphone fixe est incorrect");
+        }
         return redirect()->route('clubs.infos_club')->with('success', "L'adresse du club a été mise à jour");
     }
 

@@ -127,6 +127,10 @@ class PersonneController extends Controller
 
     public function store(PersonneRequest $request, $view_type) {
         $email = trim($request->email);
+        list($tmp, $domain) = explode('@', $email);
+        if ($domain == 'federation-photo.fr') {
+            return redirect()->back()->with('error', "Vous ne pouvez pas indiquer une adresse email contenant le domaine federation-photo.fr")->withInput();
+        }
         $olduser = Personne::where('email', $email)->first();
         if ($olduser) {
             return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
@@ -213,6 +217,10 @@ class PersonneController extends Controller
         }
         $datap['phone_mobile'] = $phone_mobile;
         if ($request->email !== $personne->email) {
+            list($tmp, $domain) = explode('@', $request->email);
+            if ($domain == 'federation-photo.fr') {
+                return redirect()->back()->with('error', "Vous ne pouvez pas indiquer une adresse email contenant le domaine federation-photo.fr")->withInput();
+            }
             // on regarde si aucun utilisateur n'existe avec le mail saisi
             $olduser = Personne::where('email', $request->email)->first();
             if ($olduser) {

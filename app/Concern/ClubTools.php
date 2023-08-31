@@ -72,16 +72,18 @@ trait ClubTools
 //        dd($currentNumber);
         $club->is_abonne = $club->numerofinabonnement < $currentNumber;
         $countries = Pays::all();
-        return[ $club, $activites, $equipements ,$countries];
+        return [$club, $activites, $equipements, $countries];
     }
-    public function updateClubGeneralite(Club $club, $request){
+
+    public function updateClubGeneralite(Club $club, $request)
+    {
         $error = null;
         if ($_FILES['logo']['name'] != '') {
             // une image a été envoyé, on change donc le media du slider
             list($first, $extension) = explode('.', $_FILES['logo']['name']);
-            $name ='club-'.uniqid();
-            $dir = storage_path().'/app/public/uploads/clubs/'.$club->numero;
-            $target_file = $dir .'/'. $name . '.' . $extension;
+            $name = 'club-' . uniqid();
+            $dir = storage_path() . '/app/public/uploads/clubs/' . $club->numero;
+            $target_file = $dir . '/' . $name . '.' . $extension;
             $size = $_FILES['logo']['size'];
             $authrorized_extensions = array('jpeg', 'jpg', 'png');
             if (!in_array($extension, $authrorized_extensions)) {
@@ -90,8 +92,8 @@ trait ClubTools
             if ($size > 1048576) {
                 $error = 2;
             }
-            if(!$error){
-                if(!File::isDirectory($dir)){
+            if (!$error) {
+                if (!File::isDirectory($dir)) {
                     File::makeDirectory($dir);
                 }
                 if (move_uploaded_file($_FILES["logo"]["tmp_name"], $target_file)) {
@@ -99,19 +101,20 @@ trait ClubTools
                 }
             }
         }
-        if($error){
-           return $error;
-        }else{
+        if ($error) {
+            return $error;
+        } else {
             $datap = array('nom' => $request->nom, 'courriel' => $request->courriel, 'web' => $request->web, "logo" => $request->logo);
             $club = Club::where('id', $club->id)->first();
             $club->update($datap);
             $user = session()->get('user');
             if ($user) {
-                $this->MailAndHistoricize($user,"Modification des informations générales du club \"".$club->nom."\"");
+                $this->MailAndHistoricize($user, "Modification des informations générales du club \"" . $club->nom . "\"");
             }
         }
     }
-    public function updateClubAdress(Club $club,$request)
+
+    public function updateClubAdress(Club $club, $request)
     {
         $selected_pays = Pays::where('id', $request->pays)->first();
         $datap_adresse = $request->all();
@@ -123,8 +126,16 @@ trait ClubTools
         $indicatif = $selected_pays->indicatif;
 
         //contrôle et formatage des numéros de téléphone
-            $datap_adresse["telephonedomicile"] = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
-           $datap_adresse["telephonemobile"] = $this->format_mobile_for_base($datap_adresse["telephonemobile"]);
+        $telephonedomicile = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
+        if ($telephonedomicile == -1) {
+            return '2';
+        }
+        $telephonemobile = $this->format_mobile_for_base($datap_adresse["telephonemobile"], $indicatif);
+        if ($telephonemobile == -1) {
+            return '1';
+        }
+        $datap_adresse["telephonedomicile"] = $telephonedomicile;
+        $datap_adresse["telephonemobile"] = $telephonemobile;
 
         $datap_adresse['pays'] = $selected_pays->nom;
 //        dd($datap_adresse);
@@ -135,11 +146,12 @@ trait ClubTools
         }
         $user = session()->get('user');
         if ($user) {
-            $this->MailAndHistoricize($user,"Modification de l'adresse du club \"".$club->nom."\"");
+            $this->MailAndHistoricize($user, "Modification de l'adresse du club \"" . $club->nom . "\"");
         }
+        return '0';
     }
 
-    public function updateClubReunion( Club $club,$request)
+    public function updateClubReunion(Club $club, $request)
     {
         $datap = $request->all();
         unset($datap['_token']);
@@ -149,11 +161,12 @@ trait ClubTools
         $club->update($datap);
         $user = session()->get('user');
         if ($user) {
-            $this->MailAndHistoricize($user,"Modification des réunions du club \"".$club->nom."\"");
+            $this->MailAndHistoricize($user, "Modification des réunions du club \"" . $club->nom . "\"");
         }
     }
 
-    protected function updateClubAdherent($request, $utilisateur) {
+    protected function updateClubAdherent($request, $utilisateur)
+    {
         $pays = Pays::where('id', $request->pays)->first();
         if (!$pays) {
             return false;
@@ -207,7 +220,8 @@ trait ClubTools
         }
     }
 
-    protected function storeClubAdherent($request, $club) {
+    protected function storeClubAdherent($request, $club)
+    {
         if ($request->personne_id != null) {
             $personne = Personne::where('id', $request->personne_id)->first();
             if (!$personne) {
@@ -232,7 +246,7 @@ trait ClubTools
                 'datenaissance' => $request->datenaissance,
                 'news' => $news,
                 'is_adherent' => 1,
-                'premiere_connexion'  => 1
+                'premiere_connexion' => 1
             );
             $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
             if ($phone_mobile == -1) {
@@ -266,9 +280,9 @@ trait ClubTools
         // on cherche le max numeroutilisateur pour le club
         $max_numeroutilisateur = Utilisateur::where('clubs_id', $club->id)->max('numeroutilisateur');
         $numeroutilisateur = $max_numeroutilisateur + 1;
-        $identifiant = str_pad($club->urs_id, 2, '0', STR_PAD_LEFT).'-'
-            .str_pad($club->numero, 4, '0', STR_PAD_LEFT).'-'
-            .str_pad($numeroutilisateur, 4, '0', STR_PAD_LEFT);
+        $identifiant = str_pad($club->urs_id, 2, '0', STR_PAD_LEFT) . '-'
+            . str_pad($club->numero, 4, '0', STR_PAD_LEFT) . '-'
+            . str_pad($numeroutilisateur, 4, '0', STR_PAD_LEFT);
 
         // on calcule le ct par défaut avec la date de naissance
         // on calcule l'âge de la personne à partir de sa date de naissance
@@ -279,7 +293,7 @@ trait ClubTools
         if ($age < 18) {
             $ct = 4;
         } else {
-            if($age < 25) {
+            if ($age < 25) {
                 $ct = 3;
             }
         }

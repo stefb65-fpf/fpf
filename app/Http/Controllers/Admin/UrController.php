@@ -66,8 +66,18 @@ class UrController extends Controller
         $selected_pays = Pays::where('id', $request->pays)->first();
         $indicatif = $selected_pays->indicatif;
         $datap_adresse = array('libelle1' => $request->libelle1, 'libelle2' => $request->libelle2, 'codepostal' => $request->codepostal, 'ville' => $request->ville, 'telephonedomicile' => $request->telephonedomicile, 'telephonemobile' => $request->telephonemobile);
-        $datap_adresse["telephonedomicile"] = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
-        $datap_adresse["telephonemobile"] = $this->format_mobile_for_base($datap_adresse["telephonemobile"]);
+        $telephonedomicile = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
+        $telephonemobile = $this->format_mobile_for_base($datap_adresse["telephonemobile"], $indicatif);
+        if ($telephonedomicile == -1) {
+            return redirect()->route('urs.edit', compact('ur', 'countries'))->with('error', "Le téléphone fixe est incorrect");
+        }
+        if ($telephonemobile == -1) {
+            return redirect()->route('urs.edit', compact('ur', 'countries'))->with('error', "Le téléphone mobile est incorrect");
+        }
+
+        $datap_adresse["telephonedomicile"] = $telephonedomicile;
+        $datap_adresse["telephonemobile"] = $telephonemobile;
+
         $datap_adresse['pays'] = $selected_pays->nom;
         //les données à mettre à jour dans la table ur
         $datap_gen = array('nom' => $request->nom, 'courriel' => $request->courriel, 'web' => $request->web);

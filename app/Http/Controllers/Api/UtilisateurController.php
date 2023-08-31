@@ -229,11 +229,15 @@ class UtilisateurController extends Controller
         $pays = Pays::where('id', $request->pays)->first();
         if ($pays) {
             $dataa['pays'] = $pays->nom;
-            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
         } else {
             $dataa['pays'] = 'FRANCE';
-            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile);
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
         }
+        if ($phone_mobile == -1) {
+            return new JsonResponse(['erreur' => 'téléphone mobile invalide'], 400);
+        }
+        $datap['phone_mobile'] = $phone_mobile;
 
         if ($request->type == 'adhesion') {
             list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($request->datenaissance);

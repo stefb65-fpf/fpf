@@ -136,7 +136,7 @@ trait Tools
     {
         $false_number = false;
         if ($number) {
-            $number = str_replace([" ","-","."], "", $number);
+            $number = preg_replace('/[^0-9]/', '', $number);
             $number = ltrim($number, '0');
             if($indicatif == 33){
                 if (!(strlen($number) == 9)) {

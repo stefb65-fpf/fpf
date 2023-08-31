@@ -23,7 +23,7 @@
                 <div class="formBlockWrapper">
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Nom du club *</div>
-                        <input class="formValue modifying modiformValueAdmin w75" type="text" value="" name="nomClub" />
+                        <input class="formValue modifying modiformValueAdmin w75" type="text" value="{{ old('nomClub') }}" name="nomClub" />
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">UR *</div>
@@ -35,11 +35,11 @@
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Adresse</div>
-                        <input class="formValue modifying formValueAdmin w75 " type="text" value="" name="libelle1Club"/>
+                        <input class="formValue modifying formValueAdmin w75 " type="text" value="{{ old('libelle1Club') }}" name="libelle1Club"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Complément</div>
-                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="libelle2Club"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('libelle2Club') }}" name="libelle2Club"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Code postal *</div>
@@ -70,20 +70,20 @@
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Adresse email *</div>
-                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="emailClub"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('emailClub') }}" name="emailClub"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Téléphone mobile</div>
                         <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicator" name="indicatifClub">+33</div>
-                            <input type="text" name="phoneMobileClub" id="phoneMobileClub" maxlength="25" class="formValue modifying"/>
+                            <input type="text" name="phoneMobileClub" id="phoneMobileClub" maxlength="25" value="{{ old('phoneMobileClub') }}" class="formValue modifying"/>
                         </div>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Téléphone fixe</div>
                         <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicator" name="indicatifClub">+33</div>
-                            <input type="text" name="phoneFixeClub" id="phoneFixeClub" maxlength="25" class="formValue modifying"/>
+                            <input type="text" name="phoneFixeClub" id="phoneFixeClub" maxlength="25" value="{{ old('phoneFixeClub') }}" class="formValue modifying"/>
                         </div>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
@@ -108,19 +108,19 @@
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Nom *</div>
-                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="nomContact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('nomContact') }}" name="nomContact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Prénom *</div>
-                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="prenomContact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('prenomContact') }}" name="prenomContact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Adresse</div>
-                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="libelle1Contact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('libelle1Contact') }}" name="libelle1Contact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">&nbsp;</div>
-                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="libelle2Contact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('libelle2Contact') }}" name="libelle2Contact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Code postal *</div>
@@ -154,13 +154,13 @@
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Adresse email *</div>
-                        <input class="formValue modifying formValueAdmin w75" type="text" value="" name="emailContact"/>
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('emailContact') }}" name="emailContact"/>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">
                         <div class="formLabel">Téléphone mobile *</div>
                         <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicator" name="indicatifContact">+33</div>
-                            <input type="text" name="phoneMobileContact" id="phoneMobileContact" class="formValue modifying" maxlength="25"/>
+                            <input type="text" name="phoneMobileContact" id="phoneMobileContact" value="{{ old('phoneMobileContact') }}" class="formValue modifying" maxlength="25"/>
                         </div>
 
                     </div>
@@ -168,7 +168,7 @@
                         <div class="formLabel">Téléphone fixe</div>
                         <div class="inputGroup d-flex justify-start align-start">
                             <div class="indicator" name="indicatifContact">+33</div>
-                            <input type="text" name="phoneFixeContact" id="phoneFixeContact" maxlength="25" class="formValue modifying"/>
+                            <input type="text" name="phoneFixeContact" id="phoneFixeContact" value="{{ old('phoneFixeContact') }}" maxlength="25" class="formValue modifying"/>
                         </div>
                     </div>
                     <div class="formUnit formUnitAdmin justify-start">

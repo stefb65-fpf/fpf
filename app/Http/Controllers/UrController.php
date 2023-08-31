@@ -73,7 +73,8 @@ class UrController extends Controller
         return view('admin.personnes.liste', compact('view_type', 'utilisateurs', 'level', 'statut', 'type_carte', 'type_adherent', 'ur_id', 'urs', 'ur', 'term'));
     }
 
-    public function createPersonne() {
+    public function createPersonne()
+    {
         $ur = $this->getUr();
         $countries = DB::table('pays')->orderBy('nom')->get();
         $personne = new Personne();
@@ -85,9 +86,14 @@ class UrController extends Controller
         return view('urs.create_adherent_club', compact('countries', 'level', 'personne', 'view_type'));
     }
 
-    public function storePersonne(PersonneRequest $request) {
+    public function storePersonne(PersonneRequest $request)
+    {
         $ur = $this->getUr();
         $email = trim($request->email);
+        list($tmp, $domain) = explode('@', $email);
+        if ($domain == 'federation-photo.fr') {
+            return redirect()->back()->with('error', "Vous ne pouvez pas indiquer une adresse email contenant le domaine federation-photo.fr")->withInput();
+        }
         $olduser = Personne::where('email', $email)->first();
         if ($olduser) {
             return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
@@ -124,7 +130,7 @@ class UrController extends Controller
         // on lie l'adresse à la personne
         $personne->adresses()->attach($addresse->id);
 
-        $identifiant = str_pad($ur->id, 2, '0', STR_PAD_LEFT).'-0000-';
+        $identifiant = str_pad($ur->id, 2, '0', STR_PAD_LEFT) . '-0000-';
         $max_utilisateur = Utilisateur::where('identifiant', 'LIKE', $identifiant . '%')->max('numeroutilisateur');
         $numero = $max_utilisateur ? $max_utilisateur + 1 : 1;
         $identifiant .= str_pad($numero, 4, '0', STR_PAD_LEFT);
@@ -148,11 +154,12 @@ class UrController extends Controller
     }
 
     // affichage des informations d'un adhérent de l'UR
-    public function editPersonne($personne_id, $view_type = null) {
+    public function editPersonne($personne_id, $view_type = null)
+    {
         $ur = $this->getUr();
         $personne = Personne::where('id', $personne_id)->first();
         if (!$personne) {
-            return redirect('/urs/personnes/'.$view_type)->with('error', "Un problème est survenu lors de la récupération des informations de la personne");
+            return redirect('/urs/personnes/' . $view_type)->with('error', "Un problème est survenu lors de la récupération des informations de la personne");
         }
         $trouve = false;
         foreach ($personne->utilisateurs as $utilisateur) {
@@ -161,10 +168,10 @@ class UrController extends Controller
             }
         }
         if (!$trouve) {
-            return redirect('/urs/personnes/'.$view_type)->with('error', "Vous ne pouvez pas accéder aux information de cette personne ne possédant pas de cartes dans cette UR");
+            return redirect('/urs/personnes/' . $view_type)->with('error', "Vous ne pouvez pas accéder aux information de cette personne ne possédant pas de cartes dans cette UR");
         }
         if (sizeof($personne->adresses) == 0) {
-            return redirect('/urs/personnes/'.$view_type)->with('error', "Un problème est survenu lors de la récupération des adresses de la personne");
+            return redirect('/urs/personnes/' . $view_type)->with('error', "Un problème est survenu lors de la récupération des adresses de la personne");
         }
         foreach ($personne->adresses as $adresse) {
             $pays = Pays::where('nom', $adresse->pays)->first();
@@ -178,7 +185,12 @@ class UrController extends Controller
     }
 
     // mise à jour des informations d'un adhérent par un responsable UR
-    public function updatePersonne(PersonneRequest $request, Personne $personne, $view_type) {
+    public function updatePersonne(PersonneRequest $request, Personne $personne, $view_type)
+    {
+        list($tmp, $domain) = explode('@', $request->email);
+        if ($domain == 'federation-photo.fr') {
+            return redirect()->back()->with('error', "Vous ne pouvez pas indiquer une adresse email contenant le domaine federation-photo.fr")->withInput();
+        }
         $datap = $request->only('nom', 'prenom', 'datenaissance', 'email', 'sexe');
         $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
         $pays = Pays::where('id', $request->pays)->first();
@@ -216,28 +228,36 @@ class UrController extends Controller
         }
         $user = session()->get('user');
         if ($user) {
-            $this->MailAndHistoricize($user,"Modification de l'adhérent \"".$personne->prenom." ".$personne->nom."\".");
+            $this->MailAndHistoricize($user, "Modification de l'adhérent \"" . $personne->prenom . " " . $personne->nom . "\".");
         }
-        return redirect('/urs/personnes/'.$view_type)->with('success', "La personne a bien été mise à jour");
+        return redirect('/urs/personnes/' . $view_type)->with('success', "La personne a bien été mise à jour");
     }
 
     // affichage des informations de l'UR
     public function infosUr()
     {
-       $ur =  $this->getUrInformations($this->getUr());
+        $ur = $this->getUrInformations($this->getUr());
         $countries = Pays::all();
         return view('urs.infos_ur', compact('ur', 'countries'));
     }
+
     //modification des informations de l'Ur
     public function updateUr(Request $request)
     {
-       $ur =$this->getUr();
-       $this->updateUrInformations($ur, $request);
+        $ur = $this->getUr();
+        $code = $this->updateUrInformations($ur, $request);
+        if ($code == 1) {
+            return redirect()->back()->with('error', "Le téléphone mobile est incorrect");
+        }
+        if ($code == 2) {
+            return redirect()->back()->with('error', "Le téléphone fixe est incorrect");
+        }
         return redirect()->back()->with('success', "Les informations de l'UR ont été mises à jour");
     }
 
     // affichage de la liste des clubs de l'UR
-    public function listeClubs($statut = null, $type_carte = null, $abonnement = null, $term = null) {
+    public function listeClubs($statut = null, $type_carte = null, $abonnement = null, $term = null)
+    {
         $ur = $this->getUr();
         $statut = $statut ?? "all";
         $abonnement = $abonnement ?? "all";
@@ -376,9 +396,9 @@ class UrController extends Controller
     public function updateGeneralite(ClubReunionRequest $request, Club $club)
     {
         $error = $this->updateClubGeneralite($club, $request);
-        if($error == 1){
+        if ($error == 1) {
             return redirect()->back()->with('error', "L'image n'est pas au bon format. Veuillez télécharger une image au format .jpeg, .jpg ou .png");
-        }elseif( $error == 2){
+        } elseif ($error == 2) {
             return redirect()->back()->with('error', "L'image est trop grande. Veuillez télécharger une image de taille maximum de 1 Mo ");
         }
         return redirect()->route('UrGestion_updateClub', compact('club'))->with('success', "Les informations générales du club a été mise à jour");;
@@ -387,7 +407,13 @@ class UrController extends Controller
     // mise à jour des informations de l'adresse du club par un responsable UR
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
-        $this->updateClubAdress($club, $request);
+        $code = $this->updateClubAdress($club, $request);
+        if ($code == 1) {
+            return redirect()->route('UrGestion_updateClub', compact('club'))->with('error', "Le téléphone mobile est incorrect");
+        }
+        if ($code == 2) {
+            return redirect()->route('UrGestion_updateClub', compact('club'))->with('error', "Le téléphone fixe est incorrect");
+        }
         return redirect()->route('UrGestion_updateClub', compact('club'))->with('success', "L'adresse du club a été mise à jour");
     }
 
@@ -460,7 +486,7 @@ class UrController extends Controller
         DB::table('fonctionsutilisateurs')->insert($datafu);
         $user = session()->get('user');
         if ($user) {
-            $this->MailAndHistoricize($user,"Ajout d'une fonction pour votre UR. ");
+            $this->MailAndHistoricize($user, "Ajout d'une fonction pour votre UR. ");
         }
 
         return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été créée");
@@ -474,7 +500,7 @@ class UrController extends Controller
         $fonction->delete();
         $user = session()->get('user');
         if ($user) {
-            $this->MailAndHistoricize($user,"Suppression de la fonction\"".$fonction->libelle."\" de votre UR.");
+            $this->MailAndHistoricize($user, "Suppression de la fonction\"" . $fonction->libelle . "\" de votre UR.");
         }
         return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été supprimée");
     }
@@ -514,7 +540,7 @@ class UrController extends Controller
 
         $user = session()->get('user');
         if ($user) {
-            $this->MailAndHistoricize($user,"Modification de l'attribution de la fonction\"".$fonction->libelle."\" de votre UR.");
+            $this->MailAndHistoricize($user, "Modification de l'attribution de la fonction\"" . $fonction->libelle . "\" de votre UR.");
         }
         return redirect()->route('urs.fonctions.liste')->with('success', "L'attribution de la fonction a été modifiée");
     }
@@ -549,7 +575,8 @@ class UrController extends Controller
         return view('clubs.adherents.edit', compact('club', 'utilisateur', 'countries', 'prev'));
     }
 
-    public function createAdherent($club_id) {
+    public function createAdherent($club_id)
+    {
         $club = Club::where('id', $club_id)->first();
         if (!$club) {
             return redirect()->route('urs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
@@ -566,7 +593,8 @@ class UrController extends Controller
         return view('clubs.adherents.create', compact('club', 'countries', 'utilisateur', 'prev'));
     }
 
-    public function storeAdherent(Request $request, $club_id) {
+    public function storeAdherent(Request $request, $club_id)
+    {
         $club = Club::where('id', $club_id)->first();
         if (!$club) {
             return redirect()->route('urs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
@@ -580,7 +608,8 @@ class UrController extends Controller
     }
 
     // mise à jour d'un adhérent
-    public function updateAdherent(AdherentRequest $request, $utilisateur_id) {
+    public function updateAdherent(AdherentRequest $request, $utilisateur_id)
+    {
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
         if (!$utilisateur) {
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
@@ -588,7 +617,7 @@ class UrController extends Controller
         if ($this->updateClubAdherent($request, $utilisateur)) {
             $user = session()->get('user');
             if ($user) {
-                $this->MailAndHistoricize($user,"Modification de l'adhérent \"".$utilisateur->prenom." ".$utilisateur->nom."\".");
+                $this->MailAndHistoricize($user, "Modification de l'adhérent \"" . $utilisateur->prenom . " " . $utilisateur->nom . "\".");
             }
             return redirect()->route('urs.liste_adherents_club', [$utilisateur->clubs_id])->with('success', "Les informations de l'adhérent ont été mises à jour");
         } else {

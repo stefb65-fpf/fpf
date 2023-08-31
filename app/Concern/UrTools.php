@@ -20,12 +20,17 @@ trait UrTools
         $indicatif = $selected_pays->indicatif;
 
         //contrôle et formatage des numéros de téléphone
-           $datap_adresse["telephonedomicile"] = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
+        $telephonedomicile = $this->format_fixe_for_base($datap_adresse["telephonedomicile"], $indicatif);
+        $telephonemobile = $this->format_mobile_for_base($datap_adresse["telephonemobile"], $indicatif);
+        if ($telephonedomicile == -1) {
+            return '2';
+        }
+        if ($telephonemobile == -1) {
+            return '1';
+        }
 
-           $datap_adresse["telephonemobile"] = $this->format_mobile_for_base($datap_adresse["telephonemobile"]);
-
-//dd($this->format_mobile_for_base($datap_adresse["telephonemobile"]));
-
+        $datap_adresse["telephonedomicile"] = $telephonedomicile;
+        $datap_adresse["telephonemobile"] = $telephonemobile;
 
         $datap_adresse['pays'] = $selected_pays->nom;
 //        dd($datap_adresse);
@@ -40,6 +45,7 @@ trait UrTools
         if ($user) {
             $this->MailAndHistoricize($user, "Modification de l'UR \"" . $ur->nom . "\"");
         }
+        return '0';
     }
 
     public function getUrInformations(Ur $ur)

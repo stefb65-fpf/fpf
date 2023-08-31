@@ -142,7 +142,7 @@ class PersonneController extends Controller
     {
         list($tmp, $domain) = explode('@', $request->email);
         if ($domain == 'federation-photo.fr') {
-            return redirect()->route('mon-profil')->with('error', "Vous ne povez pas indiquer une adresse email contenant le domaine federation-photo.fr");
+            return redirect()->route('mon-profil')->with('error', "Vous ne pouvez pas indiquer une adresse email contenant le domaine federation-photo.fr");
         }
         //on crée un code sécurisé unique et on l'enregistre dans le champ secure_code de l'utilisateur
         $crypt = $this->encodeShortReinit();

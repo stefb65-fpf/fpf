@@ -171,7 +171,12 @@ class ClubController extends Controller
                 'telephonemobile' => $phoneMobileContact,
             ];
             if ($request->phoneFixeContact != '') {
-                $dataac['telephonedomicile'] = $this->format_fixe_for_base($request->phoneFixeContact, $paysContact->indicatif);
+                $phoneFixeContact = $this->format_fixe_for_base($request->phoneFixeContact, $paysContact->indicatif);
+                if ($phoneFixeContact == -1) {
+                    DB::rollBack();
+                    return redirect()->back()->with('error', "Le numéro de téléphone fixe du contact n'est pas valide")->withInput();
+                }
+                $dataac['telephonedomicile'] = $phoneFixeContact;
             }
             $adresseContact = Adresse::create($dataac);
 
@@ -350,7 +355,13 @@ class ClubController extends Controller
 
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
-        $this->updateClubAdress($club,$request);
+        $code = $this->updateClubAdress($club,$request);
+        if ($code == 1) {
+            return redirect()->route('admin.clubs.edit', $club)->with('error', "Le téléphone mobile est incorrect");
+        }
+        if ($code == 2) {
+            return redirect()->route('admin.clubs.edit', $club)->with('error', "Le téléphone fixe est incorrect");
+        }
         return redirect()->route('admin.clubs.edit', $club)->with('success', "L'adresse du club a été mise à jour");
     }
 
