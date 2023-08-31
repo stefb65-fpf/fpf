@@ -601,6 +601,12 @@ a {
 .noscrollx{
     overflow-x: hidden!important;
 }
+.overflowyAuto{
+    overflow-y: auto;
+}
+.overflowyHidden{
+    overflow-y: hidden;
+}
 .title{
     text-align: center!important;
 }

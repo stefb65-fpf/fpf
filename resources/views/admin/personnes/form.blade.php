@@ -50,15 +50,23 @@
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Code postal *</div>
-                    <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostal', $personne->adresses[0]->codepostal) }}" name="codepostal" maxlength="10"/>
+                    <div class="suggestionWrapper">
+                        <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostal', $personne->adresses[0]->codepostal) }}" name="codepostal" maxlength="10"/>
+                        <div class="suggestion"></div>
+                    </div>
+
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Commune *</div>
-                    <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('ville', $personne->adresses[0]->ville) }}" name="ville"/>
+                    <div class="suggestionWrapper">
+                        <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('ville', $personne->adresses[0]->ville) }}" name="ville"/>
+                        <div class="suggestion"></div>
+                    </div>
+
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Pays</div>
-                    <select class="formValue modifying formValueAdmin" name="pays" id="paysPersonne">
+                    <select class="formValue modifying formValueAdmin pays" name="pays" id="paysPersonne">
                         @foreach($countries as $country)
                             <option value="{{ $country->id }}" data-indicatif="{{ $country->indicatif }}" {{ $country->nom == $personne->adresses[0]->pays ? 'selected' : '' }}>{{ $country->nom }}</option>
                         @endforeach
@@ -67,7 +75,7 @@
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Téléphone fixe</div>
                     <div class="inputGroup d-flex justify-start align-start">
-                        <div class="indicatif" name="indicatifDomicile" id="indicatifDomicile">+{{ $personne->adresses[0]->indicatif }}</div>
+                        <div class="indicator" name="indicatifDomicile" id="indicatifDomicile">+{{ $personne->adresses[0]->indicatif }}</div>
                         <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('telephonedomicile', $personne->adresses[0]->telephonedomicile) }}" name="telephonedomicile"  maxlength="25"/>
                     </div>
                 </div>
@@ -87,15 +95,21 @@
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Code postal *</div>
-                    <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostalLivraison', $personne->adresses[1]->codepostal) }}" name="codepostalLivraison" maxlength="10"/>
+                    <div class="suggestionWrapper">
+                        <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostalLivraison', $personne->adresses[1]->codepostal) }}" name="codepostalLivraison" maxlength="10"/>
+                        <div class="suggestion"></div>
+                    </div>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Commune *</div>
+                    <div class="suggestionWrapper">
                     <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('villeLivraison', $personne->adresses[1]->ville) }}" name="villeLivraison"/>
+                        <div class="suggestion"></div>
+                    </div>
                 </div>
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Pays</div>
-                    <select class="formValue modifying formValueAdmin" name="paysLivraison" id="paysPersonneLivraison">
+                    <select class="formValue modifying formValueAdmin pays" name="paysLivraison" id="paysPersonneLivraison">
                         @foreach($countries as $country)
                             <option value="{{ $country->id }}" data-indicatif="{{ $country->indicatif }}" {{ $country->nom == $personne->adresses[1]->pays ? 'selected' : '' }}>{{ $country->nom }}</option>
                         @endforeach
@@ -104,7 +118,7 @@
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Téléphone fixe</div>
                     <div class="inputGroup d-flex justify-start align-start">
-                        <div class="indicatif" name="indicatifDomicile" id="indicatifDomicileLivraison">+{{ $personne->adresses[1]->indicatif }}</div>
+                        <div class="indicator" name="indicatifDomicile" id="indicatifDomicileLivraison">+{{ $personne->adresses[1]->indicatif }}</div>
                         <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('telephonedomicileLivraison', $personne->adresses[1]->telephonedomicile) }}" name="telephonedomicileLivraison" maxlength="25"/>
                     </div>
                 </div>
@@ -121,7 +135,7 @@
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Téléphone mobile *</div>
                 <div class="inputGroup d-flex justify-start align-start">
-                    <div class="indicatif" name="indicatifMobile" id="indicatifMobile">+{{ $personne->adresses[0]->indicatif }}</div>
+                    <div class="indicator" name="indicatifMobile" id="indicatifMobile">+{{ $personne->adresses[0]->indicatif }}</div>
                     <input class="formValue modifying formValueAdmin w75" type="text" value="{{ old('phone_mobile', $personne->phone_mobile) }}" name="phone_mobile"  maxlength="25"/>
                 </div>
             </div>
@@ -141,3 +155,6 @@
                     @endif
                 </div>
 </form>
+@section('js')
+    <script src="{{ asset('js/autocompleteCommune.js') }}"></script>
+@endsection

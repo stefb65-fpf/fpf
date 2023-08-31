@@ -74,7 +74,7 @@
     </div>
     <div class="button customBtn" id="checkNewUser" data-type="{{ $type }}">Continuer</div>
     <div class="d-none" id="registerPart2">
-        <div class="authForm w540">
+        <div class="authForm w540 overflowyHidden">
             <div class="customField w100 minW100 pr20">
                 <label>Adresse</label>
                 <input type="text" name="name" id="libelle1Register"/>

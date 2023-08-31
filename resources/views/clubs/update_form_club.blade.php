@@ -150,7 +150,9 @@
                     <div class="formUnit">
                         <div class="formLabel">Téléphone mobile</div>
                         <div class="group">
-                            {{--                                                        <div class="indicator {{$club->adresse && $club->adresse->indicatif_mobile!==""?"":"d-none"}}">+{{$club->adresse?$club->adresse->indicatif_mobile:""}}</div>--}}
+                            <div
+                                class="indicator {{$club->adresse && $club->adresse->indicatif_fixe!==""?"":"d-none"}}">
+                                +{{$club->adresse?$club->adresse->indicatif_fixe:""}}</div>
                             <input class="formValue phoneInput" type="text"
                                    value="{{$club->adresse?$club->adresse->telephonemobile:""}}"
                                    disabled="true" name="telephonemobile" maxlength="25"/>
