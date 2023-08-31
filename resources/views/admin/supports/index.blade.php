@@ -11,6 +11,9 @@
             </a>
         </h1>
         @if(sizeof($supports))
+            <div class="pagination">
+                {{ $supports->render( "pagination::default") }}
+            </div>
             <div class="w100">
                 <table class="styled-table">
                     <thead>

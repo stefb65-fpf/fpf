@@ -80,6 +80,9 @@
         @if(!sizeof($clubs))
             Aucun club ne correspond aux critères selectionnés. Changer la valeur des filtres ci-dessus.
         @else
+            <div class="pagination">
+                {{ $clubs->render( "pagination::default") }}
+            </div>
             <table class="styled-table">
                 <thead>
                 <tr>

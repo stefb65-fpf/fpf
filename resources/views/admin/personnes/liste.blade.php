@@ -84,7 +84,7 @@
                                 <option value="2" {{$statut == 2? "selected":""}}>Validés</option>
                                 <option value="3" {{$statut == 3? "selected":""}}>Carte éditée</option>
                                 <option value="0" {{$statut == 0? "selected":""}}>Non renouvelés</option>
-                                <option value="4" {{$statut == 4? "selected":""}}>Anciens</option>
+                                <option value="4" {{$statut == 4? "selected":""}}>Anciens (non renouvelés > 1 an)</option>
                             </select>
                         </div>
                         <div class="formUnit mb0">
@@ -138,6 +138,9 @@
         @if(!sizeof($utilisateurs))
             Aucun résultat ne répond aux critères selectionnés.
         @else
+            <div class="pagination">
+                {{ $utilisateurs->render( "pagination::default") }}
+            </div>
             <table class="styled-table">
                 <thead>
                 <tr>

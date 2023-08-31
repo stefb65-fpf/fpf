@@ -21,6 +21,9 @@
         @endif
 @if(sizeof($reglements))
         <div class="w100">
+            <div class="pagination">
+                {{ $reglements->render( "pagination::default") }}
+            </div>
             <table class="styled-table">
                 <thead>
                 <tr>

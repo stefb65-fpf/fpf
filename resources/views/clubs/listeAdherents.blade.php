@@ -15,11 +15,11 @@
                 <div class="formLabel mr10 bold">Statut :</div>
                 <select class="formValue modifying" name="filter" data-ref="statut">
                     <option value="all">Tous</option>
-                    <option value="2" {{$statut == 2 ? "selected" : ""}}>Validés</option>
                     <option value="1" {{$statut == 1 ? "selected" : ""}}>Pré-inscrits</option>
-                    <option value="0" {{$statut == 0 ? "selected" : ""}}>Non renouvelés</option>
+                    <option value="2" {{$statut == 2 ? "selected" : ""}}>Validés</option>
                     <option value="3" {{$statut == 3 ? "selected" : ""}}>Carte éditée</option>
-                    <option value="4" {{$statut == 4 ? "selected" : ""}}>Anciens</option>
+                    <option value="0" {{$statut == 0 ? "selected" : ""}}>Non renouvelés</option>
+                    <option value="4" {{$statut == 4 ? "selected" : ""}}>Anciens (non renouvelés > 1 an)</option>
                 </select>
             </div>
             <div class="formUnit mb0">

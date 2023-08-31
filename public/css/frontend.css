@@ -150,8 +150,8 @@ a {
 }
 .pagination {
     display: flex;
-    margin-top: 20px;
-    margin-bottom: 30px;
+    /*margin-top: 20px;*/
+    /*margin-bottom: 30px;*/
 }
 
 .pagination li {

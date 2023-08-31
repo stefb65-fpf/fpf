@@ -34,7 +34,7 @@
             <div class="d-flex justify-center">
                 <button class="adminSuccess btnMedium">
                     @if($action == 'update')
-                        Modifier la fonction
+                        Enregistrer la fonction
                     @else
                         Ajouter la fonction
                     @endif

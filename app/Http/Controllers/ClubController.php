@@ -302,6 +302,8 @@ class ClubController extends Controller
         $adherents = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('utilisateurs.clubs_id', $club->id)
             ->selectRaw('utilisateurs.id, utilisateurs.identifiant, personnes.nom, personnes.prenom')
+            ->orderBy('personnes.nom')
+            ->orderBy('personnes.prenom')
             ->get();
 
         // on récupère les fonctions du club

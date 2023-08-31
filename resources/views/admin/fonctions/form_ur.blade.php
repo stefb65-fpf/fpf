@@ -16,7 +16,7 @@
             <div class="d-flex justify-start">
                 <button class="adminSuccess btnMedium">
                     @if($action == 'update')
-                        Modifier la fonction
+                        Enregistrer la fonction
                     @else
                         Ajouter la fonction
                     @endif

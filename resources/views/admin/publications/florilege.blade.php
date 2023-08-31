@@ -23,6 +23,9 @@
             <button class="adminPrimary btnMedium mt10" type="text" id="btnSouscriptionsList">Liste des souscriptions au format Excel</button>
         </div>
         <div class="w100">
+            <div class="pagination">
+                {{ $souscriptions->render( "pagination::default") }}
+            </div>
             <table class="styled-table">
                 <thead>
                 <tr>
@@ -45,8 +48,10 @@
                     @endforeach
                 </tobdy>
             </table>
+            <div class="pagination">
+                {{ $souscriptions->render( "pagination::default") }}
+            </div>
         </div>
-        {{ $souscriptions->render( "pagination::default") }}
     </div>
 @endsection
 @section('css')

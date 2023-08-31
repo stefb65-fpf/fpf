@@ -46,7 +46,7 @@ class PersonneController extends Controller
             //TODO : on affiche les formateurs
             $query = Personne::where('is_adherent',0)->where('is_formateur' ,'!=', 0);
         } elseif ($view_type == "abonnes"){
-            $query = Personne::where('is_adherent',0)->where('is_abonne' ,'!=', 0);
+            $query = Personne::where('is_adherent',0)->where('is_abonne' ,'!=', 0)->orderBy('nom')->orderBy('prenom');
         } elseif($view_type == "recherche") {
             $query = Personne::join('utilisateurs', 'utilisateurs.personne_id','=','personnes.id' );
             if($term){
@@ -54,7 +54,8 @@ class PersonneController extends Controller
                 $this->getPersonsByTerm($term, $query);
             }
         } else {
-            $query = Utilisateur::where('urs_id' ,'!=', null)->where('urs_id' ,'!=', 0)->where('personne_id' ,'!=', null);
+            $query = Utilisateur::where('urs_id' ,'!=', null)->where('urs_id' ,'!=', 0)->where('personne_id' ,'!=', null)
+            ->orderBy('urs_id')->orderBy('clubs_id')->orderBy('nom')->orderBy('prenom');
         }
 
         if ($ur_id != 'all' && $ur_id) {

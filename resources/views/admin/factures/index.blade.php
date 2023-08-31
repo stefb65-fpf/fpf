@@ -19,6 +19,9 @@
 {{--            </p>--}}
 {{--        </div>--}}
         <div class="w100">
+            <div class="pagination">
+                {{ $invoices->render("pagination::default") }}
+            </div>
             <table class="styled-table">
                 <thead>
                 <tr>
@@ -50,7 +53,9 @@
                     @endforeach
                 </tobdy>
             </table>
+            <div class="pagination">
+                {{ $invoices->render("pagination::default") }}
+            </div>
         </div>
-        {{ $invoices->render( "pagination::default") }}
     </div>
 @endsection
