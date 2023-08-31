@@ -165,6 +165,11 @@ class UtilisateurController extends Controller
 
 
     public function checkBeforeInsertion(Request $request) {
+        // on regarde si l'email n'est pas de type @federation-photo.fr
+        list($tmp, $domain) = explode('@', $request->email);
+        if ($domain == 'federation-photo.fr') {
+            return new JsonResponse(['code' => '30'], 200);
+        }
         $personne = Personne::where('email', trim($request->email))->first();
         if ($personne) {
             return new JsonResponse(['code' => '10', 'personne' => $personne], 200);

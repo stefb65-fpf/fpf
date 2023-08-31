@@ -99,12 +99,14 @@ class ClubController extends Controller
         // on vérifie qu'il n'y a pas de club avec cette adresse email
         $club = Club::where('courriel', $request->emailClub)->first();
         if ($club) {
-            return redirect()->route('admin.clubs.create')->with('error', "Un club avec cette adresse email existe déjà");
+//            return redirect()->route('admin.clubs.create')->with('error', "Un club avec cette adresse email existe déjà");
+            return redirect()->back()->with('error', "Un club avec cette adresse email existe déjà")->withInput();
         }
         // on vérifie qu'il n'y a pas une personne avec l'adresse email du contact
         $personne = Personne::where('email', $request->emailContact)->first();
         if ($personne) {
-            return redirect()->route('admin.clubs.create')->with('error', "Une personne avec l'adresse email saisie pour le contact existe déjà");
+//            return redirect()->route('admin.clubs.create')->with('error', "Une personne avec l'adresse email saisie pour le contact existe déjà");
+            return redirect()->back()->with('error', "Une personne avec l'adresse email saisie pour le contact existe déjà")->withInput();
         }
         // on cherche le dernier numéro de club pour l'UR saisie
         $numero = Club::where('urs_id', $request->urClub)->max('numero');
@@ -120,15 +122,23 @@ class ClubController extends Controller
                 'codepostal' => $request->codepostalClub,
                 'ville' => strtoupper($request->villeClub),
                 'pays' => strtoupper($pays->nom),
-                'telephonemobile' => $this->format_mobile_for_base($request->phoneMobileClub, $pays->indicatif),
+//                'telephonemobile' => $this->format_mobile_for_base($request->phoneMobileClub, $pays->indicatif),
             ];
+            $telephonemobile = $this->format_mobile_for_base($request->phoneMobileClub, $pays->indicatif);
+            if ($telephonemobile == -1) {
+                DB::rollBack();
+                return redirect()->back()->with('error', "Le numéro de téléphone mobile du club n'est pas valide")->withInput();
+            }
+            $dataa['telephonemobile'] = $telephonemobile;
             if ($request->phoneFixeClub != '') {
-                $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->phoneFixeClub, $pays->indicatif);
+                $telephonedomicile = $this->format_fixe_for_base($request->phoneFixeClub, $pays->indicatif);
+                if ($telephonedomicile == -1) {
+                    DB::rollBack();
+                    return redirect()->back()->with('error', "Le numéro de téléphone domicile du club n'est pas valide")->withInput();
+                }
+                $dataa['telephonedomicile'] = $telephonedomicile;
             }
             $adresseClub = Adresse::create($dataa);
-            if (!$adresseClub) {
-
-            }
 
             // on crée le club
             $club_abonne = isset($request->abonClub) ? 1 : 0;
@@ -147,6 +157,10 @@ class ClubController extends Controller
             // on crée l'adresse pour le contact
             $paysContact = Pays::where('id', $request->paysContact)->first();
             $phoneMobileContact = $this->format_mobile_for_base($request->phoneMobileContact, $paysContact->indicatif);
+            if ($phoneMobileContact == -1) {
+                DB::rollBack();
+                return redirect()->back()->with('error', "Le numéro de téléphone mobile du contact n'est pas valide")->withInput();
+            }
             $contact_abonne = isset($request->abonContact) ? 1 : 0;
             $dataac = [
                 'libelle1' => $request->libelle1Contact,

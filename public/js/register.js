@@ -62,6 +62,10 @@ $('#checkNewUser').on('click', function () {
             prenom: $('#firstnameRegister').val()
         },
         success: function (data) {
+            if (data.code == 30) {
+                alert("Vous ne pouvez pas saisir une adresse email contenant le nom de domaine federation-photo.fr")
+                return
+            }
             if (data.code == 10) {
                 $('#emailRegister').parent().find('div[name=error]').html('Cet email existe déjà')
                 $('#emailRegister').parent().find('div[name=error]').addClass('visible')

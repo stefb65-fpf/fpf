@@ -32,13 +32,13 @@
                 <div class="formBlockWrapper">
                     <div class="formUnit w100">
                         <div class="formLabel">Fonction spécifique à ajouter</div>
-                        <input value="" class="inputFormAction p5 formValue modifying w75" type="text" placeholder="Libellé de la fonction à ajouter" name="libelle"/>
+                        <input value="{{ old('libelle') }}" class="inputFormAction p5 formValue modifying w75" type="text" placeholder="Libellé de la fonction à ajouter" name="libelle"/>
                     </div>
                 </div>
                 <div class="formBlockWrapper">
                     <div class="formUnit w100">
                         <div class="formLabel">Identifiant adhérent</div>
-                        <input value="" class="inputFormAction p5 formValue modifying w75" type="text" placeholder="Identifiant adhérent" name="identifiant" maxlength="12"/>
+                        <input value="{{ old('identifiant') }}" class="inputFormAction p5 formValue modifying w75" type="text" placeholder="Identifiant adhérent" name="identifiant" maxlength="12"/>
                     </div>
                 </div>
                 <div class="d-flex justify-center">

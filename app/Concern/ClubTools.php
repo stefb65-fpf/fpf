@@ -84,8 +84,6 @@ trait ClubTools
             $target_file = $dir .'/'. $name . '.' . $extension;
             $size = $_FILES['logo']['size'];
             $authrorized_extensions = array('jpeg', 'jpg', 'png');
-//            dd($_FILES['logo']);
-
             if (!in_array($extension, $authrorized_extensions)) {
                 $error = 1;
             }
@@ -100,7 +98,6 @@ trait ClubTools
                     $request->logo = $name . '.' . $extension;
                 }
             }
-
         }
         if($error){
            return $error;
@@ -113,7 +110,6 @@ trait ClubTools
                 $this->MailAndHistoricize($user,"Modification des informations générales du club \"".$club->nom."\"");
             }
         }
-
     }
     public function updateClubAdress(Club $club,$request)
     {
@@ -168,14 +164,24 @@ trait ClubTools
             // on récupère les infos personne à mettre à jour
             $personne = $utilisateur->personne;
             $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe');
-            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            if ($phone_mobile == -1) {
+                DB::rollBack();
+                return false;
+            }
+            $datap['phone_mobile'] = $phone_mobile;
             $datap['news'] = $request->news ? 1 : 0;
             $personne->update($datap);
 
             // on récupère les infos adresse à mettre à jour
             $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
             $dataa['pays'] = $pays->nom;
-            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+            if ($telephonedomicile == -1) {
+                DB::rollBack();
+                return false;
+            }
+            $dataa['telephonedomicile'] = $telephonedomicile;
             $adresse = $personne->adresses[0];
             $adresse->update($dataa);
 
@@ -223,12 +229,21 @@ trait ClubTools
                 'sexe' => $request->sexe,
                 'email' => trim($request->email),
                 'password' => $password,
-                'phone_mobile' => $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif),
                 'datenaissance' => $request->datenaissance,
                 'news' => $news,
                 'is_adherent' => 1,
                 'premiere_connexion'  => 1
             );
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            if ($phone_mobile == -1) {
+                return false;
+            }
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+            if ($telephonedomicile == -1) {
+                return false;
+            }
+            $datap['phone_mobile'] = $phone_mobile;
+
             $personne = Personne::create($datap);
 
             $this->insertWpUser(trim($request->nom), trim($request->prenom), trim($request->email), $password);
@@ -240,7 +255,7 @@ trait ClubTools
                 'codepostal' => $request->codepostal,
                 'ville' => strtoupper($request->ville),
                 'pays' => $pays->nom,
-                'telephonedomicile' => $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif)
+                'telephonedomicile' => $telephonedomicile
             );
             $adresse = Adresse::create($dataa);
 

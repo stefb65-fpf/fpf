@@ -69,6 +69,10 @@ $('#checkBeforeInsertion').on('click', function(e) {
                 $('#modalSameName').removeClass('d-none')
                 return
             }
+            if (data.code == 30) {
+                alert("Vous ne pouvez pas saisir une adresse email contenant le nom de domaine federation-photo.fr")
+                return
+            }
             if (data.code == 0) {
                 $('#storeNewAdherent').submit()
                 return

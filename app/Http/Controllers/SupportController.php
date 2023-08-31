@@ -31,7 +31,9 @@ class SupportController extends Controller
         unset($data['_token']);
         unset($data['_method']);
         unset($data['enableBtn']);
-        Supportmessage::create($data);
+        $support = Supportmessage::create($data);
+        $this->sendMailSupport($support);
+
         $email = $request->email;
         $mailSent = Mail::to($email)->send(new SendSupportNotification($request->contenu,$request->objet));
 

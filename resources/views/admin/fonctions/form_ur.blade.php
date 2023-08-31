@@ -10,7 +10,7 @@
             <div class="formBlockWrapper">
                 <div class="formUnit w100">
                     <div class="formLabel">* Libellé de la fonction</div>
-                    <input value="{{ $fonction->libelle }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Libellé de la fonction à ajouter / modifier" name="libelle"/>
+                    <input value="{{ old('libelle', $fonction->libelle) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Libellé de la fonction à ajouter / modifier" name="libelle"/>
                 </div>
             </div>
             <div class="d-flex justify-start">

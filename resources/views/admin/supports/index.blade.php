@@ -15,6 +15,7 @@
                 <table class="styled-table">
                     <thead>
                     <tr>
+                        <th></th>
                         <th>Provenance</th>
                         <th>Objet</th>
                         <th>Email</th>
@@ -28,6 +29,7 @@
                     <tbody>
                     @foreach($supports as $support)
                         <tr>
+                            <td>{{ str_pad($support->id, 5, '0', STR_PAD_LEFT) }}</td>
                             <td>{{ $support->provenance }}</td>
                             <td>{{ $support->objet }}</td>
                             <td>{{ $support->email }}</td>

@@ -13,6 +13,7 @@ use App\Http\Requests\ResetPasswordRequest;
 use App\Mail\SendAnonymisationEmail;
 use App\Mail\SendEmailChangeEmailAddress;
 use App\Mail\SendEmailModifiedPassword;
+use App\Mail\SendSupportNotification;
 use App\Models\Adresse;
 use App\Models\Configsaison;
 use App\Models\Historique;
@@ -21,7 +22,9 @@ use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Souscription;
+use App\Models\Supportmessage;
 use App\Models\Utilisateur;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -137,6 +140,10 @@ class PersonneController extends Controller
     // mise à jour de l'email à partir de la page profil
     public function updateEmail(EmailRequest $request, Personne $personne)
     {
+        list($tmp, $domain) = explode('@', $request->email);
+        if ($domain == 'federation-photo.fr') {
+            return redirect()->route('mon-profil')->with('error', "Vous ne povez pas indiquer une adresse email contenant le domaine federation-photo.fr");
+        }
         //on crée un code sécurisé unique et on l'enregistre dans le champ secure_code de l'utilisateur
         $crypt = $this->encodeShortReinit();
         $personne->secure_code = $crypt;
@@ -353,35 +360,51 @@ class PersonneController extends Controller
     {
         $user = session()->get('user');
         $personne = Personne::where('id', $user->id)->first();
-        try {
-            DB::beginTransaction();
-            $prev_email = $personne->email;
-            $email = uniqid('anonyme_') . '@federationphoto.fr';
-            $datau = array('nom' => 'anonyme', 'prenom' => 'anonyme', 'courriel' => $email);
-            foreach ($personne->utilisateurs as $utilisateur) {
-                $utilisateur->update($datau);
-            }
+        $data = array('email' => $personne->email, 'objet' => 'Anonymisation des données', 'contenu' => 'Demande pour anonymisation des données personnelles');
+        $support = Supportmessage::create($data);
+        $this->sendMailSupport($support);
 
-            $data = array('nom' => 'anonyme', 'prenom' => 'anonyme', 'email' => $email, 'phone_mobile' => '', 'news' => 0, 'is_adherent' => 0, 'is_abonne' => 0,
-                'is_formateur' => 0, 'is_administratif' => 0);
-            $personne->update($data);
+        $email = $personne->email;
+        $mailSent = Mail::to($email)->send(new SendSupportNotification($support->contenu,$support->objet));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
-            $prev_email = 'contact@envolinfo.com'; // TODO : à enlever
-            $mailSent = Mail::to($prev_email)->send(new SendAnonymisationEmail());
-            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+        $mail = new \stdClass();
+        $mail->titre = "Anonymisation des données personnelles";
+        $mail->destinataire = $email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($personne->id, $mail);
 
+        return redirect()->route('mon-profil')->with('success', "Votre demande é été enregistrée et notre équipe support va vous contacter pour la vérifier avec vous");
 
-            $mail = new \stdClass();
-            $mail->titre = "Anonymisation des données personnelles";
-            $mail->destinataire = $email;
-            $mail->contenu = $htmlContent;
-            $this->registerMail($personne->id, $mail);
-            DB::commit();
-
-            return redirect()->route('logout')->with('success', "Vos données ont été anonymisées avec succès");
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->route('logout')->with('error', "Un problème est survenu lors de l'anonymisation");
-        }
+//        try {
+//            DB::beginTransaction();
+//            $prev_email = $personne->email;
+//            $email = uniqid('anonyme_') . '@federationphoto.fr';
+//            $datau = array('nom' => 'anonyme', 'prenom' => 'anonyme', 'courriel' => $email);
+//            foreach ($personne->utilisateurs as $utilisateur) {
+//                $utilisateur->update($datau);
+//            }
+//
+//            $data = array('nom' => 'anonyme', 'prenom' => 'anonyme', 'email' => $email, 'phone_mobile' => '', 'news' => 0, 'is_adherent' => 0, 'is_abonne' => 0,
+//                'is_formateur' => 0, 'is_administratif' => 0);
+//            $personne->update($data);
+//
+//            $prev_email = 'contact@envolinfo.com'; // TODO : à enlever
+//            $mailSent = Mail::to($prev_email)->send(new SendAnonymisationEmail());
+//            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+//
+//
+//            $mail = new \stdClass();
+//            $mail->titre = "Anonymisation des données personnelles";
+//            $mail->destinataire = $email;
+//            $mail->contenu = $htmlContent;
+//            $this->registerMail($personne->id, $mail);
+//            DB::commit();
+//
+//            return redirect()->route('logout')->with('success', "Vos données ont été anonymisées avec succès");
+//        } catch (\Exception $e) {
+//            DB::rollBack();
+//            return redirect()->route('logout')->with('error', "Un problème est survenu lors de l'anonymisation");
+//        }
     }
 }

@@ -117,7 +117,11 @@
                 </div>
             </div>
             <div class="flexEnd">
-                <a href="{{ route('admin.personnes.create', 'adherents') }}" class="adminPrimary btnMedium">Ajout adhérent individuel</a>
+                @if($view_type == "adherents")
+                    <a href="{{ route('admin.personnes.create', 'adherents') }}" class="adminPrimary btnMedium">Ajout adhérent individuel</a>
+                @else
+                    <a href="{{ route('urs.personnes.create', 'adherents') }}" class="adminPrimary btnMedium">Ajout adhérent individuel</a>
+                @endif
             </div>
         @else
             @if($view_type === 'abonnes')

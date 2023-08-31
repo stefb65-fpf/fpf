@@ -73,6 +73,80 @@ class UrController extends Controller
         return view('admin.personnes.liste', compact('view_type', 'utilisateurs', 'level', 'statut', 'type_carte', 'type_adherent', 'ur_id', 'urs', 'ur', 'term'));
     }
 
+    public function createPersonne() {
+        $ur = $this->getUr();
+        $countries = DB::table('pays')->orderBy('nom')->get();
+        $personne = new Personne();
+        $personne->adresses[] = new Adresse();
+        $personne->adresses[0]->pays = 'France';
+        $personne->adresses[0]->indicatif = '33';
+        $level = 'urs';
+        $view_type = 'ur_adherents';
+        return view('urs.create_adherent_club', compact('countries', 'level', 'personne', 'view_type'));
+    }
+
+    public function storePersonne(PersonneRequest $request) {
+        $ur = $this->getUr();
+        $email = trim($request->email);
+        $olduser = Personne::where('email', $email)->first();
+        if ($olduser) {
+            return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
+        }
+
+        $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
+        $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe');
+        $pays = Pays::where('id', $request->pays)->first();
+        if ($pays) {
+            $dataa['pays'] = $pays->nom;
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+        } else {
+            $dataa['pays'] = 'France';
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile);
+        }
+        if ($telephonedomicile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone fixe n'est pas valide")->withInput();
+        }
+        $dataa['telephonedomicile'] = $telephonedomicile;
+        if ($phone_mobile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
+        }
+        $datap['phone_mobile'] = $phone_mobile;
+
+        $datap['email'] = $request->email;
+        $datap['is_adherent'] = 1;
+        $datap['password'] = $this->generateRandomPassword();
+        $personne = Personne::create($datap);
+
+        $addresse = Adresse::create($dataa);
+
+        // on lie l'adresse à la personne
+        $personne->adresses()->attach($addresse->id);
+
+        $identifiant = str_pad($ur->id, 2, '0', STR_PAD_LEFT).'-0000-';
+        $max_utilisateur = Utilisateur::where('identifiant', 'LIKE', $identifiant . '%')->max('numeroutilisateur');
+        $numero = $max_utilisateur ? $max_utilisateur + 1 : 1;
+        $identifiant .= str_pad($numero, 4, '0', STR_PAD_LEFT);
+
+//        list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+        $datau = [
+            'urs_id' => $ur->id,
+            'adresses_id' => $personne->adresses[0]->id,
+            'personne_id' => $personne->id,
+            'identifiant' => $identifiant,
+            'numeroutilisateur' => $numero,
+            'sexe' => $personne->sexe,
+            'nom' => $personne->nom,
+            'prenom' => $personne->prenom,
+            'ct' => 2,
+            'statut' => 0,
+            'saison' => date('Y') - 1,
+        ];
+        $utilisateur = Utilisateur::create($datau);
+        return redirect('/urs/personnes/ur_adherents')->with('success', "L'adhérent $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
+    }
+
     // affichage des informations d'un adhérent de l'UR
     public function editPersonne($personne_id, $view_type = null) {
         $ur = $this->getUr();
@@ -105,14 +179,29 @@ class UrController extends Controller
 
     // mise à jour des informations d'un adhérent par un responsable UR
     public function updatePersonne(PersonneRequest $request, Personne $personne, $view_type) {
-        $datap = $request->only('nom', 'prenom', 'datenaissance', 'email', 'phone_mobile', 'sexe');
-        $personne->update($datap);
-
-        $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville', 'telephonedomicile');
+        $datap = $request->only('nom', 'prenom', 'datenaissance', 'email', 'sexe');
+        $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
         $pays = Pays::where('id', $request->pays)->first();
         if ($pays) {
             $dataa['pays'] = $pays->nom;
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+        } else {
+            $dataa['pays'] = 'France';
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile);
         }
+        if ($telephonedomicile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone fixe n'est pas valide")->withInput();
+        }
+        $dataa['telephonedomicile'] = $telephonedomicile;
+        if ($phone_mobile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
+        }
+        $datap['phone_mobile'] = $phone_mobile;
+
+        $personne->update($datap);
+
         $adresse_1 = $personne->adresses[0];
         $adresse_1->update($dataa);
 
@@ -328,6 +417,11 @@ class UrController extends Controller
     // enregistrement d'une fonction UR et son attribution
     public function storeFonction(Request $request)
     {
+        $exist_fonction = Fonction::where('libelle', trim($request->libelle))->where('instance', 2)->where('urs_id', $this->getUr()->id)->first();
+        if ($exist_fonction) {
+            return redirect()->back()->with('error', 'La fonction existe déjà')->withInput();
+        }
+
         if ($request->fonction_fpf != 0 && $request->libelle != '') {
             return redirect()->route('urs.fonctions.create')->with('error', "Vous devez choisir entre fonction FPF et fonction spécifique");
         }

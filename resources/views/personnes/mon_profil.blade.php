@@ -453,7 +453,7 @@
                 Dans le cadre du respect des règles RGPD, vous pouvez demander la désactivation de votre compte. Cela aura pour effet de supprimer toutes vos données personnelles de notre base de données. <b>Vos données seront anonymisées</b> et il ne sera plus possible de vous identifier. <b>Vous ne pourrez plus vous connecter à votre compte sur aucun des outils de la FPF (concours, site fédéral, ...)</b>.
             </div>
 
-                <a href="anonymize" class="formBtn danger wMaxContent" data-method="delete" data-confirm="Voulez-vous vraiment anonymiser vos données ? Toutes les cartes et autres informations liées perdront les informations d'identité. Il ne sera plus possible de voir apparaître les noms, prénoms, email et téléphone de votre compte et cette action est irréversible"  >Désactiver le compte</a>
+                <a href="anonymize" class="formBtn danger wMaxContent" data-method="delete" data-confirm="Voulez-vous vraiment anonymiser vos données ? La demande sera traitée par notre équipe et une fois fait, toutes les cartes et autres informations liées perdront les informations d'identité. Il ne sera plus possible de voir apparaître les noms, prénoms, email et téléphone de votre compte et cette action est irréversible"  >Désactiver le compte</a>
             </div>
 
         </div>

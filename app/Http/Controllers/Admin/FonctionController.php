@@ -78,6 +78,12 @@ class FonctionController extends Controller
      */
     public function store(FonctionRequest $request)
     {
+        // on regarde si la fonction existe déjà au niveau fédéral
+        $exist_fonction = Fonction::where('libelle', trim($request->libelle))->where('instance', 1)->first();
+        if ($exist_fonction) {
+            return redirect()->back()->with('error', 'La fonction existe déjà')->withInput();
+        }
+
         $data = $request->only('libelle', 'courriel');
         if (isset($request->ce)) {
             $data['ce'] = 1;
@@ -102,6 +108,10 @@ class FonctionController extends Controller
 
     public function store_ur(FonctionRequest $request)
     {
+        $exist_fonction = Fonction::where('libelle', trim($request->libelle))->where('instance', 2)->first();
+        if ($exist_fonction) {
+            return redirect()->back()->with('error', 'La fonction existe déjà')->withInput();
+        }
         $data = $request->only('libelle');
         $data['instance'] = 2;
         $max_ordre = Fonction::where('instance', 2)->max('ordre');

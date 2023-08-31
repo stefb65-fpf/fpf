@@ -1,6 +1,6 @@
 @extends('layouts.email')
 @section('content')
-    <div class="mailContent"  style="text-align: center;">
+    <div class="mailContent">
         <div class="text" style="font-size: 16px;">
             Les données personnelles relatives aux comptes liés à votre adresse mail ont été anonymisées.<br>
             Si cette action ne correspond pas à votre demande, merci de contacter très rapidement le secrétariat de la FPF.<br>

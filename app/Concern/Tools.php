@@ -4,11 +4,14 @@
 namespace App\Concern;
 
 
+use App\Mail\SendAlertSupport;
 use App\Mail\SendModificationEmail;
+use App\Mail\SendSupportNotification;
 use App\Mail\ValidationReglement;
 use App\Models\Abonnement;
 use App\Models\Club;
 use App\Models\Configsaison;
+use App\Models\Droit;
 use App\Models\Fonction;
 use App\Models\Historique;
 use App\Models\Historiquemail;
@@ -133,7 +136,7 @@ trait Tools
     {
         $false_number = false;
         if ($number) {
-            $number= preg_replace('/[^0-9]/', '', $number);
+            $number = str_replace([" ","-","."], "", $number);
             $number = ltrim($number, '0');
             if($indicatif == 33){
                 if (!(strlen($number) == 9)) {
@@ -151,7 +154,6 @@ trait Tools
     public function format_mobile_for_base($number, $indicatif = '33')
     {
         $false_number = false;
-
 //        dd($number);
         if ($number) {
             $first_two_numbers = substr($number, 0, 2);
@@ -772,5 +774,26 @@ trait Tools
         $mail->destinataire = $email;
         $mail->contenu = $htmlContent;
         $this->registerMail($user->id, $mail);
+    }
+
+    protected function sendMailSupport($support) {
+        // on récupère tous les mails de l'équipe support
+        $droit = Droit::where('label', 'SUPPORT')->first();
+        Mail::to('contact@episteme-web.com')->send(new SendAlertSupport($support));
+        foreach($droit->fonctions as $fonction) {
+            $utilisateurs = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
+                ->get();
+            foreach($utilisateurs as $utilisateur) {
+                $email = $utilisateur->personne->email;
+                Mail::to($email)->send(new SendAlertSupport($support));
+            }
+        }
+        if ($droit) {
+            foreach ($droit->utilisateurs as $utilisateur) {
+                $email = $utilisateur->personne->email;
+                Mail::to($email)->send(new SendAlertSupport($support));
+            }
+        }
     }
 }

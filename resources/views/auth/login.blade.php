@@ -6,6 +6,12 @@
             <img src="{{ env('APP_URL').'storage/app/public/FPF-100-Logo-Seul.webp' }}" alt="Fédération Photographique de France">
         </div>
         <div class="authTitle">Connexion</div>
+        <div class="alertInfo mb25 w80">
+            <span class="bold">Informations !</span>
+            Votre nouvel outil "Base en ligne" est désormais disponible. Désormais vous allez devoir vous connecter avec votre adresse e-mail et votre mot de passe.
+            Si vous n'avez pas encore de mot de passe, vous pouvez en créer un en cliquant sur le lien "Vous avez un compte FPF mais c'est votre première connexion ?" ci-dessous.
+            Si vous rencontrez un souci, que vous n'avez jamais associé d'adresse e-mail à votre compte FPF ou que vous n'avez pas reçu votre mot de passe, merci de contacter de nous le signaler via la page <a href="https://fpf-new.federation-photo.fr/support" style="text-decoration: underline; font-weight: bolder;">support</a> et nous ferons notre possible pour vous répondre au plus vite.
+        </div>
         <div class="fosterContainer">
             <a class="firstConnexion" href="/forgotPassword">
                 Vous avez un compte FPF mais c'est votre première connexion ?

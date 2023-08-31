@@ -6,13 +6,11 @@ use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PersonneRequest;
 use App\Mail\SendAnonymisationEmail;
-use App\Mail\SendInvoice;
 use App\Models\Adresse;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Ur;
 use App\Models\Utilisateur;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -131,7 +129,7 @@ class PersonneController extends Controller
         $email = trim($request->email);
         $olduser = Personne::where('email', $email)->first();
         if ($olduser) {
-            return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà");
+            return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
         }
 
         $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
@@ -139,13 +137,21 @@ class PersonneController extends Controller
         $pays = Pays::where('id', $request->pays)->first();
         if ($pays) {
             $dataa['pays'] = $pays->nom;
-            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
-            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
         } else {
             $dataa['pays'] = 'France';
-            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile);
-            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile);
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile);
         }
+        if ($telephonedomicile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone fixe n'est pas valide")->withInput();
+        }
+        $dataa['telephonedomicile'] = $telephonedomicile;
+        if ($phone_mobile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
+        }
+        $datap['phone_mobile'] = $phone_mobile;
 
         $datap['email'] = $request->email;
         $datap['password'] = $this->generateRandomPassword();
@@ -191,18 +197,26 @@ class PersonneController extends Controller
         $pays = Pays::where('id', $request->pays)->first();
         if ($pays) {
             $dataa['pays'] = $pays->nom;
-            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
-            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
         } else {
             $dataa['pays'] = 'France';
-            $datap['phone_mobile'] = $this->format_mobile_for_base($request->phone_mobile);
-            $dataa['telephonedomicile'] = $this->format_fixe_for_base($request->telephonedomicile);
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile);
         }
+        if ($telephonedomicile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone fixe n'est pas valide")->withInput();
+        }
+        $dataa['telephonedomicile'] = $telephonedomicile;
+        if ($phone_mobile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
+        }
+        $datap['phone_mobile'] = $phone_mobile;
         if ($request->email !== $personne->email) {
             // on regarde si aucun utilisateur n'existe avec le mail saisi
             $olduser = Personne::where('email', $request->email)->first();
             if ($olduser) {
-                return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà");
+                return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
             }
             $datap['email'] = $request->email;
         }
