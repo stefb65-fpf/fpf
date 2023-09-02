@@ -158,7 +158,7 @@ class PersonneController extends Controller
         $this->registerAction($personne->id, 4, "Demande de modification d'email");
 
         // on envoie un mail à l'utilisateur avec le lien de confirmation de modification de l'adresse amil
-        $link = "https://fpf-new.federation-photo.fr/changeEmail/" . $crypt;
+        $link = env('APP_URL')."changeEmail/" . $crypt;
         $mailSent = Mail::to($personne->email)->send(new SendEmailChangeEmailAddress($link));
 
         //on enregistre le mail dans l'historique des mails

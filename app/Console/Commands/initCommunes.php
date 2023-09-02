@@ -26,6 +26,7 @@ class initCommunes extends Command
      */
     public function handle()
     {
+        die();
         $communes = Commune::all();
         foreach ($communes as $commune) {
             if (strlen($commune->code_postal) < 5 || strlen($commune->numero_departement) < 2) {

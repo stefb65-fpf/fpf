@@ -189,7 +189,7 @@ class LoginController extends Controller
         $personne->secure_code = $crypt;
         $personne->save();
 
-        $link = "https://fpf-new.federation-photo.fr/reinitPassword/" . $crypt;
+        $link = env('APP_URL')."reinitPassword/" . $crypt;
         $mailSent = Mail::to($email)->send(new SendEmailReinitPassword($link));
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
@@ -227,7 +227,7 @@ class LoginController extends Controller
     public function resetPassword(ResetPasswordRequest $request, Personne $personne){
         $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null);
         $personne->update($datap);
-        $this->registerAction(1, 4, "Modification du mot de passe");
+        $this->registerAction($personne->id, 4, "Modification du mot de passe");
 
         $mailSent = Mail::to($personne->email)->send(new SendEmailModifiedPassword());
 

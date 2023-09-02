@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('elections', function (Blueprint $table) {
+        Schema::table('adresses', function (Blueprint $table) {
             $table->timestamps();
-            $table->foreign('votes_id')->references('id')->on('votes');
         });
     }
 
@@ -22,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('elections', function (Blueprint $table) {
+        Schema::table('adresses', function (Blueprint $table) {
             $table->dropTimestamps();
-            $table->dropForeign(['vote_id']);
         });
     }
 };

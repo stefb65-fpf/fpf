@@ -55,7 +55,6 @@
             @endif
         <button class="adminPrimary btnMedium" type="text" id="btnAdherentsList" data-club="{{$club->id}}">Liste des adhérents au format Excel</button>
 {{--        <button class="adminPrimary btnMedium ml10" type="text" id="btnAdherentsAjout" data-club="{{$club->id}}" >Ajouter un adhérent</button>--}}
-                {{--TODO: faut-il laisser ce bouton apparaître pour la gestion UR ? --}}
                 @if($prefix == '')
                     <a class="adminPrimary btnMedium ml10" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>
                 @else

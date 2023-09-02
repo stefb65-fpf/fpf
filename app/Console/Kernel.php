@@ -16,18 +16,18 @@ class Kernel extends ConsoleKernel
         $schedule->command('check:bridge')
             ->timezone('Europe/Paris')
             ->everyFiveMinutes();
-//        $schedule->command('update:saison')
-//            ->timezone('Europe/Paris')
-//            ->yearlyOn(9, 1, '04:00');
-//        $schedule->command('update:annee')
-//            ->timezone('Europe/Paris')
-//            ->yearlyOn(1, 1, '03:00');
-//        $schedule->command('update:vote')
-//            ->timezone('Europe/Paris')
-//            ->dailyAt('02:00');
-//        $schedule->command('update:wpsite')
-//            ->timezone('Europe/Paris')
-//            ->dailyAt('22:00');
+        $schedule->command('update:saison')
+            ->timezone('Europe/Paris')
+            ->yearlyOn(9, 1, '04:00');
+        $schedule->command('update:annee')
+            ->timezone('Europe/Paris')
+            ->yearlyOn(1, 1, '03:00');
+        $schedule->command('update:vote')
+            ->timezone('Europe/Paris')
+            ->dailyAt('02:00');
+        $schedule->command('update:wpsite')
+            ->timezone('Europe/Paris')
+            ->dailyAt('22:00');
     }
 
     /**

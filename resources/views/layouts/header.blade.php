@@ -1,5 +1,5 @@
 <div class="topbar">
-    <a href="https://fpf-new.federation-photo.fr">
+    <a href="{{ env('APP_URL') }}">
         <div class="logoMobile">
             <img src="{{ env('APP_URL').'storage/app/public/FPF-100-Logo-Seul.webp' }}"
                  alt="Fédération Photographique de France">

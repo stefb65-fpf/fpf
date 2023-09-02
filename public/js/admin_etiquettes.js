@@ -16,7 +16,7 @@ $('a[name=editEtiquettes]').on('click', function() {
         data: datas,
         dataType: 'JSON',
         success: function (reponse) {
-            const pdf_url = 'https://fpf-new.federation-photo.fr/storage/app/public/uploads/etiquettes/' + reponse.file
+            const pdf_url = $('#app_url').html() + 'storage/app/public/uploads/etiquettes/' + reponse.file
             elem.parent().parent().find('a[name=viewEtiquettes]').attr('href', pdf_url)
             elem.parent().parent().find('a[name=viewEtiquettes]').show()
         },

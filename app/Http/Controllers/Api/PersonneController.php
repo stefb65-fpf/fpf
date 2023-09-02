@@ -48,7 +48,6 @@ class PersonneController extends Controller
         }
 
         if (!$menu_admin) {
-            // TODO on contrôle les droits liés à l'utilisateur
             if (sizeof($cartes[0]->droits) > 0) {
                 $menu_admin = true;
             }

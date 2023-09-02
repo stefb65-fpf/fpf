@@ -118,7 +118,7 @@
                             <div>
                                 @foreach($ur->departements as $departement)
                                     <p>
-                                        {{$departement->numerodepartement}} - {{$departement->libelle}}
+                                        {{$departement->numero}} - {{$departement->nom}}
                                     </p>
                                 @endforeach
                             </div>

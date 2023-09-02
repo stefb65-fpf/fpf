@@ -37,10 +37,8 @@ class initPersonnes extends Command
      */
     public function handle()
     {
-//        $pwd = $this->encodePwd('azertyui1236');
-//        $link = 'https://google.fr';
-//        Mail::to('contact@envolinfo.com')->send(new SendEmailReinitPassword($link));
-//        dd($link);
+
+        die();
 
         /*
          * statut 22 : participant openfed n'ayant jamais participé ==> a supprimer (35)
@@ -53,20 +51,27 @@ class initPersonnes extends Command
          * statuts 0,1,2,3, et 4 : adhérents ou abonnés seuls
          * */
 
-//        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-//        DB::table('personnes')->truncate();
-//        DB::table('abonnements')->truncate();
-//        DB::table('adresse_personne')->truncate();
-//        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-//
-//        $datau = array('personne_id' => null);
-//        DB::table('utilisateurs')->update($datau);
-//
-//        Utilisateur::where('statut', 22)->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('personnes')->truncate();
+        DB::table('abonnements')->truncate();
+        DB::table('adresse_personne')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $utilisateurs = Utilisateur::whereNull('personne_id')->whereIn('statut', [0,1,2,3])->where('courriel', '<>', 'fpf@federation-photo.fr')->orderByDesc('courriel')->orderByDesc('adresses_id')->get();
+        $datau = array('personne_id' => null);
+        DB::table('utilisateurs')->update($datau);
+
+        Utilisateur::where('statut', 22)->delete();
+
+        $utilisateurs = Utilisateur::whereNull('personne_id')
+            ->where('statut', '<>', 10)
+//            ->whereIn('statut', [0,1,2,3])
+//            ->where('courriel', '<>', 'fpf@federation-photo.fr')
+            ->orderByDesc('courriel')
+            ->orderByDesc('adresses_id')
+            ->get();
 //        $utilisateurs = Utilisateur::where('statut', 3)->orderByDesc('courriel')->orderByDesc('adresses_id')->limit(50)->get();
 //        $utilisateurs = Utilisateur::where('statut', 5)->get();
+//        $utilisateurs = Utilisateur::where('statut', 10)->orderBy('courriel')->orderByDesc('adresses_id')->get();
 //        $utilisateurs = Utilisateur::where('statut', 2)->orderBy('courriel')->orderByDesc('adresses_id')->limit(10)->get();
 //        $utilisateurs = Utilisateur::where('statut', 12)->orderBy('courriel')->orderByDesc('adresses_id')->limit(10)->get();
 
@@ -85,7 +90,7 @@ class initPersonnes extends Command
 
             $shuffle_letters = str_shuffle($letters);
 //            $random_password = substr($shuffle_letters, 0, 8);
-            $random_password = 'Az123456';
+            $random_password = substr($nom, 0, 1).'@'.substr(strtolower($prenom), 0, 1).'54PgT23';
             $password = $this->encodePwd($random_password);
             $datap = array(
                 'nom' => $nom,
@@ -150,7 +155,7 @@ class initPersonnes extends Command
 
                 // on insère la personne
                 $personne = Personne::create($datap);
-                $this->insertWpUser($personne->prenom, $personne->nom, $personne->email, $random_password);
+//                $this->insertWpUser($personne->prenom, $personne->nom, $personne->email, $random_password);
 
 
                 // on insère la relation adresse_personne
@@ -160,6 +165,10 @@ class initPersonnes extends Command
                 }
             } else {
                 // l'utilisateur correspond à la personne précédente
+                if (in_array($v->statut, $statuts_adherents) && $v->urs_id != 0) {
+                    $datap = array('is_adherent' => 1);
+                    $personne->update($datap);
+                }
             }
 
             if ($personne) {
@@ -189,7 +198,7 @@ class initPersonnes extends Command
 
 
 
-            if (!in_array($v->statut, $statuts_adherents)) {
+            if (!in_array($v->statut, $statuts_adherents) || $v->urs_id == 0) {
                 // on supprime l'utilisateur car non adhérent
 //                DB::table('utilisateurs')->where('id', $v->id)->delete();
             }

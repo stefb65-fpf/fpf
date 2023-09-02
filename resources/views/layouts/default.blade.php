@@ -31,6 +31,7 @@
     @include('layouts.footer')
 </div>
 <span id="app_url" class="d-none">{{ env('APP_URL') }}</span>
+<span id="app_url_copain" class="d-none">{{ env('URL_COPAIN') }}</span>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script src="{{ asset('js/frontend.js') }}?t=<?= time() ?>"></script>
 <script src="{{ asset('js/topbar_searchbox.js') }}?t=<?= time() ?>"></script>

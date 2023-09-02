@@ -35,7 +35,7 @@
                         <td>{{ $ur->nom }}</td>
                         <td> @foreach($ur->departements as $departement)
                                 <p>
-                                    {{$departement->numerodepartement}} - {{$departement->libelle}}
+                                    {{$departement->numero}} - {{$departement->nom}}
                                 </p>
                             @endforeach</td>
                         <td><a href="mailto:{{$ur->courriel}}">{{$ur->courriel}}</a></td>

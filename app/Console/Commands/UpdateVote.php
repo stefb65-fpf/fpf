@@ -33,10 +33,6 @@ class UpdateVote extends Command
      */
     public function handle()
     {
-//        $this->insertWpUser('tartempion', 'closses', 'text@tototot.fr', 'Az123456');
-//        $this->deleteWpUser('text@tototot.fr');
-//        $this->updateWpUser('text@tototot.fr', 'clozrysfghsdfhsfher(sses');
-
         // on met à jour les votes pour lesquelles la date de debut phase 2 est égale à la date du jour
         $votes = Vote::where('debut_phase2', date('Y-m-d'))->where('type', 1)->get();
         foreach ($votes as $vote) {

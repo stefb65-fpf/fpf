@@ -1,5 +1,12 @@
 @extends('layouts.supportDefault')
 @section('content')
+    <div class="alertInfo mb25 w80">
+        <span class="bold">Problème de connexion ?</span>
+        Vous n'arrivez pas à vous connecter avec vos indentifiants FPF ?
+        C'est normal, nous avons changé de système d'authentification. Désormais vous allez devoir vous connecter avec votre adresse e-mail et votre mot de passe.
+        A votre première connexion, vous devrez initialiser votre mot de passe en cliquant sur le lien "Vous avez un compte FPF mais c'est votre première connexion ?"
+        sur la <a href="{{ env('APP_URL') }}login" style="text-decoration: underline; font-weight: bolder;">page d'authentification</a>.
+    </div>
         <form action="{{ route('support.submit') }}" method="POST" class="authForm align-center">
             {{ csrf_field() }}
             <input type="hidden" name="_method" value="PUT">

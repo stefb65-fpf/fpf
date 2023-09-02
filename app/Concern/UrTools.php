@@ -50,7 +50,8 @@ trait UrTools
 
     public function getUrInformations(Ur $ur)
     {
-        $ur->departements = DB::table('departementsurs')->where('urs_id', $ur->id)->get();
+        $ur->departements = DB::table('departements')->where('urs_id', $ur->id)->get();
+//        $ur->departements = DB::table('departementsurs')->where('urs_id', $ur->id)->get();
         $ur->adresse->telephonemobile = $this->format_phone_number_visual($ur->adresse->telephonemobile);
         $ur->adresse->telephonedomicile = $this->format_phone_number_visual($ur->adresse->telephonedomicile);
         $ur->adresse->indicatif_fixe = Pays::where('nom', $ur->adresse->pays)->first()->indicatif;

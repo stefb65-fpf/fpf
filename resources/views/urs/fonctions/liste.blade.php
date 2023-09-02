@@ -13,16 +13,16 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger w80">
-            <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p class="mt20">
-                On affiche ici la liste des fonctions de l'UR, la possibilité d'ajouter une fonction spécifique à l'UR,
-                de lier un adhérent de l'UR à la fonction, de supprimer la liaison adhérent / fonction, de supprimer une fonction si elle spécifique à l'UR
-            </p>
-        </div>
+{{--        <div class="alertDanger w80">--}}
+{{--            <p>--}}
+{{--                <span class="bold">Attention !</span>--}}
+{{--                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.--}}
+{{--            </p>--}}
+{{--            <p class="mt20">--}}
+{{--                On affiche ici la liste des fonctions de l'UR, la possibilité d'ajouter une fonction spécifique à l'UR,--}}
+{{--                de lier un adhérent de l'UR à la fonction, de supprimer la liaison adhérent / fonction, de supprimer une fonction si elle spécifique à l'UR--}}
+{{--            </p>--}}
+{{--        </div>--}}
 
         <div class="d-flex justify-end mt20 w100">
             <a href="{{ route('urs.fonctions.create') }}" class="adminPrimary btnMedium">Ajouter une fonction</a>

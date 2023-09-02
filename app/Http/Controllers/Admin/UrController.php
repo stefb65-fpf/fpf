@@ -44,14 +44,14 @@ class UrController extends Controller
             $ur->adresse->visual_fixe = $this->format_phone_number_visual($ur->adresse->telephonedomicile);
             //changer les url des adresses web
             $ur->web = $this->format_web_url($ur->web);
-            $ur->departements = DB::table('departementsurs')->where('urs_id', $ur->id)->get();
+            $ur->departements = DB::table('departements')->where('urs_id', $ur->id)->get();
         }
         return view('admin.urs.index', compact('urs'));
     }
 
     public function edit(Ur $ur)
     {
-        $ur->departements = DB::table('departementsurs')->where('urs_id', $ur->id)->get();
+        $ur->departements = DB::table('departements')->where('urs_id', $ur->id)->get();
         $ur->adresse->telephonemobile = $this->format_phone_number_visual($ur->adresse->telephonemobile);
         $ur->adresse->telephonedomicile = $this->format_phone_number_visual($ur->adresse->telephonedomicile);
         $countries = Pays::all();

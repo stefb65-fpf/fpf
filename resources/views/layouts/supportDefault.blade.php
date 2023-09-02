@@ -31,7 +31,7 @@
 
             <h1 class="pageTitle">
                 Demande de support
-                <a class="previousPage" title="Retour page précédente" href="{{ url()->previous() == "https://fpf-new.federation-photo.fr/support" ? "https://fpf-new.federation-photo.fr/mes-mails":url()->previous()}}">
+                <a class="previousPage" title="Retour page précédente" href="{{ url()->previous() == env('APP_URL')."support" ? env('APP_URL')."mes-mails":url()->previous()}}">
 
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                          class="bi bi-reply-fill" viewBox="0 0 16 16">
@@ -53,7 +53,7 @@
         <div class="supportContainer pageCanva">
             <h1 class="pageTitle">
                 Demande de support
-                <a class="previousPage" title="Retour page précédente" href="{{ url()->previous() == "https://fpf-new.federation-photo.fr/support" ? "https://fpf-new.federation-photo.fr/login":url()->previous()}}">
+                <a class="previousPage" title="Retour page précédente" href="{{ url()->previous() == env('APP_URL')."support" ? env('APP_URL')."login":url()->previous()}}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                          class="bi bi-reply-fill" viewBox="0 0 16 16">
                         <path

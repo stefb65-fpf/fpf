@@ -337,25 +337,31 @@ trait Tools
 
     protected function getTarifAdhesion($datenaissance)
     {
-        $date_naissance = new \DateTime($datenaissance);
-        $date_now = new \DateTime();
-        $age = $date_now->diff($date_naissance)->y;
-        if ($age <= 0) {
-            return [0, 0];
-        }
-        $tarif_id = 13;
-        $tarif_id_supp = 0;
-        $ct = 2;
-        if ($age < 18) {
-            $tarif_id = 15;
-            $tarif_id_supp = 23;
-            $ct = 4;
-        } else {
-            if ($age < 25) {
-                $tarif_id = 14;
-                $tarif_id_supp = 23;
-                $ct = 3;
+        if ($datenaissance) {
+            $date_naissance = new \DateTime($datenaissance);
+            $date_now = new \DateTime();
+            $age = $date_now->diff($date_naissance)->y;
+            if ($age <= 0) {
+                return [0, 0];
             }
+            $tarif_id = 13;
+            $tarif_id_supp = 0;
+            $ct = 2;
+            if ($age < 18) {
+                $tarif_id = 15;
+                $tarif_id_supp = 23;
+                $ct = 4;
+            } else {
+                if ($age < 25) {
+                    $tarif_id = 14;
+                    $tarif_id_supp = 23;
+                    $ct = 3;
+                }
+            }
+        } else {
+            $tarif_id = 13;
+            $tarif_id_supp = 0;
+            $ct = 2;
         }
         $tarif_adhesion = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
         $tarif = $tarif_adhesion ? $tarif_adhesion->tarif : 0;
@@ -471,7 +477,8 @@ trait Tools
     protected function setIdentifiant($codepostal)
     {
         $departement = substr($codepostal, 0, 2);
-        $dpt = DB::table('departementsurs')->where('numerodepartement', $departement)->first();
+        $dpt = DB::table('departements')->where('numero', $departement)->first();
+//        $dpt = DB::table('departementsurs')->where('numerodepartement', $departement)->first();
         if ($dpt) {
             $identifiant = str_pad($dpt->urs_id, 2, '0', STR_PAD_LEFT);
             $urs_id = $dpt->urs_id;

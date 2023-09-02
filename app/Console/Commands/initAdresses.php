@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Concern\Tools;
 use App\Models\Adresse;
 use App\Models\Commune;
 use App\Models\Pays;
@@ -10,6 +11,7 @@ use function PHPUnit\Framework\isNan;
 
 class initAdresses extends Command
 {
+    use Tools;
     /**
      * The name and signature of the console command.
      *
@@ -29,6 +31,7 @@ class initAdresses extends Command
      */
     public function handle()
     {
+        die();
         $adresses = Adresse::all();
         $pays = Pays::all();
         $tab_pays = [];
@@ -83,50 +86,26 @@ class initAdresses extends Command
 
         // traitement à excuter en troisième passage pour supprimer les téléphone trops courts
 //        foreach ($adresses as $adresse) {
-//            $telephone_domicile = str_replace(' ', '', $adresse->telephonedomicile);
-//            $telephone_domicile = str_replace('+', '', $telephone_domicile);
-//            $telephone_domicile = str_replace('/', '', $telephone_domicile);
-//            $telephone_domicile = str_replace('.', '', $telephone_domicile);
-//            $telephone_domicile = str_replace('-', '', $telephone_domicile);
-//
-//            if ($telephone_domicile != '') {
-//                $int_telephone_domicile = intval($telephone_domicile);
-//
-//                if ($telephone_domicile != str_pad($int_telephone_domicile, strlen($telephone_domicile), '0', STR_PAD_LEFT)) {
-//                    $data = array('telephonedomicile' => '');
-//                    $adresse->update($data);
-//                } else {
-//                    $pays = strtolower($adresse->pays);
-//                    if ($pays == 'france') {
-//                        if (strlen($telephone_domicile) != 10 && strlen($telephone_domicile) != 9) {
-//                            $data = array('telephonedomicile' => '');
-//                            $adresse->update($data);
-//                        }
-//                    }
-//                }
+//            $pays = mb_strtolower($adresse->pays);
+//            if (array_key_exists($pays, $tab_pays)) {
+//                $indicatif = $tab_pays[$pays];
+//            } else {
+//                $indicatif = 33;
 //            }
 //
-//
-//            $telephone_mobile = str_replace(' ', '', $adresse->telephonemobile);
-//            $telephone_mobile = str_replace('+', '', $telephone_mobile);
-//            $telephone_mobile = str_replace('/', '', $telephone_mobile);
-//            $telephone_mobile = str_replace('.', '', $telephone_mobile);
-//            $telephone_mobile = str_replace('-', '', $telephone_mobile);
-//            if ($telephone_mobile != '') {
-//                $int_telephone_mobile = intval($telephone_mobile);
-//                if ($telephone_mobile != str_pad($int_telephone_mobile, strlen($telephone_mobile), '0', STR_PAD_LEFT)) {
-//                    $data = array('telephonemobile' => '');
-//                    $adresse->update($data);
-//                } else {
-//                    $pays = strtolower($adresse->pays);
-//                    if ($pays == 'france') {
-//                        if (strlen($telephone_mobile) != 10 && strlen($telephone_mobile) != 9) {
-//                            $data = array('telephonemobile' => '');
-//                            $adresse->update($data);
-//                        }
-//                    }
-//                }
+//            $telephone_domicile = $this->format_fixe_for_base($adresse->telephonedomicile, $indicatif);
+//            if ($telephone_domicile == -1) {
+//                $data = array('telephonedomicile' => '');
+//            } else {
+//                $data = array('telephonedomicile' => $telephone_domicile);
 //            }
+//            $telephone_mobile = $this->format_mobile_for_base($adresse->telephonemobile, $indicatif);
+//            if ($telephone_mobile == -1) {
+//                $data['telephonemobile'] = '';
+//            } else {
+//                $data['telephonemobile'] = $telephone_mobile;
+//            }
+//            $adresse->update($data);
 //        }
 
 //        -------------------------------------------------------------------------------------------------

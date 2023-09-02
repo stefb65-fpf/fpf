@@ -252,7 +252,7 @@ $('select.pays').on('change', function(e) {
 });
 //input file change image
 $('input[name=logo]').on('change', function(e){
-    $(this).parent().find('img').attr("src","https://fpf-new.federation-photo.fr/storage/app/public/FPF-default-image.jpg")
+    $(this).parent().find('img').attr("src", $('#app_url').html() + "storage/app/public/FPF-default-image.jpg")
 })
 
 //show select on click
@@ -325,7 +325,7 @@ $('#connectConcours').on('click', function(e){
             form += '<input type="hidden" name="password" value="'+password+'">';
             form += '<input type="hidden" name="cartes" value="'+cartes+'">';
             // TODO change URL to prod
-            $('<form action="https://copain-dev.federation-photo.fr/webroot/utilisateurs/autoload" method="POST">' + form + '</form>').appendTo($(document.body)).submit();
+            $('<form action="' + $('#app_url_copain').html() + 'webroot/utilisateurs/autoload" method="POST">' + form + '</form>').appendTo($(document.body)).submit();
         },
         error: function(err) {
             alert("Erreur lors de la redirection vers l'outil concours")
