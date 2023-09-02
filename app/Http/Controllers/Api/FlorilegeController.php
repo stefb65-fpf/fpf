@@ -8,6 +8,7 @@ use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Personne;
 use App\Models\Souscription;
+use App\Models\Tarif;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,12 @@ class FlorilegeController extends Controller
         if (!$personne) {
             return new JsonResponse(['error' => "La personne n'existe pas"], 400);
         }
-        $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
+//        $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
+        $config = Configsaison::where('id', 1)->selectRaw('datedebutflorilege, datefinflorilege')->first();
+        $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+        $tarif_florilege_etranger = Tarif::where('statut', 0)->where('id', 22)->first();
+        $config->prixflorilegefrance = $tarif_florilege_france->tarif;
+        $config->prixflorilegeetranger = $tarif_florilege_etranger->tarif;
         if (!(date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege)) {
             return new JsonResponse(['error' => "La commande n'est pas permise"], 400);
         }
@@ -109,7 +115,12 @@ class FlorilegeController extends Controller
             ->where('fonctionsutilisateurs.fonctions_id', 97)
             ->first();
 
-        $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
+//        $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
+        $config = Configsaison::where('id', 1)->selectRaw('datedebutflorilege, datefinflorilege')->first();
+        $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+        $tarif_florilege_etranger = Tarif::where('statut', 0)->where('id', 22)->first();
+        $config->prixflorilegefrance = $tarif_florilege_france->tarif;
+        $config->prixflorilegeetranger = $tarif_florilege_etranger->tarif;
         if (!(date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege)) {
             return new JsonResponse(['error' => "La commande n'est pas permise"], 400);
         }

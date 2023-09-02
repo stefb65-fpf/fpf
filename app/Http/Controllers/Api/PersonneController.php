@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
+use App\Models\Fonction;
 use App\Models\Personne;
 use App\Models\Ur;
 use App\Models\Utilisateur;
@@ -84,6 +85,16 @@ class PersonneController extends Controller
             $tab_droits = []; // tableau des droits de l'utilisateur
             foreach($cartes[0]->droits as $droit) {
                 $tab_droits[] = $droit->label;
+            }
+            $fonctions = Fonction::join('fonctionsutilisateurs', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
+                ->select('fonctions.id', 'fonctions.libelle')
+                ->where('fonctionsutilisateurs.utilisateurs_id', $cartes[0]->id)->get();
+            foreach ($fonctions as $fonction) {
+                if ($fonction->droits) {
+                    foreach ($fonction->droits as $droit) {
+                        $tab_droits[] = $droit->label;
+                    }
+                }
             }
             $droit_news = 0;
             if (in_array('GESNEW', $tab_droits)) {

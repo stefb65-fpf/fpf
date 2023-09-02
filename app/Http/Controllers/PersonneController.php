@@ -23,6 +23,7 @@ use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Souscription;
 use App\Models\Supportmessage;
+use App\Models\Tarif;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -301,7 +302,12 @@ class PersonneController extends Controller
     {
         $personne = session()->get('user');
         // on vérifie que le florilège est bien dispo à la commande
-        $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
+//        $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
+        $config = Configsaison::where('id', 1)->selectRaw('datedebutflorilege, datefinflorilege')->first();
+        $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+        $tarif_florilege_etranger = Tarif::where('statut', 0)->where('id', 22)->first();
+        $config->prixflorilegefrance = $tarif_florilege_france->tarif;
+        $config->prixflorilegeetranger = $tarif_florilege_etranger->tarif;
         if (!(date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege)) {
             return redirect()->route('accueil');
         }

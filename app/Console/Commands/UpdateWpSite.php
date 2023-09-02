@@ -8,6 +8,7 @@ use App\Models\Equipement;
 use App\Models\Utilisateur;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UpdateWpSite extends Command
 {
@@ -78,7 +79,12 @@ class UpdateWpSite extends Command
                 if ($club->web != '') {
                     if (strpos($club->web, ":") !== false) {
                         $tabweb = explode('://', $club->web);
-                        $chaineweb = $tabweb[1];
+                        if (isset($tabweb[1])) {
+                            $chaineweb = $tabweb[1];
+                        }
+                        else {
+                            $chaineweb = '';
+                        }
                     }
                     else {
                         $chaineweb = $club->web;
@@ -102,8 +108,8 @@ class UpdateWpSite extends Command
                     'ptb_activites' => $chaine_activites,
                     'ptb_equipements' => $chaine_equipements,
                     'ptb_reunion_frequence' => $club->frequencereunions,
-                    'ptb_reunion_horaires' => $club->horairesreunions,
-                    'ptb_commentaire' => $club->reunions
+                    'ptb_reunion_horaires' => addslashes($club->horairesreunions),
+                    'ptb_commentaire' => addslashes($club->reunions)
                 );
                 foreach ($fonctions as $fonction) {
                     $name = addslashes(ucfirst(strtolower($fonction->personne->prenom)).' '.ucfirst(strtolower($fonction->personne->nom)));
@@ -133,6 +139,7 @@ class UpdateWpSite extends Command
                 $nomclub3 = str_replace('.', '', $nomclub2);
                 $postname1 = str_replace(' ', '-', strtolower($nomclub3));
                 $postname2 = str_replace("'", '', $postname1);
+                $postname2 = Str::slug($postname2);
                 $postname = iconv('UTF-8', 'ISO-8859-15//TRANSLIT//IGNORE', utf8_decode(str_replace('--', '-', $postname2)));
                 $ins_wp_posts = "INSERT INTO wp_posts (post_author, post_date, post_date_gmt, post_content, post_title, post_excerpt, comment_status,
                       ping_status, post_name, post_modified, post_modified_gmt, to_ping, pinged, post_content_filtered, guid, post_type, post_mime_type)
@@ -151,7 +158,12 @@ class UpdateWpSite extends Command
                 if ($club->web != '') {
                     if (str_contains($club->web, ":")) {
                         $tabweb = explode('://', $club->web);
-                        $chaineweb = $tabweb[1];
+                        if (isset($tabweb[1])) {
+                            $chaineweb = $tabweb[1];
+                        }
+                        else {
+                            $chaineweb = '';
+                        }
                     }
                     else {
                         $chaineweb = $club->web;
@@ -170,8 +182,8 @@ class UpdateWpSite extends Command
                     'ptb_code_postal'       => $codepostal,
                     'ptb_email'             => $club->courriel,
                     'ptb_reunion_frequence' => $club->frequencereunions,
-                    'ptb_reunion_horaires'  => $club->horairesreunions,
-                    'ptb_commentaire'       => $club->reunions,
+                    'ptb_reunion_horaires'  => addslashes($club->horairesreunions),
+                    'ptb_commentaire'       => addslashes($club->reunions),
                     'ptb_activites'         => $chaine_activites,
                     'ptb_equipements'       => $chaine_equipements,
                     '_edit_lock'            => '',
@@ -216,9 +228,10 @@ class UpdateWpSite extends Command
                         }
                         $len_chaine_club = strlen($chaine_club);
                         $chaine_meta = 'a:2:{s:7:"relType";s:1:"1";s:3:"ids";s:'.$len_chaine_club.':"'.$chaine_club.'";}';
+                        $meta_id = $meta_ur[0]->meta_id;
 
 //                        a:2:{s:7:"relType";s:1:"1";s:3:"ids";s:422:"155286, 155287, 155288, 155290, 155291, 155292, 155293, 155294, 155295, 155296, 155297, 155298, 155300, 155301, 155302, 155303, 155305, 155306, 155307, 155308, 155309, 155310, 155306, 155293, 155294, 155300, 155307, 155305, 155303, 155294, 155295, 155309, 155302, 155298, 155288, 155296, 155297, 155291, 155287, 155290, 155286, 155292, 155292, 155292, 155310, 155308, 155301, 173817, 174129, 176890, 176976, 182549, 183414";}
-                        DB::connection('mysqlwp')->statement("UPDATE wp_postmeta SET meta_value = '$chaine_meta' WHERE meta_id = $meta_ur[0]->meta_id LIMIT 1");
+                        DB::connection('mysqlwp')->statement("UPDATE wp_postmeta SET meta_value = '$chaine_meta' WHERE meta_id = $meta_id LIMIT 1");
                     }
                 }
 

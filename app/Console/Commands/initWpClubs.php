@@ -31,8 +31,8 @@ class initWpClubs extends Command
         foreach ($wp_clubs as $wp_club) {
             // on supprime des tables wp_posts et wp_postmeta
             $post_id = $wp_club->ID;
-//            DB::connection('mysqlwp')->statement("DELETE FROM wp_posts WHERE ID = $post_id LIMIT 1");
-//            DB::connection('mysqlwp')->statement("DELETE FROM wp_postmeta WHERE post_id = $post_id");
+            DB::connection('mysqlwp')->statement("DELETE FROM wp_posts WHERE ID = $post_id LIMIT 1");
+            DB::connection('mysqlwp')->statement("DELETE FROM wp_postmeta WHERE post_id = $post_id");
         }
     }
 }
