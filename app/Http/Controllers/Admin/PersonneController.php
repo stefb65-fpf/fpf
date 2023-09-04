@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PersonneRequest;
 use App\Mail\SendAnonymisationEmail;
 use App\Mail\SendUtilisateurCreateByAdmin;
+use App\Models\Abonnement;
 use App\Models\Adresse;
 use App\Models\Pays;
 use App\Models\Personne;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 class PersonneController extends Controller
 {
     use Tools;
+
     public function __construct()
     {
         $this->middleware(['checkLogin', 'adminAccess']);
@@ -37,51 +39,62 @@ class PersonneController extends Controller
         return view('admin.liste_adherents');
     }
 
-    public function list($view_type,  $ur_id = null,$statut = null,$type_carte = null, $type_adherent = null, $term = null)
+    public function list($view_type, $ur_id = null, $statut = null, $type_carte = null, $type_adherent = null, $term = null)
     {
         $statut = $statut ?? "all";
         $type_adherent = $type_adherent ?? "all";
         $ur = null;
-        if($view_type == "formateurs"){
+        if ($view_type == "formateurs") {
             //TODO : on affiche les formateurs
-            $query = Personne::where('is_adherent',0)->where('is_formateur' ,'!=', 0);
-        } elseif ($view_type == "abonnes"){
-            $query = Personne::where('is_adherent',0)->where('is_abonne' ,'!=', 0)->orderBy('nom')->orderBy('prenom');
-        } elseif($view_type == "recherche") {
-            $query = Personne::join('utilisateurs', 'utilisateurs.personne_id','=','personnes.id' );
-            if($term){
+            $query = Personne::where('is_adherent', 0)->where('is_formateur', '!=', 0);
+        } elseif ($view_type == "abonnes") {
+            $query = Personne::where('is_adherent', 0)->where('is_abonne', '!=', 0)->orderBy('nom')->orderBy('prenom');
+        } elseif ($view_type == "recherche") {
+            $query = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id');
+            if ($term) {
                 //appel de la fonction getPersonsByTerm($club, $term) qui retourne les personnes filtrées selon le term
                 $this->getPersonsByTerm($term, $query);
             }
         } else {
-            $query = Utilisateur::where('urs_id' ,'!=', null)->where('urs_id' ,'!=', 0)->where('personne_id' ,'!=', null)
-            ->orderBy('urs_id')->orderBy('clubs_id')->orderBy('nom')->orderBy('prenom');
+            $query = Utilisateur::where('urs_id', '!=', null)->where('urs_id', '!=', 0)->where('personne_id', '!=', null)
+                ->orderBy('urs_id')->orderBy('clubs_id')->orderBy('nom')->orderBy('prenom');
         }
 
         if ($ur_id != 'all' && $ur_id) {
-            $lur = Ur::where('id',$ur_id)->first();
+            $lur = Ur::where('id', $ur_id)->first();
             if ($lur) {
-                $query  = $query->where('utilisateurs.urs_id','=', $lur->id);
+                $query = $query->where('utilisateurs.urs_id', '=', $lur->id);
             }
         }
 
-        if ($statut != 'all' && in_array($statut, [0,1,2,3,4])) {
-            $query  = $query->where('statut', $statut);
+        if ($statut != 'all' && in_array($statut, [0, 1, 2, 3, 4])) {
+            $query = $query->where('statut', $statut);
         }
-        if ($type_adherent != 'all' && in_array($type_adherent,[1,2])) {
-            if($type_adherent == 1) {
-                $query  = $query->whereNull('clubs_id');
+        if ($type_adherent != 'all' && in_array($type_adherent, [1, 2])) {
+            if ($type_adherent == 1) {
+                $query = $query->whereNull('clubs_id');
             } else {
-                $query  = $query->whereNotNull('clubs_id');
+                $query = $query->whereNotNull('clubs_id');
             }
         }
-        if ($type_carte != 'all' && (in_array($type_carte,[2,3,4,5,6,7,8,9,"F"]))) {
-            $query  = $query->where('ct', $type_carte);
+        if ($type_carte != 'all' && (in_array($type_carte, [2, 3, 4, 5, 6, 7, 8, 9, "F"]))) {
+            $query = $query->where('ct', $type_carte);
         }
         $utilisateurs = $query->paginate(100);
         $urs = Ur::orderBy('nom')->get();
         $level = 'admin';
-        return view('admin.personnes.liste', compact('view_type', 'utilisateurs', 'statut', 'type_carte', 'level', 'type_adherent','ur_id','urs','ur', 'term'));
+
+        foreach ($utilisateurs as $utilisateur) {
+            $fin = '';
+            if ($utilisateur->personne->is_abonne) {
+                $personne_abonnement = Abonnement::where('personne_id', $utilisateur->personne_id)->where('etat', 1)->first();
+                if ($personne_abonnement) {
+                    $fin = $personne_abonnement->fin;
+                }
+            }
+            $utilisateur->fin = $fin;
+        }
+        return view('admin.personnes.liste', compact('view_type', 'utilisateurs', 'statut', 'type_carte', 'level', 'type_adherent', 'ur_id', 'urs', 'ur', 'term'));
     }
 
 //    public function listeAbonnes()
@@ -97,11 +110,12 @@ class PersonneController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($personne_id, $view_type) {
+    public function edit($personne_id, $view_type)
+    {
 
         $personne = Personne::where('id', $personne_id)->first();
         if (!$personne) {
-            return redirect('/admin/personnes/'.$view_type)->with('error', "Un problème est survenu lors de la récupération des informations de la personne");
+            return redirect('/admin/personnes/' . $view_type)->with('error', "Un problème est survenu lors de la récupération des informations de la personne");
         }
         if (sizeof($personne->adresses) == 0) {
             $new_adresse = new Adresse();
@@ -123,7 +137,8 @@ class PersonneController extends Controller
         return view('admin.personnes.edit', compact('personne', 'view_type', 'countries', 'level'));
     }
 
-    public function create($view_type) {
+    public function create($view_type)
+    {
         $countries = DB::table('pays')->orderBy('nom')->get();
         $personne = new Personne();
         $personne->adresses[] = new Adresse();
@@ -133,7 +148,8 @@ class PersonneController extends Controller
         return view('admin.personnes.create', compact('view_type', 'countries', 'level', 'personne'));
     }
 
-    public function store(PersonneRequest $request, $view_type) {
+    public function store(PersonneRequest $request, $view_type)
+    {
         $email = trim($request->email);
         list($tmp, $domain) = explode('@', $email);
         if ($domain == 'federation-photo.fr') {
@@ -206,7 +222,7 @@ class PersonneController extends Controller
             $mail->contenu = $htmlContent;
             $this->registerMail($personne->id, $mail);
 
-            return redirect('/admin/personnes/'.$view_type)->with('success', "L'adhérent $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
+            return redirect('/admin/personnes/' . $view_type)->with('success', "L'adhérent $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
         }
     }
 
@@ -271,7 +287,7 @@ class PersonneController extends Controller
             $adresse_2 = $personne->adresses[1];
             $adresse_2->update($dataa2);
         }
-        return redirect('/admin/personnes/'.$view_type)->with('success', "La personne a bien été mise à jour");
+        return redirect('/admin/personnes/' . $view_type)->with('success', "La personne a bien été mise à jour");
     }
 
     public function anonymize(Personne $personne, $view_type)
@@ -279,7 +295,7 @@ class PersonneController extends Controller
         try {
             DB::beginTransaction();
             $prev_email = $personne->email;
-            $email = uniqid('anonyme_').'@federationphoto.fr';
+            $email = uniqid('anonyme_') . '@federationphoto.fr';
             $datau = array('nom' => 'anonyme', 'prenom' => 'anonyme', 'courriel' => $email);
             foreach ($personne->utilisateurs as $utilisateur) {
                 $utilisateur->update($datau);
@@ -301,10 +317,10 @@ class PersonneController extends Controller
             }
             DB::commit();
 
-            return redirect('/admin/personnes/'.$view_type)->with('success', "La personne a été anonymisée avec succès");
+            return redirect('/admin/personnes/' . $view_type)->with('success', "La personne a été anonymisée avec succès");
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect('/admin/personnes/'.$view_type)->with('error', "Un problème est survenu lors de l'anonymisation de la personne");
+            return redirect('/admin/personnes/' . $view_type)->with('error', "Un problème est survenu lors de l'anonymisation de la personne");
         }
     }
 

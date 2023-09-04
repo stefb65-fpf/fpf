@@ -78,7 +78,10 @@
         </div>
 
         @if(!sizeof($clubs))
-            Aucun club ne correspond aux critères selectionnés. Changer la valeur des filtres ci-dessus.
+            <div class="w100 text-center">
+                Aucun club ne correspond aux critères selectionnés. Changer la valeur des filtres ci-dessus.
+            </div>
+
         @else
             <div class="pagination">
                 {{ $clubs->render( "pagination::default") }}

@@ -8,15 +8,19 @@
                 <div class="urTitle">{{ $ur->nom }}</div>
             </div>
             <a class="previousPage" title="Retour page précédente" href="{{ route('urs.gestion') }}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
-                    <path d="M5.921 11.9 1.353 8.62a.719.719 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                     class="bi bi-reply-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M5.921 11.9 1.353 8.62a.719.719 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z"/>
                 </svg>
             </a>
         </h1>
         <div class="alertInfo w80">
             <span class="bold">Informations !</span>
-            Ici vous avez la possibilité d'afficher la liste des clubs de votre UR et de les filtrer en fonction de leur statut, de leur type de carte et de leur abonnement.<br>
-            Vous pouvez également ajouter un club qui n'est pas encore présent dans cette liste, modifier les informations d'un club déjà existant et afficher la liste de ses abonnés.
+            Ici vous avez la possibilité d'afficher la liste des clubs de votre UR et de les filtrer en fonction de leur
+            statut, de leur type de carte et de leur abonnement.<br>
+            Vous pouvez également ajouter un club qui n'est pas encore présent dans cette liste, modifier les
+            informations d'un club déjà existant et afficher la liste de ses abonnés.
         </div>
         <div class="filters d-flex">
             <div class="formBlock maxW100">
@@ -48,7 +52,7 @@
                             <option value="all">Tous</option>
                             <option value="1" {{$abonnement== 1 ? "selected" : ""}}>Avec</option>
                             <option value="0" {{$abonnement== 0 ? "selected" : ""}}>Sans</option>
-{{--                            <option value="G" {{$abonnement== "G" ? "selected":""}}>Gratuits</option>--}}
+                            {{--                            <option value="G" {{$abonnement== "G" ? "selected":""}}>Gratuits</option>--}}
                         </select>
                     </div>
                 </div>
@@ -63,19 +67,22 @@
                 </div>
             </div>
         @endif
-{{--        <div class="mt25 flexEnd">--}}
-{{--            <a href="{{ route('admin.clubs.create') }}" class="adminPrimary btnMedium">Ajouter un club</a>--}}
-{{--            <a  class="adminPrimary btnMedium">Ajouter un club</a>--}}
-{{--        </div>--}}
+        {{--        <div class="mt25 flexEnd">--}}
+        {{--            <a href="{{ route('admin.clubs.create') }}" class="adminPrimary btnMedium">Ajouter un club</a>--}}
+        {{--            <a  class="adminPrimary btnMedium">Ajouter un club</a>--}}
+        {{--        </div>--}}
 
         @if(!sizeof($clubs))
-            Aucun club ne correspond aux critères selectionnés. Changer la valeur des filtres ci-dessus.
+            <div class="text-center w100">
+                Aucun club ne correspond aux critères selectionnés. Changer la valeur des filtres ci-dessus.
+            </div>
+
         @else
             <table class="styled-table">
                 <thead>
                 <tr>
                     <th>N°</th>
-{{--                    <th>UR</th>--}}
+                    {{--                    <th>UR</th>--}}
                     <th>Nom</th>
                     <th>Statut</th>
                     <th>Courriel</th>
@@ -89,7 +96,7 @@
                 @foreach($clubs as $club)
                     <tr>
                         <td>{{ $club->numero }}</td>
-{{--                        <td>{{$club->urs_id}}</td>--}}
+                        {{--                        <td>{{$club->urs_id}}</td>--}}
                         <td>{{$club->nom}}</td>
                         <td>
                             @switch($club->statut)
@@ -146,11 +153,12 @@
                         </td>
                         <td>
                             <div class="mb3">
-{{--                                <a href="" class="adminPrimary btnSmall">Éditer</a>--}}
+                                {{--                                <a href="" class="adminPrimary btnSmall">Éditer</a>--}}
                                 <a href="{{ route('UrGestion_updateClub', $club) }}" class="adminPrimary btnSmall">Éditer</a>
                             </div>
                             <div class="mb3">
-                                <a href="{{route('urs.liste_adherents_club',$club)}}" class="adminSuccess btnSmall">Liste des adhérents</a>
+                                <a href="{{route('urs.liste_adherents_club',$club)}}" class="adminSuccess btnSmall">Liste
+                                    des adhérents</a>
                             </div>
                         </td>
                     </tr>

@@ -7,9 +7,15 @@
             <div class="formBlockWrapper m0 p0">
                 <div class="formLine center d-flex flex-column">
                     <label class="d-flex flex-column" for="file" style="cursor:pointer">
+                        @if($club->logo)
                         <img class="clubLogo"
                              src="{{ env('APP_URL').'storage/app/public/uploads/clubs/'.$club->numero.'/'.$club->logo }}"
                              alt="">
+                        @else
+                            <img class="clubLogo"
+                                 src="{{ env('APP_URL').'storage/app/public/FPF-club-default-image.jpg'}}"
+                                 alt="">
+                        @endif
                         <span class="text underlineGrey grey relative modifyVisible" style="width: 120px;margin: auto;">Changer de logo</span>
                     </label>
                     <input class="formValue d-none" type="file" id="file" accept=".png,.jpeg,.jpg" name="logo"

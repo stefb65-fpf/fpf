@@ -1,11 +1,13 @@
 <div class="alertInfo w80">
     <span class="bold">Informations !</span>
-    Vous pouvez gérer le renouvellement des adhésions et abonnements des membres de votre club. Pour cela, cochez les adhérents que vous souhaitez renouveler ou abonner puis cliquez sur le bouton "Renouveler".<br>
+    Vous pouvez gérer le renouvellement des adhésions et abonnements des membres de votre club. Pour cela, cochez les
+    adhérents que vous souhaitez renouveler ou abonner puis cliquez sur le bouton "Renouveler".<br>
     Le club est automatiquement renouvelé lors du premier renouvellement des adhérents dans la saison.<br>
     Vous pouvez également abonner votre club au France Photo à tout moment.
 </div>
 <div class="alertSuccess w80" style="display: none;" id="alertAdherentsList">
-    Le fichier des adhérents a bien été généré. Vous pouvez le télécharger en cliquant sur le lient suivant: <a class="underline pointer" id="linkAdherentsList" target="_blank">Télécharger le fichier</a>
+    Le fichier des adhérents a bien été généré. Vous pouvez le télécharger en cliquant sur le lient suivant: <a
+        class="underline pointer" id="linkAdherentsList" target="_blank">Télécharger le fichier</a>
 </div>
 <div class="filters d-flex">
     <div class="formBlock maxW100">
@@ -34,42 +36,49 @@
     </div>
 </div>
 @if(!sizeof($adherents))
-    Ce club ne possède aucun adhérent répondant aux critères selectionnés.
+    <div class="w100 text-center"> Ce club ne possède aucun adhérent répondant aux critères selectionnés.</div>
+
 @else
     <div class="mt25 flexEnd">
-            @switch($club->statut)
-                @case(0)
-                    <div class="statutClub orange">Non renouvelé</div>
-                    @break
-                @case(1)
-                    <div class="statutClub yellow">En cours d'inscription</div>
-                    @break
-                @case(2)
-                    <div class="statutClub green">Club validé</div>
-                    @break
-            @endswitch
-            @if($club->is_abonne)
-                <div class="statutClub green">Abonné</div>
-            @else
-                <div class="statutClub">Non abonné</div>
-            @endif
-        <button class="adminPrimary btnMedium" type="text" id="btnAdherentsList" data-club="{{$club->id}}">Liste des adhérents au format Excel</button>
-{{--        <button class="adminPrimary btnMedium ml10" type="text" id="btnAdherentsAjout" data-club="{{$club->id}}" >Ajouter un adhérent</button>--}}
-                @if($prefix == '')
-                    <a class="adminPrimary btnMedium ml10" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>
-                @else
-                    <a class="adminPrimary btnMedium ml10" href="{{ route($prefix.'clubs.adherents.create', $club->id) }}">Ajouter un adhérent</a>
-                @endif
+        @switch($club->statut)
+            @case(0)
+            <div class="statutClub orange">Non renouvelé</div>
+            @break
+            @case(1)
+            <div class="statutClub yellow">En cours d'inscription</div>
+            @break
+            @case(2)
+            <div class="statutClub green">Club validé</div>
+            @break
+        @endswitch
+        @if($club->is_abonne)
+            <div class="statutClub green">Abonné</div>
+        @else
+            <div class="statutClub">Non abonné</div>
+        @endif
+        <button class="adminPrimary btnMedium" type="text" id="btnAdherentsList" data-club="{{$club->id}}">Liste des
+            adhérents au format Excel
+        </button>
+        {{--        <button class="adminPrimary btnMedium ml10" type="text" id="btnAdherentsAjout" data-club="{{$club->id}}" >Ajouter un adhérent</button>--}}
+        @if($prefix == '')
+            <a class="adminPrimary btnMedium ml10" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>
+        @else
+            <a class="adminPrimary btnMedium ml10" href="{{ route($prefix.'clubs.adherents.create', $club->id) }}">Ajouter
+                un adhérent</a>
+        @endif
 
-         <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-club="{{$club->id}}" disabled >Renouveler</button>
-     </div>
-     <div class="d-flex justify-between mt20 w100">
-         <div>
-             <input type="checkbox" class="mr10" id="abonnementClub"> Abonner le club jusqu'au numéro {{ $club->numero_fin_reabonnement }}
-         </div>
- {{--        <div>--}}
-{{--            <a class="adminPrimary btnMedium" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>--}}
-{{--        </div>--}}
+        <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-club="{{$club->id}}"
+                disabled>Renouveler
+        </button>
+    </div>
+    <div class="d-flex justify-between mt20 w100">
+        <div>
+            <input type="checkbox" class="mr10" id="abonnementClub"> Abonner le club jusqu'au
+            numéro {{ $club->numero_fin_reabonnement }}
+        </div>
+        {{--        <div>--}}
+        {{--            <a class="adminPrimary btnMedium" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>--}}
+        {{--        </div>--}}
     </div>
     <table class="styled-table">
         <thead>
@@ -90,9 +99,10 @@
             <tr>
                 <td>
                     @if(in_array($adherent->statut, [0, 1, 4]))
-                        <input type="checkbox" name="adherer" data-ref="{{ $adherent->id_utilisateur }}" data-identifiant="{{ $adherent->identifiant }}" />
-                    @endif
-                <td><input type="checkbox" name="abonner" data-ref="{{ $adherent->id_utilisateur }}" /></td>
+                        <input type="checkbox" name="adherer" data-ref="{{ $adherent->id_utilisateur }}"
+                               data-identifiant="{{ $adherent->identifiant }}"/>
+                @endif
+                <td><input type="checkbox" name="abonner" data-ref="{{ $adherent->id_utilisateur }}"/></td>
                 <td>{{$adherent->identifiant}}</td>
                 <td>{{$adherent->personne->nom}} {{$adherent->personne->prenom}} </td>
                 <td>
@@ -139,11 +149,15 @@
                         <option value="6" {{ $adherent->ct == 6 ? 'selected' : '' }}>2eme club</option>
                     </select>
                     <div name="divSecondeCarte" {{ !in_array($adherent->ct, [5,6]) ? 'class=d-none' : '' }}>
-                        <input name="inputSecondeCarte" maxlength="12" id="secondeCarte_{{ $adherent->id_utilisateur }}" data-ref="{{ $adherent->id_utilisateur }}" type="text" value="{{ $adherent->premierecarte }}" class="w120 mt5 pl5 pl5 small" placeholder="première carte">
+                        <input name="inputSecondeCarte" maxlength="12" id="secondeCarte_{{ $adherent->id_utilisateur }}"
+                               data-ref="{{ $adherent->id_utilisateur }}" type="text"
+                               value="{{ $adherent->premierecarte }}" class="w120 mt5 pl5 pl5 small"
+                               placeholder="première carte">
                     </div>
                 </td>
                 <td>
-                    <a href="{{ route($prefix.'clubs.adherents.edit', $adherent->id_utilisateur) }}" class="adminPrimary btnSmall">éditer</a>
+                    <a href="{{ route($prefix.'clubs.adherents.edit', $adherent->id_utilisateur) }}"
+                       class="adminPrimary btnSmall">éditer</a>
                 </td>
             </tr>
         @endforeach
@@ -160,17 +174,23 @@
         </div>
         <div class="modalEditBody">
             <div class="alertDanger mt10 mxauto mb0">
-                Veuillez contrôler attentivement les informations ci-dessous. Pour l'instant, aucune donnée n'a été enregistrée.
-                Si vous annulez, votre saisie ne sera pas prise en compte. Si vous validez le renouvellement, les informations seront enregistrées et vous
-                pourrez télécharger le bordereau club. Tout autre bordereau créé et n'ayant pas été validé par un règlement enregistré par la FPF sera supprimé.
+                Veuillez contrôler attentivement les informations ci-dessous. Pour l'instant, aucune donnée n'a été
+                enregistrée.
+                Si vous annulez, votre saisie ne sera pas prise en compte. Si vous validez le renouvellement, les
+                informations seront enregistrées et vous
+                pourrez télécharger le bordereau club. Tout autre bordereau créé et n'ayant pas été validé par un
+                règlement enregistré par la FPF sera supprimé.
             </div>
             <div class="mt25 bold">
-                Le coût total des adhésions et abonnements adhérents et club est de <span id="montantRenouvellement"></span>€.<br>
+                Le coût total des adhésions et abonnements adhérents et club est de <span
+                    id="montantRenouvellement"></span>€.<br>
                 Cela correspond au montant que vous devez règler.
             </div>
             <div class="mt25">
-                Renouvellement des adhésions pour les adhérents sélectionnés: <span class="bold" id="montantRenouvellementAdhesion"></span>€<br>
-                Renouvellement des abonnements pour les adhérents sélectionnés: <span class="bold" id="montantRenouvellementAbonnement"></span>€
+                Renouvellement des adhésions pour les adhérents sélectionnés: <span class="bold"
+                                                                                    id="montantRenouvellementAdhesion"></span>€<br>
+                Renouvellement des abonnements pour les adhérents sélectionnés: <span class="bold"
+                                                                                      id="montantRenouvellementAbonnement"></span>€
             </div>
             <div class="mt25" id="divRenouvellementClub" class="d-none">
                 <div id="divRenouvellementAdhesionClub" class="d-none">
@@ -211,10 +231,15 @@
         </div>
         <div class="modalEditBody">
             <div class="alertSuccess mt10 mb0 mxauto">
-                Le bordereau pour le renouvellement a bien été généré. Vous pouvez le télécharger en cliquant sur le lien suivant: <a class="blue " id="lienBordereauClub" target="_blank">bordreau de renouvellement</a>.<br>
-                Le bordereau vous a également été transmis par mail et vous pouvez le retrouver dans votre espace "Bordereaux et règlements".<br><br>
-                Vous pouvez régler directement  en ligne, par virement instantané ou CB, votre règlement en cliquant sur les boutons ci-dessous.<br>
-                Si ce n'est pas possible, vous pouvez régler par chèque ou virement en nous transmettant le bordereau. Vous pouvez également règler plus tard en vous rendant dans votre espace "Bordereaux et règlements".<br>
+                Le bordereau pour le renouvellement a bien été généré. Vous pouvez le télécharger en cliquant sur le
+                lien suivant: <a class="blue " id="lienBordereauClub" target="_blank">bordreau de
+                    renouvellement</a>.<br>
+                Le bordereau vous a également été transmis par mail et vous pouvez le retrouver dans votre espace
+                "Bordereaux et règlements".<br><br>
+                Vous pouvez régler directement en ligne, par virement instantané ou CB, votre règlement en cliquant sur
+                les boutons ci-dessous.<br>
+                Si ce n'est pas possible, vous pouvez régler par chèque ou virement en nous transmettant le bordereau.
+                Vous pouvez également règler plus tard en vous rendant dans votre espace "Bordereaux et règlements".<br>
             </div>
         </div>
         <div class="modalEditFooter">
