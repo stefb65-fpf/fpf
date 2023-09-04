@@ -64,10 +64,10 @@
                         <div>Non renseigné</div>
                     @endswitch
                 </div>
-                <div class="formUnit w100 ">
-                    <div class="formLabel mr25">Nombre d'adhérents</div>
-                    <div>{{$club->nbadherents?:""}}</div>
-                </div>
+{{--                <div class="formUnit w100 ">--}}
+{{--                    <div class="formLabel mr25">Nombre d'adhérents</div>--}}
+{{--                    <div>{{$club->nbadherents?:""}}</div>--}}
+{{--                </div>--}}
             </div>
 
         </form>
@@ -107,7 +107,7 @@
                         <div class="formLabel">Code Postal</div>
                         <div class="suggestionWrapper">
                             <input name="codepostal" type="text" class="formValue"
-                                   value="{{$club->adresse?$club->adresse->codepostal:""}}"
+                                   value="{{ $club->adresse ? str_pad($club->adresse->codepostal, 5, '0', STR_PAD_LEFT) : ""}}"
                                    disabled="true" maxlength="10" required/>
                             <div class="suggestion"></div>
                         </div>

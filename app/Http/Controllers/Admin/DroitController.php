@@ -24,7 +24,7 @@ class DroitController extends Controller
         }
         $droits = Droit::orderBy('position')->get();
         $fonctions = Fonction::where('instance', 1)->orderBy('ordre')->selectRaw('libelle, id')->get();
-        $fonctions_urs = Fonction::where('instance', 2)->orderBy('ordre')->selectRaw('libelle, id')->get();
+        $fonctions_urs = Fonction::where('instance', 2)->where('urs_id', 0)->orderBy('ordre')->selectRaw('libelle, id')->get();
         return view('admin.droits.index', compact('droits', 'fonctions', 'fonctions_urs'));
     }
 

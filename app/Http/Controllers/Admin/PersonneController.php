@@ -104,8 +104,14 @@ class PersonneController extends Controller
             return redirect('/admin/personnes/'.$view_type)->with('error', "Un problème est survenu lors de la récupération des informations de la personne");
         }
         if (sizeof($personne->adresses) == 0) {
-            return redirect('/admin/personnes/'.$view_type)->with('error', "Un problème est survenu lors de la récupération des adresses de la personne");
+            $new_adresse = new Adresse();
+            $new_adresse->pays = 'France';
+            $personne->adresses[] = $new_adresse;
         }
+//        if (sizeof($personne->adresses) == 0) {
+//            return redirect('/admin/personnes/'.$view_type)->with('error', "Un problème est survenu lors de la récupération des adresses de la personne");
+//        }
+
         foreach ($personne->adresses as $adresse) {
             $pays = Pays::where('nom', $adresse->pays)->first();
             if ($pays) {

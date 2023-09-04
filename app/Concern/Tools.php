@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Mail;
 trait Tools
 {
     use Hash;
+    use Invoice;
 
     /**
      * enregistre l'action utilisateur dans la table historique

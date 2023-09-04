@@ -45,7 +45,7 @@
                         <div class="formLabel">Code postal *</div>
                         <div class="suggestionWrapper">
                             <input name="codepostalClub" type="text" class="formValue modifying w70"
-                                   value="{{$ur->adresse?$ur->adresse->codepostal:""}}"
+                                   value="{{ $ur->adresse ? str_pad($ur->adresse->codepostal, 5, '0', STR_PAD_LEFT) : ""}}"
                                    maxlength="10" required/>
                             <div class="suggestion"></div>
                         </div>
@@ -126,7 +126,7 @@
                         <div class="formLabel">Code postal *</div>
                         <div class="suggestionWrapper">
                             <input name="codepostalContact" type="text" class="formValue modifying w70"
-                                   value="{{$ur->adresse?$ur->adresse->codepostal:""}}"
+                                   value="{{ $ur->adresse ? str_pad($ur->adresse->codepostal, 5, '0', STR_PAD_LEFT) : ""}}"
                                    maxlength="10" required/>
                             <div class="suggestion"></div>
                         </div>

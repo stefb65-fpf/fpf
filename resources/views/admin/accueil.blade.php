@@ -5,6 +5,8 @@
         <h1 class="pageTitle">
             Gestion Fédérale
         </h1>
+        <div>
+        </div>
         @if(sizeof($affectations) > 0)
             <div class="alertDanger w80">
                 <span class="bold">Informations !</span>

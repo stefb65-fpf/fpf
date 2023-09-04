@@ -319,6 +319,11 @@ class ClubController extends Controller
         if (!$club) {
             return redirect()->route('clubs.adherents.index')->with('error', "Un problème est survenu lors de la récupération des informations club");
         }
+        if (!isset($utilisateur->personne->adresses[0])) {
+            $new_adresse = new Adresse();
+            $new_adresse->pays = 'France';
+            $utilisateur->personne->adresses[] = $new_adresse;
+        }
         $pays = Pays::where('nom', strtoupper(strtolower($utilisateur->personne->adresses[0]->pays)))->first();
         if ($pays) {
             $utilisateur->personne->adresses[0]->indicatif = $pays->indicatif;

@@ -62,7 +62,7 @@
                                 <div class="formLabel">Code Postal</div>
                                 <div class="suggestionWrapper">
                                     <input name="codepostal" type="text" class="formValue modifying"
-                                           value="{{$ur->adresse?$ur->adresse->codepostal:""}}"
+                                           value="{{$ur->adresse ? str_pad($ur->adresse->codepostal, 5, '0', STR_PAD_LEFT) : ""}}"
                                             maxlength="10" required/>
                                     <div class="suggestion"></div>
                                 </div>

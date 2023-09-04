@@ -34,7 +34,7 @@
                             @endif
                             <div>{{ $adresse->libelle1 }}</div>
                             <div>{{ $adresse->libelle2 }}</div>
-                            <div>{{ $adresse->codepostal.' '.$adresse->ville }}</div>
+                            <div>{{ str_pad($adresse->codepostal, 5, '0', STR_PAD_LEFT).' '.$adresse->ville }}</div>
                         </div>
                     @endif
                 </div>

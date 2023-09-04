@@ -43,7 +43,7 @@
                         <td>
                             <div>{{$ur->adresse->libelle1}}</div>
                             <div>{{$ur->adresse->libelle2}}</div>
-                            <div>{{$ur->adresse->codepostal}}</div>
+                            <div>{{ str_pad($ur->adresse->codepostal, 5, '0', STR_PAD_LEFT) }}</div>
                             <div>{{$ur->adresse->ville}}</div>
                             <div>{{$ur->adresse->pays}}</div>
                             <div><a href="tel:{{$ur->adresse->callable_fixe}}">{{$ur->adresse->visual_fixe}}</a></div>

@@ -134,7 +134,7 @@
                         <td>
                             <div>{{$club->adresse->libelle1}}</div>
                             <div>{{$club->adresse->libelle2}}</div>
-                            <div>{{$club->adresse->codepostal}}</div>
+                            <div>{{ str_pad($club->adresse->codepostal, 5, '0', STR_PAD_LEFT) }}</div>
                             <div>{{$club->adresse->ville}}</div>
                             <div>{{$club->adresse->pays}}</div>
                             <div><a href="tel:{{$club->adresse->callable_fixe}}">{{$club->adresse->visual_fixe}}</a>

@@ -288,7 +288,7 @@
                             <div class="formLabel">Code Postal</div>
                             <div class="suggestionWrapper">
                                 <input name="codepostal" type="text" class="formValue"
-                                       value="{{$personne->adresses[0]?$personne->adresses[0]->codepostal:""}}"
+                                       value="{{$personne->adresses[0] ? str_pad($personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT) : ""}}"
                                        disabled="true" maxlength="10" required/>
                                 <div class="suggestion"></div>
                             </div>
@@ -364,7 +364,7 @@
                                 <div class="formLabel">Code Postal</div>
                                 <div class="suggestionWrapper">
                                     <input name="codepostal" type="text" class="formValue"
-                                           value="{{$personne->adresses[1]?$personne->adresses[1]->codepostal:""}}"
+                                           value="{{$personne->adresses[1] ? str_pad($personne->adresses[1]->codepostal, 5, '0', STR_PAD_LEFT) : ""}}"
                                            disabled="true" maxlength="10" required/>
                                     <div class="suggestion"></div>
                                 </div>

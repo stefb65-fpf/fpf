@@ -58,13 +58,13 @@
                             <td>
                                 @switch($support->statut)
                                     @case(0)
-                                        <a class="adminPrimary btnSmall" name="prendreCharge" data-ref="{{ $support->id }}" data-email="{{ $support->email }}" data-content="{!! nl2br($support->contenu) !!}">prendre en charge</a>
+                                        <a class="adminPrimary btnSmall" name="prendreCharge" data-ref="{{ $support->id }}" data-email="{{ $support->email }}" data-content="{!! nl2br(str_replace('"', '', $support->contenu)) !!}">prendre en charge</a>
                                         @break
                                     @case(1)
                                         <span></span>
                                         @break
                                     @case(2)
-                                        <a class="adminSuccess btnSmall" name="seeAnswer" data-content="{!! $support->answer !!}">voir la réponse</a>
+                                        <a class="adminSuccess btnSmall" name="seeAnswer" data-content="{!! strip_tags($support->answer) !!}">voir la réponse</a>
                                         @break
                                 @endswitch
                             </td>

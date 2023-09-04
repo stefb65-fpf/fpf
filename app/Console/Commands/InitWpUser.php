@@ -2,12 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Concern\Tools;
 use App\Models\Utilisateur;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class InitWpUser extends Command
 {
+    use Tools;
     /**
      * The name and signature of the console command.
      *
@@ -34,28 +36,30 @@ class InitWpUser extends Command
 //            $wp_wc_customer_lookup = DB::connection('mysqlwp')->select("SELECT customer_id FROM wp_wc_customer_lookup WHERE user_id = $wp_user->ID LIMIT 1");
 //            if (sizeof($wp_wc_customer_lookup) == 0) {
 //                // on regarde si le user est présent dans la table wp_usermeta avec meta_key = 'wp_capabilities'
-//                $wp_usermeta = DB::connection('mysqlwp')->select("SELECT meta_value FROM wp_usermeta WHERE user_id = $wp_user->ID AND meta_key = 'wp_capabilities' LIMIT 1");
-//                // est ce que la chaine de caractère contient s:3:"ptb"
-//                if (str_contains($wp_usermeta[0]->meta_value, 's:3:"ptb"')) {
-//                    $tokeep++;
-//                } else {
+////                $wp_usermeta = DB::connection('mysqlwp')->select("SELECT meta_value FROM wp_usermeta WHERE user_id = $wp_user->ID AND meta_key = 'wp_capabilities' LIMIT 1");
+////                // est ce que la chaine de caractère contient s:3:"ptb"
+////                if (str_contains($wp_usermeta[0]->meta_value, 's:3:"ptb"')) {
+////                    $tokeep++;
+////                } else {
 //                    // on supprime le user de la table wp_users
-////                    DB::connection('mysqlwp')->statement("DELETE FROM wp_users WHERE ID = $wp_user->ID LIMIT 1");
-////                    // on supprime le user de la table wp_usermeta
-////                    DB::connection('mysqlwp')->statement("DELETE FROM wp_usermeta WHERE user_id = $wp_user->ID");
-//                }
+//                    DB::connection('mysqlwp')->statement("DELETE FROM wp_users WHERE ID = $wp_user->ID LIMIT 1");
+//                    // on supprime le user de la table wp_usermeta
+//                    DB::connection('mysqlwp')->statement("DELETE FROM wp_usermeta WHERE user_id = $wp_user->ID");
+////                }
+//            } else {
+//                $tokeep++;
 //            }
 //        }
 //        dd($tokeep);
 
-        $utilisateurs = Utilisateur::where('saison', 2023)->get();
-        $letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*";
-        $shuffle_letters = str_shuffle($letters);
-        $random_password = substr($shuffle_letters, 0, 8);
-        foreach ($utilisateurs as $utilisateur) {
-            if ($utilisateur->personne) {
+//        $utilisateurs = Utilisateur::where('saison', 2023)->get();
+//        $letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*";
+//        $shuffle_letters = str_shuffle($letters);
+//        $random_password = substr($shuffle_letters, 0, 8);
+//        foreach ($utilisateurs as $utilisateur) {
+//            if ($utilisateur->personne) {
 //                $this->insertWpUser($utilisateur->personne->prenom, $utilisateur->personne->nom, $utilisateur->personne->email, $random_password);
-            }
-        }
+//            }
+//        }
     }
 }

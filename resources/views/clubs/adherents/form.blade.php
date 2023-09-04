@@ -47,7 +47,7 @@
             </div>
             <div class="formLine">
                 <div class="formLabel">Code Postal *</div>
-                <input name="codepostal" type="text" id="adresseCodepostal" value="{{ old('codepostal', $utilisateur->personne->adresses[0]->codepostal) }}" class="inputFormAction formValue modifying" maxlength="10" required/>
+                <input name="codepostal" type="text" id="adresseCodepostal" value="{{ old('codepostal', str_pad($utilisateur->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT)) }}" class="inputFormAction formValue modifying" maxlength="10" required/>
             </div>
             <div class="formLine">
                 <div class="formLabel">Ville *</div>
@@ -83,7 +83,7 @@
             </div>
             <div class="formLine">
                 <div class="formLabel">Code Postal *</div>
-                <input name="adresse2_codepostal" type="text" value="{{ old('adresse2_codepostal', $utilisateur->personne->adresses[1]->codepostal) }}" class="inputFormAction formValue modifying" maxlength="10" required/>
+                <input name="adresse2_codepostal" type="text" value="{{ old('adresse2_codepostal', str_pad($utilisateur->personne->adresses[1]->codepostal, 5, '0', STR_PAD_LEFT)) }}" class="inputFormAction formValue modifying" maxlength="10" required/>
             </div>
             <div class="formLine">
                 <div class="formLabel">Ville *</div>

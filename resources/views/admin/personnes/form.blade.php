@@ -51,7 +51,7 @@
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Code postal *</div>
                     <div class="suggestionWrapper">
-                        <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostal', $personne->adresses[0]->codepostal) }}" name="codepostal" maxlength="10"/>
+                        <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostal', str_pad($personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT)) }}" name="codepostal" maxlength="10"/>
                         <div class="suggestion"></div>
                     </div>
 
@@ -96,7 +96,7 @@
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">Code postal *</div>
                     <div class="suggestionWrapper">
-                        <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostalLivraison', $personne->adresses[1]->codepostal) }}" name="codepostalLivraison" maxlength="10"/>
+                        <input class="formValue modifying formValueAdmin" type="text" value="{{ old('codepostalLivraison', str_pad($personne->adresses[1]->codepostal, 5, '0', STR_PAD_LEFT)) }}" name="codepostalLivraison" maxlength="10"/>
                         <div class="suggestion"></div>
                     </div>
                 </div>

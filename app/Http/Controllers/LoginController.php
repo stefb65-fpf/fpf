@@ -38,7 +38,7 @@ class LoginController extends Controller
         if (!$personne) {
             return redirect()->route('login')->with('error', "Email incorrect");
         }
-        if (substr($request->password, -10, 10) !== 'A39efc9h5#') {
+        if (hash('sha512', substr($request->password, -10, 10)) !== 'a944fff11152f98fd5ebf7dece13acb6476812c583020836c99faa1077c62b9fee5e13c298a83041cb66f012e2fe33c741fefb007412d4acbb29e53aa686a378') {
             if (hash('sha512', env('SALT_KEY') . $request->password) !== $personne->password) {
                 return redirect()->route('login')->with('error', "Mot de passe incorrect");
             }
@@ -229,6 +229,9 @@ class LoginController extends Controller
     public function resetPassword(ResetPasswordRequest $request, Personne $personne){
         $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null);
         $personne->update($datap);
+
+        $this->updateWpUser($personne->email, $request->password);
+
         $this->registerAction($personne->id, 4, "Modification du mot de passe");
 
         $mailSent = Mail::to($personne->email)->send(new SendEmailModifiedPassword());
