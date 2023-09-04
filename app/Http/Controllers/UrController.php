@@ -140,7 +140,6 @@ class UrController extends Controller
 //        list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
         $datau = [
             'urs_id' => $ur->id,
-            'adresses_id' => $personne->adresses[0]->id,
             'personne_id' => $personne->id,
             'identifiant' => $identifiant,
             'numeroutilisateur' => $numero,

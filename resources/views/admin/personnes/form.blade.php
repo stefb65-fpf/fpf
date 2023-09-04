@@ -172,6 +172,14 @@
                                        maxlength="25"/>
                             </div>
                         </div>
+                        @if($view_type == 'abonnes')
+                            <div class="formUnit formUnitAdmin">
+                                <div class="formLabel">Numéro de fin</div>
+                                <input class="formValue modifying formValueAdmin w75" type="text" maxlength="3"
+                                       value="{{ old('fin', $personne->fin) }}"
+                                       name="fin"/>
+                            </div>
+                        @endif
                     </div>
                 </div>
 

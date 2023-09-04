@@ -9,6 +9,7 @@ use App\Mail\SendAnonymisationEmail;
 use App\Mail\SendUtilisateurCreateByAdmin;
 use App\Models\Abonnement;
 use App\Models\Adresse;
+use App\Models\Configsaison;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Ur;
@@ -81,13 +82,31 @@ class PersonneController extends Controller
             $query = $query->where('ct', $type_carte);
         }
         $utilisateurs = $query->paginate(100);
+        if($view_type == "recherche") {
+            foreach ($utilisateurs as $utilisateur) {
+                if ($utilisateur->personne_id) {
+                    $personne = Personne::where('id', $utilisateur->personne_id)->first();
+                    $utilisateur->personne = $personne;
+                }
+            }
+        }
+//        dd($utilisateurs);
         $urs = Ur::orderBy('nom')->get();
         $level = 'admin';
 
         foreach ($utilisateurs as $utilisateur) {
             $fin = '';
-            if ($utilisateur->personne->is_abonne) {
-                $personne_abonnement = Abonnement::where('personne_id', $utilisateur->personne_id)->where('etat', 1)->first();
+            $is_abonne = 0;
+//            dd($utilisateur->personne);
+            if (in_array($view_type, ['abonnes', 'formateurs'])) {
+                $is_abonne = $utilisateur->is_abonne;
+                $personne_id = $utilisateur->id;
+            } else {
+                $is_abonne = $utilisateur->personne->is_abonne;
+                $personne_id = $utilisateur->personne->id;
+            }
+            if ($is_abonne) {
+                $personne_abonnement = Abonnement::where('personne_id', $personne_id)->where('etat', 1)->first();
                 if ($personne_abonnement) {
                     $fin = $personne_abonnement->fin;
                 }
@@ -121,6 +140,13 @@ class PersonneController extends Controller
             $new_adresse = new Adresse();
             $new_adresse->pays = 'France';
             $personne->adresses[] = $new_adresse;
+        }
+        $personne->fin = '';
+        if ($personne->is_abonne) {
+            $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
+            if ($abonnement) {
+                $personne->fin = $abonnement->fin;
+            }
         }
 //        if (sizeof($personne->adresses) == 0) {
 //            return redirect('/admin/personnes/'.$view_type)->with('error', "Un problème est survenu lors de la récupération des adresses de la personne");
@@ -199,7 +225,6 @@ class PersonneController extends Controller
             list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
             $datau = [
                 'urs_id' => $urs_id,
-                'adresses_id' => $personne->adresses[0]->id,
                 'personne_id' => $personne->id,
                 'identifiant' => $identifiant,
                 'numeroutilisateur' => $numero,
@@ -223,6 +248,25 @@ class PersonneController extends Controller
             $this->registerMail($personne->id, $mail);
 
             return redirect('/admin/personnes/' . $view_type)->with('success', "L'adhérent $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
+        }
+
+        if ($view_type == 'abonnes') {
+            // on vcréée l'abonnement de la personne
+            $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
+            $numeroencours = $config->numeroencours;
+            if ($request->fin != '') {
+                $fin = $request->fin;
+            } else {
+                $fin = $numeroencours + 5;
+            }
+
+            $abonnement = Abonnement::create(['personne_id' => $personne->id, 'debut' => $numeroencours, 'fin' => $fin, 'etat' => 1]);
+            if ($abonnement) {
+                $personne->update(['is_abonne' => 1]);
+            }
+
+
+            return redirect('/admin/personnes/' . $view_type)->with('success', "L'abonné a bien été créé");
         }
     }
 
@@ -286,6 +330,13 @@ class PersonneController extends Controller
             }
             $adresse_2 = $personne->adresses[1];
             $adresse_2->update($dataa2);
+        }
+
+        if($view_type == 'abonnes') {
+            $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
+            if ($abonnement) {
+                $abonnement->update(['fin' => $request->fin]);
+            }
         }
         return redirect('/admin/personnes/' . $view_type)->with('success', "La personne a bien été mise à jour");
     }

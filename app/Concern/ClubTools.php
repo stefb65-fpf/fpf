@@ -303,7 +303,6 @@ trait ClubTools
             'personne_id' => $personne->id,
             'urs_id' => $club->urs_id,
             'clubs_id' => $club->id,
-            'adresses_id' => $personne->adresses[0]->id,
             'identifiant' => $identifiant,
             'numeroutilisateur' => $numeroutilisateur,
             'sexe' => $request->sexe,

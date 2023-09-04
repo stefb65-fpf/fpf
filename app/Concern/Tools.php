@@ -421,7 +421,6 @@ trait Tools
                 list($identifiant, $urs_id, $numero) = $this->setIdentifiant($personne->adresses[0]->codepostal);
                 $datau = [
                     'urs_id' => $urs_id,
-                    'adresses_id' => $personne->adresses[0]->id,
                     'personne_id' => $personne->id,
                     'identifiant' => $identifiant,
                     'numeroutilisateur' => $numero,

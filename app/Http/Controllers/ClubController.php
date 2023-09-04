@@ -223,6 +223,7 @@ class ClubController extends Controller
 //        );
 //        Utilisateur::create($datau);
 
+
         $code = $this->storeClubAdherent($request, $club);
         if ($code == '0') {
             $user = session()->get('user');

@@ -174,7 +174,7 @@
                 @foreach($utilisateurs as $utilisateur)
                     <tr>
 
-                        <td>{{$utilisateur->personne? $utilisateur->personne->nom:$utilisateur->nom}} {{$utilisateur->personne? $utilisateur->personne->prenom :$utilisateur->prenom}} </td>
+                        <td>{{$utilisateur->personne? $utilisateur->personne->nom:$utilisateur->nom}} {{$utilisateur->personne ? $utilisateur->personne->prenom : $utilisateur->prenom}} </td>
                         <td>
                             <a href="mailto:{{$utilisateur->personne?$utilisateur->personne->email:$utilisateur->email}}">{{$utilisateur->personne?$utilisateur->personne->email:$utilisateur->email}}</a>
                         </td>
