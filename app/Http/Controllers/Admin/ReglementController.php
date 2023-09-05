@@ -8,6 +8,7 @@ use App\Models\Club;
 use App\Models\Reglement;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReglementController extends Controller
 {
@@ -35,6 +36,11 @@ class ReglementController extends Controller
                         $reglement->bordereau = env('APP_URL').$dir_club.'/'.$reglement->reference.'.pdf';
                     }
                     $reglement->nom_club = $club->nom;
+                }
+            } else {
+                $reglement->nom = '';
+                foreach($reglement->utilisateurs as $utilisateur) {
+                    $reglement->nom .= $utilisateur->personne->nom.' '.$utilisateur->personne->prenom.' ';
                 }
             }
         }

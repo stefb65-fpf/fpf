@@ -41,7 +41,7 @@
                 @foreach($reglements as $reglement)
                     <tr>
                         <td>{{ $reglement->reference }}</td>
-                        <td>{{ $reglement->clubs_id ? $reglement->nom_club : '' }}</td>
+                        <td>{{ $reglement->clubs_id ? 'Club: '.$reglement->nom_club : $reglement->nom }}</td>
                         <td>{{ $reglement->statut === 0 ? 'En attente' : 'Traité' }}</td>
                         <td>{{ $reglement->created_at }}</td>
                         <td>{{ $reglement->montant }}€</td>

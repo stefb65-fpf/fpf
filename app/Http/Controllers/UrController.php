@@ -319,13 +319,17 @@ class UrController extends Controller
         $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
         $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
         $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
-        $statut = $statut ?? "all";
+        $statut = $statut ?? "init";
         $abonnement = $abonnement ?? "all";
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('utilisateurs.clubs_id', $club->id)->orderBy('utilisateurs.identifiant')
             ->selectRaw('*, utilisateurs.id as id_utilisateur');
         if (in_array($statut, [0, 1, 2, 3, 4])) {
             $query = $query->where('utilisateurs.statut', $statut);
+        } else {
+            if ($statut == "init") {
+                $query = $query->whereIn('utilisateurs.statut', [0,1,2,3]);
+            }
         }
         if (in_array($abonnement, [0, 1])) {
             $query = $query->where('personnes.is_abonne', $abonnement);
