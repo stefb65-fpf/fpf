@@ -64,7 +64,7 @@
                                         <span></span>
                                         @break
                                     @case(2)
-                                        <a class="adminSuccess btnSmall" name="seeAnswer" data-content="{!! strip_tags($support->answer) !!}">voir la réponse</a>
+                                        <a class="adminSuccess btnSmall" name="seeAnswer" data-content="{!! strip_tags(str_replace('"', '', $support->answer)) !!}">voir la réponse</a>
                                         @break
                                 @endswitch
                             </td>

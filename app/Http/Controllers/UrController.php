@@ -532,27 +532,40 @@ class UrController extends Controller
     public function updateFonction(Request $request, Fonction $fonction)
     {
         $ur = $this->getUr();
-        if ($request->identifiant == '') {
+
+        $code = $this->updateFonctionUr($request->identifiant, $fonction, $ur->id);
+        if ($code == '10') {
             return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "Vous devez saisir un identifiant");
         }
-        $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
-        if (!$utilisateur) {
+        if ($code == '20') {
             return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "L'identifiant saisi n'est pas valide");
         }
-        if ($utilisateur->urs_id != $this->getUr()->id) {
+        if ($code == '30') {
             return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "L'adhérent doit faire partie de votre UR");
         }
-        // on supprime l'ancienne attribution
-        $old_utilisateur = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
-            ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
-            ->whereNotNull('utilisateurs.personne_id')
-            ->where('utilisateurs.urs_id', $ur->id)
-            ->first();
-        DB::table('fonctionsutilisateurs')->where('fonctions_id', $fonction->id)->where('utilisateurs_id', $old_utilisateur->id)->delete();
 
-        // on ajoute la nouvelle attribution
-        $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
-        DB::table('fonctionsutilisateurs')->insert($datafu);
+//        if ($request->identifiant == '') {
+//            return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "Vous devez saisir un identifiant");
+//        }
+//        $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
+//        if (!$utilisateur) {
+//            return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "L'identifiant saisi n'est pas valide");
+//        }
+//        if ($utilisateur->urs_id != $this->getUr()->id) {
+//            return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "L'adhérent doit faire partie de votre UR");
+//        }
+//        // on supprime l'ancienne attribution
+//        $old_utilisateur = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+//            ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
+//            ->whereNotNull('utilisateurs.personne_id')
+//            ->where('utilisateurs.urs_id', $ur->id)
+//            ->first();
+//        DB::table('fonctionsutilisateurs')->where('fonctions_id', $fonction->id)->where('utilisateurs_id', $old_utilisateur->id)->delete();
+//
+//        // on ajoute la nouvelle attribution
+//        $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
+//        DB::table('fonctionsutilisateurs')->insert($datafu);
+
 
         $user = session()->get('user');
         if ($user) {

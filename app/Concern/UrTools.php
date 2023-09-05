@@ -5,6 +5,7 @@ namespace App\Concern;
 use App\Models\Adresse;
 use App\Models\Pays;
 use App\Models\Ur;
+use App\Models\Utilisateur;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
@@ -57,5 +58,35 @@ trait UrTools
         $ur->adresse->indicatif_fixe = Pays::where('nom', $ur->adresse->pays)->first()->indicatif;
 
         return $ur;
+    }
+
+    protected function updateFonctionUr($identifiant, $fonction, $ur_id) {
+        if ($identifiant == '') {
+            return '10';
+//            return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "Vous devez saisir un identifiant");
+        }
+        $utilisateur = Utilisateur::where('identifiant', $identifiant)->first();
+        if (!$utilisateur) {
+            return '20';
+//            return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "L'identifiant saisi n'est pas valide");
+        }
+        if ($utilisateur->urs_id != $ur_id) {
+            return '30';
+//            return redirect()->route('urs.fonctions.change_attribution', $fonction)->with('error', "L'adhérent doit faire partie de votre UR");
+        }
+        // on supprime l'ancienne attribution
+        $old_utilisateur = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
+            ->whereNotNull('utilisateurs.personne_id')
+            ->where('utilisateurs.urs_id', $ur_id)
+            ->first();
+        if ($old_utilisateur) {
+            DB::table('fonctionsutilisateurs')->where('fonctions_id', $fonction->id)->where('utilisateurs_id', $old_utilisateur->id)->delete();
+        }
+
+        // on ajoute la nouvelle attribution
+        $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
+        DB::table('fonctionsutilisateurs')->insert($datafu);
+        return '0';
     }
 }

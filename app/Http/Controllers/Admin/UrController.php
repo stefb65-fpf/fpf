@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Concern\Tools;
+use App\Concern\UrTools;
 use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\Election;
@@ -18,6 +19,7 @@ use mysql_xdevapi\Table;
 class UrController extends Controller
 {
     use Tools;
+    use UrTools;
 
     public function __construct()
     {
@@ -108,6 +110,55 @@ class UrController extends Controller
             }
         }
         return view('admin.urs.fonctions', compact('ur', 'fonctions'));
+    }
+
+    public function changeAttributionUr($fonction_id, $ur_id) {
+        $fonction = Fonction::where('id', $fonction_id)->first();
+        if (!$fonction) {
+            return redirect()->route('urs.index')->with('error', "La fonction n'existe pas");
+        }
+        $ur = Ur::where('id', $ur_id)->first();
+        if (!$ur) {
+            return redirect()->route('urs.index')->with('error', "L'UR n'existe pas");
+        }
+        return view('admin.urs.change_attribution', compact('fonction', 'ur'));
+    }
+
+    public function updateFonctionForUr(Request $request, $fonction_id, $ur_id) {
+        $ur = Ur::where('id', $ur_id)->first();
+        if (!$ur) {
+            return redirect()->route('urs.index')->with('error', "L'UR n'existe pas");
+        }
+        $fonction = Fonction::where('id', $fonction_id)->first();
+        if (!$fonction) {
+            return redirect()->route('urs.index')->with('error', "La fonction n'existe pas");
+        }
+        $code = $this->updateFonctionUr($request->identifiant, $fonction, $ur->id);
+        if ($code == '10') {
+            return redirect()->route('admin.urs.fonctions.change_attribution', [$fonction->id, $ur->id])->with('error', "Vous devez saisir un identifiant");
+        }
+        if ($code == '20') {
+            return redirect()->route('admin.urs.fonctions.change_attribution', [$fonction->id, $ur->id])->with('error', "L'identifiant saisi n'est pas valide");
+        }
+        if ($code == '30') {
+            return redirect()->route('admin.urs.fonctions.change_attribution', [$fonction->id, $ur->id])->with('error', "L'adhérent doit faire partie de votre UR");
+        }
+        return redirect()->route('admin.urs.fonctions', $ur)->with('success', "L'attribution de la fonction a été modifiée");
+    }
+
+    public function destroyFonctionUr($fonction_id, $ur_id) {
+        $ur = Ur::where('id', $ur_id)->first();
+        if (!$ur) {
+            return redirect()->route('urs.index')->with('error', "L'UR n'existe pas");
+        }
+        $fonction = Fonction::where('id', $fonction_id)->first();
+        if (!$fonction) {
+            return redirect()->route('admin.urs.fonctions', $ur)->with('error', "Impossible de supprimer la fonction");
+        }
+        DB::table('fonctionsurs')->where('fonctions_id', $fonction->id)->delete();
+        DB::table('fonctionsutilisateurs')->where('fonctions_id', $fonction->id)->delete();
+        $fonction->delete();
+        return redirect()->route('admin.urs.fonctions', $ur)->with('success', "La fonctiona  bien été supprimée");
     }
 
 }

@@ -62,6 +62,9 @@ Route::get('/admin/factures', [App\Http\Controllers\Admin\InvoiceController::cla
 Route::get('/admin/supports', [App\Http\Controllers\Admin\SupportController::class, 'index'])->name('supports.index');
 
 Route::get('/admin/urs/{ur}/fonctions', [App\Http\Controllers\Admin\UrController::class, 'fonctions'])->name('admin.urs.fonctions');
+Route::get('/admin/urs/fonctions/{fonction_id}/{ur_id}/change_attribution_fonctionur', [App\Http\Controllers\Admin\UrController::class, 'changeAttributionUr'])->name('admin.urs.fonctions.change_attribution');
+Route::delete('/admin/urs/fonctions/{fonction_id}/{ur_id}/destroy_fonctionur', [App\Http\Controllers\Admin\UrController::class, 'destroyFonctionUr'])->name('admin.urs.fonctions.destroy');
+Route::post('/admin/urs/fonctions/{fonction_id}/{ur_id}/update', [App\Http\Controllers\Admin\UrController::class, 'updateFonctionForUr'])->name('admin.urs.fonctions.update');
 Route::resource('/admin/urs', App\Http\Controllers\Admin\UrController::class);
 //Gestion urs par responsable fpf
 //Route::get('/admin/urs/{ur}/edit', [App\Http\Controllers\Admin\UrController::class, 'urEdit'])->name('urs.edit');

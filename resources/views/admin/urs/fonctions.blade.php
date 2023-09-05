@@ -32,14 +32,14 @@
                     <td>{{ $fonction->utilisateur->personne->prenom.' '.$fonction->utilisateur->personne->nom.' ('.$fonction->utilisateur->identifiant.')' }}</td>
                     <td><a href="mailto:{{ $fonction->utilisateur->personne->email }}">{{ $fonction->utilisateur->personne->email }}</a></td>
                     <td>
-{{--                        <div class="mb3">--}}
-{{--                            <a href="{{ route('urs.fonctions.change_attribution', $fonction) }}" class="adminPrimary btnSmall">Changer l'attribution</a>--}}
-{{--                        </div>--}}
-{{--                        @if($fonction->urs_id !== 0)--}}
-{{--                            <div class="mb3">--}}
-{{--                                <a href="{{route('urs.fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer la fonction</a>--}}
-{{--                            </div>--}}
-{{--                        @endif--}}
+                        <div class="mb3">
+                            <a href="{{ route('admin.urs.fonctions.change_attribution', [$fonction, $ur->id]) }}" class="adminPrimary btnSmall">Changer l'attribution</a>
+                        </div>
+                        @if($fonction->urs_id !== 0)
+                            <div class="mb3">
+                                <a href="{{route('admin.urs.fonctions.destroy',[$fonction, $ur->id])}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer la fonction</a>
+                            </div>
+                        @endif
 
                     </td>
                 </tr>
