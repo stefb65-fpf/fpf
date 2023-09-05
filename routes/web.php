@@ -180,6 +180,10 @@ Route::get('/admin/clubs/create', [App\Http\Controllers\Admin\ClubController::cl
 Route::post('/admin/clubs/store', [App\Http\Controllers\Admin\ClubController::class, 'store'])->name('admin.clubs.store');
 Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}/{term?}', [App\Http\Controllers\Admin\ClubController::class, 'index'])->name('admin.clubs.index');
 Route::get('/admin/liste_adherent/{club}/{statut?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'listeAdherent'])->name('admin.clubs.liste_adherents_club');
+Route::get('/admin/liste_fonctions/{club}', [App\Http\Controllers\Admin\ClubController::class, 'listeFonctions'])->name('admin.clubs.liste_fonctions');
+Route::put('/admin/update-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\Admin\ClubController::class,'updateFonction'])->name('admin.updateFonctionClub');
+Route::put('/admin/add-club-fonction/{club_id}/{fonction_id}',[App\Http\Controllers\Admin\ClubController::class,'addFonction'])->name('admin.addFonctionClub');
+Route::delete('/admin/delete-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\Admin\ClubController::class,'deleteFonction'])->name('admin.deleteFonctionClub');
 //Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
 
 //gestion clubs par responsable ur

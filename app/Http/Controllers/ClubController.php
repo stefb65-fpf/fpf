@@ -48,17 +48,17 @@ class ClubController extends Controller
     public function infosClub()
     {
         $club = $this->getClub();
-        list($club,$activites,$equipements,$countries) = $this->getClubFormParameters($club);
+        list($club, $activites, $equipements, $countries) = $this->getClubFormParameters($club);
         return view('clubs.infos_club', compact('club', 'activites', 'equipements', 'countries'));
     }
 
     // Mise a jour des infos générales du club (nom, logo, courriel, ..)
-    public function updateGeneralite( ClubReunionRequest $request, Club $club)
+    public function updateGeneralite(ClubReunionRequest $request, Club $club)
     {
         $error = $this->updateClubGeneralite($club, $request);
-        if($error == 1){
+        if ($error == 1) {
             return redirect()->back()->with('error', "L'image n'est pas au bon format. Veuillez télécharger une image au format .jpeg, .jpg ou .png");
-        }elseif( $error == 2){
+        } elseif ($error == 2) {
             return redirect()->back()->with('error', "L'image est trop grande. Veuillez télécharger une image de taille maximum de 1 Mo ");
         }
         return redirect()->route('clubs.infos_club')->with('success', "Les informations générales du club ont été mises à jour");
@@ -68,7 +68,7 @@ class ClubController extends Controller
     // mise à jour de l'adresse du club
     public function updateClubAddress(AdressesRequest $request, Club $club)
     {
-        $code = $this->updateClubAdress($club,$request);
+        $code = $this->updateClubAdress($club, $request);
         if ($code == 1) {
             return redirect()->route('clubs.infos_club')->with('error', "Le téléphone mobile est incorrect");
         }
@@ -81,13 +81,13 @@ class ClubController extends Controller
     // mise à jour des informations de réunion du club
     public function updateReunion(ClubReunionRequest $request, Club $club)
     {
-        $this->updateClubReunion($club,$request);
+        $this->updateClubReunion($club, $request);
         return redirect()->route('clubs.infos_club')->with('success', "Les informations de réunion du club ont été mises à jour");
     }
 
 
     // affichage de la vue de gestion des adhérents du club
-    public function gestionAdherents($statut = null,$abonnement = null)
+    public function gestionAdherents($statut = null, $abonnement = null)
     {
         $club = $this->getClub();
         $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
@@ -98,14 +98,14 @@ class ClubController extends Controller
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('utilisateurs.clubs_id', $club->id)->orderBy('utilisateurs.identifiant')
             ->selectRaw('*, utilisateurs.id as id_utilisateur');
-        if (in_array($statut, [0,1,2,3, 4])) {
+        if (in_array($statut, [0, 1, 2, 3, 4])) {
             $query = $query->where('utilisateurs.statut', $statut);
         } else {
             if ($statut == 'init') {
-                $query = $query->whereIn('utilisateurs.statut', [0,1,2,3]);
+                $query = $query->whereIn('utilisateurs.statut', [0, 1, 2, 3]);
             }
         }
-        if (in_array($abonnement, [0,1])) {
+        if (in_array($abonnement, [0, 1])) {
             $query = $query->where('personnes.is_abonne', $abonnement);
         }
         $adherents = $query->get();
@@ -119,11 +119,12 @@ class ClubController extends Controller
             }
             $adherent->fin = $fin;
         }
-        return view('clubs.adherents.index', compact('club','statut','abonnement','adherents'));
+        return view('clubs.adherents.index', compact('club', 'statut', 'abonnement', 'adherents'));
     }
 
     // affichage de la vue permettant la saisie pour la création d'un adhérent par responsable de club
-    public function createAdherent() {
+    public function createAdherent()
+    {
         $club = $this->getClub();
         $utilisateur = new Utilisateur();
         $personne = new Personne();
@@ -138,10 +139,9 @@ class ClubController extends Controller
     }
 
     // enregistrement des informations pour la création d'un adhérent par responsable de club
-    public function storeAdherent(AdherentRequest $request) {
+    public function storeAdherent(AdherentRequest $request)
+    {
         $club = $this->getClub();
-
-
 
 
 //        if ($request->personne_id != null) {
@@ -232,14 +232,14 @@ class ClubController extends Controller
         if ($code == '0') {
             $user = session()->get('user');
             if ($user) {
-                $this->MailAndHistoricize($user,"Ajout d'un adhérent ". trim(strtoupper($request->nom))." ".trim(strtoupper($request->prenom)." au club ".$club->nom));
+                $this->MailAndHistoricize($user, "Ajout d'un adhérent " . trim(strtoupper($request->nom)) . " " . trim(strtoupper($request->prenom) . " au club " . $club->nom));
             }
             return redirect()->route('clubs.adherents.index')->with('success', "L'adhérent a bien  été ajouté");
         } else {
             return match ($code) {
                 '1' => redirect()->back()->with('error', "Problème lors de la récupérartion des informations de la personne")->withInput(),
                 '2' => redirect()->back()->with('error', "L'adresse email est invalide")->withInput(),
-                '3 '=> redirect()->back()->with('error', "Le pays est invalide")->withInput(),
+                '3 ' => redirect()->back()->with('error', "Le pays est invalide")->withInput(),
                 '4' => redirect()->back()->with('error', "Téléphone mobile invalide")->withInput(),
                 '5' => redirect()->back()->with('error', "Téléphone fixe invalide")->withInput(),
                 default => redirect()->route('clubs.adherents.index')->with('error', "Un problème est survenu lors de l'ajout de l'adhérent"),
@@ -248,7 +248,8 @@ class ClubController extends Controller
     }
 
     // affichage de la vue des informations d'un adhérent du club
-    public function editAdherent($utilisateur_id) {
+    public function editAdherent($utilisateur_id)
+    {
         $club = $this->getClub();
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
         if ($utilisateur->clubs_id != $club->id) {
@@ -282,7 +283,8 @@ class ClubController extends Controller
     }
 
     // Mise à jour des informations d'un adhérent du club
-    public function updateAdherent(AdherentRequest $request, $utilisateur_id) {
+    public function updateAdherent(AdherentRequest $request, $utilisateur_id)
+    {
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
         if (!$utilisateur) {
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
@@ -291,12 +293,12 @@ class ClubController extends Controller
         if ($code == '0') {
             $user = session()->get('user');
             if ($user) {
-                $this->MailAndHistoricize($user,"Modification des informations de l'adhérent ". $utilisateur->nom);
+                $this->MailAndHistoricize($user, "Modification des informations de l'adhérent " . $utilisateur->nom);
             }
             return redirect()->route('clubs.adherents.index')->with('success', "Les informations de l'adhérent ont été mises à jour");
         } else {
             return match ($code) {
-                '3 '=> redirect()->back()->with('error', "Le pays est invalide")->withInput(),
+                '3 ' => redirect()->back()->with('error', "Le pays est invalide")->withInput(),
                 '4' => redirect()->back()->with('error', "Téléphone mobile invalide")->withInput(),
                 '5' => redirect()->back()->with('error', "Téléphone fixe invalide")->withInput(),
                 default => redirect()->back()->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent")->withInput(),
@@ -338,32 +340,15 @@ class ClubController extends Controller
     {
         //on vérifie que le nouvel utilisateur appartient au club
         $club = $this->getClub();
-        $adherents = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
-            ->where('utilisateurs.clubs_id', $club->id)
-            ->selectRaw('utilisateurs.id')
-            ->get();
-        $in_array = false;
-        $new_utilisateur_id = $request->adherent_id;
-        foreach ($adherents as $adherent) {
-            if ($adherent->id == $new_utilisateur_id) {
-                $in_array = true;
+        if ($this->updateFonctionClub($club->id, $fonction_id, $current_utilisateur_id, $request->adherent_id)) {
+            $user = session()->get('user');
+            if ($user) {
+                $this->MailAndHistoricize($user, "Modification des fonctions du club");
             }
+            return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été attribuée à un nouvel utilisateur");
+        } else {
+            return redirect()->route('clubs.fonctions.index')->with('error', "Cet utilisateur ne fait pas partie des adhérent du club");
         }
-        if (!$in_array) {
-            return redirect()->route('clubs.fonctions.index')->with('error', 'Cet utilisateur ne fait pas partie des adhérent du club');
-        }
-        //on ajoute la ligne correspondant à la table pivot
-        $data_ap = array('utilisateurs_id' => $new_utilisateur_id, 'fonctions_id' => $fonction_id);
-        DB::table('fonctionsutilisateurs')->insert($data_ap);
-        //on supprime l'ancien utilisateur
-        DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
-
-        $user = session()->get('user');
-        if ($user) {
-        $this->MailAndHistoricize($user,"Modification des fonctions du club");
-        }
-
-        return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été attribuée à un nouvel utilisateur");
     }
 
     // ajout d'une fonction club
@@ -371,28 +356,16 @@ class ClubController extends Controller
     {
         //on vérifie que le nouvel utilisateur appartient au club
         $club = $this->getClub();
-        $adherents = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
-            ->where('utilisateurs.clubs_id', $club->id)
-            ->selectRaw('utilisateurs.id, utilisateurs.identifiant, personnes.nom, personnes.prenom')
-            ->get();
-        $in_array = false;
-        $new_utilisateur_id = $request->adherent_id;
-        foreach ($adherents as $adherent) {
-            if ($adherent->id == $new_utilisateur_id) {
-                $in_array = true;
+
+        if ($this->addFonctionClub($club->id, $fonction_id, $request->adherent_id)) {
+            $user = session()->get('user');
+            if ($user) {
+                $this->MailAndHistoricize($user, "Ajout d'une fonction du club");
             }
+            return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été ajoutée à cet utilisateur");
+        } else {
+            return redirect()->route('clubs.fonctions.index')->with('error', "Cet utilisateur ne fait pas partie des adhérent du club");
         }
-        if (!$in_array) {
-            return redirect()->route('clubs.fonctions.index')->with('error', 'Cet utilisateur ne fait pas partie des adhérent du club');
-        }
-        //on ajoute la ligne correspondant à la table pivot
-        $data_ap = array('utilisateurs_id' => $new_utilisateur_id, 'fonctions_id' => $fonction_id);
-        DB::table('fonctionsutilisateurs')->insert($data_ap);
-        $user = session()->get('user');
-        if ($user) {
-            $this->MailAndHistoricize($user,"Ajout d'une fonction du club");
-        }
-        return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été ajoutée à cet utilisateur");
     }
 
     // suppression d'une fonction Club
@@ -401,7 +374,7 @@ class ClubController extends Controller
         DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
         $user = session()->get('user');
         if ($user) {
-            $this->MailAndHistoricize($user,"Suppression d'une fonction du club");
+            $this->MailAndHistoricize($user, "Suppression d'une fonction du club");
         }
         return redirect()->route('clubs.fonctions.index')->with('success', "La fonction a été ôtée à cet utilisateur");
     }
@@ -420,18 +393,20 @@ class ClubController extends Controller
     }
 
 
-
-    public function attentePaiementValidation() {
+    public function attentePaiementValidation()
+    {
         $club = $this->getClub();
         return view('clubs.reglements.attente_paiement_validation', compact('club'));
     }
 
-    public function attentePaiementValidationFlorilege() {
+    public function attentePaiementValidationFlorilege()
+    {
         $club = $this->getClub();
         return view('clubs.florilege.attente_paiement_validation', compact('club'));
     }
 
-    public function validationPaiementCarte(Request $request) {
+    public function validationPaiementCarte(Request $request)
+    {
         $club = $this->getClub();
         $result = $this->getMonextResult($request->token);
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
@@ -440,7 +415,7 @@ class ClubController extends Controller
             if ($reglement) {
                 // on fait le traitement
                 if ($this->saveReglement($reglement)) {
-                    $data =array('statut' => 1, 'numerocheque' => 'Monext '.$reglement->monext_token, 'dateenregistrement' => date('Y-m-d H:i:s'),
+                    $data = array('statut' => 1, 'numerocheque' => 'Monext ' . $reglement->monext_token, 'dateenregistrement' => date('Y-m-d H:i:s'),
                         'monext_token' => null, 'monext_link' => null);
                     $reglement->update($data);
 
@@ -456,7 +431,8 @@ class ClubController extends Controller
     }
 
     // affichage de la page de commande des Florilège pour le club
-    public function florilege() {
+    public function florilege()
+    {
         $club = $this->getClub();
 //        $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
         $config = Configsaison::where('id', 1)->selectRaw('datedebutflorilege, datefinflorilege')->first();
@@ -483,7 +459,8 @@ class ClubController extends Controller
         return view('clubs.florilege.index', compact('club', 'config', 'adresse', 'contact'));
     }
 
-    public function cancelPaiementFlorilege(Request $request) {
+    public function cancelPaiementFlorilege(Request $request)
+    {
         $souscription = Souscription::where('monext_token', $request->token)->first();
         if ($souscription) {
             $souscription->delete();
@@ -491,13 +468,14 @@ class ClubController extends Controller
         return redirect()->route('clubs.florilege')->with('error', "Votre paiement a été annulé");
     }
 
-    public function validationPaiementCarteFlorilege(Request $request) {
+    public function validationPaiementCarteFlorilege(Request $request)
+    {
         $result = $this->getMonextResult($request->token);
         $souscription = Souscription::where('monext_token', $request->token)->first();
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
             if ($souscription) {
                 // on enregistre la validation de la souscription
-                $data = ['statut' => 1, 'monext_token' => null, 'monext_link' => null, 'ref_reglement' => 'Monext '.$souscription->monext_token];
+                $data = ['statut' => 1, 'monext_token' => null, 'monext_link' => null, 'ref_reglement' => 'Monext ' . $souscription->monext_token];
                 $souscription->update($data);
 
                 if ($souscription->personne_id) {
@@ -524,12 +502,13 @@ class ClubController extends Controller
     }
 
     // affichage des factures liées au club
-    public function factures() {
+    public function factures()
+    {
         $club = $this->getClub();
         $invoices = \App\Models\Invoice::where('club_id', $club->id)->orderByDesc('created_at')->get();
         foreach ($invoices as $invoice) {
-            list($tmp, $path) = explode('htdocs',  $invoice->getStorageDir());
-            $path .= '/'.$invoice->numero.'.pdf';
+            list($tmp, $path) = explode('htdocs', $invoice->getStorageDir());
+            $path .= '/' . $invoice->numero . '.pdf';
             $invoice->path = $path;
         }
         return view('clubs.factures.index', compact('club', 'invoices'));
