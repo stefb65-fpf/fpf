@@ -314,4 +314,50 @@ trait ClubTools
         Utilisateur::create($datau);
         return '0';
     }
+
+
+
+    protected function updateFonctionClub($club_id, $fonction_id, $current_utilisateur_id, $adherent_id) {
+        $adherents = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->where('utilisateurs.clubs_id', $club_id)
+            ->selectRaw('utilisateurs.id')
+            ->get();
+        $in_array = false;
+        $new_utilisateur_id = $adherent_id;
+        foreach ($adherents as $adherent) {
+            if ($adherent->id == $new_utilisateur_id) {
+                $in_array = true;
+            }
+        }
+        if (!$in_array) {
+            return false;
+        }
+        //on ajoute la ligne correspondant à la table pivot
+        $data_ap = array('utilisateurs_id' => $new_utilisateur_id, 'fonctions_id' => $fonction_id);
+        DB::table('fonctionsutilisateurs')->insert($data_ap);
+        //on supprime l'ancien utilisateur
+        DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+        return true;
+    }
+
+    protected function addFonctionClub($club_id, $fonction_id, $adherent_id) {
+        $adherents = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->where('utilisateurs.clubs_id', $club_id)
+            ->selectRaw('utilisateurs.id, utilisateurs.identifiant, personnes.nom, personnes.prenom')
+            ->get();
+        $in_array = false;
+        $new_utilisateur_id = $adherent_id;
+        foreach ($adherents as $adherent) {
+            if ($adherent->id == $new_utilisateur_id) {
+                $in_array = true;
+            }
+        }
+        if (!$in_array) {
+            return false;
+        }
+        //on ajoute la ligne correspondant à la table pivot
+        $data_ap = array('utilisateurs_id' => $new_utilisateur_id, 'fonctions_id' => $fonction_id);
+        DB::table('fonctionsutilisateurs')->insert($data_ap);
+        return true;
+    }
 }
