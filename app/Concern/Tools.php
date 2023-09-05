@@ -183,7 +183,7 @@ trait Tools
     public function getClubsByTerm($term, $query)
     {
         if (is_numeric($term)) {
-            $query = $query->where('numero', 'LIKE', '%' . $term . '%')->get();
+            $query = $query->where('numero', 'LIKE', '%' . trim($term, 0) . '%')->get();
         } else {
             $query = $query->where('nom', 'LIKE', '%' . $term . '%')->get();
         }
