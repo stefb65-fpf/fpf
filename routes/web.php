@@ -202,6 +202,10 @@ Route::get('/urs/personnes/create', [App\Http\Controllers\UrController::class,'c
 Route::post('/urs/personnes/store', [App\Http\Controllers\UrController::class,'storePersonne'])->name('urs.personnes.store');
 Route::put('/urs/personnes/{personne}/update/{view_type}', [App\Http\Controllers\UrController::class,'updatePersonne'])->name('urs.personnes.update');
 Route::get('/urs/personnes/{view_type}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\UrController::class, 'list']);
+Route::get('/urs/liste_fonctions/{club}', [App\Http\Controllers\UrController::class, 'listeFonctionsClub'])->name('urs.clubs.liste_fonctions');
+Route::put('/urs/update-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\UrController::class,'updateClubFonction'])->name('urs.updateFonctionClub');
+Route::put('/urs/add-club-fonction/{club_id}/{fonction_id}',[App\Http\Controllers\UrController::class,'addClubFonction'])->name('urs.addFonctionClub');
+Route::delete('/urs/delete-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\UrController::class,'deleteClubFonction'])->name('urs.deleteFonctionClub');
 
 //gestion admin personnes
 Route::get('/admin/personnes/{personne_id}/edit/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'edit'])->name('admin.personnes.edit');

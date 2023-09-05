@@ -160,6 +160,10 @@
                                 <a href="{{route('urs.liste_adherents_club',$club)}}" class="adminSuccess btnSmall">Liste
                                     des adhérents</a>
                             </div>
+                            <div class="mb3">
+                                <a href="{{route('urs.clubs.liste_fonctions',$club)}}" class="adminDanger btnSmall">Liste
+                                    des fonctions</a>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

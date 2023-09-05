@@ -660,4 +660,69 @@ class UrController extends Controller
 //            return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent");
         }
     }
+
+
+
+    public function listeFonctionsClub(Club $club) {
+        $ur = $this->getUr();
+        if (!($club->urs_id == $ur->id)) {
+            return redirect()->route('accueil')->with('error', "Le club n'appartient pas à l'UR que vous gérez");
+        }
+        $adherents = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->where('utilisateurs.clubs_id', $club->id)
+            ->selectRaw('utilisateurs.id, utilisateurs.identifiant, personnes.nom, personnes.prenom')
+            ->orderBy('personnes.nom')
+            ->orderBy('personnes.prenom')
+            ->get();
+
+        // on récupère les fonctions du club
+        $fonctions = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
+            ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->where('utilisateurs.clubs_id', $club->id)
+            ->where('fonctions.instance', 3)
+            ->selectRaw('fonctions.id, fonctions.libelle, utilisateurs.identifiant, personnes.nom, personnes.prenom , utilisateurs.id as id_utilisateur')
+            ->orderBy('fonctions.ordre')
+            ->get();
+        $tab_fonctions = [];
+        foreach ($fonctions as $fonction) {
+            $tab_fonctions[$fonction->id] = $fonction;
+        }
+
+        return view('urs.clubs.liste_fonctions', compact('club', 'adherents', 'tab_fonctions'));
+
+    }
+
+    public function updateClubFonction(Request $request, $club_id, $current_utilisateur_id, $fonction_id) {
+        $club = Club::where('id', $club_id)->first();
+        if (!$club) {
+            return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
+        }
+        if ($this->updateFonctionClub($club->id, $fonction_id, $current_utilisateur_id, $request->adherent_id)) {
+            return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('success', "La fonction a été attribuée à un nouvel utilisateur");
+        } else {
+            return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('error', "Cet utilisateur ne fait pas partie des adhérent du club");
+        }
+    }
+
+    public function addClubFonction(Request $request, $club_id, $fonction_id) {
+        $club = Club::where('id', $club_id)->first();
+        if (!$club) {
+            return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
+        }
+        if ($this->addFonctionClub($club_id, $fonction_id, $request->adherent_id)) {
+            return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('success', "La fonction a été ajoutée à cet utilisateur");
+        } else {
+            return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('error', "Cet utilisateur ne fait pas partie des adhérent du club");
+        }
+    }
+
+    public function deleteClubFonction($club_id, $current_utilisateur_id, $fonction_id) {
+        $club = Club::where('id', $club_id)->first();
+        if (!$club) {
+            return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
+        }
+        DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+        return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('success', "La fonction a été supprimée pour cet utilisateur");
+    }
 }
