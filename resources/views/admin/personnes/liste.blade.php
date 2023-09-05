@@ -253,7 +253,8 @@
                             @endif
                         @endif
                         @if(in_array($view_type,["adherents","ur_adherents","recherche", 'abonnes']))
-                            <td>{{$utilisateur->fin?:""}}</td>
+{{--                            <td>{{$utilisateur->fin?:""}}</td>--}}
+                            <td>Abonnement</td>
                         @endif
                         <td>
                             <div class="mb3">
