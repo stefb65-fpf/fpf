@@ -155,7 +155,7 @@
                     @endif
                 </div>
                 <div class="formBlock minW100">
-                    <div class="formBlockTitle">Coorodonnées numériques</div>
+                    <div class="formBlockTitle">Coordonnées numériques</div>
                     <div class="formBlockWrapper">
                         <div class="formUnit formUnitAdmin">
                             <div class="formLabel">Adresse email *</div>
@@ -180,6 +180,16 @@
                                        name="fin"/>
                             </div>
                         @endif
+                    </div>
+                </div>
+
+                <div class="formBlock minW100">
+                    <div class="formBlockTitle">Newsletter</div>
+                    <div class="formBlockWrapper">
+                        <div class="formLine">
+                            <input class="inputFormAction modifying" name="news" type="checkbox" {{ $personne->news === 1 ? 'checked' : '' }} />
+                            <div>Réception des informations de la FPF (hors lettre de la fédé)</div>
+                        </div>
                     </div>
                 </div>
 

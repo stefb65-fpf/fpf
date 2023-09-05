@@ -188,6 +188,11 @@ class PersonneController extends Controller
 
         $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
         $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe');
+        if ($request->news) {
+            $datap['news'] = 1;
+        } else {
+            $datap['news'] = 0;
+        }
         $pays = Pays::where('id', $request->pays)->first();
         if ($pays) {
             $dataa['pays'] = $pays->nom;
@@ -276,6 +281,11 @@ class PersonneController extends Controller
     public function update(PersonneRequest $request, Personne $personne, $view_type)
     {
         $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe');
+        if ($request->news) {
+            $datap['news'] = 1;
+        } else {
+            $datap['news'] = 0;
+        }
         $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
         $pays = Pays::where('id', $request->pays)->first();
         if ($pays) {
