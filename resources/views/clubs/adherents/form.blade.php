@@ -29,8 +29,9 @@
                 <input class="inputFormAction formValue modifying w70" id="personnePrenom" value="{{ old('prenom', $utilisateur->personne->prenom) }}" name="prenom" maxlength="70" minlength="2" type="text" required />
             </div>
             <div class="formLine">
-                <div class="formLabel">Date de naissance *</div>
-                <input class="inputFormAction formValue modifying" id="personneDateNaissance" type="date" value="{{ old('datenaissance', $utilisateur->personne->datenaissance) }}" name="datenaissance" required />
+                <div class="formLabel">Date de naissance</div>
+                <input class="inputFormAction formValue modifying" id="personneDateNaissance" type="date" value="{{ old('datenaissance', $utilisateur->personne->datenaissance) }}" name="datenaissance" />
+{{--                <input class="inputFormAction formValue modifying" id="personneDateNaissance" type="date" value="{{ old('datenaissance', $utilisateur->personne->datenaissance) }}" name="datenaissance" required />--}}
             </div>
         </div>
     </div>
@@ -113,7 +114,8 @@
         <div class="formBlockWrapper">
             <div class="formLine">
                 <div class="formLabel">Adresse email *</div>
-                <input class="inputFormAction formValue modifying w70" id="personneEmail" value="{{ old('email', $utilisateur->personne->email) }}" name="email" required {{ $action == 'update' ? 'disabled' : '' }} />
+                <input class="inputFormAction formValue modifying w70" id="personneEmail" value="{{ old('email', $utilisateur->personne->email) }}" name="email" required />
+{{--                <input class="inputFormAction formValue modifying w70" id="personneEmail" value="{{ old('email', $utilisateur->personne->email) }}" name="email" required {{ $action == 'update' ? 'disabled' : '' }} />--}}
             </div>
             <div class="formLine">
                 <div class="formLabel">Téléphone mobile *</div>

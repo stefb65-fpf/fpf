@@ -171,12 +171,23 @@ trait ClubTools
         if (!$pays) {
             return '3';
         }
+        $personne = $utilisateur->personne;
+        if ($personne !== $request->email) {
+            if (!filter_var(trim($request->email), FILTER_VALIDATE_EMAIL)) {
+                return '2';
+            }
+            // est ce qu'une personne avec le même email existe déjà ?
+            $exist_personne = Personne::where('email', trim($request->email))->where('id', '<>', $personne->id)->first();
+            if ($exist_personne) {
+                return '1';
+            }
+        }
 
         try {
             DB::beginTransaction();
             // on récupère les infos personne à mettre à jour
-            $personne = $utilisateur->personne;
-            $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe');
+
+            $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe', 'email');
             $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
             if ($phone_mobile == -1) {
                 DB::rollBack();

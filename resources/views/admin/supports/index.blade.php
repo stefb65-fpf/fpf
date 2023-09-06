@@ -10,6 +10,10 @@
                 </svg>
             </a>
         </h1>
+        <div style="display: flex; justify-content: flex-start; align-items: center">
+            <a href="{{ env('APP_URL') }}admin/supports/non-traites" class="adminPrimary btnMedium">Uniquement les non traitées</a>
+            <a href="{{ env('APP_URL') }}admin/supports" class="adminSuccess btnMedium ml15">Toutes les demandes</a>
+        </div>
         @if(sizeof($supports))
             <div class="pagination">
                 {{ $supports->render( "pagination::default") }}

@@ -81,7 +81,6 @@ $('#renouvellementAdherents').on('click', function (e) {
                     alert('Veuillez renseigner le numéro de la seconde carte pour l\'adhérent ' + item.data('identifiant'))
                     passage = 0
                     return
-                    console.log('bbbbbbbbb')
                 }
                 if (!regIdentifiant.test($('#secondeCarte_' + ref).val())) {
                     alert('le numéro de la seconde carte pour l\'adhérent ' + item.data('identifiant') + ' est incorrect')

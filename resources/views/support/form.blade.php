@@ -1,11 +1,19 @@
 @extends('layouts.supportDefault')
 @section('content')
     <div class="alertInfo mb25 w80">
-        <span class="bold">Problème de connexion ?</span>
-        Vous n'arrivez pas à vous connecter avec vos indentifiants FPF ?
-        C'est normal, nous avons changé de système d'authentification. Désormais vous allez devoir vous connecter avec votre adresse e-mail et votre mot de passe.
-        A votre première connexion, vous devrez initialiser votre mot de passe en cliquant sur le lien "Vous avez un compte FPF mais c'est votre première connexion ?"
-        sur la <a href="{{ env('APP_URL') }}login" style="text-decoration: underline; font-weight: bolder;">page d'authentification</a>.
+        <div>
+            <span class="bold">Problème de connexion ?</span>
+            Vous n'arrivez pas à vous connecter avec vos indentifiants FPF ?
+            C'est normal, nous avons changé de système d'authentification. Désormais vous allez devoir vous connecter avec votre adresse e-mail et votre mot de passe.
+            A votre première connexion, vous devrez initialiser votre mot de passe en cliquant sur le lien "Vous avez un compte FPF mais c'est votre première connexion ?"
+            sur la <a href="{{ env('APP_URL') }}login" style="text-decoration: underline; font-weight: bolder;">page d'authentification</a>.
+        </div>
+        <div style="margin-top: 15px;">
+            <span class="bold">Avant de solliciter le suport !</span>
+            Il est possible que la réponse à votre problème soit contenue dans le <a href="{{ env('APP_URL') }}storage/app/public/guide-adherents-2023.pdf" style="text-decoration: underline; font-weight: bolder;">guide d'utilisation des adhérents</a>.
+            Si vous êtes responsable de club, vous pouvez également consulter le <a href="{{ env('APP_URL') }}storage/app/public/guide-clubs-2023.pdf" style="text-decoration: underline; font-weight: bolder;">guide d'utilisation des clubs</a>.
+            Si vous ne trouvez pas la réponse à votre question, vous pouvez alors contacter le support.
+        </div>
     </div>
         <form action="{{ route('support.submit') }}" method="POST" class="authForm align-center">
             {{ csrf_field() }}

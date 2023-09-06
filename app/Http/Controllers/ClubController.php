@@ -298,7 +298,9 @@ class ClubController extends Controller
             return redirect()->route('clubs.adherents.index')->with('success', "Les informations de l'adhérent ont été mises à jour");
         } else {
             return match ($code) {
-                '3 ' => redirect()->back()->with('error', "Le pays est invalide")->withInput(),
+                '1' => redirect()->back()->with('error', "Une personne possédant cetta adresse email existe déjà dans la base de données")->withInput(),
+                '2' => redirect()->back()->with('error', "L'adresse email est invalide")->withInput(),
+                '3' => redirect()->back()->with('error', "Le pays est invalide")->withInput(),
                 '4' => redirect()->back()->with('error', "Téléphone mobile invalide")->withInput(),
                 '5' => redirect()->back()->with('error', "Téléphone fixe invalide")->withInput(),
                 default => redirect()->back()->with('error', "Un problème est survenu lors de la mise à jour des informations de l'adhérent")->withInput(),

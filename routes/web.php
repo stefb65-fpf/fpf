@@ -59,7 +59,7 @@ Route::get('/admin/reglements/cartes', [App\Http\Controllers\Admin\ReglementCont
 
 Route::get('/admin/factures', [App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('admin.factures');
 
-Route::get('/admin/supports', [App\Http\Controllers\Admin\SupportController::class, 'index'])->name('supports.index');
+Route::get('/admin/supports/{type?}', [App\Http\Controllers\Admin\SupportController::class, 'index'])->name('supports.index');
 
 Route::get('/admin/urs/{ur}/fonctions', [App\Http\Controllers\Admin\UrController::class, 'fonctions'])->name('admin.urs.fonctions');
 Route::get('/admin/urs/fonctions/{fonction_id}/{ur_id}/change_attribution_fonctionur', [App\Http\Controllers\Admin\UrController::class, 'changeAttributionUr'])->name('admin.urs.fonctions.change_attribution');

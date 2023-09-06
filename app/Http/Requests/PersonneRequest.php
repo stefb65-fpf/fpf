@@ -24,7 +24,8 @@ class PersonneRequest extends FormRequest
         return [
             'nom' => 'string|required|max:60',
             'prenom' => 'string|required|max:60',
-            'datenaissance'=>'date',
+            'datenaissance'=>'date|nullable',
+//            'datenaissance'=>'date',
             'libelle1' => 'nullable|string',
             'libelle2' => 'nullable|string',
             'codepostal'=>'string|required|max:10',

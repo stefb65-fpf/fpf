@@ -20,8 +20,12 @@ class SupportController extends Controller
         $this->middleware(['checkLogin', 'adminAccess'])->except(['updateStatus', 'sendAnswer']);
     }
 
-    public function index() {
-        $supports = Supportmessage::orderByDesc('id')->paginate(100);
+    public function index($type = null) {
+        $query = Supportmessage::orderByDesc('id');
+        if ($type == 'non-traites') {
+            $query->where('statut', 0);
+        }
+        $supports = $query->paginate(100);
         return view('admin.supports.index', compact('supports'));
     }
 

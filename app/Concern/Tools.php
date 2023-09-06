@@ -257,16 +257,18 @@ trait Tools
                 $abonnement = Abonnement::where('personne_id', $utilisateur->personne_id)->where('etat', 1)->first();
                 if ($abonnement) {
                     // on crée un abonnement avec état 0
-                    $debut = $abonnement->fin + 1;
+//                    $debut = $abonnement->fin + 1;
                     $fin = $abonnement->fin + 5;
-                    $dataa = array('personne_id' => $utilisateur->personne_id, 'etat' => 0, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
+                    $dataa = array('fin' => $fin);
+                    $abonnement->update($dataa);
+//                    $dataa = array('personne_id' => $utilisateur->personne_id, 'etat' => 0, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
                 } else {
                     // on crée un abonnement avec état 1
                     $debut = $numeroencours;
                     $fin = $numeroencours + 4;
                     $dataa = array('personne_id' => $utilisateur->personne_id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
+                    Abonnement::create($dataa);
                 }
-                Abonnement::create($dataa);
             }
             $personne = Personne::where('id', $utilisateur->personne_id)->first();
             $personne->update($datap);

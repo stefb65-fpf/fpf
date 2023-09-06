@@ -524,7 +524,8 @@ class UtilisateurController extends Controller
 
                 if ($adherent['ct'] == 5) {
                     // on vérifie que la seconde acrte indiquée existe bien et est au tarif normal
-                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->whereIn('ct', [2,7])->first();
+                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->first();
+//                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->whereIn('ct', [2,7])->first();
                     if (!$autre_carte) {
                         $ct = '>25 ans';
                         $tarif_id = 8;
@@ -534,7 +535,8 @@ class UtilisateurController extends Controller
 
                 if ($adherent['ct'] == 6) {
                     // on vérifie l'existence de la carte d'un autre club au tarif plein et appartenant à la même personne
-                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->where('ct', 2)->first();
+                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->whereIn('ct', [2,3,4,5,6])->first();
+//                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->where('ct', 2)->first();
                     if (!$autre_carte) {
                         $ct = '>25 ans';
                         $tarif_id = 8;

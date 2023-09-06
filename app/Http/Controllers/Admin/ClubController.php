@@ -25,6 +25,7 @@ use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -109,7 +110,7 @@ class ClubController extends Controller
             return redirect()->back()->with('error', "Une personne avec l'adresse email saisie pour le contact existe déjà")->withInput();
         }
         // on cherche le dernier numéro de club pour l'UR saisie
-        $numero = Club::where('urs_id', $request->urClub)->max('numero');
+        $numero = Club::where('urs_id', '<>', 0)->max('numero');
         $new_numero = $numero + 1;
 
         try {
@@ -205,7 +206,6 @@ class ClubController extends Controller
             $datau = [
                 'urs_id' => $request->urClub,
                 'clubs_id' => $club->id,
-                'adresses_id' => $personne->adresses[0]->id,
                 'personne_id' => $personne->id,
                 'identifiant' => $identifiant,
                 'numeroutilisateur' => 1,
@@ -257,12 +257,72 @@ class ClubController extends Controller
             ];
             DB::table('reglementsutilisateurs')->insert($dataru);
 
+            $this->generateBordereauClub($club, $reglement);
+
             DB::commit();
             return redirect()->route('admin.clubs.index')->with('success', "Le club $club->numero a été créé. Pour valider l'inscription, vous devez valider le règlement $ref d'un montant de $montant_reglement €");
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('admin.clubs.create')->with('error', "Une erreur est survenue lors de la création du club");
         }
+    }
+
+    protected function generateBordereauClub($club, $reglement) {
+        $ref = $reglement->reference;
+        $name = $ref.'.pdf';
+        $dir = $club->getImageDir();
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $tarif_adhesion_club = Tarif::where('id', 4)->where('statut', 0)->first();
+        $montant_adhesion_club = $tarif_adhesion_club->tarif;
+        $tarif_adhesion_club_ur = Tarif::where('id', 7)->where('statut', 0)->first();
+        $montant_adhesion_club_ur = $tarif_adhesion_club_ur->tarif;
+        $tarif_abonnement_club = Tarif::where('id', 5)->where('statut', 0)->first();
+        $montant_abonnement_club = $tarif_abonnement_club->tarif;
+
+        $total_club = $montant_adhesion_club  + $montant_adhesion_club_ur;
+        if ($reglement->aboClub == 1) {
+            $total_club += $montant_abonnement_club;
+        } else {
+            $montant_abonnement_club = 0;
+        }
+        $total_montant = $total_club;
+
+        $tab_adherents = [];
+        $utilisateur = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('clubs_id', $club->id)->where('fonctionsutilisateurs.fonctions_id', 97)->first();
+
+        $tarif = Tarif::where('id', 8)->where('statut', 0)->first();
+        $line = ['prenom' => $utilisateur->personne->prenom, 'nom' => $utilisateur->personne->nom, 'identifiant' => $utilisateur->identifiant,
+            'ct' => '>25 ans', 'id' => $utilisateur->id, 'ctInt' => 2
+        ];
+
+        $tab_adherents[$utilisateur->identifiant]['adherent'] = $line;
+        $tab_adherents[$utilisateur->identifiant]['adhesion'] = $tarif->tarif;
+        $tab_adherents[$utilisateur->identifiant]['total'] = $tarif->tarif;
+        $total_adhesion = $tarif->tarif;
+
+        $total_abonnement = 0;
+        $reglement_utilisateur = DB::table('reglementsutilisateurs')->where('reglements_id', $reglement->id)->first();
+        if ($reglement_utilisateur) {
+            if ($reglement_utilisateur->abonnement == 1) {
+                $tarif = Tarif::where('id', 17)->where('statut', 0)->first();
+                $tab_adherents[$utilisateur->identifiant]['abonnement'] = $tarif->tarif;
+                $tab_adherents[$utilisateur->identifiant]['total'] += $tarif->tarif;
+                $total_abonnement += $tarif->tarif;
+            }
+        }
+        $total_adherents = $total_adhesion + $total_abonnement;
+        $total_montant += $total_adherents;
+
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadView('pdf.borderauclub', compact('tab_adherents', 'ref', 'club', 'total_montant', 'total_club',
+            'montant_adhesion_club', 'montant_abonnement_club', 'montant_adhesion_club_ur', 'total_adhesion', 'total_abonnement', 'total_adherents'))
+            ->setWarnings(false)
+            ->setPaper('a4', 'portrait')
+            ->save($dir.'/'.$name);
+        list($tmp, $filename) = explode('htdocs/', $dir.'/'.$name);
     }
 
     public function edit(Club $club)
@@ -348,10 +408,12 @@ class ClubController extends Controller
             return redirect()->route('clubs.adherents.edit', $utilisateur_id)->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
         }
         $code = $this->updateClubAdherent($request, $utilisateur);
-        if ($code == '01') {
+        if ($code == '0') {
             return redirect()->route('admin.clubs.liste_adherents_club', [$utilisateur->clubs_id])->with('success', "Les informations de l'adhérent ont été mises à jour");
         } else {
             return match ($code) {
+                '1' => redirect()->back()->with('error', "Une personne possédant cetta adresse email existe déjà dans la base de données")->withInput(),
+                '2' => redirect()->back()->with('error', "L'adresse email est invalide")->withInput(),
                 '3 '=> redirect()->back()->with('error', "Le pays est invalide")->withInput(),
                 '4' => redirect()->back()->with('error', "Téléphone mobile invalide")->withInput(),
                 '5' => redirect()->back()->with('error', "Téléphone fixe invalide")->withInput(),
