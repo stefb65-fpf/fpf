@@ -70,7 +70,7 @@ trait ClubTools
         //gestion abonnement
         $currentNumber = Configsaison::where('id', 1)->first()->numeroencours;
 //        dd($currentNumber);
-        $club->is_abonne = $club->numerofinabonnement < $currentNumber;
+        $club->is_abonne = $club->numerofinabonnement <= $currentNumber;
         $countries = Pays::all();
         return [$club, $activites, $equipements, $countries];
     }

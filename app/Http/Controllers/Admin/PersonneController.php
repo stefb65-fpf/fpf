@@ -12,6 +12,8 @@ use App\Models\Adresse;
 use App\Models\Configsaison;
 use App\Models\Pays;
 use App\Models\Personne;
+use App\Models\Reglement;
+use App\Models\Tarif;
 use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Support\Facades\DB;
@@ -160,7 +162,9 @@ class PersonneController extends Controller
         }
         $countries = DB::table('pays')->orderBy('nom')->get();
         $level = 'admin';
-        return view('admin.personnes.edit', compact('personne', 'view_type', 'countries', 'level'));
+        $tarif = Tarif::where('id', 19)->where('statut', 0)->first();
+        $montant_abonnement = $tarif->tarif;
+        return view('admin.personnes.edit', compact('personne', 'view_type', 'countries', 'level', 'montant_abonnement'));
     }
 
     public function create($view_type)
@@ -391,5 +395,26 @@ class PersonneController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function renewAbo(Personne $personne, $view_type) {
+        $utilisateur = Utilisateur::where('personne_id', $personne->id)->first();
+        if (!$utilisateur) {
+            return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('error', "Un problème est survenu lors de la récupération de l'utilisateur");
+        }
+        // on crée un règlement
+        $ref = 'ABO-NEW-'.$utilisateur->identifiant;
+        $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
+        $num = $last_reglement ? intval(substr($last_reglement->reference, -4)) + 1 : 1;
+        $ref .= '-'.str_pad($num, 4, '0', STR_PAD_LEFT);
+        $tarif = Tarif::where('id', 19)->where('statut', 0)->first();
+        $montant = $tarif->tarif;
+        $reglement = Reglement::create(['montant' => $montant, 'reference' => $ref, 'statut' => 0]);
+
+        // on crée la liaison reglements utilisateurs
+        $dataru = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $utilisateur->id, 'abonnement' => 1);
+        DB::table('reglementsutilisateurs')->insert($dataru);
+
+        return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('success', "Le règlement $ref a bien été créé. Pour finaliser l'abonnement, merci de le valider dans la gestion des règlements");
     }
 }

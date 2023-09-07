@@ -89,6 +89,7 @@ class UpdateSaison extends Command
 
         // mise à jour des utilisateurs
         Utilisateur::whereIn('statut', [2, 3])->update(['saison' => date('Y')]);
+        Utilisateur::where('statut', 0)->update(['statut' => 4]);
         Utilisateur::whereIn('statut', [1, 2, 3])->update(['statut' => 0]);
 
         // on met à jour le type de carte pour les utilisateurs de moins de 25 ans

@@ -17,10 +17,10 @@ $('#checkBeforeInsertion').on('click', function(e) {
         alert('Veuillez renseigner le prénom de la personne')
         return
     }
-    if ($('#personneDateNaissance').val() == '') {
-        alert('Veuillez renseigner la date de naissance de la personne')
-        return
-    }
+    // if ($('#personneDateNaissance').val() == '') {
+    //     alert('Veuillez renseigner la date de naissance de la personne')
+    //     return
+    // }
     if ($('#adresseCodepostal').val() == '') {
         alert('Veuillez renseigner le code postal de la personne')
         return

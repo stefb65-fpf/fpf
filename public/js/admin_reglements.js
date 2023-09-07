@@ -11,7 +11,7 @@ $('a[name=validerReglement]').on('click', function(e){
 })
 $('#validRenouvellement').on('click', function(e){
     if ($('#infoValidationRenouvellement').val() == '') {
-        alert('Veuillez saisir une informationd e paiement')
+        alert('Veuillez saisir une information de paiement')
         return
     }
     const id = $(this).data('id')

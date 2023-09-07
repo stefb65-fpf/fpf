@@ -103,6 +103,7 @@ class ClubController extends Controller
         } else {
             if ($statut == 'init') {
                 $query = $query->whereIn('utilisateurs.statut', [0, 1, 2, 3]);
+                $statut = 0;
             }
         }
         if (in_array($abonnement, [0, 1])) {

@@ -216,6 +216,7 @@ Route::get('/admin/personnes/create/{view_type}', [App\Http\Controllers\Admin\Pe
 Route::put('/admin/personnes/{personne}/update/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'update'])->name('admin.personnes.update');
 Route::post('/admin/personnes/store/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'store'])->name('admin.personnes.store');
 Route::delete('/admin/personnes/{personne}/anonymize/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'anonymize'])->name('admin.personnes.anonymize');
+Route::put('/admin/personnes/{personne}/renewAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'renewAbo'])->name('admin.personnes.renewAbo');
 Route::get('/admin/personnes/{view_type}/{ur_id?}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\Admin\PersonneController::class, 'list']);
 Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::class,'index'])->name('personnes.index');
 

@@ -9,7 +9,7 @@
             Relevé du club {{ str_pad($club->urs_id, 2, '0', STR_PAD_LEFT).'-'.str_pad($club->numero, 4, '0', STR_PAD_LEFT) }} : {{ $club->nom }}
         </div>
         <div style="margin-top: 10px;">
-            Veuillez envoyer un chèque d'un montant de {{ number_format($total_montant, 2, ',', '') }} € pour le renouvellement ou effectuer un virement de ce montant à :<br>
+            Veuillez effectuer un virement d’un montant de {{ number_format($total_montant, 2, ',', '') }} € en indiquant en référence le numéro de bordereau {{ $ref }} à :<br>
             Fédération photographique de France<br>
             IBAN : FR76 1751 5900 0008 2229 9272 052<br>
             BIC : CEPAFRPP751

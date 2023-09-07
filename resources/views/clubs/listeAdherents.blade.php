@@ -238,7 +238,7 @@
                 "Bordereaux et règlements".<br><br>
                 Vous pouvez régler directement en ligne, par virement instantané ou CB, votre règlement en cliquant sur
                 les boutons ci-dessous.<br>
-                Si ce n'est pas possible, vous pouvez régler par chèque ou virement en nous transmettant le bordereau.
+                Si ce n'est pas possible, vous pouvez régler virement en nous transmettant en référence le bordereau.
                 Vous pouvez également règler plus tard en vous rendant dans votre espace "Bordereaux et règlements".<br>
             </div>
         </div>
