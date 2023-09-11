@@ -61,8 +61,8 @@ class InitUtilisateurs extends Command
 
 
 
-        die();
-
+//        die();
+//
 //        $utilisateurs = Utilisateur::where('statut', 10)->orderBy('courriel')->get();
 //        $letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*";
 //        foreach ($utilisateurs as $v) {

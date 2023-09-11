@@ -119,9 +119,13 @@
             </div>
             <div class="flexEnd">
                 @if($view_type == "adherents")
+                    <a href="{{ route('admin.personnes.createOpen', 'adherents') }}" class="adminDanger btnMedium mr10">Ajout
+                        open</a>
                     <a href="{{ route('admin.personnes.create', 'adherents') }}" class="adminPrimary btnMedium">Ajout
                         adhérent individuel</a>
                 @else
+                    <a href="{{ route('urs.personnes.createOpen', 'adherents') }}" class="adminDanger btnMedium mr10">Ajout
+                        open</a>
                     <a href="{{ route('urs.personnes.create', 'adherents') }}" class="adminPrimary btnMedium">Ajout
                         adhérent individuel</a>
                 @endif

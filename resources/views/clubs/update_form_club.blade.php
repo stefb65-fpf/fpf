@@ -203,17 +203,17 @@
                 <div class="formUnit mr25 w100">
                     <div class="formLabel">Réunions</div>
                     <input class="formValue w70" value="{{$club->reunions?:""}}"
-                           disabled="true" name="reunions"/>
+                           disabled="true" name="reunions"  maxlength="255" />
                 </div>
                 <div class="formUnit mr25 w100">
                     <div class="formLabel">Fréquence des réunions</div>
                     <input class="formValue w70" value="{{$club->frequencereunions?:""}}"
-                           disabled="true" name="frequencereunions"/>
+                           disabled="true" name="frequencereunions"  maxlength="255" />
                 </div>
                 <div class="formUnit mr25 w100">
                     <div class="formLabel">Horaires des réunions</div>
                     <input class="formValue w70" value="{{$club->horairesreunions?:""}}"
-                           disabled="true" name="horairesreunions"/>
+                           disabled="true" name="horairesreunions" maxlength="255" />
                 </div>
             </div>
         </form>

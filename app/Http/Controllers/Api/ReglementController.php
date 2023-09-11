@@ -99,21 +99,21 @@ class ReglementController extends Controller
         if (sizeof($tab_individuels) > 0) {
             // on imprime un fichier d'étiquettes carte
             $name = 'etiquettes_renouvellement_individuels_'.$rand.'_'.date('YmdHis').'.pdf';
-            if (sizeof($tab_cartes) > 0) {
+//            if (sizeof($tab_cartes) > 0) {
                 $pdf = App::make('dompdf.wrapper');
                 $pdf->loadView('pdf.etiquettes_renouvellement_individuels', compact('tab_individuels'))
                     ->setWarnings(false)
                     ->setPaper('a4', 'portrait')
                     ->save($dir.'/'.$name);
                 list($tmp, $file_etiquettes_individuels) = explode('htdocs/', $dir.'/'.$name);
-            }
+//            }
         }
 
         $file_etiquettes_club = '';
         if (sizeof($tab_clubs) > 0) {
             // on imprime un fichier de livraison par club
             $name = 'etiquettes_renouvellement_clubs_'.$rand.'_'.date('YmdHis').'.pdf';
-            if (sizeof($tab_cartes) > 0) {
+//            if (sizeof($tab_cartes) > 0) {
                 $pdf = App::make('dompdf.wrapper');
                 $pdf->loadView('pdf.etiquettes_renouvellement_clubs', compact('tab_clubs'))
                     ->setWarnings(false)
@@ -121,7 +121,7 @@ class ReglementController extends Controller
                     ->save($dir.'/'.$name);
 
                 list($tmp, $file_etiquettes_club) = explode('htdocs/', $dir.'/'.$name);
-            }
+//            }
         }
 
         // une fois les cartes éditées, on met à jour les utilisateurs

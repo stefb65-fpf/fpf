@@ -8,6 +8,7 @@ use App\Concern\UrTools;
 use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
+use App\Http\Requests\OpenRequest;
 use App\Http\Requests\PersonneRequest;
 use App\Mail\SendUtilisateurCreateByAdmin;
 use App\Models\Abonnement;
@@ -88,6 +89,14 @@ class UrController extends Controller
         return view('urs.create_adherent_club', compact('countries', 'level', 'personne', 'view_type'));
     }
 
+    public function createOpen() {
+        $ur = $this->getUr();
+        $personne = new Personne();
+        $level = 'urs';
+        $view_type = 'ur_adherents';
+        return view('urs.create_adherent_open', compact('level', 'personne', 'view_type', 'ur'));
+    }
+
     public function storePersonne(PersonneRequest $request)
     {
         $ur = $this->getUr();
@@ -163,6 +172,61 @@ class UrController extends Controller
         $this->registerMail($personne->id, $mail);
 
         return redirect('/urs/personnes/ur_adherents')->with('success', "L'adhérent $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
+    }
+
+    public function storeOpen(OpenRequest $request)
+    {
+        $ur = $this->getUr();
+        $email = trim($request->email);
+        list($tmp, $domain) = explode('@', $email);
+        if ($domain == 'federation-photo.fr') {
+            return redirect()->back()->with('error', "Vous ne pouvez pas indiquer une adresse email contenant le domaine federation-photo.fr")->withInput();
+        }
+        $olduser = Personne::where('email', $email)->first();
+        if ($olduser) {
+            return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
+        }
+
+        $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+        $datap = $request->only('nom', 'prenom', 'sexe', 'email');
+        $datap['nom'] = strtoupper($datap['nom']);
+        if ($phone_mobile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
+        }
+        $datap['phone_mobile'] = $phone_mobile;
+        $datap['password'] = $this->generateRandomPassword();
+
+        $datap['is_adherent'] = 2;
+        $personne = Personne::create($datap);
+
+        $identifiant = str_pad($ur->id, 2, '0', STR_PAD_LEFT).'-0000-';
+        $max_utilisateur = Utilisateur::where('identifiant', 'LIKE', $identifiant . '%')->max('numeroutilisateur');
+        $numero = $max_utilisateur ? $max_utilisateur + 1 : 1;
+        $identifiant .= str_pad($numero, 4, '0', STR_PAD_LEFT);
+        $datau = [
+            'urs_id' => $ur->id,
+            'personne_id' => $personne->id,
+            'identifiant' => $identifiant,
+            'numeroutilisateur' => $numero,
+            'sexe' => $personne->sexe,
+            'nom' => $personne->nom,
+            'prenom' => $personne->prenom,
+            'ct' => 7,
+            'statut' => 0,
+            'saison' => date('Y') - 1,
+        ];
+        $utilisateur = Utilisateur::create($datau);
+        // on envoie le mail d'information a l'utilisateur
+        $mailSent = Mail::to($personne->email)->send(new SendUtilisateurCreateByAdmin($personne->email));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+        $mail = new \stdClass();
+        $mail->titre = "Création d'un compte adhérent open";
+        $mail->destinataire = $email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($personne->id, $mail);
+
+        return redirect('/urs/personnes/ur_adherents')->with('success', "L'adhérent open $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
     }
 
     // affichage des informations d'un adhérent de l'UR

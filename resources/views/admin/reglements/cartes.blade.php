@@ -10,6 +10,9 @@
                 </svg>
             </a>
         </h1>
+        <div class="d-flex justify-end w100">
+            <a class="adminSuccess btnSmall mr25" href="{{ route('reglements.cartes.historique') }}">Historique des cartes</a>
+        </div>
         @if(sizeof($utilisateurs) > 0)
             <h2>Liste des cartes à éditer</h2>
             <div class="d-flex justify-end w100">

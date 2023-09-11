@@ -473,13 +473,15 @@ class UtilisateurController extends Controller
             }
             $tarif = Tarif::where('id', $tarif_id)->where('statut', 0)->first();
             $montant_adhesion_club = $tarif->tarif;
+            if ($club->second_year == 1) {
+                $montant_adhesion_club = $tarif->tarif / 2;
+            }
 
             // montant de l'adhésion à l'ur
             $tarif = Tarif::where('id', 6)->where('statut', 0)->first();
             $montant_adhesion_club_ur = $tarif->tarif;
 
             if ($club->second_year == 1) {
-                $montant_adhesion_club = $tarif->tarif / 2;
                 $montant_adhesion_club_ur = $tarif->tarif / 2;
             }
         }

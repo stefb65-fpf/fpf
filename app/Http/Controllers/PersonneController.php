@@ -55,7 +55,20 @@ class PersonneController extends Controller
             // on récupère le montant dur enouvellement pour l'année en cours:
             list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
         }
-        return view('personnes.mon_compte', compact('personne', 'tarif', 'tarif_supp', 'ct', 'cartes'));
+        $bad_profil = 0;
+//        if ($_SERVER['REMOTE_ADDR'] == '92.137.109.86') {
+//            dd(session()->get('user'));
+//        }
+        if (sizeof($personne->adresses) == 0) {
+            $bad_profil = 1;
+        }
+        if (!$personne->datenaissance) {
+            $bad_profil = 1;
+        }
+        if ($personne->phone_mobile == '') {
+            $bad_profil = 1;
+        }
+        return view('personnes.mon_compte', compact('personne', 'tarif', 'tarif_supp', 'ct', 'cartes', 'bad_profil'));
     }
 
     // affichage des informations liées à la personne connectée
@@ -189,6 +202,13 @@ class PersonneController extends Controller
         }
         $datap['phone_mobile'] = $phone_mobile;
         $personne->update($datap);
+
+        $user = session()->get('user');
+        $user->nom = $personne->nom;
+        $user->prenom = $personne->prenom;
+        $user->datenaissance = $personne->datenaissance;
+        $request->session()->put('user', $user);
+
         $this->registerAction($personne->id, 4, "Modification de vos informations de civilité");
         return redirect()->route('mon-profil')->with('success', "Vos informations de civilité ont été modifiées avec succès");
     }
@@ -218,9 +238,12 @@ class PersonneController extends Controller
                 $new_adress = Adresse::create($datap_adresse);
                 if ($new_adress) {
                     // on ajoute une ligne à la table pivot adresse_personne (le 'defaut' est à 1 pour "adresse de facturation"):
-
                     $data_ap = array('adresse_id' => $new_adress->id, 'personne_id' => $personne->id, 'defaut' => 1);
                     DB::table('adresse_personne')->insert($data_ap);
+
+                    $user = session()->get('user');
+                    $user->adresses[] = $new_adress;
+                    $request->session()->put('user', $user);
                 }
             } else { //la personne a au moins une adresse en base. On met à jour l'adresse par defaut.
                 $personne->adresses[0]->update($datap_adresse);

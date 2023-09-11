@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\OpenRequest;
 use App\Http\Requests\PersonneRequest;
 use App\Mail\SendAnonymisationEmail;
 use App\Mail\SendUtilisateurCreateByAdmin;
@@ -16,6 +17,7 @@ use App\Models\Reglement;
 use App\Models\Tarif;
 use App\Models\Ur;
 use App\Models\Utilisateur;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -178,6 +180,13 @@ class PersonneController extends Controller
         return view('admin.personnes.create', compact('view_type', 'countries', 'level', 'personne'));
     }
 
+    public function createOpen($view_type)
+    {
+        $personne = new Personne();
+        $level = 'admin';
+        return view('admin.personnes.createOpen', compact('view_type', 'level', 'personne'));
+    }
+
     public function store(PersonneRequest $request, $view_type)
     {
         $email = trim($request->email);
@@ -192,6 +201,7 @@ class PersonneController extends Controller
 
         $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
         $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe');
+        $datap['nom'] = strtoupper($datap['nom']);
         if ($request->news) {
             $datap['news'] = 1;
         } else {
@@ -277,6 +287,60 @@ class PersonneController extends Controller
 
             return redirect('/admin/personnes/' . $view_type)->with('success', "L'abonné a bien été créé");
         }
+    }
+
+    public function storeOpen(OpenRequest $request, $view_type) {
+        $email = trim($request->email);
+        list($tmp, $domain) = explode('@', $email);
+        if ($domain == 'federation-photo.fr') {
+            return redirect()->back()->with('error', "Vous ne pouvez pas indiquer une adresse email contenant le domaine federation-photo.fr")->withInput();
+        }
+        $olduser = Personne::where('email', $email)->first();
+        if ($olduser) {
+            return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
+        }
+
+        $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+        $datap = $request->only('nom', 'prenom', 'sexe', 'email');
+        $datap['nom'] = strtoupper($datap['nom']);
+        if ($phone_mobile == -1) {
+            return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
+        }
+        $datap['phone_mobile'] = $phone_mobile;
+        $datap['password'] = $this->generateRandomPassword();
+
+        $datap['is_adherent'] = 2;
+        $personne = Personne::create($datap);
+
+        $identifiant = str_pad($request->urs_id, 2, '0', STR_PAD_LEFT).'-0000-';
+        $max_utilisateur = Utilisateur::where('identifiant', 'LIKE', $identifiant . '%')->max('numeroutilisateur');
+        $numero = $max_utilisateur ? $max_utilisateur + 1 : 1;
+        $identifiant .= str_pad($numero, 4, '0', STR_PAD_LEFT);
+        $datau = [
+            'urs_id' => $request->urs_id,
+            'personne_id' => $personne->id,
+            'identifiant' => $identifiant,
+            'numeroutilisateur' => $numero,
+            'sexe' => $personne->sexe,
+            'nom' => $personne->nom,
+            'prenom' => $personne->prenom,
+            'ct' => 7,
+            'statut' => 0,
+            'saison' => date('Y') - 1,
+        ];
+        $utilisateur = Utilisateur::create($datau);
+        // on envoie le mail d'information a l'utilisateur
+        $mailSent = Mail::to($personne->email)->send(new SendUtilisateurCreateByAdmin($personne->email));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+        $mail = new \stdClass();
+        $mail->titre = "Création d'un compte adhérent open";
+        $mail->destinataire = $email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($personne->id, $mail);
+
+        return redirect('/admin/personnes/' . $view_type)->with('success', "L'adhérent $utilisateur->identifiant a bien été créé et un email d'information lui a été transmis à l'adresse $email");
+
     }
 
     /**
