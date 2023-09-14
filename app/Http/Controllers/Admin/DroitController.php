@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Models\Droit;
 use App\Models\Fonction;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 
 class DroitController extends Controller
 {
+    use Tools;
     public function __construct() {
         $this->middleware(['checkLogin', 'adminAccess']);
     }
@@ -54,13 +56,6 @@ class DroitController extends Controller
         return redirect()->route('droits.index')->with('success', 'Le droit a été supprimé pour la fonction');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -109,64 +104,5 @@ class DroitController extends Controller
             return redirect()->route('droits.index')->with('success', 'Le droit a été ajouté pour la fonction');
         }
 
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    protected function checkDroit($strdroit)
-    {
-        $cartes = session()->get('cartes');
-        $user = session()->get('user');
-        if ($user->is_administratif) {
-            return true;
-        }
-        if (!isset($cartes[0])) {
-            return false;
-//            return redirect()->route('accueil');
-        }
-        $droits = [];
-        foreach($cartes[0]->droits as $droit) {
-            $droits[] = $droit->label;
-        }
-        foreach ($cartes[0]->fonctions as $fonction) {
-            foreach ($fonction->droits as $droit) {
-                $droits[] = $droit->label;
-            }
-        }
-        if (!in_array($strdroit, $droits)) {
-            return false;
-//            return redirect()->route('accueil');
-        }
-        return true;
     }
 }

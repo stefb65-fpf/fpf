@@ -824,4 +824,30 @@ trait Tools
             }
         }
     }
+
+
+    protected function checkDroit($strdroit)
+    {
+        $cartes = session()->get('cartes');
+        $user = session()->get('user');
+        if ($user->is_administratif) {
+            return true;
+        }
+        if (!isset($cartes[0])) {
+            return false;
+        }
+        $droits = [];
+        foreach($cartes[0]->droits as $droit) {
+            $droits[] = $droit->label;
+        }
+        foreach ($cartes[0]->fonctions as $fonction) {
+            foreach ($fonction->droits as $droit) {
+                $droits[] = $droit->label;
+            }
+        }
+        if (!in_array($strdroit, $droits)) {
+            return false;
+        }
+        return true;
+    }
 }

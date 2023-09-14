@@ -16,6 +16,10 @@ class Reglement extends Model
         return $this->belongsToMany('App\Models\Utilisateur', 'reglementsutilisateurs', 'reglements_id', 'utilisateurs_id');
     }
 
+    public function Reversement() {
+        return $this->belongsTo('App\Models\Reversement');
+    }
+
     use DateTime;
 
     public function getDateenregistrementAttribute($value) {

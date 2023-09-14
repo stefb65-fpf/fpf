@@ -232,6 +232,10 @@ Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::c
 Route::get('/admin/reglements/{term?}', [App\Http\Controllers\Admin\ReglementController::class, 'index']);
 Route::resource('/admin/reglements', App\Http\Controllers\Admin\ReglementController::class);
 
+Route::get('/admin/reversements', [App\Http\Controllers\Admin\ReversementController::class, 'index'])->name('reversements.index');
+Route::get('/admin/reversements/attente', [App\Http\Controllers\Admin\ReversementController::class, 'attente'])->name('reversements.attente');
+Route::get('/admin/reversements/effectues', [App\Http\Controllers\Admin\ReversementController::class, 'effectues'])->name('reversements.effectues');
+
 //Gestion support
 Route::get('/support', [App\Http\Controllers\SupportController::class,'index'])->name('support.index');
 Route::put('/support', [App\Http\Controllers\SupportController::class,'submit'])->name('support.submit');
