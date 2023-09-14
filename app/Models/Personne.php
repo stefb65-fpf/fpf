@@ -38,6 +38,6 @@ class Personne extends Model
         $number = substr($value, strpos($value, ".") + 1);
         $number = "0".$number;
         $splitted_number = trim(chunk_split($number, 2, ' '));
-        return $isPoint? $splitted_number :$value;
+        return $isPoint ? $splitted_number : $value;
     }
 }

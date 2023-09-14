@@ -9,11 +9,12 @@ class Motion extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    public $timestamps = false;
 
     public function election() {
         return $this->belongsTo('App\Models\Election');
     }
     public function reponse() {
-        return $this->belongsTo('App\Models\Reponse');
+        return $this->belongsTo('App\Models\Reponse', 'reponses_id');
     }
 }

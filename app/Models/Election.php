@@ -11,14 +11,14 @@ class Election extends Model
     protected $guarded = [];
 
     public function vote() {
-        return $this->belongsTo('App\Models\Vote');
+        return $this->belongsTo('App\Models\Vote', 'votes_id');
     }
 
     public function candidats() {
-        return $this->hasMany('App\Models\Candidat');
+        return $this->hasMany('App\Models\Candidat', 'elections_id');
     }
 
     public function motions() {
-        return $this->hasMany('App\Models\Motion');
+        return $this->hasMany('App\Models\Motion', 'elections_id');
     }
 }

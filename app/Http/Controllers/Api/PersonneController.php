@@ -143,7 +143,7 @@ class PersonneController extends Controller
     }
 
     public function checkExternLoginWithoutPaswword(Request $request) {
-        $personne = Personne::where('email', substr($request->email, 7))->first();
+        $personne = Personne::where('email', $request->email, 7)->first();
         if (!$personne) {
             return new JsonResponse(['success' => 'KO', 'message' => "Email non présent dans notre base"], 200);
         }

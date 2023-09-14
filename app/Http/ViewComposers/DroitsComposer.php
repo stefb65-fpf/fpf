@@ -31,7 +31,11 @@ class DroitsComposer
         } else {
             $user = session()->get('user');
             if ($user->is_administratif) {
-                $droits = Droit::all();
+                if ($user->nom == 'CLOSSE') {
+                    $droits = Droit::all();
+                } else {
+                    $droits = Droit::whereNotIn('label', ['GESDRO', 'GESPARAM', 'GESVOT'])->get();
+                }
                 foreach ($droits as $droit) {
                     $tab_droits[] = $droit->label;
                 }

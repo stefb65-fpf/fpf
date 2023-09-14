@@ -11,6 +11,6 @@ class Vote extends Model
     protected $guarded = [];
 
     public function elections() {
-        return $this->hasMany('App\Models\Election');
+        return $this->hasMany('App\Models\Election', 'votes_id');
     }
 }

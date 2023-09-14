@@ -25,6 +25,8 @@ use App\Models\Souscription;
 use App\Models\Supportmessage;
 use App\Models\Tarif;
 use App\Models\Utilisateur;
+use App\Models\Vote;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -56,9 +58,6 @@ class PersonneController extends Controller
             list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
         }
         $bad_profil = 0;
-//        if ($_SERVER['REMOTE_ADDR'] == '92.137.109.86') {
-//            dd(session()->get('user'));
-//        }
         if (sizeof($personne->adresses) == 0) {
             $bad_profil = 1;
         }
@@ -68,7 +67,122 @@ class PersonneController extends Controller
         if ($personne->phone_mobile == '') {
             $bad_profil = 1;
         }
-        return view('personnes.mon_compte', compact('personne', 'tarif', 'tarif_supp', 'ct', 'cartes', 'bad_profil'));
+        $votes_encours = null;
+        $votes_futurs = null;
+        $tab_fonctions = [];
+        foreach ($cartes[0]->fonctions as $fonction) {
+            $tab_fonctions[] = $fonction->id;
+        }
+
+        if (isset($cartes[0])) {
+            if ($cartes[0]->saison >= date('Y') && $cartes[0]->statut < 4) {
+                $phase2_available = 0;
+                $phase3_available = 0;
+                foreach ($cartes[0]->fonctions as $la_fonction) {
+                    if (in_array($la_fonction->id, config('app.club_vote_functions'))) {
+                        $phase2_available = 1;
+                    }
+                    if (in_array($la_fonction->id, config('app.ur_vote_functions'))) {
+                        $phase3_available = 1;
+                    }
+                }
+
+                $votes_encours = Vote::where('debut', '<=', date('Y-m-d'))
+                    ->where('fin', '>=', date('Y-m-d'))
+                    ->whereIn('urs_id', [0, $cartes[0]->urs_id])
+                    ->where(function (Builder $query) {
+                        $query->where('type', 0)
+                            ->orWhere(function (Builder $query) {
+                                $query->where('type', 1)
+                                    ->where('phase', '>', 0);
+                            });
+                    })
+                    ->get();
+                foreach ($votes_encours as $k => $v) {
+                    // on regarde si l'utilisateur a déjà voté
+                    $vote_utilisateur = DB::table('votes_utilisateurs')
+                        ->where('utilisateurs_id', $cartes[0]->id)
+                        ->where('votes_id', $v->id)
+                        ->where('statut', 1)
+                        ->first();
+                    if ($vote_utilisateur) {
+                        unset($votes_encours[$k]);
+                    }
+                    if (($v->fonctions_id != 0) && ($v->fonctions_id != 9999)) {
+                        // on regarde si l'utilisateur possède la fonction nécessaire pour voter
+                        if (!in_array($v->fonctions_id, $tab_fonctions)) {
+                            unset($votes_encours[$k]);
+                        }
+                    }
+
+                    if ($v->fonctions_id == 9999) {
+                        $user = Utilisateur::where('id', $cartes[0]->id)->selectRaw('ca')->first();
+                        if ($user->ca == 0) {
+                            unset($votes_encours[$k]);
+                        }
+                    }
+                    if ($v->type == 1) {
+                        if ($v->phase == 2) {
+                            if ($phase2_available == 0) {
+                                unset($votes_encours[$k]);
+                            } else {
+                                // si c'est un responsable club, on regarde si le vote n'a pas déjà été fait par un autre responsable
+                                $exist_cumul = DB::table('cumul_votes_clubs')
+                                    ->where('votes_id', $v->id)
+                                    ->where('clubs_id', $cartes[0]->clubs_id)
+                                    ->where('statut', 0)->first();
+                                if (!$exist_cumul) {
+                                    unset($votes_encours[$k]);
+                                } else {
+                                }
+                            }
+                        }
+                        if (($v->phase == 3) && ($phase3_available == 0)) {
+                            unset($votes_encours[$k]);
+                        }
+                        if (($v->phase == 3) && ($phase3_available == 1)) {
+                            // on regarde le nombre de voix pour l'UR
+                            $exist_cumul = DB::table('cumul_votes_urs')
+                                ->where('votes_id', $v->id)
+                                ->where('urs_id', $cartes[0]->urs_id)
+                                ->where('statut', 0)->first();
+                            if (!$exist_cumul) {
+                                unset($votes_encours[$k]);
+                            } else {
+                                $nb_voix_ur = $exist_cumul->nb_voix;
+                                if ($nb_voix_ur == 0) {
+                                    unset($votes_encours[$k]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+//        dd($votes_encours);
+
+                $votes_futurs = Vote::whereRaw('DATE_SUB(debut, INTERVAL 15 day) <= NOW()')
+                    ->where('debut', '>', date('Y-m-d'))
+                    ->whereIn('urs_id', [0, $cartes[0]->urs_id])
+                    ->get();
+
+                foreach ($votes_futurs as $k => $v) {
+                    if (($v->fonctions_id != 0) && ($v->fonctions_id != 9999)) {
+                        // on regarde si l'utilisateur possède la fonction
+                        if (!in_array($v->fonctions_id, $tab_fonctions)) {
+                            unset($votes_futurs[$k]);
+                        }
+                    }
+
+
+                    if ($v->fonctions_id == 9999) {
+                        if ($_SESSION['Utilisateur']->ca == 0) {
+                            unset($votes_futurs[$k]);
+                        }
+                    }
+                }
+            }
+        }
+        return view('personnes.mon_compte', compact('personne', 'tarif', 'tarif_supp', 'ct', 'cartes', 'bad_profil', 'votes_futurs', 'votes_encours'));
     }
 
     // affichage des informations liées à la personne connectée
@@ -123,7 +237,7 @@ class PersonneController extends Controller
         $mails = Historiquemail::where('personne_id', $user->id)->orderByDesc('created_at')->paginate(50);
 
         foreach ($mails as $mail) {
-                $mail->contenu = $this->get_string_between($mail->contenu, '<main>', '</main>');
+            $mail->contenu = $this->get_string_between($mail->contenu, '<main>', '</main>');
         }
 
         return view('personnes.mes_mails', compact('mails'));
@@ -172,7 +286,7 @@ class PersonneController extends Controller
         $this->registerAction($personne->id, 4, "Demande de modification d'email");
 
         // on envoie un mail à l'utilisateur avec le lien de confirmation de modification de l'adresse amil
-        $link = env('APP_URL')."changeEmail/" . $crypt;
+        $link = env('APP_URL') . "changeEmail/" . $crypt;
         $mailSent = Mail::to($personne->email)->send(new SendEmailChangeEmailAddress($link));
 
         //on enregistre le mail dans l'historique des mails
@@ -397,7 +511,7 @@ class PersonneController extends Controller
         $this->sendMailSupport($support);
 
         $email = $personne->email;
-        $mailSent = Mail::to($email)->send(new SendSupportNotification($support->contenu,$support->objet));
+        $mailSent = Mail::to($email)->send(new SendSupportNotification($support->contenu, $support->objet));
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
         $mail = new \stdClass();

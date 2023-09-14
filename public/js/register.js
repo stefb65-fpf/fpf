@@ -16,7 +16,7 @@ $('#checkNewUser').on('click', function () {
         $('#emailRegister').parent().find('div[name=error]').addClass('visible')
         return
     }
-    const regEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    const regEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/
     if (!regEmail.test($('#emailRegister').val())) {
         $('#emailRegister').parent().find('div[name=error]').html("L'email n'est pas valide")
         $('#emailRegister').parent().find('div[name=error]').addClass('visible')
@@ -145,7 +145,7 @@ $('#checkTarifForNewUser').on('click', function () {
         $('#emailRegister').parent().find('div[name=error]').addClass('visible')
         return
     }
-    const regEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    const regEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/
     if (!regEmail.test($('#emailRegister').val())) {
         $('#emailRegister').parent().find('div[name=error]').html("L'email n'est pas valide")
         $('#emailRegister').parent().find('div[name=error]').addClass('visible')
@@ -283,7 +283,7 @@ $('button[name=payByVirement]').on('click', function () {
         $('#emailRegister').parent().find('div[name=error]').addClass('visible')
         return
     }
-    const regEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    const regEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/
     if (!regEmail.test($('#emailRegister').val())) {
         $('#emailRegister').parent().find('div[name=error]').html("L'email n'est pas valide")
         $('#emailRegister').parent().find('div[name=error]').addClass('visible')

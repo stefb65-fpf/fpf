@@ -178,8 +178,11 @@
                 enregistrée.
                 Si vous annulez, votre saisie ne sera pas prise en compte. Si vous validez le renouvellement, les
                 informations seront enregistrées et vous
-                pourrez télécharger le bordereau club. Tout autre bordereau créé et n'ayant pas été validé par un
-                règlement enregistré par la FPF sera supprimé.
+                pourrez télécharger le bordereau club.
+                <span class="bolder" style="font-size: 20px;">
+                Tout autre bordereau créé et n'ayant pas été validé par un
+                règlement enregistré par la FPF sera supprimé. Donc si vous avez un paiement en cours mais non pris en compte par la FPF, ne validez pas ce bordereau.
+                </span>
             </div>
             <div class="mt25 bold">
                 Le coût total des adhésions et abonnements adhérents et club est de <span

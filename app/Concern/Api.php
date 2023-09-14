@@ -73,4 +73,44 @@ trait Api
         $getWebPaymentDetailsResponse = $payline->getWebPaymentDetails(['token' => $token]);
         return array('code' => $getWebPaymentDetailsResponse['result']['code'], 'message' => $getWebPaymentDetailsResponse['result']['shortMessage']);
     }
+
+    protected function callOctopush($to, $message, $sender) {
+        $url = "https://api.octopush.com/v1/public/sms-campaign/send";
+        $headers = array(
+            "Content-Type: application/json",
+            "cache-control: no-cache",
+            "api-login: " . env('OCTOPUSH_IDENTIFIANT'),
+            "api-key: " . env('OCTOPUSH_KEY'),
+        );
+
+        $params = array(
+            "recipients" => [
+                [
+                    "phone_number" => $to
+                ]
+            ],
+            'text' => $message,
+            'type' => 'sms_premium',
+            'sender' => $sender,
+            'purpose' => 'alert'
+//            'simulation_mode' => 'true'
+        );
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL                 => $url,
+            CURLOPT_CUSTOMREQUEST       => 'POST',
+            CURLOPT_HTTPHEADER          => $headers,
+            CURLOPT_POST                => 1,
+            CURLOPT_POSTFIELDS          => json_encode($params),
+            CURLOPT_RETURNTRANSFER      => 1,
+        ));
+        $reponse = curl_exec($curl);
+        $status     = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        if ($status == 200 || $status == 201) {
+            $return_code = '0';
+        } else {
+            $return_code = '20';
+        }
+        return $return_code;
+    }
 }

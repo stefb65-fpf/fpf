@@ -7,6 +7,8 @@ use App\Http\Requests\ElectionRequest;
 use App\Http\Requests\VoteRequest;
 use App\Models\Candidat;
 use App\Models\Election;
+use App\Models\Motion;
+use App\Models\Reponse;
 use App\Models\Utilisateur;
 use App\Models\Vote;
 use Illuminate\Http\Request;
@@ -139,7 +141,20 @@ class VoteController extends Controller
         if ($election) {
             return redirect()->route('votes.elections.create', $vote)->with('error', 'Une élection avec ce nom existe déjà pour ce vote.');
         }
-        Election::create($data);
+        $election = Election::create($data);
+        if ($election->type == 1) {
+            // on récupère les réponses pour ce type de vote
+            $reponses = Reponse::where('type_vote', $vote->type)->orderBy('id')->get();
+            foreach ($reponses as $reponse) {
+                // on crée la motion correspondante
+                $data = [
+                    'elections_id' => $election->id,
+                    'reponses_id' => $reponse->id
+                ];
+                Motion::create($data);
+            }
+        }
+
         return redirect()->route('votes.elections.index', $vote)->with('success', 'L\'élection a bien été créée.');
     }
 
@@ -200,5 +215,24 @@ class VoteController extends Controller
     public function candidatsDestroy(Vote $vote, Election $election, Candidat $candidat) {
         $candidat->delete();
         return redirect()->route('votes.elections.candidats.index', [$vote, $election])->with('success', 'Le candidat a bien été supprimé.');
+    }
+
+    public function resultats(Vote $vote, Election $election) {
+        $candidats = null;
+        $motions = null;
+        if ($election->type == 2) {
+            // on récupère les candidats classés par niombre de voix
+            $candidats = Candidat::where('elections_id', $election->id)->orderByDesc('nb_votes')->get();
+            foreach ($candidats as $candidat) {
+                $candidat->utilisateur = Utilisateur::where('id', $candidat->utilisateurs_id)->first();
+            }
+        } else {
+            // on récupère les résultats pour chaque motion
+            $motions = Motion::where('elections_id', $election->id)->orderBy('id')->get();
+            foreach ($motions as $motion) {
+                $motion->reponse = Reponse::where('id', $motion->reponses_id)->first();
+            }
+        }
+        return view('admin.votes.resultats', compact('vote', 'election', 'candidats', 'motions'));
     }
 }

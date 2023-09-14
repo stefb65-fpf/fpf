@@ -44,6 +44,11 @@ Route::get('/getStatus/{term}', [App\Http\Controllers\Api\PersonneController::cl
 Route::post('/personnes/affectationUr', [App\Http\Controllers\Api\PersonneController::class,'affectationUr']);
 Route::post('/submitNewsPreferences', [App\Http\Controllers\Api\PersonneController::class,'newsPreferences']);
 
+Route::post('/votes/sendCode', [App\Http\Controllers\Api\VoteController::class,'sendCode']);
+Route::post('/votes/confirmCancelCode', [App\Http\Controllers\Api\VoteController::class,'confirmCancelCode']);
+Route::post('/votes/confirmGiveCode', [App\Http\Controllers\Api\VoteController::class,'confirmGiveCode']);
+Route::post('/votes/saveVote', [App\Http\Controllers\Api\VoteController::class,'saveVote']);
+
 // autocomplétion pour la saisie de commune set code postaux
 Route::post('/getAutocompleteCommune', [App\Http\Controllers\Api\CommuneController::class,'autocompleteCommune']);
 

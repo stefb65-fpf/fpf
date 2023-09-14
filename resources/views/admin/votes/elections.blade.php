@@ -39,10 +39,17 @@
                         <td>{{ $election->type == 1 ? 'Motion' : 'Election de candidats' }}</td>
                         <td>{{ $election->type == 1 ? '' : $election->nb_postes }}</td>
                         <td>
-                            <div class="mb3">
-                                <a href="{{ route('votes.elections.edit', [$vote, $election]) }}" class="adminPrimary btnSmall">Modifier</a>
-                            </div>
-                            @if($election->type == 2)
+                            @if($election->vote->debut >= date('Y-m-d'))
+                                <div class="mb3">
+                                    <a href="{{ route('votes.elections.edit', [$vote, $election]) }}" class="adminPrimary btnSmall">Modifier</a>
+                                </div>
+                            @endif
+                            @if($election->vote->fin <= date('Y-m-d'))
+                                <div class="mb3">
+                                    <a href="{{ route('votes.elections.resultats', [$vote, $election]) }}" class="adminPrimary btnSmall">Résultats</a>
+                                </div>
+                            @endif
+                            @if($election->type == 2 && $election->vote->debut >= date('Y-m-d'))
                                 <div class="mb3">
                                     <a href="{{ route('votes.elections.candidats.index', [$vote, $election]) }}" class="adminSuccess btnSmall">Candidats</a>
                                 </div>

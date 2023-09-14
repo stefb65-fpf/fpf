@@ -182,17 +182,26 @@ trait ClubTools
                 return '1';
             }
         }
+        $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+        if ($phone_mobile == -1) {
+            return '4';
+        }
+
+        $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+        if ($telephonedomicile == -1) {
+            return '5';
+        }
 
         try {
             DB::beginTransaction();
             // on récupère les infos personne à mettre à jour
 
             $datap = $request->only('nom', 'prenom', 'datenaissance', 'sexe', 'email');
-            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
-            if ($phone_mobile == -1) {
-                DB::rollBack();
-                return '4';
-            }
+//            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+//            if ($phone_mobile == -1) {
+//                DB::rollBack();
+//                return '4';
+//            }
             $datap['phone_mobile'] = $phone_mobile;
             $datap['news'] = $request->news ? 1 : 0;
             $personne->update($datap);
@@ -200,14 +209,20 @@ trait ClubTools
             // on récupère les infos adresse à mettre à jour
             $dataa = $request->only('libelle1', 'libelle2', 'codepostal', 'ville');
             $dataa['pays'] = $pays->nom;
-            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
-            if ($telephonedomicile == -1) {
-                DB::rollBack();
-                return '5';
-            }
+//            $telephonedomicile = $this->format_fixe_for_base($request->telephonedomicile, $pays->indicatif);
+//            if ($telephonedomicile == -1) {
+//                DB::rollBack();
+//                return '5';
+//            }
             $dataa['telephonedomicile'] = $telephonedomicile;
-            $adresse = $personne->adresses[0];
-            $adresse->update($dataa);
+            if (sizeof($personne->adresses) > 0) {
+                $adresse = $personne->adresses[0];
+                $adresse->update($dataa);
+            } else {
+                $adresse = Adresse::create($dataa);
+                $personne->adresses()->attach($adresse->id);
+            }
+
 
             // on récupère les infos adresse2 à mettre à jour
             if (sizeof($personne->adresses) > 1) {

@@ -37,7 +37,7 @@ $('#checkBeforeInsertion').on('click', function(e) {
         alert('Veuillez renseigner l\'email de la personne')
         return
     }
-    const regEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    const regEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/
     if (!regEmail.test($('#personneEmail').val())) {
         alert('Veuillez renseigner un email valide')
         return

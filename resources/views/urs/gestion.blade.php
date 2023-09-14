@@ -7,6 +7,7 @@
             <div class="urTitle">{{ $ur->nom }}</div>
         </h1>
         <div class="cardContainer">
+            @if($menu['ur_general'])
             <a class="card" href="{{ route('urs.infos_ur') }}">
                 <div class="wrapper">
                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -49,6 +50,7 @@
                     <div class="cardTitle">Trésorerie, Reversements</div>
                 </div>
             </a>
+            @endif
             @if(in_array('GESNEWUR', $droits_fpf) || in_array('GESNEWURCA', $droits_fpf))
                 <a class="card" id="connectNewsletter">
                     <div class="wrapper">

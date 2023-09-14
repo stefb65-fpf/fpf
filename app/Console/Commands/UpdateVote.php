@@ -90,7 +90,7 @@ class UpdateVote extends Command
         if (sizeof($votes_phase3) > 0) {
             // on calcule la limite pour les urs
             $nb_adherents_fpf = Utilisateur::whereIn('statut', [2,3])->whereNotNull('clubs_id')->count();
-            $limit_ur = floor($nb_adherents_fpf->nb / 25);
+            $limit_ur = floor($nb_adherents_fpf / 25);
 
             foreach ($votes_phase3 as $vote) {
                 // on regarde s'il y a déjà des éléments pour ce vote dans la table cimul_votes_urs

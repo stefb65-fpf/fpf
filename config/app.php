@@ -190,6 +190,8 @@ return [
 
 
     'club_functions' => explode(',', env('CLUB_FUNCTIONS')),
+    'club_vote_functions' => explode(',', env('CLUB_VOTE_FUNCTIONS')),
     'ur_functions' => explode(',', env('UR_FUNCTIONS')),
+    'ur_vote_functions' => explode(',', env('UR_VOTE_FUNCTIONS')),
 
 ];

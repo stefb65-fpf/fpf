@@ -478,6 +478,7 @@ trait Tools
 
     protected function setIdentifiant($codepostal)
     {
+        $codepostal = str_pad($codepostal, 5, '0', STR_PAD_LEFT);
         $departement = substr($codepostal, 0, 2);
         $dpt = DB::table('departements')->where('numero', $departement)->first();
 //        $dpt = DB::table('departementsurs')->where('numerodepartement', $departement)->first();
@@ -577,6 +578,7 @@ trait Tools
         // on doit déterminer les accès de l'utilisateur et les pousser dans la session
         $menu_club = false;
         $menu_ur = false;
+        $menu_ur_general = false;
         $menu_admin = $personne->is_administratif;
         $menu_formation = !$personne->is_administratif;
 
@@ -584,7 +586,7 @@ trait Tools
 //        if (!$personne->is_administratif) {
         if (!$personne->is_administratif && $personne->is_adherent != 0) {
             // on regarde les functions sur chaque carte
-            $utilisateurs = Utilisateur::where('personne_id', $personne->id)->orderBy('statut')->selectRaw('id, urs_id, clubs_id, identifiant, statut')->get();
+            $utilisateurs = Utilisateur::where('personne_id', $personne->id)->orderBy('statut')->selectRaw('id, urs_id, clubs_id, identifiant, statut, saison')->get();
             if (sizeof($utilisateurs) > 0) {
                 $prec_statut3 = 4;
                 foreach ($utilisateurs as $utilisateur) {
@@ -628,9 +630,25 @@ trait Tools
                 }
 
                 if (!$menu_admin) {
-                    // TODO on contrôle les droits liés à l'utilisateur
                     if (sizeof($cartes[0]->droits) > 0) {
-                        $menu_admin = true;
+                        foreach ($cartes[0]->droits as $droit) {
+                            if (!in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])) {
+                                $menu_admin = true;
+                            }
+                        }
+                    }
+//                    if (sizeof($cartes[0]->droits) > 0) {
+//                        $menu_admin = true;
+//                    }
+                }
+                $menu_ur_general = $menu_ur;
+                if (!$menu_ur) {
+                    if (sizeof($cartes[0]->droits) > 0) {
+                        foreach ($cartes[0]->droits as $droit) {
+                            if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])) {
+                                $menu_ur = true;
+                            }
+                        }
                     }
                 }
             }
@@ -639,6 +657,7 @@ trait Tools
         $menu = [
             'club' => $menu_club,
             'ur' => $menu_ur,
+            'ur_general' => $menu_ur_general,
             'admin' => $menu_admin,
             'formation' => $menu_formation,
         ];

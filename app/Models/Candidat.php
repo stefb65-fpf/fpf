@@ -13,4 +13,7 @@ class Candidat extends Model
     public function elections() {
         return $this->belongsTo('App\Models\Election');
     }
+    public function utilisateur() {
+        return $this->belongsTo('App\Models\Utilisateur', 'utilisateurs_id');
+    }
 }

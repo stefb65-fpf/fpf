@@ -39,6 +39,7 @@ Route::put('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'updateU
 
 Route::resource('/admin/formations', App\Http\Controllers\Admin\FormationController::class);
 
+Route::get('/vote/{vote}', [App\Http\Controllers\VoteController::class, 'index'])->name('utilisateur.vote');
 Route::resource('/admin/votes', App\Http\Controllers\Admin\VoteController::class);
 Route::get('/admin/votes/elections/{vote}', [App\Http\Controllers\Admin\VoteController::class, 'electionsList'])->name('votes.elections.index');
 Route::get('/admin/votes/elections/{vote}/create', [App\Http\Controllers\Admin\VoteController::class, 'electionsCreate'])->name('votes.elections.create');
@@ -47,6 +48,7 @@ Route::get('/admin/votes/elections/{vote}/edit/{election}', [App\Http\Controller
 Route::put('/admin/votes/elections/{vote}/update/{election}', [App\Http\Controllers\Admin\VoteController::class, 'electionsUpdate'])->name('votes.elections.update');
 Route::delete('/admin/votes/elections/{vote}/delete/{election}', [App\Http\Controllers\Admin\VoteController::class, 'electionsDestroy'])->name('votes.elections.delete');
 Route::get('/admin/votes/{vote}/elections/{election}/candidats', [App\Http\Controllers\Admin\VoteController::class, 'candidatsList'])->name('votes.elections.candidats.index');
+Route::get('/admin/votes/{vote}/elections/{election}/resultats', [App\Http\Controllers\Admin\VoteController::class, 'resultats'])->name('votes.elections.resultats');
 Route::post('/admin/votes/{vote}/elections/{election}/candidats', [App\Http\Controllers\Admin\VoteController::class, 'candidatsStore'])->name('votes.elections.candidats.store');
 Route::delete('/admin/votes/{vote}/elections/{election}/candidats/{candidat}', [App\Http\Controllers\Admin\VoteController::class, 'candidatsDestroy'])->name('votes.elections.candidats.delete');
 
