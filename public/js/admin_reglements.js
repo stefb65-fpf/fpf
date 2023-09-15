@@ -65,3 +65,27 @@ $('.searchedTerm .close').on('click', function(){
     let url = "/admin/reglements";
     window.location.href = url;
 })
+
+$('a[name=relanceMail]').on('click', function(e){
+    $('#refRelance').html($(this).data('reference'))
+    $('#validRelance').data('id', $(this).data('id'))
+    $('#modalRelanceMail').removeClass('d-none')
+})
+$('#validRelance').on('click', function(e){
+    const id = $(this).data('id')
+    $.ajax({
+        url:'/api/relanceReglement',
+        type: 'POST',
+        data: {
+            ref: id
+        },
+        dataType: 'JSON',
+        success: function (reponse) {
+            $('#modalRelanceMail').addClass('d-none')
+            $('#modalRelanceOk').removeClass('d-none')
+        },
+        error: function (e) {
+            alert("Une erreur s'est produite")
+        }
+    });
+})

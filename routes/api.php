@@ -21,6 +21,7 @@ Route::post('/utilisateurs/renew/individuel', [App\Http\Controllers\Api\Utilisat
 // action sur les règlements
 Route::post('/validReglement', [App\Http\Controllers\Api\ReglementController::class,'validReglement']);
 Route::post('/editCartes', [App\Http\Controllers\Api\ReglementController::class,'editCartes']);
+Route::post('/relanceReglement', [App\Http\Controllers\Api\ReglementController::class,'relanceReglement']);
 
 // gestion de commandes Florilège
 Route::post('/florilege/order', [App\Http\Controllers\Api\FlorilegeController::class,'orderFlorilege']);

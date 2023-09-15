@@ -58,6 +58,11 @@
                                     <a class="adminSuccess btnSmall" target="_blank" name="validerReglement" data-id="{{ $reglement->id }}" data-reference="{{ $reglement->reference }}" data-montant="{{ $reglement->montant }}">valider</a>
                                 </div>
                             @endif
+                            @if($reglement->statut === 0 && $reglement->clubs_id)
+                                <div class="mb3">
+                                    <a class="adminDanger btnSmall" name="relanceMail" data-id="{{ $reglement->id }}" data-reference="{{ $reglement->reference }}">relance mail</a>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                 @endforeach
@@ -109,6 +114,37 @@
         </div>
         <div class="modalEditFooter">
             <div class="adminDanger btnMedium mr10 modalEditCloseReload">Fermer</div>
+        </div>
+    </div>
+
+    <div class="modalEdit d-none" id="modalRelanceMail">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Relance email pour adhésion</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Voulez vous vraiment faire une relance mail pour le règlement <span id="refRelance"></span> ?
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="validRelance" data-id="">Envoyer la relance</div>
+        </div>
+    </div>
+
+    <div class="modalEdit d-none" id="modalRelanceOk">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Relance email pour adhésion</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Le relance mail a bien été envoyée
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Fermer</div>
         </div>
     </div>
 @endsection

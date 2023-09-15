@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
+use App\Mail\RelanceReglement;
+use App\Mail\SendRenouvellementMail;
 use App\Models\Abonnement;
 use App\Models\Club;
 use App\Models\Configsaison;
@@ -14,6 +16,7 @@ use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Mail;
 
 class ReglementController extends Controller
 {
@@ -135,5 +138,28 @@ class ReglementController extends Controller
         }
 
         return new JsonResponse(['file_cartes' => $file_cartes, 'file_etiquettes_club' => $file_etiquettes_club, 'file_etiquettes_individuels' => $file_etiquettes_individuels], 200);
+    }
+
+    public function relanceReglement(Request $request) {
+        $reglement = Reglement::where('id', $request->ref)->where('statut', 0)->first();
+        if (!$reglement) {
+            return new JsonResponse(['erreur' => 'règlement introuvable'], 400);
+        }
+        $club = Club::where('id', $reglement->clubs_id)->first();
+        if (!$club) {
+            return new JsonResponse(['erreur' => 'club introuvable'], 400);
+        }
+        $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('fonctionsutilisateurs.fonctions_id', 97)
+            ->where('utilisateurs.clubs_id', $club->id)
+            ->whereNotNull('utilisateurs.personne_id')
+            ->first();
+        if ($contact) {
+            $name = $reglement->reference.'.pdf';
+            $dir = $club->getImageDir();
+            $mailSent = Mail::to($contact->personne->email)->send(new RelanceReglement($club, $dir.'/'.$name, $reglement->reference, $reglement->montant));
+            return new JsonResponse([], 200);
+        }
+        return new JsonResponse(['erreur' => 'probleme envoi'], 400);
     }
 }
