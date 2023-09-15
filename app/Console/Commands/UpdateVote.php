@@ -33,6 +33,9 @@ class UpdateVote extends Command
      */
     public function handle()
     {
+        // on met à jour les votes pour lesquelles la date de debut  est égale à la date du jour
+        Vote::where('debut', date('Y-m-d'))->where('type', 1)->where('phase', 0)->update(['phase' => 1]);
+
         // on met à jour les votes pour lesquelles la date de debut phase 2 est égale à la date du jour
         $votes = Vote::where('debut_phase2', date('Y-m-d'))->where('type', 1)->get();
         foreach ($votes as $vote) {
@@ -85,7 +88,7 @@ class UpdateVote extends Command
 
 
 
-        // on met à jour les votes pour lesquels la date de debut phase 2 est égale à la date du jour
+        // on met à jour les votes pour lesquels la date de debut phase 3 est égale à la date du jour
         $votes_phase3 = Vote::where('debut_phase3', date('Y-m-d'))->where('type', 1)->get();
         if (sizeof($votes_phase3) > 0) {
             // on calcule la limite pour les urs

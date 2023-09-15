@@ -67,27 +67,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="alertDanger w80">
-            <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p class="mt20">
-                On affiche ici la liste des 25 urs avec la possibilité de modifier les informations UR et les fonctions comme le ferait un administrateur de l'UR.<br>
-                Pas de possibilité d'ajout ou de suppression d'urs.<br>
-            </p>
-        </div>
-{{--        <div class="alertDanger w80">--}}
-{{--            <div class="bold">on récupère la liste des urs dans $urs</div>--}}
-{{--            <div>pour chaque ur, on affiche les informations nom UR, email avec lien mailto, site web avec lien,--}}
-{{--                un petit bloc coordonnées + telephone ($ur->adresse), nom, prénom et identifiant du président ($ur->president) plus deux actions Editer et Fonctions</div>--}}
-{{--        </div>--}}
-{{--        @foreach($urs as $ur)--}}
-{{--            {{$ur->president?$ur->president->nom:""}}--}}
-{{--            {{$ur->adresse}}--}}
-{{--            {{$ur}}--}}
-{{--        @endforeach--}}
-{{--        <a data-method="delete"  data-confirm="Voulez-vous vraiment supprimer bla bla ?">test delete HELLEBORE</a>--}}
     </div>
 @endsection
 @section('css')

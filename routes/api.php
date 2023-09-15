@@ -49,6 +49,8 @@ Route::post('/votes/confirmCancelCode', [App\Http\Controllers\Api\VoteController
 Route::post('/votes/confirmGiveCode', [App\Http\Controllers\Api\VoteController::class,'confirmGiveCode']);
 Route::post('/votes/saveVote', [App\Http\Controllers\Api\VoteController::class,'saveVote']);
 
+Route::post('/reversements/confirm', [App\Http\Controllers\Api\ReversementController::class,'validReversement']);
+
 // autocomplétion pour la saisie de commune set code postaux
 Route::post('/getAutocompleteCommune', [App\Http\Controllers\Api\CommuneController::class,'autocompleteCommune']);
 
