@@ -253,12 +253,12 @@
                                 @endswitch
                             </td>
                             @if($view_type != "recherche")
-                                <td>{{ $utilisateur->club ? $utilisateur->club->nom : '' }}{{$utilisateur->clubs_id}}</td>
+                                <td>{{ $utilisateur->club ? $utilisateur->club->nom : '' }}</td>
                             @endif
                         @endif
                         @if(in_array($view_type,["adherents","ur_adherents","recherche", 'abonnes']))
-{{--                            <td>{{$utilisateur->fin?:""}}</td>--}}
-                            <td>Abonnement</td>
+                            <td>{{$utilisateur->fin?:""}}</td>
+{{--                            <td>Abonnement</td>--}}
                         @endif
                         <td>
                             <div class="mb3">

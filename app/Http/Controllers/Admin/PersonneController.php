@@ -51,18 +51,19 @@ class PersonneController extends Controller
         $ur = null;
         if ($view_type == "formateurs") {
             //TODO : on affiche les formateurs
-            $query = Personne::where('is_adherent', 0)->where('is_formateur', '!=', 0);
+            $query = Personne::where('is_adherent', 0)->where('is_formateur', '!=', 0)->orderBy('nom')->orderBy('prenom');
         } elseif ($view_type == "abonnes") {
             $query = Personne::where('is_adherent', 0)->where('is_abonne', '!=', 0)->orderBy('nom')->orderBy('prenom');
         } elseif ($view_type == "recherche") {
-            $query = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id');
+            $query = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')->orderBy('personnes.nom')->orderBy('personnes.prenom');
             if ($term) {
                 //appel de la fonction getPersonsByTerm($club, $term) qui retourne les personnes filtrées selon le term
                 $this->getPersonsByTerm($term, $query);
             }
         } else {
-            $query = Utilisateur::where('urs_id', '!=', null)->where('urs_id', '!=', 0)->where('personne_id', '!=', null)
-                ->orderBy('urs_id')->orderBy('clubs_id')->orderBy('nom')->orderBy('prenom');
+            $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+                ->where('urs_id', '!=', null)->where('urs_id', '!=', 0)->where('personne_id', '!=', null)
+                ->orderBy('personnes.nom')->orderBy('personnes.prenom');
         }
 
         if ($ur_id != 'all' && $ur_id) {
@@ -100,8 +101,6 @@ class PersonneController extends Controller
 
         foreach ($utilisateurs as $utilisateur) {
             $fin = '';
-            $is_abonne = 0;
-//            dd($utilisateur->personne);
             if (in_array($view_type, ['abonnes', 'formateurs'])) {
                 $is_abonne = $utilisateur->is_abonne;
                 $personne_id = $utilisateur->id;

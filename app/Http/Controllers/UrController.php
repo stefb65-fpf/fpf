@@ -18,6 +18,7 @@ use App\Models\Configsaison;
 use App\Models\Fonction;
 use App\Models\Pays;
 use App\Models\Personne;
+use App\Models\Reglement;
 use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
@@ -49,10 +50,11 @@ class UrController extends Controller
         $statut = $statut ?? "all";
         $type_adherent = $type_adherent ?? "all";
         $ur = $this->getUr();
-        $query = Utilisateur::where('urs_id', '=', $ur->id)->where('personne_id', '!=', null);
+        $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->where('urs_id', '=', $ur->id)->where('personne_id', '!=', null)->orderBy('personnes.nom')->orderBy('personnes.prenom');
         if ($view_type == "recherche" && $term) {
             $query = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
-                ->where('utilisateurs.urs_id', '=', $ur->id);
+                ->where('utilisateurs.urs_id', '=', $ur->id)->orderBy('personnes.nom')->orderBy('personnes.prenom');
             $this->getPersonsByTerm($term, $query);
         }
 
@@ -70,6 +72,23 @@ class UrController extends Controller
             $query = $query->where('ct', $type_carte);
         }
         $utilisateurs = $query->paginate(100);
+        foreach($utilisateurs as $utilisateur) {
+            $fin = '';
+            if ($view_type == 'recherche') {
+                $is_abonne = $utilisateur->is_abonne;
+                $personne_id = $utilisateur->id;
+            } else {
+                $is_abonne = $utilisateur->personne->is_abonne;
+                $personne_id = $utilisateur->personne->id;
+            }
+            if ($is_abonne) {
+                $personne_abonnement = Abonnement::where('personne_id', $personne_id)->where('etat', 1)->first();
+                if ($personne_abonnement) {
+                    $fin = $personne_abonnement->fin;
+                }
+            }
+            $utilisateur->fin = $fin;
+        }
         $urs = Ur::orderBy('nom')->get();
         $ur_id = $ur->id;
         $level = 'urs';
@@ -386,7 +405,8 @@ class UrController extends Controller
         $statut = $statut ?? "init";
         $abonnement = $abonnement ?? "all";
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
-            ->where('utilisateurs.clubs_id', $club->id)->orderBy('utilisateurs.identifiant')
+            ->where('utilisateurs.clubs_id', $club->id)
+            ->orderBy('personnes.nom')->orderBy('personnes.prenom')
             ->selectRaw('*, utilisateurs.id as id_utilisateur');
         if (in_array($statut, [0, 1, 2, 3, 4])) {
             $query = $query->where('utilisateurs.statut', $statut);
@@ -399,6 +419,15 @@ class UrController extends Controller
             $query = $query->where('personnes.is_abonne', $abonnement);
         }
         $adherents = $query->get();
+
+        $reglement_en_cours = Reglement::where('statut', 0)->where('clubs_id', $club->id)->first();
+        $abo_club = 0;
+        if ($reglement_en_cours && $club->statut == 1) {
+            if ($reglement_en_cours->aboClub == 1) {
+                $abo_club = 1;
+            }
+        }
+        $club->aboPreinscrit = $abo_club;
         foreach ($adherents as $adherent) {
             $fin = '';
             if ($adherent->personne->is_abonne) {
@@ -408,7 +437,30 @@ class UrController extends Controller
                 }
             }
             $adherent->fin = $fin;
+            $abo_adherent = 0;
+            if ($reglement_en_cours) {
+                $reglement_utilisateur = DB::table('reglementsutilisateurs')
+                    ->where('reglements_id', $reglement_en_cours->id)
+                    ->where('utilisateurs_id', $adherent->id_utilisateur)
+                    ->first();
+                if ($reglement_utilisateur) {
+                    if ($reglement_utilisateur->abonnement == 1) {
+                        $abo_adherent = 1;
+                    }
+                }
+                $adherent->aboPreinscrit = $abo_adherent;
+            }
         }
+//        foreach ($adherents as $adherent) {
+//            $fin = '';
+//            if ($adherent->personne->is_abonne) {
+//                $personne_abonnement = Abonnement::where('personne_id', $adherent->personne_id)->where('etat', 1)->first();
+//                if ($personne_abonnement) {
+//                    $fin = $personne_abonnement->fin;
+//                }
+//            }
+//            $adherent->fin = $fin;
+//        }
         return view('urs.liste_adherents_club', compact('ur', 'club', 'adherents', 'statut', 'abonnement'));
     }
 
@@ -590,6 +642,19 @@ class UrController extends Controller
     {
         $ur = $this->getUr();
         return view('urs.fonctions.change_attribution', compact('fonction', 'ur'));
+    }
+
+    public function deleteAttribution(Fonction $fonction, Utilisateur $utilisateur) {
+        $ur = $this->getUr();
+        DB::table('fonctionsutilisateurs')
+            ->where('fonctions_id', $fonction->id)
+            ->where('utilisateurs_id', $utilisateur->id)
+            ->delete();
+        DB::table('fonctionsurs')
+            ->where('fonctions_id', $fonction->id)
+            ->where('urs_id', $ur->id)
+            ->delete();
+        return redirect()->route('urs.fonctions.liste')->with('success', "L'attribution de la fonction a été supprimée");
     }
 
     // changement de l'attribution de la fonction UR

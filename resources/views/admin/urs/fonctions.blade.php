@@ -35,6 +35,13 @@
                         <div class="mb3">
                             <a href="{{ route('admin.urs.fonctions.change_attribution', [$fonction, $ur->id]) }}" class="adminPrimary btnSmall">Changer l'attribution</a>
                         </div>
+                        <div class="mb3">
+                            <a href="{{ route('admin.urs.fonctions.delete_attribution', [$fonction, $fonction->utilisateur]) }}" class="adminDanger btnSmall"
+                               style="background-color: #c75f09" data-method="delete"
+                               data-confirm="Voulez-vous vraiment supprimer l'attribution de cette fonction ?">
+                                Supprimer l'attribution
+                            </a>
+                        </div>
                         @if($fonction->urs_id !== 0)
                             <div class="mb3">
                                 <a href="{{route('admin.urs.fonctions.destroy',[$fonction, $ur->id])}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer la fonction</a>

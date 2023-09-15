@@ -13,16 +13,6 @@
                 </svg>
             </a>
         </h1>
-{{--        <div class="alertDanger w80">--}}
-{{--            <p>--}}
-{{--                <span class="bold">Attention !</span>--}}
-{{--                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.--}}
-{{--            </p>--}}
-{{--            <p class="mt20">--}}
-{{--                On affiche ici la liste des fonctions de l'UR, la possibilité d'ajouter une fonction spécifique à l'UR,--}}
-{{--                de lier un adhérent de l'UR à la fonction, de supprimer la liaison adhérent / fonction, de supprimer une fonction si elle spécifique à l'UR--}}
-{{--            </p>--}}
-{{--        </div>--}}
 
         <div class="d-flex justify-end mt20 w100">
             <a href="{{ route('urs.fonctions.create') }}" class="adminPrimary btnMedium">Ajouter une fonction</a>
@@ -47,6 +37,13 @@
                     <td>
                         <div class="mb3">
                             <a href="{{ route('urs.fonctions.change_attribution', $fonction) }}" class="adminPrimary btnSmall">Changer l'attribution</a>
+                        </div>
+                        <div class="mb3">
+                            <a href="{{ route('urs.fonctions.delete_attribution', [$fonction, $fonction->utilisateur]) }}" class="adminDanger btnSmall"
+                               style="background-color: #c75f09" data-method="delete"
+                               data-confirm="Voulez-vous vraiment supprimer l'attribution de cette fonction ?">
+                                Supprimer l'attribution
+                            </a>
                         </div>
                         @if($fonction->urs_id !== 0)
                             <div  class="mb3">

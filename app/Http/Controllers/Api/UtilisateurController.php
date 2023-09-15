@@ -126,6 +126,11 @@ class UtilisateurController extends Controller
             DB::table('reglementsutilisateurs')->insert($datar);
         }
 
+        if ($club->statut == 0) {
+            $datac = array('statut' => 1);
+            $club->update($datac);
+        }
+
         // on crée le bordereau
         $name = $ref.'.pdf';
         $dir = $club->getImageDir();

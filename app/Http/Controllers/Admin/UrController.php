@@ -124,6 +124,19 @@ class UrController extends Controller
         return view('admin.urs.change_attribution', compact('fonction', 'ur'));
     }
 
+    public function deleteAttribution(Fonction $fonction, Utilisateur $utilisateur) {
+        $ur = Ur::where('id', $utilisateur->urs_id)->first();
+        DB::table('fonctionsutilisateurs')
+            ->where('fonctions_id', $fonction->id)
+            ->where('utilisateurs_id', $utilisateur->id)
+            ->delete();
+        DB::table('fonctionsurs')
+            ->where('fonctions_id', $fonction->id)
+            ->where('urs_id', $ur->id)
+            ->delete();
+        return redirect()->route('admin.urs.fonctions', $ur)->with('success', "L'attribution de la fonction a été supprimée");
+    }
+
     public function updateFonctionForUr(Request $request, $fonction_id, $ur_id) {
         $ur = Ur::where('id', $ur_id)->first();
         if (!$ur) {

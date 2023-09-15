@@ -3,7 +3,14 @@
     Vous pouvez gérer le renouvellement des adhésions et abonnements des membres de votre club. Pour cela, cochez les
     adhérents que vous souhaitez renouveler ou abonner puis cliquez sur le bouton "Renouveler".<br>
     Le club est automatiquement renouvelé lors du premier renouvellement des adhérents dans la saison.<br>
-    Vous pouvez également abonner votre club au France Photo à tout moment.
+    Vous pouvez également abonner votre club au France Photo à tout moment.<br>
+    Après génération du bordereau de renouvellement, si vous n'effectuez pas le paiement immédiatement, les adhérents sont en statut pré-inscrits.
+    Ils sont alors cochés par défaut dans la liste des adhérents. Si vous souhaitez modifier votre bordereau, vous devez
+    <ul class="ml50">
+        <li>les laisser cocher pour prendre en compte leur adhésion</li>
+        <li>les décocher si vous ne voulez finalement pas les renouveler</li>
+    </ul>
+
 </div>
 <div class="alertSuccess w80" style="display: none;" id="alertAdherentsList">
     Le fichier des adhérents a bien été généré. Vous pouvez le télécharger en cliquant sur le lient suivant: <a
@@ -42,14 +49,14 @@
     <div class="mt25 flexEnd">
         @switch($club->statut)
             @case(0)
-            <div class="statutClub orange">Non renouvelé</div>
-            @break
+                <div class="statutClub orange">Non renouvelé</div>
+                @break
             @case(1)
-            <div class="statutClub yellow">En cours d'inscription</div>
-            @break
+                <div class="statutClub yellow">En cours d'inscription</div>
+                @break
             @case(2)
-            <div class="statutClub green">Club validé</div>
-            @break
+                <div class="statutClub green">Club validé</div>
+                @break
         @endswitch
         @if($club->is_abonne)
             <div class="statutClub green">Abonné</div>
@@ -67,13 +74,13 @@
                 un adhérent</a>
         @endif
 
-        <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-club="{{$club->id}}"
-                disabled>Renouveler
+        <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-club="{{$club->id}}" {{ $club->statut != 1 ? 'disabled' : '' }}>Renouveler
         </button>
     </div>
     <div class="d-flex justify-between mt20 w100">
         <div>
-            <input type="checkbox" class="mr10" id="abonnementClub"> Abonner le club jusqu'au
+            <input type="checkbox" class="mr10" id="abonnementClub" {{ $club->aboPreinscrit ? 'checked=checked' : '' }}>
+            Abonner le club jusqu'au
             numéro {{ $club->numero_fin_reabonnement }}
         </div>
         {{--        <div>--}}
@@ -98,42 +105,42 @@
         @foreach($adherents as $adherent)
             <tr>
                 <td>
-                    @if(in_array($adherent->statut, [0, 1, 4]))
-                        <input type="checkbox" name="adherer" data-ref="{{ $adherent->id_utilisateur }}"
-                               data-identifiant="{{ $adherent->identifiant }}"/>
+                @if(in_array($adherent->statut, [0, 1, 4]))
+                    <input type="checkbox" name="adherer" data-ref="{{ $adherent->id_utilisateur }}"
+                               data-identifiant="{{ $adherent->identifiant }}" {{ $adherent->statut == 1 ? 'checked=checked' : '' }} />
                 @endif
-                <td><input type="checkbox" name="abonner" data-ref="{{ $adherent->id_utilisateur }}"/></td>
+                <td><input type="checkbox" name="abonner" data-ref="{{ $adherent->id_utilisateur }}"  {{ $adherent->aboPreinscrit == 1 ? 'checked=checked' : '' }} /></td>
                 <td>{{$adherent->identifiant}}</td>
                 <td>{{$adherent->personne->nom}} {{$adherent->personne->prenom}} </td>
                 <td>
                     @switch($adherent->statut)
                         @case(0)
-                        <div class="d-flex">
-                            <div class="sticker orange" title="Non renouvelé"></div>
-                        </div>
-                        @break
+                            <div class="d-flex">
+                                <div class="sticker orange" title="Non renouvelé"></div>
+                            </div>
+                            @break
                         @case(1)
-                        <div class="d-flex">
-                            <div class="sticker yellow" title="Préinscrit"></div>
-                        </div>
-                        @break
+                            <div class="d-flex">
+                                <div class="sticker yellow" title="Préinscrit"></div>
+                            </div>
+                            @break
                         @case(2)
-                        <div class="d-flex">
-                            <div class="sticker green" title="Validé"></div>
-                        </div>
-                        @break
+                            <div class="d-flex">
+                                <div class="sticker green" title="Validé"></div>
+                            </div>
+                            @break
                         @case(3)
-                        <div class="d-flex">
-                            <div class="sticker green" title="Carte éditée"></div>
-                        </div>
-                        @break
+                            <div class="d-flex">
+                                <div class="sticker green" title="Carte éditée"></div>
+                            </div>
+                            @break
                         @case(4)
-                        <div class="d-flex">
-                            <div class="sticker" title="Carte non renouvelée depuis plus d'un an"></div>
-                        </div>
-                        @break
+                            <div class="d-flex">
+                                <div class="sticker" title="Carte non renouvelée depuis plus d'un an"></div>
+                            </div>
+                            @break
                         @default
-                        <div>Non renseigné</div>
+                            <div>Non renseigné</div>
                     @endswitch
                 </td>
                 <td><a href="mailto:{{$adherent->personne->email}}">{{$adherent->personne->email}}</a></td>
@@ -179,7 +186,7 @@
                 Si vous annulez, votre saisie ne sera pas prise en compte. Si vous validez le renouvellement, les
                 informations seront enregistrées et vous
                 pourrez télécharger le bordereau club.
-                <span class="bolder" style="font-size: 20px;">
+                <span class="bolder">
                 Tout autre bordereau créé et n'ayant pas été validé par un
                 règlement enregistré par la FPF sera supprimé. Donc si vous avez un paiement en cours mais non pris en compte par la FPF, ne validez pas ce bordereau.
                 </span>

@@ -31,6 +31,7 @@ Route::get('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'infosUr
 Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class, 'listeReversements'])->name('urs.liste_reversements');
 Route::get('/urs/fonctions/liste', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.fonctions.liste');
 Route::get('/urs/{fonction}/change_attribution', [App\Http\Controllers\UrController::class, 'changeAttribution'])->name('urs.fonctions.change_attribution');
+Route::delete('/urs/{fonction}/{utilisateur}/delete_attribution', [App\Http\Controllers\UrController::class, 'deleteAttribution'])->name('urs.fonctions.delete_attribution');
 Route::delete('/urs/{fonction}/destroy_fonction', [App\Http\Controllers\UrController::class, 'destroyFonction'])->name('urs.fonctions.destroy');
 Route::get('/urs/fonctions/create', [App\Http\Controllers\UrController::class, 'createFonction'])->name('urs.fonctions.create');
 Route::post('/urs/fonctions/store', [App\Http\Controllers\UrController::class, 'storeFonction'])->name('urs.fonctions.store');
@@ -66,6 +67,7 @@ Route::get('/admin/supports/{type?}', [App\Http\Controllers\Admin\SupportControl
 
 Route::get('/admin/urs/{ur}/fonctions', [App\Http\Controllers\Admin\UrController::class, 'fonctions'])->name('admin.urs.fonctions');
 Route::get('/admin/urs/fonctions/{fonction_id}/{ur_id}/change_attribution_fonctionur', [App\Http\Controllers\Admin\UrController::class, 'changeAttributionUr'])->name('admin.urs.fonctions.change_attribution');
+Route::delete('/admin/urs/{fonction}/{utilisateur}/delete_attribution', [App\Http\Controllers\Admin\UrController::class, 'deleteAttribution'])->name('admin.urs.fonctions.delete_attribution');
 Route::delete('/admin/urs/fonctions/{fonction_id}/{ur_id}/destroy_fonctionur', [App\Http\Controllers\Admin\UrController::class, 'destroyFonctionUr'])->name('admin.urs.fonctions.destroy');
 Route::post('/admin/urs/fonctions/{fonction_id}/{ur_id}/update', [App\Http\Controllers\Admin\UrController::class, 'updateFonctionForUr'])->name('admin.urs.fonctions.update');
 Route::resource('/admin/urs', App\Http\Controllers\Admin\UrController::class);

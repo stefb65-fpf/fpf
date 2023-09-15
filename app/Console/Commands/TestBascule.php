@@ -34,38 +34,50 @@ class TestBascule extends Command
      */
     public function handle()
     {
+//        $reglements = Reglement::where('statut', 0)->whereNotNull('clubs_id')->get();
+//        foreach ($reglements as $reglement) {
+//            $club = Club::where('id', $reglement->clubs_id)->first();
+//            if ($club->statut == 0) {
+//                $datac = ['statut' => 1];
+//                $club->update($datac);
+//            }
+//        }
+//        die();
 
-        $photos = DB::table('photos')->get();
-        $nb = 0;
-        foreach ($photos as $photo) {
-            $participant = str_replace('-', '', $photo->participants_id);
-            $ean = substr($photo->ean, 0, 10);
-            if ($participant != $ean) {
 
-                $utilisateur = Utilisateur::where('identifiant', $photo->participants_id)->selectRaw('nom,prenom,courriel')->first();
-                $identifiant_ean = substr($ean, 0, 2).'-'.substr($ean, 2, 4).'-'.substr($ean, 6, 4);
-                $old_utilisateur = DB::table('utilisateurs_save_before_v2')->where('identifiant', $identifiant_ean)->selectRaw('nom,prenom,courriel')->first();
-                if ($utilisateur && $old_utilisateur) {
-                    if (trim($utilisateur->nom) != trim($old_utilisateur->nom) || trim($utilisateur->prenom) != trim($old_utilisateur->prenom) || $utilisateur->courriel != $old_utilisateur->courriel) {
-                        // on cherche si l'utilisateur avec l'ancienne adresse email existe encore
-//                        $existe_utilisateur = Utilisateur::where('courriel', $old_utilisateur->courriel)->first();
-//                        if ($existe_utilisateur) {
-                            echo $photo->participants_id.' '.$utilisateur->nom.' '.$utilisateur->prenom.' '.$utilisateur->courriel.' - '.
-                                $photo->ean.' '.$old_utilisateur->nom.' '.$old_utilisateur->prenom.' '.$old_utilisateur->courriel."\n";
-                            $nb++;
-//                            $datar = ['participants_id' => $existe_utilisateur->identifiant];
-//                            DB::table('photos')->where('id', $photo->id)->update($datar);
-//                        }
 
-                    }
 
-                }
-//                echo $photo->participants_id.' '.$utilisateur->nom.' '.$utilisateur->prenom.' '.$utilisateur->courriel.' - '.
-//                    $photo->ean.' '.$old_utilisateur->nom.' '.$old_utilisateur->prenom.' '.$old_utilisateur->courriel."\n";
-//                $nb++;
-            }
-        }
-        echo 'nb : '.$nb."\n";
+//        $photos = DB::table('photos')->get();
+//        $nb = 0;
+//        foreach ($photos as $photo) {
+//            $participant = str_replace('-', '', $photo->participants_id);
+//            $ean = substr($photo->ean, 0, 10);
+//            if ($participant != $ean) {
+//
+//                $utilisateur = Utilisateur::where('identifiant', $photo->participants_id)->selectRaw('nom,prenom,courriel')->first();
+//                $identifiant_ean = substr($ean, 0, 2).'-'.substr($ean, 2, 4).'-'.substr($ean, 6, 4);
+//                $old_utilisateur = DB::table('utilisateurs_save_before_v2')->where('identifiant', $identifiant_ean)->selectRaw('nom,prenom,courriel')->first();
+//                if ($utilisateur && $old_utilisateur) {
+//                    if (trim($utilisateur->nom) != trim($old_utilisateur->nom) || trim($utilisateur->prenom) != trim($old_utilisateur->prenom) || $utilisateur->courriel != $old_utilisateur->courriel) {
+//                        // on cherche si l'utilisateur avec l'ancienne adresse email existe encore
+////                        $existe_utilisateur = Utilisateur::where('courriel', $old_utilisateur->courriel)->first();
+////                        if ($existe_utilisateur) {
+//                            echo $photo->participants_id.' '.$utilisateur->nom.' '.$utilisateur->prenom.' '.$utilisateur->courriel.' - '.
+//                                $photo->ean.' '.$old_utilisateur->nom.' '.$old_utilisateur->prenom.' '.$old_utilisateur->courriel."\n";
+//                            $nb++;
+////                            $datar = ['participants_id' => $existe_utilisateur->identifiant];
+////                            DB::table('photos')->where('id', $photo->id)->update($datar);
+////                        }
+//
+//                    }
+//
+//                }
+////                echo $photo->participants_id.' '.$utilisateur->nom.' '.$utilisateur->prenom.' '.$utilisateur->courriel.' - '.
+////                    $photo->ean.' '.$old_utilisateur->nom.' '.$old_utilisateur->prenom.' '.$old_utilisateur->courriel."\n";
+////                $nb++;
+//            }
+//        }
+//        echo 'nb : '.$nb."\n";
 //        $reglement = Reglement::where('id', 35175)->first();
 //        $ref = $reglement->reference;
 //        $club = Club::where('id', $reglement->clubs_id)->first();

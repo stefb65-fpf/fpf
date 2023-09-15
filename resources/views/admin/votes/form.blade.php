@@ -60,9 +60,9 @@
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Portée du vote</div>
                 <select class="formValue modifying formValueAdmin" name="urs_id">
-                    <option value="0" {{ $vote->urs_id === 0 ? 'selected=selected' : '' }}>Vote national</option>
+                    <option value="0" {{ $vote->urs_id == 0 ? 'selected=selected' : '' }}>Vote national</option>
                     @for($i = 1; $i <= 25; $i++)
-                        <option value="{{ $i }}"  {{ $vote->urs_id === $i ? 'selected=selected' : '' }}>Vote UR {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
+                        <option value="{{ $i }}"  {{ $vote->urs_id == $i ? 'selected=selected' : '' }}>Vote UR {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
                     @endfor
                 </select>
             </div>
