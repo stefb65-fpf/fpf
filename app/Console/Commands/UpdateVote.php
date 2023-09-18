@@ -73,7 +73,8 @@ class UpdateVote extends Command
                     $tabledest = 'votes_utilisateurs_'.$vote->id.'_phase_1';
                     DB::statement("DROP TABLE IF EXISTS ".$tabledest);
                     DB::statement("CREATE TABLE $tabledest LIKE votes_utilisateurs");
-                    DB::statement("INSERT $tabledest SELECT * FROM votes_utilisateurs");
+                    $statement = "INSERT $tabledest SELECT * FROM votes_utilisateurs";
+                    DB::statement($statement);
 
                     // on supprime de la la tabble clonée tout ce qui ne concerne pas le vote
                     DB::table($tabledest)->where('votes_id', '!=', $vote->id)->delete();
@@ -126,7 +127,8 @@ class UpdateVote extends Command
                         $tabledest = 'votes_utilisateurs_'.$vote->id.'_phase_2';
                         DB::statement("DROP TABLE IF EXISTS ".$tabledest);
                         DB::statement("CREATE TABLE $tabledest LIKE votes_utilisateurs");
-                        DB::statement("INSERT $tabledest SELECT * FROM votes_utilisateurs");
+                        $statement = "INSERT $tabledest SELECT * FROM votes_utilisateurs";
+                        DB::statement($statement);
 
                         // on supprime de la la tabble clonée tout ce qui ne concerne pas le vote
                         DB::table($tabledest)->where('votes_id', '!=', $vote->id)->delete();

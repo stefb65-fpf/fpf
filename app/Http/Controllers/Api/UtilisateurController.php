@@ -571,21 +571,28 @@ class UtilisateurController extends Controller
         }
         if ($abonnes) {
             $tarif_abonne = Tarif::where('id', 17)->where('statut', 0)->first();
+            $tarif_abonne_non_adherent = Tarif::where('id', 19)->where('statut', 0)->first();
             foreach ($abonnes as $abonne) {
                 $utilisateur = Utilisateur::where('id', $abonne)->first();
                 if (!$utilisateur) {
                     return new JsonResponse(['erreur' => 'impossible de récupérer l\'utilisateur'], 400);
                 }
                 if (!isset($tab_adherents[$utilisateur->identifiant])) {
+                    if (in_array($utilisateur->statut, [2,3])) {
+                        $montant_abonne = $tarif_abonne->tarif;
+                    } else {
+                        $montant_abonne = $tarif_abonne_non_adherent->tarif;
+                    }
                     $line = ['prenom' => $utilisateur->personne->prenom, 'nom' => $utilisateur->personne->nom, 'identifiant' => $utilisateur->identifiant,
                         'id' => $utilisateur->id];
                     $tab_adherents[$utilisateur->identifiant]['adherent'] = $line;
-                    $tab_adherents[$utilisateur->identifiant]['total'] = $tarif_abonne->tarif;
+                    $tab_adherents[$utilisateur->identifiant]['total'] = $montant_abonne;
                 } else {
-                    $tab_adherents[$utilisateur->identifiant]['total'] += $tarif_abonne->tarif;
+                    $montant_abonne = $tarif_abonne->tarif;
+                    $tab_adherents[$utilisateur->identifiant]['total'] += $montant_abonne;
                 }
-                $tab_adherents[$utilisateur->identifiant]['abonnement'] = $tarif_abonne->tarif;
-                $total_abonnement += $tarif_abonne->tarif;
+                $tab_adherents[$utilisateur->identifiant]['abonnement'] = $montant_abonne;
+                $total_abonnement += $montant_abonne;
             }
         }
         ksort($tab_adherents);

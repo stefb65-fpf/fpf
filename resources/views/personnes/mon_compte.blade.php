@@ -58,6 +58,9 @@
                     @else
                         Vous n'avez pas renseigné de numéro de téléphone mobile. Vous pouvez le renseignant en vous rendant sur votre <a href="mon-profil">profil</a>.
                     @endif
+                    <div>
+                        Une fois le vote effectué, vous recevrez un email de confirmation. Si ce pavé d'informations ne s'affiche plus, c'est que votre vote a bien été pris en compte.
+                    </div>
                 </div>
                 @foreach($votes_encours as $v)
                     <div class="mt25 borderTopBlue pt10">

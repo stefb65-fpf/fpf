@@ -85,5 +85,9 @@
                 </tfoot>
             </table>
         </div>
+
+        <div style="margin-top: 50px; text-align: center; font-weight: bolder; font-size: 20px;">
+            Total à règler: {{ number_format($total_montant, 2, ',', '') }} €
+        </div>
     </div>
 @endsection

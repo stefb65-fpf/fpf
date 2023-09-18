@@ -2,6 +2,8 @@
     <span class="bold">Informations !</span>
     Vous pouvez gérer le renouvellement des adhésions et abonnements des membres de votre club. Pour cela, cochez les
     adhérents que vous souhaitez renouveler ou abonner puis cliquez sur le bouton "Renouveler".<br>
+    L'abonnement d'un membre du club se fait au tarif "abonné club" lorsque l'adhésion du membre est également renouvelée ou que celui-ci est déjà adhérent.
+    Dan,s le cas contraire, le tarif appliqué est celui de l'abonnement normal.<br>
     Le club est automatiquement renouvelé lors du premier renouvellement des adhérents dans la saison.<br>
     Vous pouvez également abonner votre club au France Photo à tout moment.<br>
     Après génération du bordereau de renouvellement, si vous n'effectuez pas le paiement immédiatement, les adhérents sont en statut pré-inscrits.

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Concern\Api;
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
+use App\Mail\ConfirmVote;
+use App\Mail\RelanceReglement;
 use App\Mail\SendAlertSupport;
 use App\Mail\SendCodeForVote;
 use App\Models\Candidat;
@@ -73,8 +75,13 @@ class VoteController extends Controller
 
     public function confirmCancelCode(Request $request) {
         $cartes = session()->get('cartes');
+        $user = session()->get('user');
         if (!isset($cartes[0])) {
             return new JsonResponse(['erreur' => 'Aucune carte trouvée'], 400);
+        }
+        $vote = Vote::where('id', $request->vote)->first();
+        if (!$vote) {
+            return new JsonResponse(['erreur' => 'Vote non trouvé'], 400);
         }
         // on regarde si le code est bon
         $vote_utilisateur = DB::table('votes_utilisateurs')
@@ -93,11 +100,22 @@ class VoteController extends Controller
             ->where('utilisateurs_id', $cartes[0]->id)
             ->where('votes_id', $request->vote)
             ->where('statut', 0)->update($datau);
+
+        $mailSent = Mail::to($user->email)->send(new ConfirmVote($vote));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+        $mail = new \stdClass();
+        $mail->titre = "Confirmation de la prise en compte de votre vote";
+        $mail->destinataire = $user->email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($user->id, $mail);
+
         return new JsonResponse(['succes' => 'Le vote a été sauvegardé'], 200);
     }
 
     public function saveVote(Request $request)
     {
+        $user = session()->get('user');
         $cartes = session()->get('cartes');
         if (!isset($cartes[0])) {
             return new JsonResponse(['erreur' => 'Aucune carte trouvée'], 400);
@@ -191,6 +209,17 @@ class VoteController extends Controller
 
             $datav = ['total_votes' => $vote->total_votes + $nb_voix];
             $vote->update($datav);
+
+            $mailSent = Mail::to('contact@envolinfo.com')->send(new ConfirmVote($vote));
+//            $mailSent = Mail::to($user->email)->send(new ConfirmVote($vote));
+            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+            $mail = new \stdClass();
+            $mail->titre = "Confirmation de la prise en compte de votre vote";
+            $mail->destinataire = $user->email;
+            $mail->contenu = $htmlContent;
+            $this->registerMail($user->id, $mail);
+
             DB::commit();
         } catch (\Exception $e) {
             dd($e);
@@ -202,8 +231,13 @@ class VoteController extends Controller
 
     public function confirmGiveCode(Request $request) {
         $cartes = session()->get('cartes');
+        $user = session()->get('user');
         if (!isset($cartes[0])) {
             return new JsonResponse(['erreur' => 'Aucune carte trouvée'], 400);
+        }
+        $vote = Vote::where('id', $request->vote)->first();
+        if (!$vote) {
+            return new JsonResponse(['erreur' => 'Vote non trouvé'], 400);
         }
         // on regarde si le code est bon
         $vote_utilisateur = DB::table('votes_utilisateurs')
@@ -232,6 +266,15 @@ class VoteController extends Controller
                 ->where('utilisateurs_id', $cartes[0]->id)
                 ->where('votes_id', $request->vote)
                 ->where('statut', 0)->update($datau);
+
+            $mailSent = Mail::to($user->email)->send(new ConfirmVote($vote));
+            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+            $mail = new \stdClass();
+            $mail->titre = "Confirmation de la prise en compte de votre vote";
+            $mail->destinataire = $user->email;
+            $mail->contenu = $htmlContent;
+            $this->registerMail($user->id, $mail);
 
             DB::commit();
         } catch (\Exception $e) {

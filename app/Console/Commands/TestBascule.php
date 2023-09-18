@@ -7,6 +7,7 @@ use App\Models\Club;
 use App\Models\Reglement;
 use App\Models\Tarif;
 use App\Models\Utilisateur;
+use App\Models\Vote;
 use Illuminate\Console\Command;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
@@ -34,6 +35,16 @@ class TestBascule extends Command
      */
     public function handle()
     {
+//        $vote = Vote::where('id', 67)->first();
+//        $tabledest = 'votes_utilisateurs_'.$vote->id.'_phase_1';
+//        DB::statement("DROP TABLE IF EXISTS ".$tabledest);
+//        DB::statement("CREATE TABLE $tabledest LIKE votes_utilisateurs");
+//        $statement = "INSERT $tabledest SELECT * FROM votes_utilisateurs";
+//        DB::statement($statement);
+//
+//        // on supprime de la la tabble clonée tout ce qui ne concerne pas le vote
+//        DB::table($tabledest)->where('votes_id', '!=', $vote->id)->delete();
+
 //        $reglements = Reglement::where('statut', 0)->whereNotNull('clubs_id')->get();
 //        foreach ($reglements as $reglement) {
 //            $club = Club::where('id', $reglement->clubs_id)->first();
