@@ -210,8 +210,8 @@ class VoteController extends Controller
             $datav = ['total_votes' => $vote->total_votes + $nb_voix];
             $vote->update($datav);
 
-            $mailSent = Mail::to('contact@envolinfo.com')->send(new ConfirmVote($vote));
-//            $mailSent = Mail::to($user->email)->send(new ConfirmVote($vote));
+//            $mailSent = Mail::to('contact@envolinfo.com')->send(new ConfirmVote($vote));
+            $mailSent = Mail::to($user->email)->send(new ConfirmVote($vote));
             $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
             $mail = new \stdClass();

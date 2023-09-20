@@ -369,6 +369,24 @@ class ClubController extends Controller
         }
     }
 
+    public function storeExistingAdherent(Request $request, $club_id) {
+        $club = Club::where('id', $club_id)->first();
+        if (!$club) {
+            return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
+        }
+
+        $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
+        if (!$utilisateur) {
+            return redirect()->route('admin.clubs.adherents.create', $club_id)->with('error', "L'identifiant renseigné ne correspond à aucun adhérent existant");
+        }
+        $code = $this->storeExistingClubAdherent($utilisateur, $club);
+        if ($code == '0') {
+            return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('success', "L'adhérent a bien  été ajouté");
+        } else {
+            return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('error', "Un problème est survenu lors de l'ajout de l'adhérent");
+        }
+    }
+
     public function editAdherent($utilisateur_id) {
         $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
         $countries = Pays::all();

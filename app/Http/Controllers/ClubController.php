@@ -187,6 +187,24 @@ class ClubController extends Controller
         }
     }
 
+    public function storeExistingAdherent(Request $request) {
+        $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
+        if (!$utilisateur) {
+            return redirect()->route('clubs.adherents.create')->with('error', "L'identifiant renseigné ne correspond à aucun adhérent existant");
+        }
+        $club = $this->getClub();
+        $code = $this->storeExistingClubAdherent($utilisateur, $club);
+        if ($code == '0') {
+            $user = session()->get('user');
+            if ($user) {
+                $this->MailAndHistoricize($user, "Ajout d'un adhérent " . trim(strtoupper($utilisateur->personne->nom)) . " " . trim(strtoupper($utilisateur->personne->prenom) . " au club " . $club->nom));
+            }
+            return redirect()->route('clubs.adherents.index')->with('success', "L'adhérent a bien  été ajouté");
+        } else {
+            return redirect()->route('clubs.adherents.index')->with('error', "Un problème est survenu lors de l'ajout de l'adhérent");
+        }
+    }
+
     // affichage de la vue des informations d'un adhérent du club
     public function editAdherent($utilisateur_id)
     {

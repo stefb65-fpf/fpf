@@ -9,7 +9,7 @@
     Après génération du bordereau de renouvellement, si vous n'effectuez pas le paiement immédiatement, les adhérents sont en statut pré-inscrits.
     Ils sont alors cochés par défaut dans la liste des adhérents. Si vous souhaitez modifier votre bordereau, vous devez
     <ul class="ml50">
-        <li>les laisser cocher pour prendre en compte leur adhésion</li>
+        <li>les laisser cochés pour prendre en compte leur adhésion</li>
         <li>les décocher si vous ne voulez finalement pas les renouveler</li>
     </ul>
 

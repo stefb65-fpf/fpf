@@ -17,6 +17,7 @@
             </a>
         </h1>
         <div class="w100">
+            @include('clubs.adherents.rapidForm')
             @include('clubs.adherents.form', ['action' => 'store'])
         </div>
     </div>

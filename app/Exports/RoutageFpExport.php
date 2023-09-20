@@ -38,6 +38,14 @@ class RoutageFpExport implements FromView, WithStyles, ShouldAutoSize
                 ->orderByDesc('adresse_personne.defaut')
                 ->selectRaw('adresses.libelle1, adresses.libelle2, adresses.codepostal, adresses.ville, adresses.pays')
                 ->first();
+            if (!$adresse) {
+                $adresse = new Adresse();
+                $adresse->libelle1 = '5 rue Jules Vallès';
+                $adresse->libelle2 = '';
+                $adresse->codepostal = '75011';
+                $adresse->ville = 'PARIS';
+                $adresse->pays = 'FRANCE';
+            }
             $abonne->adresse = $adresse;
         }
 
@@ -57,6 +65,14 @@ class RoutageFpExport implements FromView, WithStyles, ShouldAutoSize
                         ->orderByDesc('adresse_personne.defaut')
                         ->selectRaw('adresses.libelle1, adresses.libelle2, adresses.codepostal, adresses.ville, adresses.pays')
                         ->first();
+                    if (!$adresse) {
+                        $adresse = new Adresse();
+                        $adresse->libelle1 = '5 rue Jules Vallès';
+                        $adresse->libelle2 = '';
+                        $adresse->codepostal = '75011';
+                        $adresse->ville = 'PARIS';
+                        $adresse->pays = 'FRANCE';
+                    }
                     $club->adresse = $adresse;
                     $club->personne = $personne;
                 }

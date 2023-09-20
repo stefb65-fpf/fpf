@@ -45,15 +45,17 @@
                 <div>
                     {{ $carte->personne->sexe == 0 ? 'Mr' : 'Mme' }} {{ $carte->personne->nom }} {{ $carte->personne->prenom }}
                 </div>
-                @if($carte->personne->adresses[0]->libelle1)
-                    <div>{{ $carte->personne->adresses[0]->libelle1 }}</div>
+                @if(isset($carte->personne->adresses[0]))
+                    @if($carte->personne->adresses[0]->libelle1)
+                        <div>{{ $carte->personne->adresses[0]->libelle1 }}</div>
+                    @endif
+                    @if($carte->personne->adresses[0]->libelle2)
+                        <div>{{ $carte->personne->adresses[0]->libelle2 }}</div>
+                    @endif
+                    <div>
+                        {{ str_pad($carte->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT) }} {{ strtoupper($carte->personne->adresses[0]->ville) }}
+                    </div>
                 @endif
-                @if($carte->personne->adresses[0]->libelle2)
-                    <div>{{ $carte->personne->adresses[0]->libelle2 }}</div>
-                @endif
-                <div>
-                    {{ str_pad($carte->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT) }} {{ strtoupper($carte->personne->adresses[0]->ville) }}
-                </div>
             </div>
 
 

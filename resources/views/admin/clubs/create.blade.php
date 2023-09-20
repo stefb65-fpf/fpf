@@ -14,7 +14,8 @@
         </h1>
         <div class="alertInfo w80">
             <span class="bold">Informations !</span>
-            Vous pouvez ici ajouter un club
+            Lorsque vous ajoutez un club, le bordereau qui en sera issu devra être validé immédiatement avec uniquement l'adhésion et / ou abonnement du club et du contact.
+            Aucun autre adhérent ne sera ajouté au bordereau créé. Si vous ne pouvez pas valider le règlement du club, ne pas le créer.
         </div>
         <form action="{{ route('admin.clubs.store') }}" method="POST" enctype="multipart/form-data" class="w100">
             {{ csrf_field() }}

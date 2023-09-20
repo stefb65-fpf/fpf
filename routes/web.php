@@ -11,6 +11,7 @@ Route::get('/clubs/factures', [App\Http\Controllers\ClubController::class, 'fact
 Route::get('/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\ClubController::class, 'editAdherent'])->name('clubs.adherents.edit');
 Route::get('/clubs/adherents/create', [App\Http\Controllers\ClubController::class, 'createAdherent'])->name('clubs.adherents.create');
 Route::post('/clubs/adherents/store', [App\Http\Controllers\ClubController::class, 'storeAdherent'])->name('clubs.adherents.store');
+Route::post('/clubs/adherents/storeExistingAdherent', [App\Http\Controllers\ClubController::class, 'storeExistingAdherent'])->name('clubs.adherents.storeExistingAdherent');
 Route::put('/clubs/adherents/{utilisateur_id}/update', [App\Http\Controllers\ClubController::class, 'updateAdherent'])->name('clubs.adherents.update');
 Route::get('/clubs/adherents/{statut?}/{abonnement?}', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.adherents.index');
 Route::get('/clubs/fonctions', [App\Http\Controllers\ClubController::class, 'gestionFonctions'])->name('clubs.fonctions.index');
@@ -180,6 +181,7 @@ Route::get('/admin/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers
 Route::put('/admin/adherents/{utilisateur_id}/update', [App\Http\Controllers\Admin\ClubController::class, 'updateAdherent'])->name('admin.adherents.update');
 Route::get('/admin/adherents/{club_id}/create', [App\Http\Controllers\Admin\ClubController::class, 'createAdherent'])->name('admin.clubs.adherents.create');
 Route::post('/admin/adherents/{club_id}/store', [App\Http\Controllers\Admin\ClubController::class, 'storeAdherent'])->name('admin.clubs.adherents.store');
+Route::post('/admin/adherents/{club_id}/storeExistingAdherent', [App\Http\Controllers\Admin\ClubController::class, 'storeExistingAdherent'])->name('admin.clubs.adherents.storeExistingAdherent');
 Route::put('/admin/clubs/{club}/update-generalite', [App\Http\Controllers\Admin\ClubController::class, 'updateGeneralite'])->name('admin.clubs.updateGeneralite');
 Route::put('/admin/clubs/{club}/update-club-addresses', [App\Http\Controllers\Admin\ClubController::class, 'updateClubAddress'])->name('admin.clubs.updateClubAddress');
 Route::put('/admin/clubs/{club}/update-club-reunion', [App\Http\Controllers\Admin\ClubController::class, 'updateReunion'])->name('admin.clubs.updateReunion');
@@ -198,6 +200,7 @@ Route::delete('/admin/delete-club-fonction/{club_id}/{current_utilisateur_id}/{f
 Route::get('/urs/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\UrController::class, 'editAdherent'])->name('urs.clubs.adherents.edit');
 Route::get('/urs/clubs/adherents/{club_id}/create', [App\Http\Controllers\UrController::class, 'createAdherent'])->name('urs.clubs.adherents.create');
 Route::post('/urs/clubs/adherents/{club_id}/store', [App\Http\Controllers\UrController::class, 'storeAdherent'])->name('urs.adherents.store');
+Route::post('/urs/clubs/adherents/{club_id}/storeExistingAdherent', [App\Http\Controllers\UrController::class, 'storeExistingAdherent'])->name('urs.adherents.storeExistingAdherent');
 Route::put('/urs/adherents/{utilisateur_id}/update', [App\Http\Controllers\UrController::class, 'updateAdherent'])->name('urs.adherents.update');
 Route::get('/urs/liste_clubs/{statut?}/{type_carte?}/{abonnement?}/{term?}', [App\Http\Controllers\UrController::class, 'listeClubs'])->name('urs.liste_clubs');
 Route::get('/urs/clubs/liste_adherents/{club}/{statut?}/{abonnement?}',[App\Http\Controllers\UrController::class, 'listeAdherentsClub'])->name('urs.liste_adherents_club');

@@ -341,6 +341,48 @@ trait ClubTools
         return '0';
     }
 
+    protected function storeExistingClubAdherent($utilisateur, $club) {
+        // on cherche le max numeroutilisateur pour le club
+        $max_numeroutilisateur = Utilisateur::where('clubs_id', $club->id)->max('numeroutilisateur');
+        $numeroutilisateur = $max_numeroutilisateur + 1;
+        $identifiant = str_pad($club->urs_id, 2, '0', STR_PAD_LEFT) . '-'
+            . str_pad($club->numero, 4, '0', STR_PAD_LEFT) . '-'
+            . str_pad($numeroutilisateur, 4, '0', STR_PAD_LEFT);
+
+        // on calcule le ct par défaut avec la date de naissance
+        // on calcule l'âge de la personne à partir de sa date de naissance
+        $ct = 2;
+        if ($utilisateur->personne->datenaissance) {
+            $date_naissance = new \DateTime($utilisateur->personne->datenaissance);
+            $date_now = new \DateTime();
+            $age = $date_now->diff($date_naissance)->y;
+            if ($age < 18) {
+                $ct = 4;
+            } else {
+                if ($age < 25) {
+                    $ct = 3;
+                }
+            }
+        }
+
+
+        // on crée un nouvel utilisateur pour la personne dans le club
+        $datau = array(
+            'personne_id' => $utilisateur->personne->id,
+            'urs_id' => $club->urs_id,
+            'clubs_id' => $club->id,
+            'identifiant' => $identifiant,
+            'numeroutilisateur' => $numeroutilisateur,
+            'sexe' => $utilisateur->personne->sexe,
+            'nom' => $utilisateur->personne->nom,
+            'prenom' => $utilisateur->personne->prenom,
+            'ct' => $ct,
+            'statut' => 0
+        );
+        Utilisateur::create($datau);
+        return '0';
+    }
+
 
 
     protected function updateFonctionClub($club_id, $fonction_id, $current_utilisateur_id, $adherent_id) {

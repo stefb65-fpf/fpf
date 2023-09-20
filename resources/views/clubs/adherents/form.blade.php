@@ -9,6 +9,9 @@
     @endif
 @endif
     {{ csrf_field() }}
+    <div style="max-width: 1200px; margin: 20px auto">
+        Si ce n'est pas le cas, remplissez le formulaire ci-dessous.
+    </div>
     <div class="formBlock">
         <input type="hidden" name="prev" value="{{ $prev }}">
         <div class="formBlockTitle">Civilité</div>
@@ -137,7 +140,7 @@
         </div>
     </div>
         <input type="hidden" name="personne_id" id="existantPersonneId">
-    <div>
+    <div class="d-flex justify-center">
         @if($action == 'update')
             <button type="submit" class="adminSuccess btnMedium">Enregistrer les modifications</button>
         @else
