@@ -34,6 +34,7 @@ class UtilisateurController extends Controller
         return view('auth/register');
     }
 
+
     // affichage de la vue lors de la validation d'un paiement par carte pour uen première adhésion FPF
     public function validationPaiementCarte(Request $request) {
         $result = $this->getMonextResult($request->token);

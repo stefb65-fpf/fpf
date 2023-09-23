@@ -17,10 +17,13 @@ Route::post('/utilisateurs/checkBeforeInsertion', [App\Http\Controllers\Api\Util
 Route::post('/utilisateurs/getTarifForNewUser', [App\Http\Controllers\Api\UtilisateurController::class,'getTarifForNewUser']);
 Route::post('/utilisateurs/register', [App\Http\Controllers\Api\UtilisateurController::class,'register']);
 Route::post('/utilisateurs/renew/individuel', [App\Http\Controllers\Api\UtilisateurController::class,'renewIndividuel']);
+Route::post('/utilisateurs/add/individuel', [App\Http\Controllers\Api\UtilisateurController::class,'addIndividuel']);
+Route::post('/utilisateurs/add/abonnement', [App\Http\Controllers\Api\UtilisateurController::class,'addAbonnement']);
 
 // action sur les règlements
 Route::post('/validReglement', [App\Http\Controllers\Api\ReglementController::class,'validReglement']);
 Route::post('/editCartes', [App\Http\Controllers\Api\ReglementController::class,'editCartes']);
+Route::post('/reEditCarte', [App\Http\Controllers\Api\ReglementController::class,'reEditCarte'])->name('reEditCarte');
 Route::post('/relanceReglement', [App\Http\Controllers\Api\ReglementController::class,'relanceReglement']);
 
 // gestion de commandes Florilège
@@ -67,3 +70,8 @@ Route::post('/sendAnswerSupport', [App\Http\Controllers\Admin\SupportController:
 
 //liste adhérents club
 Route::post('/ajax/editListAdherents', [App\Http\Controllers\Api\UtilisateurController::class,'createListAdherents']);
+
+
+Route::post('/gestStatsClub', [App\Http\Controllers\Api\StatistiquesController::class,'gestStatsClub']);
+Route::post('/gestStatsAdherents', [App\Http\Controllers\Api\StatistiquesController::class,'gestStatsAdherents']);
+Route::post('/gestStatsRepartitionCartes', [App\Http\Controllers\Api\StatistiquesController::class,'gestStatsRepartitionCartes']);

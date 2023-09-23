@@ -23,7 +23,7 @@ class ComposerServiceProvider extends ServiceProvider
         );
 
         view()->composer(
-            ['admin.accueil', 'admin.personnes.form', 'urs.gestion'],
+            ['admin.accueil', 'admin.personnes.form', 'urs.gestion', 'layouts.menu'],
             'App\Http\ViewComposers\DroitsComposer'
         );
 

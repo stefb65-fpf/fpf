@@ -105,10 +105,10 @@ class ClubController extends Controller
         }
         // on vérifie qu'il n'y a pas une personne avec l'adresse email du contact
         $personne = Personne::where('email', $request->emailContact)->first();
-        if ($personne) {
-//            return redirect()->route('admin.clubs.create')->with('error', "Une personne avec l'adresse email saisie pour le contact existe déjà");
-            return redirect()->back()->with('error', "Une personne avec l'adresse email saisie pour le contact existe déjà")->withInput();
-        }
+//        if ($personne) {
+////            return redirect()->route('admin.clubs.create')->with('error', "Une personne avec l'adresse email saisie pour le contact existe déjà");
+//            return redirect()->back()->with('error', "Une personne avec l'adresse email saisie pour le contact existe déjà")->withInput();
+//        }
         // on cherche le dernier numéro de club pour l'UR saisie
         $numero = Club::where('urs_id', '<>', 0)->max('numero');
         $new_numero = $numero + 1;
@@ -182,24 +182,33 @@ class ClubController extends Controller
             $adresseContact = Adresse::create($dataac);
 
             // on crée la personne contact
-            $password = $this->generateRandomPassword();
-            $firstname = ucfirst($request->prenomContact);
-            $lastname = strtoupper($request->nomContact);
-            $datapc = [
-                'nom' => $lastname,
-                'prenom' => $firstname,
-                'sexe' => $request->sexeContact,
-                'email' => $request->emailContact,
-                'password' => $password,
-                'phone_mobile' => $phoneMobileContact,
-                'is_adherent' => 1
-            ];
-            $personne = Personne::create($datapc);
+            if (!$personne) {
+                $password = $this->generateRandomPassword();
+                $firstname = ucfirst($request->prenomContact);
+                $lastname = strtoupper($request->nomContact);
+                $datapc = [
+                    'nom' => $lastname,
+                    'prenom' => $firstname,
+                    'sexe' => $request->sexeContact,
+                    'email' => $request->emailContact,
+                    'password' => $password,
+                    'phone_mobile' => $phoneMobileContact,
+                    'is_adherent' => 1
+                ];
+                $personne = Personne::create($datapc);
 
-            $this->insertWpUser($firstname, $lastname, $request->emailContact, $password);
+                $this->insertWpUser($firstname, $lastname, $request->emailContact, $password);
 
-            // on lie l'adresse à la personne
-            $personne->adresses()->attach($adresseContact->id);
+                // on lie l'adresse à la personne
+                $personne->adresses()->attach($adresseContact->id);
+            } else {
+                $datapc = [
+                    'phone_mobile' => $phoneMobileContact,
+                    'is_adherent' => 1
+                ];
+                $personne->update($datapc);
+            }
+
 
             // on crée ladhérent dans la table utilisateurs
             $identifiant = str_pad($request->urClub, 2, '0', STR_PAD_LEFT) . '-' . str_pad($club->numero, 4, '0', STR_PAD_LEFT) . '-0001';

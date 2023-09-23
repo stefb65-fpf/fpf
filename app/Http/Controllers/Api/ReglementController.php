@@ -162,4 +162,14 @@ class ReglementController extends Controller
         }
         return new JsonResponse(['erreur' => 'probleme envoi'], 400);
     }
+
+    public function reEditCarte(Request $request) {
+        $utilisateur = Utilisateur::where('identifiant', $request->ref)->first();
+        if (!$utilisateur) {
+            return new JsonResponse(['erreur' => 'utilisateur introuvable'], 400);
+        }
+        $data = ['statut' => 2, 'nb_cases_carte' => 0];
+        $utilisateur->update($data);
+        return new JsonResponse([], 200);
+    }
 }

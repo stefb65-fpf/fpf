@@ -19,8 +19,10 @@ use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Tarif;
+use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -476,11 +478,141 @@ trait Tools
         return [$code, $reglement];
     }
 
+    public function saveNewCard($personne, $type) {
+        // on crée un règlement
+        $numero_cheque = ($type == 'Bridge') ? 'Bridge ' . $personne->bridge_id : 'Monext ' . $personne->monext_token;
+        $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
+        $montant = $tarif_adhesion->tarif;
+        $ref = 'ADH-NEW-CARD-' . $personne->id;
+        $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
+        $num = $last_reglement ? intval(substr($last_reglement->reference, -4)) + 1 : 1;
+        $ref .= '-'.str_pad($num, 4, '0', STR_PAD_LEFT);
+        $datar = [
+            'montant' => $montant,
+            'numerocheque' => $numero_cheque,
+            'dateenregistrement' => date('Y-m-d H:i:s'),
+            'statut' => 1,
+            'reference' => $ref
+        ];
+        $reglement = Reglement::create($datar);
+
+        list($identifiant, $urs_id, $numero) = $this->setIdentifiant($personne->adresses[0]->codepostal);
+        $datau = [
+            'urs_id' => $urs_id,
+            'personne_id' => $personne->id,
+            'identifiant' => $identifiant,
+            'numeroutilisateur' => $numero,
+            'sexe' => $personne->sexe,
+            'nom' => $personne->nom,
+            'prenom' => $personne->prenom,
+            'ct' => 2,
+            'statut' => 2,
+            'saison' => date('Y'),
+        ];
+        $utilisateur = Utilisateur::create($datau);
+
+        // on insère une ligne dans la table reglementsutilisateurs
+        DB::table('reglementsutilisateurs')
+            ->insert([
+                    'reglements_id' => $reglement->id,
+                    'utilisateurs_id' => $utilisateur->id,
+                    'adhesion' => 1,
+                    'abonnement' => 1
+                ]
+            );
+
+        // on regarde s'il existe un abonnement en cours
+        $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
+        if ($abonnement) {
+            $fin = $abonnement->fin + 5;
+            $dataa = array('fin' => $fin);
+            $abonnement->update($dataa);
+        } else {
+            // on crée un abonnement avec état 1
+            $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+            $debut = $numeroencours;
+            $fin = $numeroencours + 4;
+            $dataa = array('personne_id' => $personne->id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
+            Abonnement::create($dataa);
+        }
+
+        // on met à jour la personne
+        $datap = ['attente_paiement' => 0, 'action_paiement' => null, 'monext_token' => null, 'monext_link' => null,
+            'bridge_id' => null, 'bridge_link' => null, 'is_abonne' => 1, 'is_adherent' => 1];
+        $personne->update($datap);
+        $code = 'ok';
+
+        return [$code, $reglement];
+
+    }
+
+    public function saveNewAbo($personne, $type) {
+        $tarif_reduit = 0;
+        foreach ($personne->utilisateurs as $carte) {
+            if ($carte->clubs_id) {
+                if (in_array($carte->statut, [2,3])) {
+                    $tarif_reduit = 1;
+                }
+            }
+        }
+        $tarif_id = $tarif_reduit ? 17 : 19;
+        $utilisateur = Utilisateur::where('id', $personne->utilisateurs[0]->id)->first();
+
+        // on crée un règlement
+        $numero_cheque = ($type == 'Bridge') ? 'Bridge ' . $personne->bridge_id : 'Monext ' . $personne->monext_token;
+        $tarif_abonnement = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
+        $montant = $tarif_abonnement->tarif;
+        $ref = 'ADH-NEW-ABO-'.$personne->id;
+        $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
+        $num = $last_reglement ? intval(substr($last_reglement->reference, -4)) + 1 : 1;
+        $ref .= '-'.str_pad($num, 4, '0', STR_PAD_LEFT);
+        $datar = [
+            'montant' => $montant,
+            'numerocheque' => $numero_cheque,
+            'dateenregistrement' => date('Y-m-d H:i:s'),
+            'statut' => 1,
+            'reference' => $ref
+        ];
+        $reglement = Reglement::create($datar);
+
+        // on insère une ligne dans la table reglementsutilisateurs
+        DB::table('reglementsutilisateurs')
+            ->insert([
+                    'reglements_id' => $reglement->id,
+                    'utilisateurs_id' => $utilisateur->id,
+                    'adhesion' => 0,
+                    'abonnement' => 1
+                ]
+            );
+
+        $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
+        if ($abonnement) {
+            $fin = $abonnement->fin + 5;
+            $dataa = array('fin' => $fin);
+            $abonnement->update($dataa);
+        } else {
+            // on crée un abonnement avec état 1
+            $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+            $debut = $numeroencours;
+            $fin = $numeroencours + 4;
+            $dataa = array('personne_id' => $personne->id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
+            Abonnement::create($dataa);
+        }
+
+        // on met à jour la personne
+        $datap = ['attente_paiement' => 0, 'action_paiement' => null, 'monext_token' => null, 'monext_link' => null,
+            'bridge_id' => null, 'bridge_link' => null, 'is_abonne' => 1];
+        $personne->update($datap);
+        $code = 'ok';
+
+        return [$code, $reglement];
+    }
+
     protected function setIdentifiant($codepostal)
     {
         $codepostal = str_pad($codepostal, 5, '0', STR_PAD_LEFT);
         $departement = substr($codepostal, 0, 2);
-        $dpt = DB::table('departements')->where('numero', $departement)->first();
+        $dpt = DB::table('departements')->where('numero', $departement)->whereNotNull('urs_id')->first();
 //        $dpt = DB::table('departementsurs')->where('numerodepartement', $departement)->first();
         if ($dpt) {
             $identifiant = str_pad($dpt->urs_id, 2, '0', STR_PAD_LEFT);
@@ -494,6 +626,18 @@ trait Tools
         $numero = $max_utilisateur ? $max_utilisateur + 1 : 1;
         $identifiant .= str_pad($numero, 4, '0', STR_PAD_LEFT);
         return array($identifiant, $urs_id, $numero);
+    }
+
+    protected function getUrFromCodepostal($codepostal) {
+        $codepostal = str_pad($codepostal, 5, '0', STR_PAD_LEFT);
+        $departement = substr($codepostal, 0, 2);
+        $dpt = DB::table('departements')->where('numero', $departement)->whereNotNull('urs_id')->first();
+        if ($dpt) {
+            $ur = Ur::where('id', $dpt->urs_id)->first();
+        } else {
+            $ur = null;
+        }
+        return $ur;
     }
 
     protected function sendMailValidationReglement($personne, $reglement)
@@ -620,6 +764,8 @@ trait Tools
                         if (in_array($fonction->id, config('app.ur_functions'))) {
                             $menu_ur = true;
                         }
+
+
                         if ($fonction->instance == 1) {
                             // on contrôle les droits liés à la fonction
                             if (sizeof($fonction->droits)) {
@@ -647,6 +793,17 @@ trait Tools
                         foreach ($cartes[0]->droits as $droit) {
                             if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])) {
                                 $menu_ur = true;
+                            }
+                        }
+                    }
+                    if (sizeof($cartes[0]->fonctions) > 0) {
+                        foreach ($cartes[0]->fonctions as $fonction) {
+                            if ($fonction->instance == 2) {
+                                foreach ($fonction->droits as $droit) {
+                                    if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])) {
+                                        $menu_ur = true;
+                                    }
+                                }
                             }
                         }
                     }

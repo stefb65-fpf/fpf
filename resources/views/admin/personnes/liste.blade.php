@@ -270,6 +270,13 @@
                                         <a href="{{ route('admin.personnes.edit', [$utilisateur->id, $view_type]) }}"
                                            class="adminPrimary btnSmall">Editer</a>
                                     @endif
+                                    @if($utilisateur->statut == 3)
+                                        <div class="mt5">
+                                            <a name="reEditCarte" data-ref="{{ $utilisateur->identifiant }}"
+                                               class="adminSuccess btnSmall">nouvelle carte</a>
+                                        </div>
+                                    @endif
+
                                 @else
                                     <a href="{{ route('urs.personnes.edit', [$utilisateur->personne_id, $view_type]) }}"
                                        class="adminPrimary btnSmall">Editer</a>

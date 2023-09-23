@@ -57,7 +57,7 @@ trait Api
         $doWebPaymentRequest['order']['date'] = date('d/m/Y H:i'); // date of the order
 
         // CONTRACT NUMBERS
-        $doWebPaymentRequest['payment']['contractNumber'] = '8729848';
+        $doWebPaymentRequest['payment']['contractNumber'] = env('PAYLINE_CONTRACT_NUMBER');
 
         $doWebPaymentResponse = $payline->doWebPayment($doWebPaymentRequest);
         if ($doWebPaymentResponse['result']['code'] != '00000') {

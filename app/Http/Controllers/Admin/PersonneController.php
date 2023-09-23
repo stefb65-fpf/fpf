@@ -49,6 +49,7 @@ class PersonneController extends Controller
         $statut = $statut ?? "all";
         $type_adherent = $type_adherent ?? "all";
         $ur = null;
+
         if ($view_type == "formateurs") {
             //TODO : on affiche les formateurs
             $query = Personne::where('is_adherent', 0)->where('is_formateur', '!=', 0)->orderBy('nom')->orderBy('prenom');
@@ -433,16 +434,19 @@ class PersonneController extends Controller
                 'is_formateur' => 0, 'is_administratif' => 0);
             $personne->update($data);
 
-            $mailSent = Mail::to($prev_email)->send(new SendAnonymisationEmail());
-            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+            if (filter_var($prev_email, FILTER_VALIDATE_EMAIL)) {
+                $mailSent = Mail::to($prev_email)->send(new SendAnonymisationEmail());
+                $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
-            if ($personne) {
-                $mail = new \stdClass();
-                $mail->titre = "Anonymisation des données personnelles";
-                $mail->destinataire = $email;
-                $mail->contenu = $htmlContent;
-                $this->registerMail($personne->id, $mail);
+                if ($personne) {
+                    $mail = new \stdClass();
+                    $mail->titre = "Anonymisation des données personnelles";
+                    $mail->destinataire = $email;
+                    $mail->contenu = $htmlContent;
+                    $this->registerMail($personne->id, $mail);
+                }
             }
+
             DB::commit();
 
             return redirect('/admin/personnes/' . $view_type)->with('success', "La personne a été anonymisée avec succès");
@@ -479,5 +483,27 @@ class PersonneController extends Controller
         DB::table('reglementsutilisateurs')->insert($dataru);
 
         return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('success', "Le règlement $ref a bien été créé. Pour finaliser l'abonnement, merci de le valider dans la gestion des règlements");
+    }
+
+    public function addFreeAbo(Personne $personne, $view_type) {
+        $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
+        if ($abonnement) {
+            $fin = $abonnement->fin + 5;
+            $dataa = array('fin' => $fin);
+            $abonnement->update($dataa);
+        } else {
+            // on crée un abonnement avec état 1
+            $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
+            $numeroencours = $config->numeroencours;
+            $debut = $numeroencours;
+            $fin = $numeroencours + 4;
+            $dataa = array('personne_id' => $personne->id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin);
+            Abonnement::create($dataa);
+
+            $datap = ['is_abonne' => 1];
+            $personne->update($datap);
+        }
+
+        return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('success', "L'abonnement a bien été créé pour la personne");
     }
 }

@@ -93,6 +93,24 @@ class CheckBridge extends Command
                         $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
                         $this->createAndSendInvoice($datai);
                     }
+
+                    if ($personne->action_paiement == 'ADD_INDIVIDUEL_CARD') {
+                        // on crée la carte
+                        list($code, $reglement) = $this->saveNewCard($personne, 'Bridge');
+
+                        $description = "Adhésion individuelle à la FPF";
+                        $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
+                        $this->createAndSendInvoice($datai);
+                    }
+
+                    if ($personne->action_paiement == 'ADD_NEW_ABO') {
+                        // on crée la carte
+                        list($code, $reglement) = $this->saveNewAbo($personne, 'Monext');
+
+                        $description = "Abonnement individuel à la revue France Photo";
+                        $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
+                        $this->createAndSendInvoice($datai);
+                    }
                 }
             }
         }

@@ -457,6 +457,137 @@ class UtilisateurController extends Controller
         }
     }
 
+    public function addIndividuel(Request $request) {
+        $personne = Personne::where('id', $request->personne_id)->first();
+        if (!$personne) {
+            return new JsonResponse(['erreur' => 'Personne non trouvée'], 400);
+        }
+        $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
+        if (!$tarif_adhesion) {
+            return new JsonResponse(['erreur' => 'impossible de récupérer le tarif'], 400);
+        }
+        $montant = $tarif_adhesion->tarif;
+        $montant_cents = intval($montant * 100);
+        $ref = 'ADH-NEW-CARD-'.$personne->id;
+        $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
+        $num = $last_reglement ? intval(substr($last_reglement->reference, -4)) + 1 : 1;
+        $ref .= '-'.str_pad($num, 4, '0', STR_PAD_LEFT);
+
+        if ($request->type == 'bridge') {
+            $url = 'https://api.bridgeapi.io/v2/payment-links';
+            $transaction = new \stdClass();
+            $transaction->amount = floatval($montant);
+            $transaction->currency = 'EUR';
+            $transaction->label = $ref;
+            $expired_date = new \DateTime(date('Y-m-d H:i:s'));
+            $expired_date->add(new \DateInterval('P1D'));
+
+            $bridge_datas = [
+                "user" => [
+                    "first_name" => $personne->prenom,
+                    "last_name" => $personne->nom
+                ],
+                "expired_date" => $expired_date->format('c'),
+                "client_reference" => strval($personne->id),
+                "transactions" => [
+                    $transaction
+                ],
+                "callback_url" => env('APP_URL') . "personnes/attente_paiement_validation",
+            ];
+
+            list($status, $reponse) = $this->callBridge($url, 'POST', json_encode($bridge_datas));
+            if ($status == 200) {
+                $reponse = json_decode($reponse);
+                $personne->update(['bridge_id' => $reponse->id, 'bridge_link' => $reponse->url, 'attente_paiement' => 1, 'action_paiement' => 'ADD_INDIVIDUEL_CARD']);
+                return new JsonResponse(['url' => $reponse->url], 200);
+            } else {
+                return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
+            }
+        } else {
+            $urls = [
+                'cancelURL' => env('APP_URL') . "cancel_paiement_add_new_card",
+                'returnURL' => env('APP_URL') . "validation_paiement_carte_new_card",
+                'notificationURL' => env('APP_URL') . "personnes/notification_paiement_new_card",
+            ];
+            $user = [
+                'email' => $personne->email,
+                'prenom' => $personne->prenom,
+                'nom' => $personne->nom,
+            ];
+            $result = $this->callMonext($montant_cents, $urls, $ref, $user);
+            if ($result['code'] == '00000') {
+                $personne->update(['monext_token' => $result['token'], 'monext_link' => $result['redirectURL'], 'attente_paiement' => 1, 'action_paiement' => 'ADD_INDIVIDUEL_CARD']);
+                return new JsonResponse(['url' => $result['redirectURL']], 200);
+            } else {
+                return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
+            }
+        }
+    }
+
+
+    public function addAbonnement(Request $request) {
+        $personne = Personne::where('id', $request->personne_id)->first();
+        if (!$personne) {
+            return new JsonResponse(['erreur' => 'Personne non trouvée'], 400);
+        }
+        $montant = $request->montant;
+        $montant_cents = intval($montant * 100);
+        $ref = 'ADH-NEW-ABO-'.$personne->id;
+        $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
+        $num = $last_reglement ? intval(substr($last_reglement->reference, -4)) + 1 : 1;
+        $ref .= '-'.str_pad($num, 4, '0', STR_PAD_LEFT);
+
+        if ($request->type == 'bridge') {
+            $url = 'https://api.bridgeapi.io/v2/payment-links';
+            $transaction = new \stdClass();
+            $transaction->amount = floatval($montant);
+            $transaction->currency = 'EUR';
+            $transaction->label = $ref;
+            $expired_date = new \DateTime(date('Y-m-d H:i:s'));
+            $expired_date->add(new \DateInterval('P1D'));
+
+            $bridge_datas = [
+                "user" => [
+                    "first_name" => $personne->prenom,
+                    "last_name" => $personne->nom
+                ],
+                "expired_date" => $expired_date->format('c'),
+                "client_reference" => strval($personne->id),
+                "transactions" => [
+                    $transaction
+                ],
+                "callback_url" => env('APP_URL') . "personnes/attente_paiement_validation",
+            ];
+
+            list($status, $reponse) = $this->callBridge($url, 'POST', json_encode($bridge_datas));
+            if ($status == 200) {
+                $reponse = json_decode($reponse);
+                $personne->update(['bridge_id' => $reponse->id, 'bridge_link' => $reponse->url, 'attente_paiement' => 1, 'action_paiement' => 'ADD_NEW_ABO']);
+                return new JsonResponse(['url' => $reponse->url], 200);
+            } else {
+                return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
+            }
+        } else {
+            $urls = [
+                'cancelURL' => env('APP_URL') . "cancel_paiement_add_new_abo",
+                'returnURL' => env('APP_URL') . "validation_paiement_carte_new_abo",
+                'notificationURL' => env('APP_URL') . "personnes/notification_paiement_new_abo",
+            ];
+            $user = [
+                'email' => $personne->email,
+                'prenom' => $personne->prenom,
+                'nom' => $personne->nom,
+            ];
+            $result = $this->callMonext($montant_cents, $urls, $ref, $user);
+            if ($result['code'] == '00000') {
+                $personne->update(['monext_token' => $result['token'], 'monext_link' => $result['redirectURL'], 'attente_paiement' => 1, 'action_paiement' => 'ADD_NEW_ABO']);
+                return new JsonResponse(['url' => $result['redirectURL']], 200);
+            } else {
+                return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
+            }
+        }
+    }
+
     protected function getMontantRenouvellementClub($club_id, $abo_club) {
         $club = Club::where('id', $club_id)->first();
         if (!$club) {

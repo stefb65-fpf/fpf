@@ -451,6 +451,65 @@ class PersonneController extends Controller
         return view('personnes.florilege', compact('config', 'personne'));
     }
 
+    public function cancelPaiementNewCard(Request $request) {
+        $personne = Personne::where('monext_token', $request->token)->first();
+        if ($personne) {
+            $personne->update(['monext_token' => NULL, 'monext_link' => NULL, 'attente_paiement' => 0, 'action_paiement' => NULL]);
+        }
+        return redirect()->route('souscription-individuelle')->with('error', 'Votre paiement a été annulé');
+    }
+
+    public function cancelPaiementNewAbo(Request $request) {
+        $personne = Personne::where('monext_token', $request->token)->first();
+        if ($personne) {
+            $personne->update(['monext_token' => NULL, 'monext_link' => NULL, 'attente_paiement' => 0, 'action_paiement' => NULL]);
+        }
+        return redirect()->route('souscription-abonnement')->with('error', 'Votre paiement a été annulé');
+    }
+
+    public function validationPaiementNewCard(Request $request) {
+        $result = $this->getMonextResult($request->token);
+        $code = 'ko';
+        if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
+            $personne = Personne::where('monext_token', $request->token)->first();
+            if ($personne) {
+                list($code, $reglement) = $this->saveNewCard($personne, 'Monext');
+
+                if ($code == 'ok') {
+                    $description = "Adhésion individuelle à la FPF";
+                    $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
+                    $this->createAndSendInvoice($datai);
+                }
+            }
+        }
+        return view('personnes.validation_paiement_new_carte', compact( 'code'));
+    }
+
+    public function validationPaiementNewAbo(Request $request) {
+        $result = $this->getMonextResult($request->token);
+        $code = 'ko';
+        if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
+            $personne = Personne::where('monext_token', $request->token)->first();
+            if ($personne) {
+                list($code, $reglement) = $this->saveNewAbo($personne, 'Monext');
+
+                if ($code == 'ok') {
+                    $description = "Abonnement individuel à la revue France Photo";
+                    $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
+                    $this->createAndSendInvoice($datai);
+
+                    $personne = $this->getSituation($personne);
+                    $request->session()->put('user', $personne);
+                }
+            }
+        }
+        return view('personnes.validation_paiement_new_abo', compact( 'code'));
+    }
+
+    public function attentePaiementValidation() {
+        return view('personnes.attente_paiement_validation');
+    }
+
     public function cancelPaiementFlorilege(Request $request)
     {
         $souscription = Souscription::where('monext_token', $request->token)->first();
@@ -500,6 +559,44 @@ class PersonneController extends Controller
         }
 
         return view('personnes.factures', compact('invoices'));
+    }
+
+    public function souscriptionIndividuelle() {
+        $personne = session()->get('user');
+
+        $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
+        $tarif = $tarif_adhesion->tarif;
+
+        $ur = null; $available = 0;
+        if (sizeof($personne->adresses) != 0) {
+            if ($personne->adresses[0]->codepostal != '00000') {
+                $ur = $this->getUrFromCodepostal($personne->adresses[0]->codepostal);
+                $available = 1;
+            }
+        }
+        return view('personnes.souscription_individuelle', compact('personne', 'ur', 'available', 'tarif'));
+    }
+
+    public function souscriptionAbonnement() {
+        $personne = session()->get('user');
+        $cartes = session()->get('cartes');
+        $tarif_reduit = 0; $membre_club = 0;
+        foreach ($cartes as $carte) {
+            if ($carte->clubs_id) {
+                $membre_club = 1;
+                if (in_array($carte->statut, [2,3])) {
+                    $tarif_reduit = 1;
+                }
+            }
+        }
+        if ($membre_club == 0) {
+            return redirect()->route('accueil');
+        }
+        $tarif_id = $tarif_reduit ? 17 : 19;
+        $tarif_abonnement = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
+        $tarif = $tarif_abonnement->tarif;
+
+        return view('personnes.souscription_abonnement', compact('personne', 'tarif', 'tarif_reduit'));
     }
 
     public function anonymize()

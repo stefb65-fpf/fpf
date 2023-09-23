@@ -203,6 +203,7 @@
                     </button>
                     @if($level == 'admin' && $action == 'update')
                         <a href="{{ route('admin.personnes.renewAbo', [$personne, $view_type]) }}" class="adminSuccess btnMedium ml50" data-method="put" data-confirm="Vous allez générer un règlement pour prolonger l'abonnement de l'adhérent de 5 numéros. Si celui-ci n'a pas d'abonnement en cours, la fin de son abonnement sera 5 numéros après celui en cours. Le règlement généré devra être validé pour la prise en compte.  Confirmez-vous votre demande ?">Abonner l'utilisateur pour un montant de {{ $montant_abonnement }}€</a>
+                        <a href="{{ route('admin.personnes.addFreeAbo', [$personne, $view_type]) }}" class="adminSuccess btnMedium ml50" data-method="put" data-confirm="Voulez-vous vraiment ajouter un abonnement gratuit de 5 numéros ? Si l'utilisateur est déjà abonné, vous allez prolonger son abonnement de 5 numéros. Si celui-ci n'a pas d'abonnement en cours, la fin de son abonnement sera 5 numéros après celui en cours.">Ajouter un abonnement gratuit</a>
                     @endif
                     @if($level == 'admin' && $action == 'update' && in_array('ANONYM', $droits_fpf))
                         <a href="{{ route('admin.personnes.anonymize', [$personne, $view_type]) }}"

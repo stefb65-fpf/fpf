@@ -22,9 +22,11 @@ Route::get('/clubs/florilege/attente_paiement_validation', [App\Http\Controllers
 Route::get('/clubs/validation_paiement_carte', [App\Http\Controllers\ClubController::class, 'validationPaiementCarte'])->name('clubs.validation_paiement_carte');
 Route::get('/reglements/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiement'])->name('reglements.notification_paiement');
 Route::get('/personnes/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiementPersonne'])->name('personnes.notification_paiement');
+Route::get('/personnes/notification_paiement_new_card', [App\Http\Controllers\ReglementController::class, 'notificationPaiementNewCard'])->name('personnes.notification_paiement_new_card');
 Route::get('/florilege/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiementFlorilege'])->name('florilege.notification_paiement');
 
 Route::get('/utilisateurs/attente_paiement_validation', [App\Http\Controllers\UtilisateurController::class, 'attentePaiementValidation'])->name('utilisateurs.attente_paiement_validation');
+Route::get('/personnes/attente_paiement_validation', [App\Http\Controllers\PersonneController::class, 'attentePaiementValidation'])->name('personnes.attente_paiement_validation');
 
 Route::get('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
 
@@ -126,6 +128,12 @@ Route::get('/registerAbonnement', [App\Http\Controllers\LoginController::class, 
 Route::get('/cancel_paiement', [App\Http\Controllers\UtilisateurController::class, 'cancelPaiement']);
 Route::get('/validation_paiement_carte', [App\Http\Controllers\UtilisateurController::class, 'validationPaiementCarte']);
 
+Route::get('/cancel_paiement_add_new_card', [App\Http\Controllers\PersonneController::class, 'cancelPaiementNewCard']);
+Route::get('/validation_paiement_carte_new_card', [App\Http\Controllers\PersonneController::class, 'validationPaiementNewCard']);
+
+Route::get('/cancel_paiement_add_new_abo', [App\Http\Controllers\PersonneController::class, 'cancelPaiementNewAbo']);
+Route::get('/validation_paiement_carte_new_abo', [App\Http\Controllers\PersonneController::class, 'validationPaiementNewAbo']);
+
 Route::get('/cancel_paiement_renew', [App\Http\Controllers\PersonneController::class, 'cancelPaiementRenew']);
 Route::get('/personnes/validation_paiement_carte_renew', [App\Http\Controllers\PersonneController::class, 'validationPaiementCarteRenew']);
 
@@ -141,6 +149,8 @@ Route::get('/mes-mails', [App\Http\Controllers\PersonneController::class, 'mesMa
 Route::get('/mes-actions', [App\Http\Controllers\PersonneController::class, 'mesActions']);
 Route::get('/mes-formations', [App\Http\Controllers\PersonneController::class, 'mesFormations']);;
 Route::get('/mon-profil', [App\Http\Controllers\PersonneController::class, 'monProfil'])->name('mon-profil');
+Route::get('/souscription-individuelle', [App\Http\Controllers\PersonneController::class, 'souscriptionIndividuelle'])->name('souscription-individuelle');
+Route::get('/souscription-abonnement', [App\Http\Controllers\PersonneController::class, 'souscriptionAbonnement'])->name('souscription-abonnement');
 Route::get('/florilege', [App\Http\Controllers\PersonneController::class, 'florilege'])->name('florilege');
 Route::get('/factures', [App\Http\Controllers\PersonneController::class, 'factures'])->name('factures');
 Route::put('/update-password/{personne}',[App\Http\Controllers\PersonneController::class, 'updatePassword'])->name('updatePassword');
@@ -174,7 +184,7 @@ Route::get('/urs/gestion', [App\Http\Controllers\UrController::class, 'gestion']
 Route::get('/admin', [App\Http\Controllers\Admin\UserController::class, 'accueil'])->name('admin');
 Route::get('/admin/informations', [App\Http\Controllers\Admin\UserController::class, 'informations'])->name('admin.informations');
 
-
+Route::get('/admin/statistiques', [App\Http\Controllers\Admin\StatistiquesController::class, 'index'])->name('admin.statistiques');
 
 //Gestion clubs par responsable fpf
 Route::get('/admin/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\Admin\ClubController::class, 'editAdherent'])->name('admin.clubs.adherents.edit');
@@ -229,6 +239,7 @@ Route::post('/admin/personnes/store/{view_type}', [App\Http\Controllers\Admin\Pe
 Route::post('/admin/personnes/storeOpen/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'storeOpen'])->name('admin.personnes.storeOpen');
 Route::delete('/admin/personnes/{personne}/anonymize/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'anonymize'])->name('admin.personnes.anonymize');
 Route::put('/admin/personnes/{personne}/renewAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'renewAbo'])->name('admin.personnes.renewAbo');
+Route::put('/admin/personnes/{personne}/addFreeAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'addFreeAbo'])->name('admin.personnes.addFreeAbo');
 Route::get('/admin/personnes/{view_type}/{ur_id?}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\Admin\PersonneController::class, 'list']);
 Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::class,'index'])->name('personnes.index');
 

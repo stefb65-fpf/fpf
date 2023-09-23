@@ -24,3 +24,20 @@ $('select[name=filter]').on('change',function (e) {
     url += statut + "/" + typeCarte + "/" + typeAdherent;
     window.location.href = url;
 })
+
+$('a[name=reEditCarte]').on('click',function (e) {
+    const ref = $(this).data('ref')
+    $.ajax({
+        url: '/api/reEditCarte',
+        type: 'POST',
+        data: {
+            ref: ref
+        },
+        success: function (data) {
+            alert("La carte a été ajoutée à la liste des cartes à éditer")
+        },
+        error: function (err) {
+            alert('Une erreur est survenue')
+        }
+    })
+})

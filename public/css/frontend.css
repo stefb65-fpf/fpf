@@ -216,6 +216,15 @@ a {
     height: max-content !important;
     min-height: 28px;
 }
+.btnCard {
+    font-size: 0.8rem !important;
+    display: block;
+    text-align: center;
+    padding: 2px;
+    background-color: #003d77;
+    color: white;
+    cursor: pointer;
+}
 
 /* laravel > 5.1  */
 .pagination nav {

@@ -57,6 +57,24 @@ class ReglementController extends Controller
         echo 'ok';
     }
 
+    public function notificationPaiementNewCard(Request $request) {
+        $result = $this->getMonextResult($request->token);
+        if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
+            // on traite le règlement
+            $personne = Personne::where('monext_token', $request->token)->first();
+            if ($personne) {
+                list($code, $reglement) = $this->saveNewCard($personne, 'Monext');
+
+                $description = "Adhésion individuelle à la FPF";
+                $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
+                $this->createAndSendInvoice($datai);
+
+            }
+        }
+        // sinon on ne fait rien
+        echo 'ok';
+    }
+
     // notification de paiement sur sosucriptions Folrilège - méthode appelée par Monext si l'utilisateur a payé mais n'est pas revenu sur le site
     public function notificationPaiementFlorilege(Request $request) {
         $result = $this->getMonextResult($request->token);
