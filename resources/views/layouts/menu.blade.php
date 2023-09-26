@@ -57,13 +57,15 @@
                         </div>
                     </div>
                 @endif
-                <div class="mt10">
-                    <a class="btnCard" href="{{ route('souscription-individuelle') }}">souscrire une carte individuelle</a>
-                </div>
-                @if($user->renew_abo)
+                @if($cartes)
                     <div class="mt10">
-                        <a class="btnCard" href="{{ route('souscription-abonnement') }}">{{ $user->is_abonne ? 'prolonger mon abonnement' : 'ajouter un abonnement' }}</a>
+                        <a class="btnCard" href="{{ route('souscription-individuelle') }}">souscrire une carte individuelle</a>
                     </div>
+                    @if($user->renew_abo)
+                        <div class="mt10">
+                            <a class="btnCard" href="{{ route('souscription-abonnement') }}">{{ $user->is_abonne ? 'prolonger mon abonnement' : 'ajouter un abonnement' }}</a>
+                        </div>
+                    @endif
                 @endif
             </div>
             <ul class="leftMenu" id="navMenu">
@@ -95,13 +97,29 @@
                         </a>
                     </li>
                 @endif
-{{--                @if(in_array('VISUSTAT', $droits_fpf))--}}
-{{--                    <li class="leftMenuItem{{ Request::is('gestion-fpf')?" active":""}}">--}}
-{{--                        <a href="{{ route('admin.statistiques') }}">--}}
-{{--                            Tableau de bord--}}
-{{--                        </a>--}}
-{{--                    </li>--}}
-{{--                @endif--}}
+                @if(in_array('VISUSTAT', $droits_fpf))
+                    <li class="leftMenuItem">
+                        <a href="{{ route('admin.statistiques') }}">
+                            Tableau de bord
+                        </a>
+                    </li>
+                @else
+                    @if($menu['ur'] && in_array('VISUSTATUR', $droits_fpf))
+                        <li class="leftMenuItem">
+                            <a href="{{ route('urs.statistiques') }}">
+                                Tableau de bord UR
+                            </a>
+                        </li>
+                    @else
+                        @if($menu['club'])
+                            <li class="leftMenuItem">
+                                <a href="{{ route('clubs.statistiques') }}">
+                                    Tableau de bord Club
+                                </a>
+                            </li>
+                        @endif
+                    @endif
+                @endif
             </ul>
         </div>
 

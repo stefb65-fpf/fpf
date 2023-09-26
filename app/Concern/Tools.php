@@ -730,7 +730,7 @@ trait Tools
 //        if (!$personne->is_administratif) {
         if (!$personne->is_administratif && $personne->is_adherent != 0) {
             // on regarde les functions sur chaque carte
-            $utilisateurs = Utilisateur::where('personne_id', $personne->id)->orderBy('statut')->selectRaw('id, urs_id, clubs_id, identifiant, statut, saison')->get();
+            $utilisateurs = Utilisateur::where('personne_id', $personne->id)->where('statut', '<', 10)->orderBy('statut')->selectRaw('id, urs_id, clubs_id, identifiant, statut, saison')->get();
             if (sizeof($utilisateurs) > 0) {
                 $prec_statut3 = 4;
                 foreach ($utilisateurs as $utilisateur) {

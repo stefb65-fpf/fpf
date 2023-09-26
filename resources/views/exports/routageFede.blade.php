@@ -21,7 +21,7 @@
     @foreach($personnes as $personne)
         <tr>
             <td>{{ $personne->urs_id }}</td>
-            <td>{{ $personne->clubs_id }}</td>
+            <td>{{ $personne->nunero_club }}</td>
             <td>{{ $personne->nom_club }}</td>
             <td>{{ $personne->identifiant }}</td>
             <td>{{ $personne->sexe === 0 ? 'Mr' : 'Mme' }}</td>

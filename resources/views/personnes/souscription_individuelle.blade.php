@@ -14,7 +14,7 @@
                 <div class="alertInfo w80">
                     <span class="bold">Informations !</span>
                     <div>
-                        Vous pouvez souscrire une carte d'adhérent individuelle en étant rattaché à l'UR <b>{{ $ur ? $ur->nom : "Région Parisienne (le numéro d'ur sera déterminé après adhésion en focntion de votre adresse exacte)" }}</b>.<br>
+                        Vous pouvez souscrire une carte d'adhérent individuelle en étant rattaché à l'UR <b>{{ $ur ? $ur->nom : "Région Parisienne (le numéro d'ur sera déterminé après adhésion en fonction de votre adresse exacte)" }}</b>.<br>
                         Si cette UR ne correspond pas à votre attente, veuillez corriger votre adresse dans votre profil. <br>
                         Cette adhésion individuelle vous attribuera un nouvel identifiant FPF mais vous conserverez également les identifiants existants.
                     </div>

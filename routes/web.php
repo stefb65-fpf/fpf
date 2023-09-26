@@ -7,6 +7,7 @@ Route::get('/registerAdhesion', [App\Http\Controllers\LoginController::class, 'r
 
 //gestion des adhésions et abonnements club par responsable de clubs
 Route::get('/clubs/florilege', [App\Http\Controllers\ClubController::class, 'florilege'])->name('clubs.florilege');
+Route::get('/clubs/statistiques', [App\Http\Controllers\ClubController::class, 'statistiques'])->name('clubs.statistiques');
 Route::get('/clubs/factures', [App\Http\Controllers\ClubController::class, 'factures'])->name('clubs.factures');
 Route::get('/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\ClubController::class, 'editAdherent'])->name('clubs.adherents.edit');
 Route::get('/clubs/adherents/create', [App\Http\Controllers\ClubController::class, 'createAdherent'])->name('clubs.adherents.create');
@@ -30,7 +31,8 @@ Route::get('/personnes/attente_paiement_validation', [App\Http\Controllers\Perso
 
 Route::get('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
 
-
+Route::get('/urs/statistiques', [App\Http\Controllers\UrController::class, 'statistiques'])->name('urs.statistiques');
+Route::get('/urs/statistiques_votes', [App\Http\Controllers\UrController::class, 'statistiquesVotes'])->name('urs.statistiques_votes');
 Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class, 'listeReversements'])->name('urs.liste_reversements');
 Route::get('/urs/fonctions/liste', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.fonctions.liste');
 Route::get('/urs/{fonction}/change_attribution', [App\Http\Controllers\UrController::class, 'changeAttribution'])->name('urs.fonctions.change_attribution');
@@ -185,6 +187,7 @@ Route::get('/admin', [App\Http\Controllers\Admin\UserController::class, 'accueil
 Route::get('/admin/informations', [App\Http\Controllers\Admin\UserController::class, 'informations'])->name('admin.informations');
 
 Route::get('/admin/statistiques', [App\Http\Controllers\Admin\StatistiquesController::class, 'index'])->name('admin.statistiques');
+Route::get('/admin/statistiques_votes', [App\Http\Controllers\Admin\StatistiquesController::class, 'statistiquesVotes'])->name('admin.statistiques_votes');
 
 //Gestion clubs par responsable fpf
 Route::get('/admin/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\Admin\ClubController::class, 'editAdherent'])->name('admin.clubs.adherents.edit');

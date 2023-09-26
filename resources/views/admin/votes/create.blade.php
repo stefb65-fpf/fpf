@@ -18,7 +18,7 @@
             Vous pouvez saisir plusieurs types de sessions:
             <ul class="ml30">
                 <li>une session classique, nationale ou régionale, lors de laquelle tout le public cible (adhérents, présidents de clubs ou présidents d'UR) peut voter en même temps</li>
-                <li>une session 3 phases pour les votes de type motion AG nationale pour laquelle les votes vont s'enchaîner en focntion des catégories: adhérents puis responsables de club puis présidents d'UR</li>
+                <li>une session 3 phases pour les votes de type motion AG nationale pour laquelle les votes vont s'enchaîner en fonction des catégories: adhérents puis responsables de club puis présidents d'UR</li>
             </ul>
         </div>
         @include('admin.votes.form', ['action' => 'store'])

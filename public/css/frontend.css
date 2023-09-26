@@ -220,10 +220,11 @@ a {
     font-size: 0.8rem !important;
     display: block;
     text-align: center;
-    padding: 2px;
+    padding: 5px;
     background-color: #003d77;
     color: white;
     cursor: pointer;
+    border-radius: 5px;
 }
 
 /* laravel > 5.1  */
@@ -725,6 +726,20 @@ a {
 
 .title {
     text-align: center !important;
+}
+
+.tabIndex {
+    outline: none;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.tabIndex.active {
+    background-color: #003d77;
+    color: white;
 }
 
 /*****************************************************  */

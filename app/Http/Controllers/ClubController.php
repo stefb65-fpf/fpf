@@ -474,6 +474,39 @@ class ClubController extends Controller
         return view('clubs.factures.index', compact('club', 'invoices'));
     }
 
+    public function statistiques() {
+        $club = $this->getClub();
+        $nb_adherents = Utilisateur::whereIn('statut', [2,3])->where('clubs_id', $club->id)->count();
+        $nb_adherents_previous = DB::table('utilisateurs_prec')->whereIn('statut', [2,3])->where('clubs_id', $club->id)->count();
+        $ratio_adherents = round(($nb_adherents - $nb_adherents_previous) * 100 / $nb_adherents_previous, 2);
+        $nb_abonnements = Abonnement::join('personnes', 'personnes.id', '=', 'abonnements.personne_id')
+            ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+            ->where('abonnements.etat', 1)
+            ->where('utilisateurs.clubs_id', $club->id)
+            ->count();
+        $nb_souscriptions = Souscription::join('personnes', 'personnes.id', '=', 'souscriptions.personne_id')
+            ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+            ->where('utilisateurs.clubs_id', $club->id)
+            ->where('souscriptions.statut', 1)
+            ->sum('souscriptions.nbexemplaires');
+
+        // on récupère les classements régionaux et nationaux du club pour la saison en cours
+        $classements_nationaux = DB::table('classementclubs')->join('competitions', 'competitions.id', '=', 'classementclubs.competitions_id')
+            ->where('classementclubs.clubs_id', $club->id)
+            ->where('competitions.saison', date('Y'))
+            ->orderBy('competitions.id')
+            ->selectRaw('classementclubs.place, classementclubs.total, competitions.nom')
+            ->get();
+        $classements_regionaux = DB::table('rclassementclubs')->join('rcompetitions', 'rcompetitions.id', '=', 'rclassementclubs.competitions_id')
+            ->where('rclassementclubs.clubs_id', $club->id)
+            ->where('rcompetitions.saison', date('Y'))
+            ->orderBy('rcompetitions.id')
+            ->selectRaw('rclassementclubs.place, rclassementclubs.total, rcompetitions.nom')
+            ->get();
+        return view('clubs.statistiques.index', compact('club', 'nb_adherents', 'nb_abonnements', 'nb_souscriptions',
+            'ratio_adherents', 'nb_adherents_previous', 'classements_nationaux', 'classements_regionaux'));
+    }
+
     // fonction de récupération des infos club en fonction de l'identifiant de l'utilisateur
     protected function getClub()
     {

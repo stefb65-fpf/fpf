@@ -183,6 +183,7 @@ class PublicationController extends Controller
                     $personne->clubs_id = '';
                     $personne->identifiant = '';
                     $personne->nom_club = '';
+                    $personne->nunero_club = '';
                     $tab_personnes[] = $personne;
                 }
             } else {
@@ -196,9 +197,11 @@ class PublicationController extends Controller
                             $club = Club::where('id', $utilisateur->clubs_id)->first();
                             if ($club) {
                                 $personne->nom_club = $club->nom;
+                                $personne->nunero_club = $club->numero;
                             }
                         } else {
                             $personne->nom_club = '';
+                            $personne->nunero_club = '';
                         }
                         $tab_personnes[] = $personne;
                     }

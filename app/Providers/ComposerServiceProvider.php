@@ -18,12 +18,13 @@ class ComposerServiceProvider extends ServiceProvider
             'App\Http\ViewComposers\PersonneAccountComposer'
         );
         view()->composer(
-            ['layouts.menu', 'layouts.header', 'urs.gestion'],
+            ['layouts.menu', 'layouts.header', 'urs.gestion', 'admin.statistiques.index', 'admin.statistiques.votes',
+                'clubs.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes'],
             'App\Http\ViewComposers\MenuComposer'
         );
 
         view()->composer(
-            ['admin.accueil', 'admin.personnes.form', 'urs.gestion', 'layouts.menu'],
+            ['admin.accueil', 'admin.personnes.form', 'urs.gestion', 'layouts.menu', 'admin.statistiques.index'],
             'App\Http\ViewComposers\DroitsComposer'
         );
 

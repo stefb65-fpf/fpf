@@ -19,8 +19,11 @@ use App\Models\Fonction;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Reversement;
+use App\Models\Souscription;
 use App\Models\Ur;
 use App\Models\Utilisateur;
+use App\Models\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -886,5 +889,43 @@ class UrController extends Controller
         }
         DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
         return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('success', "La fonction a été supprimée pour cet utilisateur");
+    }
+
+    public function statistiques() {
+        $ur = $this->getUr();
+        $nb_adherents = Utilisateur::whereIn('statut', [2,3])->where('urs_id', $ur->id)->count();
+        $nb_adherents_previous = DB::table('utilisateurs_prec')->whereIn('statut', [2,3])->where('urs_id', $ur->id)->count();
+        $ratio_adherents = round(($nb_adherents - $nb_adherents_previous) * 100 / $nb_adherents_previous, 2);
+        $nb_clubs = Club::where('statut', 2)->where('urs_id', $ur->id)->count();
+        $nb_clubs_previous = DB::table('clubs_prec')->where('urs_id', $ur->id)->where('statut', 2)->count();
+        $ratio_clubs = round(($nb_clubs - $nb_clubs_previous) * 100 / $nb_clubs_previous, 2);
+        $nb_abonnements = Abonnement::join('personnes', 'personnes.id', '=', 'abonnements.personne_id')
+            ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+            ->where('abonnements.etat', 1)
+            ->where('utilisateurs.urs_id', $ur->id)
+            ->count();
+        $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+        $nb_abonnements_clubs = Club::where('numerofinabonnement', '>=', $numeroencours)->where('urs_id', $ur->id)->count();
+        $nb_souscriptions = Souscription::join('personnes', 'personnes.id', '=', 'souscriptions.personne_id')
+            ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+            ->where('utilisateurs.urs_id', $ur->id)
+            ->where('souscriptions.statut', 1)
+            ->sum('souscriptions.nbexemplaires');
+
+        if (in_array(date('m'), [9,10,11,12])) {
+            $debut_saison = date('Y').'-09-01';
+        } else {
+            $debut_saison = (date('Y') - 1).'-09-01';
+        }
+        $montant_reversements = Reversement::where('urs_id', $ur->id)->where('created_at', '>=', $debut_saison)->sum('montant');
+
+        return view('urs.statistiques.index', compact('ur', 'nb_adherents', 'nb_adherents_previous', 'ratio_adherents',
+            'nb_clubs', 'nb_clubs_previous', 'ratio_clubs', 'nb_abonnements', 'nb_abonnements_clubs', 'nb_souscriptions', 'montant_reversements'));
+    }
+    public function statistiquesVotes() {
+        $ur = $this->getUr();
+        // on prend les 20 derniers votes existants pour lesquels la date de début est passée
+        $votes = Vote::where('debut', '<=', date('Y-m-d'))->where('urs_id', $ur->id)->orderByDesc('id')->paginate(20);
+        return view('urs.statistiques.votes', compact('votes', 'ur'));
     }
 }
