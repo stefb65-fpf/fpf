@@ -165,7 +165,8 @@ Route::put('/resetEmail/{personne}', [App\Http\Controllers\LoginController::clas
 
 
 // affichage des formations et actions liées à l'inscription
-Route::get('/formations/accueil', [App\Http\Controllers\FormationController::class, 'accueil'])->name('formations.accueil');
+Route::get('/formations', [App\Http\Controllers\FormationController::class, 'accueil'])->name('formations.accueil');
+Route::get('/formations/{formation}/detail', [App\Http\Controllers\FormationController::class, 'detail'])->name('formations.detail');
 
 // gestion des clubs par responsable de clubs
 Route::get('/clubs/gestion', [App\Http\Controllers\ClubController::class, 'gestion'])->name('clubs.gestion');

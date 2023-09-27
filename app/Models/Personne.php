@@ -30,6 +30,11 @@ class Personne extends Model
     public function historiquemails() {
         return $this->hasMany('App\Models\Historiquemail');
     }
+
+    public function interests() {
+        return $this->hasMany('App\Models\Interest');
+    }
+
 //    public function getDatenaissanceAttribute($value){
 //        return $value? Carbon::createFromFormat('Y-m-d', $value)->format('d/m/Y'):null;
 //    }
