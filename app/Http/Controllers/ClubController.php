@@ -484,11 +484,15 @@ class ClubController extends Controller
             ->where('abonnements.etat', 1)
             ->where('utilisateurs.clubs_id', $club->id)
             ->count();
-        $nb_souscriptions = Souscription::join('personnes', 'personnes.id', '=', 'souscriptions.personne_id')
+        $nb_souscriptions_indiv = Souscription::join('personnes', 'personnes.id', '=', 'souscriptions.personne_id')
             ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
             ->where('utilisateurs.clubs_id', $club->id)
             ->where('souscriptions.statut', 1)
             ->sum('souscriptions.nbexemplaires');
+        $nb_souscriptions_club = Souscription::where('clubs_id', $club->id)
+            ->where('statut', 1)
+            ->sum('nbexemplaires');
+        $nb_souscriptions = $nb_souscriptions_indiv + $nb_souscriptions_club;
 
         // on récupère les classements régionaux et nationaux du club pour la saison en cours
         $classements_nationaux = DB::table('classementclubs')->join('competitions', 'competitions.id', '=', 'classementclubs.competitions_id')

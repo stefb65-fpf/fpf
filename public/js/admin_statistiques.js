@@ -18,6 +18,7 @@ function drawChartClubs() {
             data = google.visualization.arrayToDataTable([
                 ['Statut', 'Nombre de clubs'],
                 ['Non renouvelés', reponse.non_renouveles],
+                ['Pré-inscrits', reponse.preinscrits],
                 ['Renouvelés', reponse.valides],
                 ['Nouveaux', reponse.nouveaux]
             ])
@@ -30,7 +31,7 @@ function drawChartClubs() {
     let options = {
         title: 'Clubs',
         is3D: true,
-        legend: { position: 'bottom' }
+        // legend: { position: 'bottom' }
     }
 
     let chart = new google.visualization.PieChart(document.getElementById('piechartClubs'))
@@ -51,8 +52,8 @@ function drawChartAdherents() {
             data = google.visualization.arrayToDataTable([
                 ['Statut', 'Nombre adhérents'],
                 ['Non renouvelés', reponse.non_renouveles],
-                ['Renouvelés', reponse.valides],
                 ['Pré-inscrits', reponse.preinscrits],
+                ['Renouvelés', reponse.valides],
                 ['Nouveaux', reponse.nouveaux],
             ])
         },

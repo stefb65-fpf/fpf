@@ -14,7 +14,7 @@
             </a>
         </h1>
         <div class="d-flex align-center">
-            @if($menu['admin'])
+            @if($menu['admin'] && in_array('VISUSTAT', $droits_fpf))
                 <a class="tabIndex" href="{{ route('admin.statistiques') }}">Adhésions FPF</a>
                 <a class="tabIndex" href="{{ route('admin.statistiques_votes') }}">Votes FPF</a>
             @endif

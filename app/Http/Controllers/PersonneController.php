@@ -70,11 +70,12 @@ class PersonneController extends Controller
         $votes_encours = null;
         $votes_futurs = null;
         $tab_fonctions = [];
-        foreach ($cartes[0]->fonctions as $fonction) {
-            $tab_fonctions[] = $fonction->id;
-        }
 
         if (isset($cartes[0])) {
+            foreach ($cartes[0]->fonctions as $fonction) {
+                $tab_fonctions[] = $fonction->id;
+            }
+
             if ($cartes[0]->saison >= date('Y') && $cartes[0]->statut < 4) {
                 $phase2_available = 0;
                 $phase3_available = 0;

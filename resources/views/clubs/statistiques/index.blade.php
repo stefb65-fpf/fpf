@@ -17,7 +17,7 @@
         </h1>
         @if($menu['ur'] || $menu['admin'])
             <div class="d-flex align-center">
-                @if($menu['admin'])
+                @if($menu['admin'] && in_array('VISUSTAT', $droits_fpf))
                     <a class="tabIndex" href="{{ route('admin.statistiques') }}">Adhésions FPF</a>
                     <a class="tabIndex" href="{{ route('admin.statistiques_votes') }}">Votes FPF</a>
                 @endif
@@ -78,7 +78,7 @@
                                 @endforeach
                                 @foreach($classements_regionaux as $regional)
                                     <tr>
-                                        <td>{{ $regional->nom }}</td>
+                                        <td>Régional {{ $regional->nom }}</td>
                                         <td>{{ $regional->total }}</td>
                                         <td>{{ $regional->place }}</td>
                                     </tr>

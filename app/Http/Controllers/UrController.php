@@ -906,11 +906,16 @@ class UrController extends Controller
             ->count();
         $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
         $nb_abonnements_clubs = Club::where('numerofinabonnement', '>=', $numeroencours)->where('urs_id', $ur->id)->count();
-        $nb_souscriptions = Souscription::join('personnes', 'personnes.id', '=', 'souscriptions.personne_id')
+        $nb_souscriptions_indiv = Souscription::join('personnes', 'personnes.id', '=', 'souscriptions.personne_id')
             ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
             ->where('utilisateurs.urs_id', $ur->id)
             ->where('souscriptions.statut', 1)
             ->sum('souscriptions.nbexemplaires');
+        $nb_souscriptions_clubs = Souscription::join('clubs', 'clubs.id', '=', 'souscriptions.clubs_id')
+            ->where('clubs.urs_id', $ur->id)
+            ->where('souscriptions.statut', 1)
+            ->sum('souscriptions.nbexemplaires');
+        $nb_souscriptions = $nb_souscriptions_indiv + $nb_souscriptions_clubs;
 
         if (in_array(date('m'), [9,10,11,12])) {
             $debut_saison = date('Y').'-09-01';
