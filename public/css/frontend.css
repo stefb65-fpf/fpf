@@ -216,6 +216,7 @@ a {
     height: max-content !important;
     min-height: 28px;
 }
+
 .btnCard {
     font-size: 0.8rem !important;
     display: block;
@@ -359,6 +360,10 @@ a {
 
 .flex-2 {
     flex: 2;
+}
+
+.flex-3 {
+    flex: 3;
 }
 
 .center {
@@ -672,8 +677,20 @@ a {
     min-width: 100% !important;
 }
 
+/*.minW400 {*/
+/*    min-width: min(400px,100%) !important;*/
+/*}*/
+
+/*.minW750 {*/
+/*    min-width: min(750px,100%) !important;*/
+/*}*/
+
 .maxW100 {
     max-width: 100% !important;
+}
+
+.maxW1400 {
+    max-width: min(1400px, 100%) !important;
 }
 
 .borderTopBlue {
@@ -737,9 +754,14 @@ a {
     font-size: 1rem;
     cursor: pointer;
 }
+
 .tabIndex.active {
     background-color: #003d77;
     color: white;
+}
+
+.gap20 {
+    gap: 20px;
 }
 
 /*****************************************************  */
@@ -2890,6 +2912,9 @@ select.floating.hidden {
     .searchContainer .foster {
         width: 91px;
     }
+    .flex-lg-column{
+        flex-direction: column;
+    }
 }
 
 @media screen and (max-width: 991px) {
@@ -3012,6 +3037,10 @@ select.floating.hidden {
     .md-my-15 {
         margin-top: 15px;
         margin-bottom: 15px;
+    }
+
+    .md-mt-15 {
+        margin-top: 15px;
     }
 
     .md-my-20 {

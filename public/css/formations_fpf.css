@@ -1,0 +1,168 @@
+.bgOrange {
+    background-color: #ffae13;
+}
+
+.bgRed {
+    background-color: #e0001a;
+}
+
+.bgRedLight {
+    background-color: #ff5063;
+}
+
+.bgBlueLight {
+    background-color: #00b4c3;
+}
+
+.bgGreen {
+    background-color: #46c300;
+}
+
+.bgPurpleLight {
+    background-color: #aea4fc;
+}
+
+.seeMore {
+    background-color: #e0001a;
+    color: white;
+    padding: 7px 12px;
+    font-size: 13px;
+    border-radius: 3px;
+    width: 150px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center
+
+}
+
+.cardList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card {
+    background-color: white;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    padding: 12px;
+    width: min(100%, 1100px);
+    transition: background-color 0.2s ease-in-out;
+}
+
+.hoverable:hover {
+    /*background-color: rgb(81, 81, 81);*/
+    cursor: pointer;
+    /*color: white;*/
+}
+
+.hoverable:hover .formationChapo, .hoverable:hover .formationTitle, .hoverable:hover .score {
+    /*color: white;*/
+}
+
+.tag {
+    text-transform: uppercase;
+    padding: 3px 5px;
+    border-radius: 3px;
+    font-size: 13px;
+    color: white;
+    margin-right: 7px;
+    margin-bottom: 5px;
+}
+
+.formationTitle {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #2f2f2f;
+    font-weight: 400;
+}
+
+.formationShortDesc {
+    font-size: 15px;
+    color: #545454;
+    margin-top: 7px;
+}
+
+.badge {
+    display: flex;
+    flex-direction: row;
+    font-size: 14px;
+    color: #4b4b4b;
+    margin-left: 0;
+    margin-bottom: 5px;
+}
+
+.badge img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.inlineMd {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+}
+
+.inlineMd .left {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.inlineMd .right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 7px 0;
+    min-width: 220px;
+}
+
+.inlineMd .stars svg {
+    height: 22px;
+}
+
+.score {
+    display: flex;
+    font-size: 13px;
+    color: #545454;
+    align-items: flex-end;
+    height: max-content;
+}
+
+.score .bold {
+    font-size: 15px;
+    margin: 0 2px 0 5px;
+    display: flex;
+    align-items: flex-end;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.score .on5 {
+    display: flex;
+    align-items: flex-end;
+}
+.favorite{
+    transition: 0.5s ease-in-out;
+}
+.favorite:hover svg, .favorite:hover svg path,.favorite.active svg, .favorite.active svg path{
+fill: #ff5063;
+}
+/*****************************************************  */
+/*media queries*/
+/*****************************************************  */
+
+
+@media screen and (max-width: 767px) {
+    .inlineMd {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .inlineMd .right {
+        justify-content: flex-start;
+    }
+}
