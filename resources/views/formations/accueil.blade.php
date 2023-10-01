@@ -105,13 +105,18 @@
                                      alt="">
                                 @if(!($formation->type == 1))
                                     À distance
+
                                 @endif
-                                @foreach($formation->cities as $city)
-                                    / {{$city}}
-                                @endforeach
+                                @if($formation->location)
+                                    @if($formation->type == 2)
+                                        /
+                                    @endif
+                                    {{ $formation->location}}
+                                @endif
+
                             </div>
                         </div>
-                        <a class="seeMore md-mt-15 md-mx-auto"
+                        <a class="redBtn md-mt-15 md-mx-auto"
                            href="{{ route('formations.detail', [$formation->id, 'formation']) }}">Voir la Formation</a>
                     </div>
                 </div>

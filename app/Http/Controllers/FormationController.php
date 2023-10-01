@@ -21,18 +21,14 @@ class FormationController extends Controller
         foreach ($formations as $formation) {
 //            dd($formation->categorie);
 //            dd($formation->formateurs);
-            $formation->cities = $this->getFormationCities($formation);
+            $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
         }
-
-
         return view('formations.accueil', compact('formations'));
     }
 
     public function detail(Formation $formation)
     {
-
-        $formation->cities = $this->getFormationCities($formation);
-//        dd($formation->cities);
+        $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
         return view('formations.detail', compact('formation'));
     }
 }

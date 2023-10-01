@@ -10,12 +10,17 @@ trait FormationTools
 
     public function getFormationCities(Formation $formation)
     {
-        $cities = [];
+        $cities = "";
+        $today = date("Y-m-d H:i:s");
+    $first = true;
         foreach ($formation->sessions as $session) {
-            if ($session->location) {
-                array_push($cities, $session->location);
+            $separator = strlen($cities)?", ":"";
+
+            if ($session->location && $session->start_date > $today) {
+                $cities = $cities . $separator. $session->location;
             }
         }
+
         return $cities;
     }
 

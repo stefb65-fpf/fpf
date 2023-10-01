@@ -2,11 +2,13 @@
 
 
 namespace App\Concern;
+
 use Payline\PaylineSDK;
 
 trait Api
 {
-    protected function callBridge($url, $method, $datas) {
+    protected function callBridge($url, $method, $datas)
+    {
         $headers = array(
             "Content-Type: application/json",
             "Bridge-Version: 2021-06-01",
@@ -26,12 +28,13 @@ trait Api
         }
         curl_setopt_array($curl, $curl_options);
         $response = curl_exec($curl);
-        $status     = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $status = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
         return [$status, $response];
     }
 
-    protected function callMonext($amount_cents, $urls, $ref, $user) {
+    protected function callMonext($amount_cents, $urls, $ref, $user)
+    {
         $payline = new PaylineSDK(env('PAYLINE_MERCHANT_ID'), env('PAYLINE_ACCESS_KEY'), null, null, null, null, env('PAYLINE_PRODUCTION'));
 
         $doWebPaymentRequest = array();
@@ -68,13 +71,15 @@ trait Api
         }
     }
 
-    protected function getMonextResult($token) {
+    protected function getMonextResult($token)
+    {
         $payline = new PaylineSDK(env('PAYLINE_MERCHANT_ID'), env('PAYLINE_ACCESS_KEY'), null, null, null, null, env('PAYLINE_PRODUCTION'));
         $getWebPaymentDetailsResponse = $payline->getWebPaymentDetails(['token' => $token]);
         return array('code' => $getWebPaymentDetailsResponse['result']['code'], 'message' => $getWebPaymentDetailsResponse['result']['shortMessage']);
     }
 
-    protected function callOctopush($to, $message, $sender) {
+    protected function callOctopush($to, $message, $sender)
+    {
         $url = "https://api.octopush.com/v1/public/sms-campaign/send";
         $headers = array(
             "Content-Type: application/json",
@@ -97,15 +102,15 @@ trait Api
         );
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL                 => $url,
-            CURLOPT_CUSTOMREQUEST       => 'POST',
-            CURLOPT_HTTPHEADER          => $headers,
-            CURLOPT_POST                => 1,
-            CURLOPT_POSTFIELDS          => json_encode($params),
-            CURLOPT_RETURNTRANSFER      => 1,
+            CURLOPT_URL => $url,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_POST => 1,
+            CURLOPT_POSTFIELDS => json_encode($params),
+            CURLOPT_RETURNTRANSFER => 1,
         ));
         $reponse = curl_exec($curl);
-        $status     = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $status = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
         if ($status == 200 || $status == 201) {
             $return_code = '0';
         } else {
@@ -113,4 +118,5 @@ trait Api
         }
         return $return_code;
     }
+
 }
