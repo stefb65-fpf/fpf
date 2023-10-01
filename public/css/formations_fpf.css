@@ -307,8 +307,9 @@
 .sessionContainer .locations {
     display: flex;
     justify-content: start;
-    align-items: center;
+    align-items: start;
     flex: 2;
+    margin-right: 10px;
 }
 
 .sessionContainer .inscription {

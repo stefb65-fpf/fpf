@@ -197,7 +197,10 @@
                                             <a href="" class="redBtn uppercase bgOrange hMaxContent">S'inscrire en liste
                                                 d'attente</a>
                                         @else
-                                            Inscription clôturée.
+                                            <span class="bold">
+                                                  Inscription clôturée.
+                                            </span>
+
                                         @endif
                                     @endif
 
