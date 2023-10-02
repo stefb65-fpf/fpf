@@ -35,6 +35,10 @@ class Personne extends Model
         return $this->hasMany('App\Models\Interest');
     }
 
+    public function inscrits() {
+        return $this->hasMany('App\Models\Inscrit');
+    }
+
 //    public function getDatenaissanceAttribute($value){
 //        return $value? Carbon::createFromFormat('Y-m-d', $value)->format('d/m/Y'):null;
 //    }

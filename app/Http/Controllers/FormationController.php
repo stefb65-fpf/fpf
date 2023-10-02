@@ -28,7 +28,16 @@ class FormationController extends Controller
 
     public function detail(Formation $formation)
     {
+        $personne = session()->get('user');
+//        $array = [];
+//        foreach ($personne->inscrits as $item) {
+//
+//            $array[] = $item;
+//        }
+//        $personne->inscrits = array_values($array);
+
+//        dd($personne->inscrits);
         $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
-        return view('formations.detail', compact('formation'));
+        return view('formations.detail', compact('formation', 'personne'));
     }
 }
