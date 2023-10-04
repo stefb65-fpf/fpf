@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Concern\Api;
 use App\Concern\Invoice;
 use App\Concern\Tools;
+use App\Models\Inscrit;
 use App\Models\Personne;
 use App\Models\Reglement;
 use Illuminate\Http\Request;
@@ -87,7 +88,7 @@ class ReglementController extends Controller
 
                 if ($souscription->personne_id) {
                     $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
-                    $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->personne_id];
+                    $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'personne_id' => $souscription->personne_id];
                     $this->createAndSendInvoice($datai);
                 } else {
                     if ($souscription->clubs_id) {
@@ -96,6 +97,26 @@ class ReglementController extends Controller
                         $this->createAndSendInvoice($datai);
                     }
                 }
+            }
+        }
+        // sinon on ne fait rien
+        echo 'ok';
+    }
+
+    public function notificationPaiementFormation(Request $request) {
+        $result = $this->getMonextResult($request->token);
+        if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
+            // on traite le règlement
+            $inscrit = Inscrit::where('monext_token', $request->token)->where('attente_paiement', 1)->first();
+            if ($inscrit) {
+                // on met à jour le flag attente_paiement à 0 pour l'inscrit
+                $data = ['attente_paiement' => 0, 'status' => 1];
+                $inscrit->update($data);
+
+                $description = "Inscription à la formation ".$inscrit->session->formation->name;
+                $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
+                $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->session->price, 'personne_id' => $inscrit->personne->id];
+                $this->createAndSendInvoice($datai);
             }
         }
         // sinon on ne fait rien

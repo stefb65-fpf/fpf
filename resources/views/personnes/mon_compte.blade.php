@@ -3,13 +3,20 @@
     <div class="accountContent">
         <div class="welcome">Bienvenue sur votre compte <span class="bold capitalize">{{ $user->prenom.' '.$user->nom }}</span></div>
         @if(isset($cartes[0]) && is_null($cartes[0]->clubs_id) && !in_array($cartes[0]->statut, [2,3]))
-            @if($bad_profil == 1)
+            @if($bad_profil == 2)
                 <div class="alertInfo w80">
                     <span class="bold">Informations !</span>
                     Votre profil n'est pas complet. Vous devez le compléter avant de pouvoir adhérer à la FPF.
                     <a href="/mon-profil" class="bolder">Compléter mon profil</a>
                 </div>
             @else
+                @if($bad_profil == 1)
+                    <div class="alertInfo w80">
+                        <span class="bold">Informations !</span>
+                        Votre profil n'est pas complet. Vous devez le compléter avant de pouvoir bénéficier de tous les services proposés par la FPF.
+                        <a href="/mon-profil" class="bolder">Compléter mon profil</a>
+                    </div>
+                @endif
                 <div class="alertInfo w80">
                     <span class="bold">Informations !</span>
                     Votre adhésion en tant qu'individuel de la FPF avec votre carte {{ $cartes[0]->identifiant }} a expirée. Vous pouvez la renouveler en cliquant sur l'un des boutons ci-dessous.
@@ -35,7 +42,7 @@
                 </div>
             @endif
         @else
-            @if($bad_profil == 1)
+            @if($bad_profil == 2)
                 <div class="alertInfo w80">
                     <span class="bold">Informations !</span>
                     Votre profil n'est pas complet. Vous devez le compléter pour pouvoir bénéficier de l'ensemble des services de la FPF.

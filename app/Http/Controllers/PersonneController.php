@@ -59,7 +59,7 @@ class PersonneController extends Controller
         }
         $bad_profil = 0;
         if (sizeof($personne->adresses) == 0) {
-            $bad_profil = 1;
+            $bad_profil = 2;
         }
         if (!$personne->datenaissance) {
             $bad_profil = 1;

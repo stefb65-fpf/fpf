@@ -135,15 +135,16 @@
                     </div>
                 </div>
                 <div class="card p0">
-                    <div class="cardTitle">Descriptif</div>
+                    <div class="cardTitle">Descriptif de la formation</div>
                     <div class="cardContent">
                         {!! $formation->longDesc !!}
                     </div>
                 </div>
                 <div class="card p0">
-                    <div class="cardTitle">Dates des sessions</div>
+                    <div class="cardTitle">Dates des futures sessions</div>
                     <div class="cardContent">
                         @foreach($formation->sessions as $session)
+                            @if($session->start_date >= date('Y-m-d'))
                             <div class="sessionContainer">
                                 <div class="start">
                                     <div class="icon mr10">
@@ -159,13 +160,17 @@
                                                 fill="#454545"/>
                                         </svg>
                                     </div>
-                                    {{date("d/m/Y",strtotime($session->start_date))}}
+                                    {{ date("d/m/Y",strtotime($session->start_date)) }}
                                 </div>
                                 <div class="places">
-                                    @if(sizeof($session->inscrits->where('status', 1)) < $session->places)
+                                    @if(sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places)
                                         <div class="green">Places disponibles</div>
                                     @else
-                                        <div class="red">Complet</div>
+                                        @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places )
+                                            <div class="green">Places disponibles en liste d'attente</div>
+                                        @else
+                                            <div class="red">Complet</div>
+                                        @endif
                                     @endif
                                 </div>
                                 <div class="price">{{$session->price}} €</div>
@@ -190,28 +195,26 @@
                                     @endif
                                 </div>
                                 <div class="inscription">
-
-                                    @if(sizeof($session->inscrits->where('status', 1)) < $session->places)
-
-                                        @if(gettype($personne->inscrits)== "array" && in_array($session->id,$personne->inscrits))
-                                           <div class="bold"> Vous êtes inscrit.e à cette session.</div>
-                                        @else
-                                            <a href="" class="redBtn uppercase"> S'inscrire</a>
-                                        @endif
+                                    @if(in_array($session->id, $inscriptions))
+{{--                                    @if(gettype($personne->inscrits) == "array" && in_array($session->id, $personne->inscrits))--}}
+                                        <div class="bold">Vous êtes inscrit.e à cette session</div>
                                     @else
-                                        @if(sizeof($session->inscrits->where('status', 1)) >= $session->places && sizeof($session->inscrits->where('status', 1)) < $session->places + $session->waiting_places )
-                                            <a href="" class="redBtn uppercase bgOrange hMaxContent">S'inscrire en liste
-                                                d'attente</a>
+                                        @if(sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places)
+                                            <a name="paiementInscription" data-session="{{ $session->id }}" data-price="{{ $session->price }}" class="redBtn uppercase" style="cursor: pointer;">S'inscrire</a>
                                         @else
-                                            <span class="bold">
-                                                  Inscription clôturée.
-                                            </span>
-
+                                            @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places )
+{{--                                            @if(sizeof($session->inscrits->where('status', 1)) >= $session->places && sizeof($session->inscrits->where('status', 1)) < $session->places + $session->waiting_places )--}}
+                                                <a name="attenteInscription" data-session="{{ $session->id }}" class="redBtn uppercase bgOrange hMaxContent" style="cursor: pointer;">S'inscrire en liste d'attente</a>
+                                            @else
+                                                <span class="bold">
+                                                      Inscription terminée
+                                                </span>
+                                            @endif
                                         @endif
                                     @endif
                                 </div>
                             </div>
-
+                            @endif
                         @endforeach
                     </div>
                 </div>
@@ -251,8 +254,45 @@
             </div>
         </div>
     </div>
+
+    <div class="modalEdit d-none" id="modalPaiementFormation">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Inscription à une session de formation</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Vous allez vous inscrire pour la session de formation <span class="bold">{{ $formation->name }}</span>.<br>
+            Pour valider votre inscription, vous devez payer la somme de <span id="priceModalPaiementFormation" class="bold"></span> par virement immédiat ou carte bancaire.<br>
+            Aucune autre méthode de paiement ne sera acceptée.
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="formationPayVirement" data-ref="">Payer par virement</div>
+            <div class="adminPrimary btnMedium mr10" id="formationPayCb" data-ref="">Payer par CB</div>
+        </div>
+    </div>
+
+    <div class="modalEdit d-none" id="modalAttenteFormation">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Inscription à une session de formation</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Vous allez vous inscrire sur liste d'attente pour la session de formation <span class="bold">{{ $formation->name }}</span>.<br>
+            Aucun paiement ne sera exigé pour le moment. Si une place se libère en liste principale, un lien de paiement vous sera envoyé par mail.
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="formationInscriptionAttente" data-ref="">Confirmer l'inscription en liste d'attente</div>
+        </div>
+    </div>
 @endsection
 @section('css')
+    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
     <link href="{{ asset('css/formations_fpf.css') }}" rel="stylesheet">
 @endsection
 @section('js')

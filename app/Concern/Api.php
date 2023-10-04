@@ -61,7 +61,6 @@ trait Api
 
         // CONTRACT NUMBERS
         $doWebPaymentRequest['payment']['contractNumber'] = env('PAYLINE_CONTRACT_NUMBER');
-
         $doWebPaymentResponse = $payline->doWebPayment($doWebPaymentRequest);
         if ($doWebPaymentResponse['result']['code'] != '00000') {
             return array('code' => $doWebPaymentResponse['result']['code'], 'message' => $doWebPaymentResponse['result']['longMessage']);

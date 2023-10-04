@@ -144,7 +144,7 @@
                 </a>
             @endif
             @if(in_array('GESFOR', $droits_fpf))
-                <a class="card" href="{{ route('formations.index') }}">
+                <a class="card" href="{{ route('formations.admin_accueil') }}">
                     <div class="wrapper">
                         <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path

@@ -6,6 +6,9 @@ let club = $('.pageTitle').attr('data-club')
 $('select[name=filter]').on('change', function (e) {
     e.preventDefault()
     let statut = $('select[data-ref=statut]').val()
+    if (statut == '') {
+        return
+    }
     let abonnement = $('select[data-ref=abonnement]').val()
     let url
     if (typeof club === 'undefined') {

@@ -54,7 +54,17 @@ class PublicationController extends Controller
             if ($validate == 1) {
                 // on change l'état des abonnments dont le dernier numéro est celui en cours
                 $dataa = array('etat' => 2);
-                Abonnement::where('fin', $numeroencours)->update($dataa);
+                $datap = array('is_abonne' => 0);
+                $abonnements = Abonnement::where('fin', $numeroencours)->get();
+                foreach ($abonnements as $abonnement) {
+                    $abonnement->update($dataa);
+
+                    $personne= Personne::where('id', $abonnement->personne_id)->first();
+                    if ($personne) {
+                        $personne->update($datap);
+                    }
+                }
+//                Abonnement::where('fin', $numeroencours)->update($dataa);
 
                 // on met à jour le numéro de fichier
                 $datac = array('numeroencours' => $numeroencours + 1);

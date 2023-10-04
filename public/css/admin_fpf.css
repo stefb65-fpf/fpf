@@ -79,6 +79,24 @@
     outline: none;
     border: none;
 }
+.adminWarning {
+    background-color: #fd7e14;
+    color: #000;
+    padding: 5px 10px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    border: none;
+}
+ .adminYellow{
+     background-color: #ffc107;
+     color: #000;
+     padding: 5px 10px;
+     font-weight: 600;
+     cursor: pointer;
+     outline: none;
+     border: none;
+ }
 .deleteDroit {
     color: #500;
     margin-left: 10px;
@@ -146,7 +164,15 @@
     border: 1px solid #b3b3b3;
     border-right: none;
     padding-right: 8px;
-
+}
+.helper {
+    margin-left: 165px;
+    font-size: small;
+    color: brown;
+    font-style: italic;
+}
+.d-none-admin {
+    display: none !important;
 }
 /*.modalEdit {*/
 /*    left: 50%;*/

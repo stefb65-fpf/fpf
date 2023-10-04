@@ -4,6 +4,75 @@ $(".favorite svg ").on('click', function (e) {
     //TODO appel api pour enregistrer le fait que l'utilisateur est intéressé par cette formation
 })
 
+$('a[name=paiementInscription]').on('click', function (e) {
+    const session = $(this).data('session')
+    const price = $(this).data('price')
+    $('#priceModalPaiementFormation').html(price + ' €')
+    $('#formationPayVirement').data('ref', session)
+    $('#formationPayCb').data('ref', session)
+    $('#modalPaiementFormation').removeClass('d-none')
+})
+
+$('#formationPayVirement').on('click', function () {
+    const ref = $(this).data('ref')
+    $.ajax({
+        url:'/api/formations/payByVirement',
+        type: 'POST',
+        data: {
+            ref: ref,
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            $(location).attr('href', data.url)
+        },
+        error: function (e) {
+            alert(e.responseJSON.erreur)
+        }
+    });
+})
+
+$('#formationPayCb').on('click', function () {
+    const ref = $(this).data('ref')
+    $.ajax({
+        url:'/api/formations/payByCb',
+        type: 'POST',
+        data: {
+            ref: ref,
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            $(location).attr('href', data.url)
+        },
+        error: function (e) {
+            alert(e.responseJSON.erreur)
+        }
+    });
+})
+
+$('a[name=attenteInscription]').on('click', function (e) {
+    const session = $(this).data('session')
+    $('#formationInscriptionAttente').data('ref', session)
+    $('#modalAttenteFormation').removeClass('d-none')
+})
+
+$('#formationInscriptionAttente').on('click', function () {
+    const ref = $(this).data('ref')
+    $.ajax({
+        url:'/api/formations/inscriptionAttente',
+        type: 'POST',
+        data: {
+            ref: ref,
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            $(location).attr('href', $(location).attr('href'))
+        },
+        error: function (e) {
+            alert(e.responseJSON.erreur)
+        }
+    });
+})
+
 
 $('div[name=formateur]').on('click', function (e) {
     e.preventDefault()
@@ -48,7 +117,6 @@ $('div[name=formateur]').on('click', function (e) {
         error: function (e) {
         }
     });
-
 })
 
 $('div[name=reviews]').on('click', function (e) {

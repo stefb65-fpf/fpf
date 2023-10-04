@@ -440,7 +440,7 @@ class ClubController extends Controller
 
                 if ($souscription->personne_id) {
                     $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
-                    $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->personne_id];
+                    $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'personne_id' => $souscription->personne_id];
                     $this->createAndSendInvoice($datai);
                 } else {
                     if ($souscription->clubs_id) {

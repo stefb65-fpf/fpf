@@ -69,13 +69,13 @@
                 @endif
             </div>
             <ul class="leftMenu" id="navMenu">
-                {{--                @if($menu['formation'])--}}
-                {{--                <li class="leftMenuItem{{ Request::is('formations')?" active":""}}">--}}
-                {{--                    <a href="{{ route('formations.accueil') }}">--}}
-                {{--                        catalogue formations--}}
-                {{--                    </a>--}}
-                {{--                </li>--}}
-                {{--                @endif--}}
+                @if($menu['formation'])
+                    <li class="leftMenuItem">
+                        <a href="{{ route('formations.accueil') }}">
+                            catalogue formations
+                        </a>
+                    </li>
+                @endif
                 @if($menu['club'])
                     <li class="leftMenuItem{{ Request::is('gestion-club')?" active":""}}">
                         <a href="{{ route('clubs.gestion') }}">

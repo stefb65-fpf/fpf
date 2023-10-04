@@ -43,7 +43,31 @@ Route::post('/urs/fonctions/store', [App\Http\Controllers\UrController::class, '
 Route::post('/urs/fonctions/{fonction}/update', [App\Http\Controllers\UrController::class, 'updateFonction'])->name('urs.fonctions.update');
 Route::put('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'updateUr'])->name('urs.infos.update');
 
+Route::get('/admin/formations/{formation}/activate', [App\Http\Controllers\Admin\FormationController::class, 'activate'])->name('formations.activate');
+Route::get('/admin/formations/{formation}/deactivate', [App\Http\Controllers\Admin\FormationController::class, 'deactivate'])->name('formations.deactivate');
+Route::get('/admin/formations/parametrage', [App\Http\Controllers\Admin\FormationController::class, 'parametrage'])->name('formations.parametrage');
+Route::get('/admin/formations/accueil', [App\Http\Controllers\Admin\FormationController::class, 'accueil'])->name('formations.admin_accueil');
 Route::resource('/admin/formations', App\Http\Controllers\Admin\FormationController::class);
+Route::resource('/admin/categoriesformations', App\Http\Controllers\Admin\CategorieFormationController::class);
+Route::resource('/admin/evaluationsthemes', App\Http\Controllers\Admin\EvaluationthemeController::class);
+Route::resource('/admin/evaluationsitems', App\Http\Controllers\Admin\EvaluationitemController::class);
+Route::get('/admin/evaluationsitems/{theme}/createForTheme', [App\Http\Controllers\Admin\EvaluationitemController::class, 'createForTheme'])->name('evaluationsitems.createForTheme');
+Route::post('/admin/evaluationsitems/{theme}/store', [App\Http\Controllers\Admin\EvaluationitemController::class, 'storeForTheme'])->name('evaluationsitems.storeForTheme');
+
+Route::get('/admin/sessions/{formation}/liste', [App\Http\Controllers\Admin\SessionController::class, 'index'])->name('sessions.index');
+Route::get('/admin/sessions/{formation}/create', [App\Http\Controllers\Admin\SessionController::class, 'create'])->name('sessions.create');
+Route::post('/admin/sessions/{formation}/store', [App\Http\Controllers\Admin\SessionController::class, 'store'])->name('sessions.store');
+Route::get('/admin/sessions/{session}/edit', [App\Http\Controllers\Admin\SessionController::class, 'edit'])->name('sessions.edit');
+Route::put('/admin/sessions/{session}/update', [App\Http\Controllers\Admin\SessionController::class, 'update'])->name('sessions.update');
+Route::delete('/admin/sessions/{session}/destroy', [App\Http\Controllers\Admin\SessionController::class, 'destroy'])->name('sessions.destroy');
+
+Route::get('/admin/inscrits/{session}/liste', [App\Http\Controllers\Admin\InscritController::class, 'liste'])->name('inscrits.liste');
+Route::delete('/admin/inscrits/{inscrit}/destroy', [App\Http\Controllers\Admin\InscritController::class, 'destroy'])->name('inscrits.destroy');
+
+Route::get('/admin/formateurs/{formation}/liste', [App\Http\Controllers\Admin\FormateurController::class, 'liste'])->name('formateurs.liste');
+Route::post('/admin/formateurs/{formation}/add', [App\Http\Controllers\Admin\FormateurController::class, 'add'])->name('formateurs.add');
+Route::delete('/admin/formateurs/{formation}/remove/{formateur}', [App\Http\Controllers\Admin\FormateurController::class, 'remove'])->name('formateurs.remove');
+Route::resource('/admin/formateurs', App\Http\Controllers\Admin\FormateurController::class);
 
 Route::get('/vote/{vote}', [App\Http\Controllers\VoteController::class, 'index'])->name('utilisateur.vote');
 Route::resource('/admin/votes', App\Http\Controllers\Admin\VoteController::class);
@@ -166,6 +190,10 @@ Route::put('/resetEmail/{personne}', [App\Http\Controllers\LoginController::clas
 
 // affichage des formations et actions liées à l'inscription
 Route::get('/formations', [App\Http\Controllers\FormationController::class, 'accueil'])->name('formations.accueil');
+Route::get('/formations/cancel_paiement', [App\Http\Controllers\FormationController::class, 'cancelPaiement']);
+Route::get('/formations/validation_paiement', [App\Http\Controllers\FormationController::class, 'validationPaiement']);
+Route::get('/formations/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiementFormation']);
+Route::get('/formations/attente_paiement_validation/{formation}', [App\Http\Controllers\FormationController::class, 'attentePaiementValidation']);
 Route::get('/formations/{formation}/detail', [App\Http\Controllers\FormationController::class, 'detail'])->name('formations.detail');
 
 // gestion des clubs par responsable de clubs

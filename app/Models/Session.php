@@ -17,4 +17,8 @@ class Session extends Model
     public function evaluations() {
         return $this->hasMany('App\Models\Evaluation');
     }
+
+    public function inscrits() {
+        return $this->hasMany('App\Models\Inscrit');
+    }
 }

@@ -63,7 +63,6 @@
                                 @endfor
                                 <div class="score mr10">
                                     <div class="bold">
-
                                         {{($formation->stars - floor($formation->stars)) == 0 ? floor($formation->stars):$formation->stars}}
                                     </div>
                                     <div class="on5 mr5">/5</div>
@@ -83,13 +82,13 @@
                                      alt="">
                                 @switch($formation->level)
                                     @case (2)
-                                    confirmé
-                                    @break
+                                        confirmé
+                                        @break
                                     @case(1)
-                                    intermédiaire
-                                    @break
+                                        intermédiaire
+                                        @break
                                     @default
-                                    initiation
+                                        initiation
                                 @endswitch
                             </div>
                             @if($formation->duration)
@@ -99,13 +98,11 @@
                                     {{$formation->duration}}
                                 </div>
                             @endif
-
                             <div class="badge mr25">
                                 <img class="mr10" src="{{ env('APP_URL').'storage/app/public/map-marker-alt.png' }}"
                                      alt="">
                                 @if(!($formation->type == 1))
                                     À distance
-
                                 @endif
                                 @if($formation->location)
                                     @if($formation->type == 2)
@@ -113,11 +110,10 @@
                                     @endif
                                     {{ $formation->location}}
                                 @endif
-
                             </div>
                         </div>
                         <a class="redBtn md-mt-15 md-mx-auto"
-                           href="{{ route('formations.detail', [$formation->id, 'formation']) }}">Voir la Formation</a>
+                           href="{{ route('formations.detail', $formation->id) }}">Voir la Formation</a>
                     </div>
                 </div>
             @endforeach

@@ -11,7 +11,7 @@ class Formateur extends Model
     protected $guarded = [];
 
     public function formations() {
-        return $this->belongsToMany('App\Models\Formation');
+        return $this->belongsToMany('App\Models\Formation', 'formation_formateur');
     }
 
     public function personne() {

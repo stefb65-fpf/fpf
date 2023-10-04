@@ -5,11 +5,14 @@ namespace App\Console\Commands;
 use App\Concern\Api;
 use App\Concern\Invoice;
 use App\Concern\Tools;
+use App\Mail\ConfirmationInscriptionFormation;
+use App\Models\Inscrit;
 use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Souscription;
 use App\Models\Utilisateur;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class CheckBridge extends Command
 {
@@ -131,7 +134,7 @@ class CheckBridge extends Command
 
                     if ($souscription->personne_id) {
                         $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
-                        $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->personne_id];
+                        $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'personne_id' => $souscription->personne_id];
                         $this->createAndSendInvoice($datai);
                     } else {
                         if ($souscription->clubs_id) {
@@ -145,6 +148,43 @@ class CheckBridge extends Command
                 if ($tab_reponse->status == 'REVOKED' || $tab_reponse->status == 'EXPIRED') {
                     // le paiement n'a pas été effectué
                     $souscription->delete();
+                }
+            }
+        }
+
+        $inscrits = Inscrit::where('attente_paiement', 1)->whereNotNull('bridge_id')->get();
+        foreach ($inscrits as $inscrit) {
+            $url = 'https://api.bridgeapi.io/v2/payment-links/'. $inscrit->bridge_id;
+            list($status, $reponse) = $this->callBridge($url, 'GET', null);
+            if ($status == 200) {
+                $tab_reponse = json_decode($reponse);
+                if ($tab_reponse->status == 'COMPLETED') {
+                    // le paiement de l'inscription a été effectué
+                    $data = ['attente_paiement' => 0, 'status' => 1];
+                    $inscrit->update($data);
+                    $formation = $inscrit->session->formation;
+
+                    $email = $inscrit->personne->email;
+                    $mailSent = Mail::to($email)->send(new ConfirmationInscriptionFormation($inscrit->session));
+                    $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+                    $sujet = "FPF // Inscription à la formation $formation->name";
+                    $mail = new \stdClass();
+                    $mail->titre = $sujet;
+                    $mail->destinataire = $email;
+                    $mail->contenu = $htmlContent;
+                    $this->registerMail($inscrit->personne->id, $mail);
+
+                    $sujet = "Inscription à la formation $formation->name";
+                    $this->registerAction($inscrit->personne->id, 2, $sujet);
+
+                    $description = "Inscription à la formation ".$inscrit->session->formation->name;
+                    $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->session->price, 'personne_id' => $inscrit->personne->id];
+                    $this->createAndSendInvoice($datai);
+                }
+                if ($tab_reponse->status == 'REVOKED' || $tab_reponse->status == 'EXPIRED') {
+                    $inscrit->delete();
                 }
             }
         }

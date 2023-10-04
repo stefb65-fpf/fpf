@@ -1,0 +1,10 @@
+.cardEtiquette {
+    width:330px;
+    height: 132px;
+    padding: 5px;
+}
+.cardEtiquetteTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}

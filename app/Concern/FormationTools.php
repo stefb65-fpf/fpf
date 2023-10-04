@@ -12,17 +12,12 @@ trait FormationTools
     {
         $cities = "";
         $today = date("Y-m-d H:i:s");
-    $first = true;
         foreach ($formation->sessions as $session) {
-            $separator = strlen($cities)?", ":"";
-
+            $separator = strlen($cities) ? ", " : "";
             if ($session->location && $session->start_date > $today) {
-                $cities = $cities . $separator. $session->location;
+                $cities = $cities . $separator . $session->location;
             }
         }
-
         return $cities;
     }
-
-
 }

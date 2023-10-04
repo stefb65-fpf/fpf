@@ -81,3 +81,8 @@ Route::post('/gestStatsRepartitionCartes', [App\Http\Controllers\Api\Statistique
 // action sur l'affichage des formations
 Route::post('/getFormateur', [App\Http\Controllers\Api\FormationController::class, 'getFormateur']);
 Route::post('/getReviews', [App\Http\Controllers\Api\FormationController::class, 'getReviews']);
+Route::post('/formations/payByVirement', [App\Http\Controllers\Api\FormationController::class, 'payByVirement']);
+Route::post('/formations/payByCb', [App\Http\Controllers\Api\FormationController::class, 'payByCb']);
+Route::post('/formations/inscriptionAttente', [App\Http\Controllers\Api\FormationController::class, 'inscriptionAttente']);
+
+Route::post('/checkTrainerEmail', [App\Http\Controllers\Api\FormateurController::class, 'checkTrainerEmail']);

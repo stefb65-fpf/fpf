@@ -1,5 +1,5 @@
 .bgOrange {
-    background-color: #ffae13 !important;
+    background-color: #ffae13;
 }
 
 .bgRed {
@@ -14,35 +14,16 @@
     background-color: #00b4c3;
 }
 
-.bgGreen {
-    background-color: #46c300;
-}
-
-.green {
-    color: green;
-}
-
-.red {
-    color: #e0001a;
-}
-
 .bgPurpleLight {
     background-color: #aea4fc;
 }
 
-.redBtn {
+.seeMore {
     background-color: #e0001a;
     color: white;
     padding: 7px 12px;
     font-size: 13px;
     border-radius: 3px;
-    width: 150px;
-    height: 36px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-
 }
 
 .cardList {
@@ -52,8 +33,6 @@
 }
 
 .card {
-    display: flex;
-    flex-direction: column;
     background-color: white;
     border-radius: 12px;
     margin-bottom: 40px;
@@ -79,7 +58,6 @@
     font-size: 13px;
     color: white;
     margin-right: 7px;
-    margin-bottom: 5px;
 }
 
 .formationTitle {
@@ -89,7 +67,7 @@
     font-weight: 400;
 }
 
-.formationShortDesc {
+.formationChapo {
     font-size: 15px;
     color: #545454;
     margin-top: 7px;
@@ -101,7 +79,6 @@
     font-size: 14px;
     color: #4b4b4b;
     margin-left: 0;
-    margin-bottom: 5px;
 }
 
 .badge img {
@@ -114,7 +91,6 @@
     display: flex;
     justify-content: space-between;
     padding: 7px 0;
-    flex-wrap: wrap;
 }
 
 .inlineMd .left {
@@ -129,7 +105,6 @@
     align-items: center;
     justify-content: flex-end;
     margin: 7px 0;
-    min-width: 220px;
 }
 
 .inlineMd .stars svg {
@@ -158,252 +133,6 @@
     align-items: flex-end;
 }
 
-.favorite path {
-    transition: fill 0.5s ease-in-out;
-}
-
-.favorite.active svg path {
-    fill: #ff5063;
-    stroke: #ff5063;
-}
-
-.cardTitle {
-    margin-top: 15px;
-    padding: 14px 30px;
-    background: #02b3e4;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 16px;
-    color: #fff;
-    border-radius: 0 2px 2px 0;
-    text-transform: uppercase;
-    width: max-content;
-}
-
-.cardContent {
-    font-size: 14px;
-    color: #424242;
-    margin-top: 4px;
-    padding: 15px 20px;
-    line-height: 28px;
-}
-
-.cardContent h1, .cardContent h2, .cardContent h3, .cardContent h4, .cardContent h5 {
-    text-align: left;
-    margin-top: 10px;
-    margin-bottom: 0px;
-    font-weight: 500;
-}
-
-.cardContent h1 {
-    text-align: center;
-    font-size: 18px;
-    color: #003d77;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-    text-decoration: underline;
-}
-
-.cardContent h2 {
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 18px;
-    line-height: 20px;
-    margin-top: 20px;
-}
-
-.modalFormateur {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.formateur img, .modalFormateur img {
-    width: 110px;
-    height: 110px;
-    margin-bottom: 20px;
-}
-
-.formateur {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 10px;
-    cursor: pointer;
-    border-radius: 3px;
-    width: 190px;
-    min-height: 230px;
-    transition: 0.2s ease-in-out;
-}
-
-.formateur:hover {
-    background-color: #d9d9d9;
-}
-
-.formateur .name, .modalFormateur .name {
-    font-weight: 600;
-    text-align: center;
-    font-size: 15px;
-}
-
-.formateur .function, .modalFormateur .function {
-    font-weight: 300;
-    font-size: 14px;
-    text-align: center;
-    text-transform: uppercase;
-    line-height: 19px;
-}
-
-.modalFormateur .website {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-    font-size: 14px;
-    color: #2C4F80;
-}
-
-.modalFormateur .website .icon {
-    margin-right: 10px;
-}
-
-.modalFormateur .cv {
-    margin-top: 25px;
-    line-height: 27px;
-    text-align: justify;
-    color: #545454;
-}
-
-.sessionContainer {
-    display: flex;
-    margin-bottom: 15px;
-    width: 100%;
-    border: 1px solid #454545;
-    gap: 10px;
-    padding: 18px 7px;
-    border-radius: 5px;
-}
-
-.sessionContainer .start {
-    flex: 2;
-    display: flex;
-    align-items: center;
-}
-
-.sessionContainer .places {
-    flex: 2;
-    display: flex;
-    align-items: center;
-}
-
-.sessionContainer .price {
-    flex: 1;
-    display: flex;
-    align-items: center;
-}
-
-.sessionContainer .locations {
-    display: flex;
-    justify-content: start;
-    align-items: start;
-    flex: 2;
-    margin-right: 10px;
-}
-
-.sessionContainer .inscription {
-    flex: 2;
-    display: flex;
-    align-items: center;
-}
-
-.icon {
-    display: flex;
-}
-
-.modalReviews .stars {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 25px;
-}
-
-.reviewsList {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 35px;
-}
-
-.reviewItem {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-
-.reviewItem .top {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.reviewItem .top .left {
-    text-align: left;
-}
-
-.reviewItem .bottom {
-    width: 100%;
-    text-align: left;
-    font-size: 14px;
-    margin: 5px 0 8px;
-}
-
-.reviewItem .top .right {
-    display: flex;
-    margin-right: 5px;
-    height: max-content;
-    align-items: flex-end;
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 20px;
-    color: #3a3a3a;
-}
-
-.reviewItem .top .right .small {
-    font-size: 13px;
-    color: rgb(84, 84, 84);
-    margin-left: 3px;
-}
-
-.reviewItem .name {
-    color: #003d77;
-    font-size: 14px;
-    font-weight: 500
-}
-
-.reviewItem .date {
-    color: #5A606C;
-    font-weight: 300;
-    font-style: normal;
-    line-height: 1.3846153846153846;
-    font-size: 13px;
-}
-
-.separator {
-    width: min(100%, 424px);
-    margin: 17px auto;
-    height: 1px;
-    background-color: #c8c8c8;
-}
-
-.separator:last-child {
-    display: none;
-}
-
 /*****************************************************  */
 /*media queries*/
 /*****************************************************  */
@@ -417,12 +146,5 @@
 
     .inlineMd .right {
         justify-content: flex-start;
-    }
-}
-
-@media screen and (min-width: 1200px ) and (max-width: 1400px), screen  and (max-width: 768px) {
-    .sessionContainer {
-        flex-direction: column;
-        align-items: center;
     }
 }

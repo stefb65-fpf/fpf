@@ -25,7 +25,8 @@
             <div class="formUnit mb0">
                 <div class="formLabel mr10 bold">Statut :</div>
                 <select class="formValue modifying" name="filter" data-ref="statut">
-                    <option value="all">Tous</option>
+                    <option value=""></option>
+                    <option value="all" {{$statut == 'all' ? "selected" : ""}}>Tous</option>
                     <option value="1" {{$statut == 1 ? "selected" : ""}}>Pré-inscrits</option>
                     <option value="2" {{$statut == 2 ? "selected" : ""}}>Validés</option>
                     <option value="3" {{$statut == 3 ? "selected" : ""}}>Carte éditée</option>
