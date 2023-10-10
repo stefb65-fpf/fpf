@@ -30,8 +30,9 @@ class FormationController extends Controller
     {
         $formations = Formation::where('published', 1)->orderByDesc('created_at')->get();
         foreach ($formations as $formation) {
-            $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
+            $formation->location = $this->getFormationCities($formation, $formation->location);
         }
+
         return view('formations.accueil', compact('formations'));
     }
 
@@ -40,14 +41,15 @@ class FormationController extends Controller
         $user = session()->get('user');
         $personne = Personne::where('id', $user->id)->first();
         $inscriptions = [];
-        foreach ($personne->inscrits->where('status', 1) as $inscrit) {
+        foreach ($personne->inscrits as $inscrit) {
             $inscriptions[] = $inscrit->session_id;
         }
         $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
         return view('formations.detail', compact('formation', 'personne', 'inscriptions'));
     }
 
-    public function cancelPaiement(Request $request) {
+    public function cancelPaiement(Request $request)
+    {
         $inscrit = Inscrit::where('monext_token', $request->token)->first();
         if ($inscrit) {
             $formation = $inscrit->session->formation;
@@ -58,7 +60,8 @@ class FormationController extends Controller
         }
     }
 
-    public function validationPaiement(Request $request) {
+    public function validationPaiement(Request $request)
+    {
         $result = $this->getMonextResult($request->token);
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
             $inscrit = Inscrit::where('monext_token', $request->token)->where('attente_paiement', 1)->first();
@@ -82,8 +85,8 @@ class FormationController extends Controller
                 $sujet = "Inscription à la formation $formation->name";
                 $this->registerAction($inscrit->personne->id, 2, $sujet);
 
-                $description = "Inscription à la formation ".$inscrit->session->formation->name;
-                $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
+                $description = "Inscription à la formation " . $inscrit->session->formation->name;
+                $ref = 'FORMATION-' . $inscrit->personne_id . '-' . $inscrit->session_id;
                 $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->session->price, 'personne_id' => $inscrit->personne->id];
                 $this->createAndSendInvoice($datai);
                 return redirect()->route('formations.detail', $formation->id)->with('success', "Votre paiement a été pris en compte et vous êtes désormais inscrit à cette formation");
@@ -93,7 +96,8 @@ class FormationController extends Controller
         }
     }
 
-    public function attentePaiementValidation($formation_id) {
+    public function attentePaiementValidation($formation_id)
+    {
         return redirect()->route('formations.detail', $formation_id)->with('success', "Si vous avez procédé au paiement par virement de votre inscription, celle-ci sera traitée d'ici quelques minutes et un email vous informera de sa prise en compte");
     }
 

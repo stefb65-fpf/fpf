@@ -1,10 +1,9 @@
-@extends('layouts.default')
-
-@section('content')
-    <div class="formationsPage pageCanva">
-        <h1 class="pageTitle">
-            {{ $formation->name }}
-            <a class="previousPage" title="Retour page précédente" href="{{ route('formations.accueil') }}">
+@extends('layouts.account')
+@section('contentaccount')
+    <div class="accountContent">
+        <h1 class="mt25 mb25">
+            Retour
+            <a class="previousPage" title="Retour page précédente" href="/mes-formations">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                      class="bi bi-reply-fill" viewBox="0 0 16 16">
                     <path
@@ -123,15 +122,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="favorite md-mt-15 md-ml-auto pointer mr20"
-                        >
-                            <svg width="29" height="24" viewBox="0 0 29 24" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M14.803 3.58738C16.0101 1.97971 17.9648 1.00016 20.2542 1C22.0444 1.00217 23.7606 1.71427 25.0265 2.98012C26.2925 4.24611 27.0046 5.96258 27.0066 7.75295C27.006 11.6606 24.0741 15.3604 20.7903 18.2362C17.5589 21.0661 14.2518 22.8685 14.0093 22.9968L14.0093 22.9968L14.0034 23L14.0033 23L14.0032 23L14.0032 23L13.9973 22.9968C13.7548 22.8685 10.4477 21.0661 7.21631 18.2362C3.93234 15.3603 1.00027 11.6603 1 7.75238C1.00217 5.96221 1.71427 4.24598 2.98012 2.98012C4.24597 1.71427 5.96221 1.00217 7.75238 1C10.0418 1.00016 11.9965 1.97971 13.2036 3.58738L14.0033 4.65244L14.803 3.58738Z"
-                                    stroke="#454545" stroke-width="2"/>
-                            </svg>
-                        </div>
+
                     </div>
                 </div>
                 <div class="card p0">
@@ -177,7 +168,7 @@
                                     <div class="price">{{$session->price}} €</div>
                                     <div class="locations">
                                         <img class="mr10"
-                                             src="{{ env('APP_URL').'storage/app/public/map-marker-alt.png' }}">
+                                             src="{{ env('APP_URL').'storage/app/public/map-marker-alt.png' }}" alt="localisation">
                                         @if(!$session->type)
                                             À distance
                                         @elseif($session->type == 1)
@@ -194,10 +185,8 @@
                                                 /  {{$formation->location}}
                                             @endif
                                         @endif
-
                                     </div>
                                     <div class="inscription">
-
                                         @if(in_array($session->id, $inscriptions))
                                             @if($session->inscrits->where('personne_id',$personne->id) && ($session->inscrits->where('personne_id',$personne->id)->first()->status == 0))
                                                 <div class="orangeBtn">En attente de paiement</div>
@@ -219,8 +208,7 @@
                                                    data-price="{{ $session->price }}" class="redBtn uppercase"
                                                    style="cursor: pointer;">S'inscrire</a>
                                             @else
-                                                @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places )
-                                                    {{--                                            @if(sizeof($session->inscrits->where('status', 1)) >= $session->places && sizeof($session->inscrits->where('status', 1)) < $session->places + $session->waiting_places )--}}
+                                                @if(sizeof($session->inscrits->where('status', 1)) >= $session->places && sizeof($session->inscrits->where('status', 1)) < $session->places + $session->waiting_places )
                                                     <a name="attenteInscription" data-session="{{ $session->id }}"
                                                        class="redBtn uppercase bgOrange hMaxContent"
                                                        style="cursor: pointer;">S'inscrire en liste d'attente</a>
@@ -273,51 +261,8 @@
             </div>
         </div>
     </div>
-
-    <div class="modalEdit d-none" id="modalPaiementFormation">
-        <div class="modalEditHeader">
-            <div class="modalEditTitle">Inscription à une session de formation</div>
-            <div class="modalEditClose">
-                X
-            </div>
-        </div>
-        <div class="modalEditBody">
-            Vous allez vous inscrire pour la session de formation <span class="bold">{{ $formation->name }}</span>.<br>
-            Pour valider votre inscription, vous devez payer la somme de <span id="priceModalPaiementFormation"
-                                                                               class="bold"></span> par virement
-            immédiat ou carte bancaire.<br>
-            Aucune autre méthode de paiement ne sera acceptée.
-        </div>
-        <div class="modalEditFooter">
-            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
-            <div class="adminPrimary btnMedium mr10" id="formationPayVirement" data-ref="">Payer par virement</div>
-            <div class="adminPrimary btnMedium mr10" id="formationPayCb" data-ref="">Payer par CB</div>
-        </div>
-    </div>
-
-    <div class="modalEdit d-none" id="modalAttenteFormation">
-        <div class="modalEditHeader">
-            <div class="modalEditTitle">Inscription à une session de formation</div>
-            <div class="modalEditClose">
-                X
-            </div>
-        </div>
-        <div class="modalEditBody">
-            Vous allez vous inscrire sur liste d'attente pour la session de formation <span
-                class="bold">{{ $formation->name }}</span>.<br>
-            Aucun paiement ne sera exigé pour le moment. Si une place se libère en liste principale, un lien de paiement
-            vous sera envoyé par mail.
-        </div>
-        <div class="modalEditFooter">
-            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
-            <div class="adminPrimary btnMedium mr10" id="formationInscriptionAttente" data-ref="">Confirmer
-                l'inscription en liste d'attente
-            </div>
-        </div>
-    </div>
 @endsection
 @section('css')
-    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
     <link href="{{ asset('css/formations_fpf.css') }}" rel="stylesheet">
 @endsection
 @section('js')

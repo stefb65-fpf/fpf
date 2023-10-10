@@ -173,17 +173,18 @@ Route::get('/validation_paiement_carte_florilege_club', [App\Http\Controllers\Cl
 // gestion profil de la personne
 Route::get('/mes-mails', [App\Http\Controllers\PersonneController::class, 'mesMails']);
 Route::get('/mes-actions', [App\Http\Controllers\PersonneController::class, 'mesActions']);
-Route::get('/mes-formations', [App\Http\Controllers\PersonneController::class, 'mesFormations']);;
+Route::get('/mes-formations', [App\Http\Controllers\PersonneController::class, 'mesFormations']);
+Route::get('/mes-formations/{formation}/detail', [App\Http\Controllers\PersonneController::class, 'formationDetail'])->name('mes-formations.detail');
 Route::get('/mon-profil', [App\Http\Controllers\PersonneController::class, 'monProfil'])->name('mon-profil');
 Route::get('/souscription-individuelle', [App\Http\Controllers\PersonneController::class, 'souscriptionIndividuelle'])->name('souscription-individuelle');
 Route::get('/souscription-abonnement', [App\Http\Controllers\PersonneController::class, 'souscriptionAbonnement'])->name('souscription-abonnement');
 Route::get('/florilege', [App\Http\Controllers\PersonneController::class, 'florilege'])->name('florilege');
 Route::get('/factures', [App\Http\Controllers\PersonneController::class, 'factures'])->name('factures');
-Route::put('/update-password/{personne}',[App\Http\Controllers\PersonneController::class, 'updatePassword'])->name('updatePassword');
-Route::put('/update-email/{personne}',[App\Http\Controllers\PersonneController::class, 'updateEmail'])->name('updateEmail');
-Route::put('/update-civilite/{personne}',[App\Http\Controllers\PersonneController::class, 'updateCivilite'])->name('updateCivilite');
-Route::put('/update-adresse/{personne}/{form}',[App\Http\Controllers\PersonneController::class, 'updateAdresse'])->name('updateAdresse');
-Route::delete('/anonymize',[App\Http\Controllers\PersonneController::class, 'anonymize'])->name('anonymize');
+Route::put('/update-password/{personne}', [App\Http\Controllers\PersonneController::class, 'updatePassword'])->name('updatePassword');
+Route::put('/update-email/{personne}', [App\Http\Controllers\PersonneController::class, 'updateEmail'])->name('updateEmail');
+Route::put('/update-civilite/{personne}', [App\Http\Controllers\PersonneController::class, 'updateCivilite'])->name('updateCivilite');
+Route::put('/update-adresse/{personne}/{form}', [App\Http\Controllers\PersonneController::class, 'updateAdresse'])->name('updateAdresse');
+Route::delete('/anonymize', [App\Http\Controllers\PersonneController::class, 'anonymize'])->name('anonymize');
 
 Route::put('/resetEmail/{personne}', [App\Http\Controllers\LoginController::class, 'resetEmail'])->name('resetEmail');
 
@@ -203,9 +204,9 @@ Route::put('/update-club-address/{club}', [App\Http\Controllers\ClubController::
 Route::put('/update-club-reunion/{club}', [App\Http\Controllers\ClubController::class, 'updateReunion'])->name('clubGestion_updateReunion');
 
 // gestion des fonctions club par responsable de clubs
-Route::delete('/delete-club-fonction/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\ClubController::class,'deleteFonction'])->name('deleteFonctionClub');
-Route::put('/update-club-fonction/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\ClubController::class,'updateFonction'])->name('updateFonctionClub');
-Route::put('/add-club-fonction/{fonction_id}',[App\Http\Controllers\ClubController::class,'addFonction'])->name('addFonctionClub');
+Route::delete('/delete-club-fonction/{current_utilisateur_id}/{fonction_id}', [App\Http\Controllers\ClubController::class, 'deleteFonction'])->name('deleteFonctionClub');
+Route::put('/update-club-fonction/{current_utilisateur_id}/{fonction_id}', [App\Http\Controllers\ClubController::class, 'updateFonction'])->name('updateFonctionClub');
+Route::put('/add-club-fonction/{fonction_id}', [App\Http\Controllers\ClubController::class, 'addFonction'])->name('addFonctionClub');
 
 
 // gestion des urs par responsable ur
@@ -233,9 +234,9 @@ Route::post('/admin/clubs/store', [App\Http\Controllers\Admin\ClubController::cl
 Route::get('/admin/clubs/{ur_id?}/{statut?}/{type_carte?}/{abonnement?}/{term?}', [App\Http\Controllers\Admin\ClubController::class, 'index'])->name('admin.clubs.index');
 Route::get('/admin/liste_adherent/{club}/{statut?}/{abonnement?}', [App\Http\Controllers\Admin\ClubController::class, 'listeAdherent'])->name('admin.clubs.liste_adherents_club');
 Route::get('/admin/liste_fonctions/{club}', [App\Http\Controllers\Admin\ClubController::class, 'listeFonctions'])->name('admin.clubs.liste_fonctions');
-Route::put('/admin/update-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\Admin\ClubController::class,'updateFonction'])->name('admin.updateFonctionClub');
-Route::put('/admin/add-club-fonction/{club_id}/{fonction_id}',[App\Http\Controllers\Admin\ClubController::class,'addFonction'])->name('admin.addFonctionClub');
-Route::delete('/admin/delete-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\Admin\ClubController::class,'deleteFonction'])->name('admin.deleteFonctionClub');
+Route::put('/admin/update-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}', [App\Http\Controllers\Admin\ClubController::class, 'updateFonction'])->name('admin.updateFonctionClub');
+Route::put('/admin/add-club-fonction/{club_id}/{fonction_id}', [App\Http\Controllers\Admin\ClubController::class, 'addFonction'])->name('admin.addFonctionClub');
+Route::delete('/admin/delete-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}', [App\Http\Controllers\Admin\ClubController::class, 'deleteFonction'])->name('admin.deleteFonctionClub');
 //Route::resource('/admin/clubs', App\Http\Controllers\Admin\ClubController::class);
 
 //gestion clubs par responsable ur
@@ -245,35 +246,35 @@ Route::post('/urs/clubs/adherents/{club_id}/store', [App\Http\Controllers\UrCont
 Route::post('/urs/clubs/adherents/{club_id}/storeExistingAdherent', [App\Http\Controllers\UrController::class, 'storeExistingAdherent'])->name('urs.adherents.storeExistingAdherent');
 Route::put('/urs/adherents/{utilisateur_id}/update', [App\Http\Controllers\UrController::class, 'updateAdherent'])->name('urs.adherents.update');
 Route::get('/urs/liste_clubs/{statut?}/{type_carte?}/{abonnement?}/{term?}', [App\Http\Controllers\UrController::class, 'listeClubs'])->name('urs.liste_clubs');
-Route::get('/urs/clubs/liste_adherents/{club}/{statut?}/{abonnement?}',[App\Http\Controllers\UrController::class, 'listeAdherentsClub'])->name('urs.liste_adherents_club');
+Route::get('/urs/clubs/liste_adherents/{club}/{statut?}/{abonnement?}', [App\Http\Controllers\UrController::class, 'listeAdherentsClub'])->name('urs.liste_adherents_club');
 Route::get('/urs/clubs/{club}', [App\Http\Controllers\UrController::class, 'updateClub'])->name('UrGestion_updateClub');
 Route::put('/urs/clubs/update-generalite/{club}', [App\Http\Controllers\UrController::class, 'updateGeneralite'])->name('UrGestion_updateGeneralite');
 Route::put('/urs/clubs/update-club-address/{club}', [App\Http\Controllers\UrController::class, 'updateClubAddress'])->name('UrGestion_updateClubAddress');
 Route::put('/urs/clubs/update-club-reunion/{club}', [App\Http\Controllers\UrController::class, 'updateReunion'])->name('UrGestion_updateReunion');
-Route::get('/urs/personnes/{personne_id}/edit/{view_type}', [App\Http\Controllers\UrController::class,'editPersonne'])->name('urs.personnes.edit');
-Route::get('/urs/personnes/create', [App\Http\Controllers\UrController::class,'createPersonne'])->name('urs.personnes.create');
-Route::get('/urs/personnes/createOpen', [App\Http\Controllers\UrController::class,'createOpen'])->name('urs.personnes.createOpen');
-Route::post('/urs/personnes/store', [App\Http\Controllers\UrController::class,'storePersonne'])->name('urs.personnes.store');
-Route::post('/urs/personnes/storeOpen', [App\Http\Controllers\UrController::class,'storeOpen'])->name('urs.personnes.storeOpen');
-Route::put('/urs/personnes/{personne}/update/{view_type}', [App\Http\Controllers\UrController::class,'updatePersonne'])->name('urs.personnes.update');
+Route::get('/urs/personnes/{personne_id}/edit/{view_type}', [App\Http\Controllers\UrController::class, 'editPersonne'])->name('urs.personnes.edit');
+Route::get('/urs/personnes/create', [App\Http\Controllers\UrController::class, 'createPersonne'])->name('urs.personnes.create');
+Route::get('/urs/personnes/createOpen', [App\Http\Controllers\UrController::class, 'createOpen'])->name('urs.personnes.createOpen');
+Route::post('/urs/personnes/store', [App\Http\Controllers\UrController::class, 'storePersonne'])->name('urs.personnes.store');
+Route::post('/urs/personnes/storeOpen', [App\Http\Controllers\UrController::class, 'storeOpen'])->name('urs.personnes.storeOpen');
+Route::put('/urs/personnes/{personne}/update/{view_type}', [App\Http\Controllers\UrController::class, 'updatePersonne'])->name('urs.personnes.update');
 Route::get('/urs/personnes/{view_type}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\UrController::class, 'list']);
 Route::get('/urs/liste_fonctions/{club}', [App\Http\Controllers\UrController::class, 'listeFonctionsClub'])->name('urs.clubs.liste_fonctions');
-Route::put('/urs/update-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\UrController::class,'updateClubFonction'])->name('urs.updateFonctionClub');
-Route::put('/urs/add-club-fonction/{club_id}/{fonction_id}',[App\Http\Controllers\UrController::class,'addClubFonction'])->name('urs.addFonctionClub');
-Route::delete('/urs/delete-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\UrController::class,'deleteClubFonction'])->name('urs.deleteFonctionClub');
+Route::put('/urs/update-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}', [App\Http\Controllers\UrController::class, 'updateClubFonction'])->name('urs.updateFonctionClub');
+Route::put('/urs/add-club-fonction/{club_id}/{fonction_id}', [App\Http\Controllers\UrController::class, 'addClubFonction'])->name('urs.addFonctionClub');
+Route::delete('/urs/delete-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}', [App\Http\Controllers\UrController::class, 'deleteClubFonction'])->name('urs.deleteFonctionClub');
 
 //gestion admin personnes
-Route::get('/admin/personnes/{personne_id}/edit/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'edit'])->name('admin.personnes.edit');
-Route::get('/admin/personnes/create/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'create'])->name('admin.personnes.create');
-Route::get('/admin/personnes/createOpen/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'createOpen'])->name('admin.personnes.createOpen');
-Route::put('/admin/personnes/{personne}/update/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'update'])->name('admin.personnes.update');
-Route::post('/admin/personnes/store/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'store'])->name('admin.personnes.store');
-Route::post('/admin/personnes/storeOpen/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'storeOpen'])->name('admin.personnes.storeOpen');
-Route::delete('/admin/personnes/{personne}/anonymize/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'anonymize'])->name('admin.personnes.anonymize');
-Route::put('/admin/personnes/{personne}/renewAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'renewAbo'])->name('admin.personnes.renewAbo');
-Route::put('/admin/personnes/{personne}/addFreeAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'addFreeAbo'])->name('admin.personnes.addFreeAbo');
+Route::get('/admin/personnes/{personne_id}/edit/{view_type}', [App\Http\Controllers\Admin\PersonneController::class, 'edit'])->name('admin.personnes.edit');
+Route::get('/admin/personnes/create/{view_type}', [App\Http\Controllers\Admin\PersonneController::class, 'create'])->name('admin.personnes.create');
+Route::get('/admin/personnes/createOpen/{view_type}', [App\Http\Controllers\Admin\PersonneController::class, 'createOpen'])->name('admin.personnes.createOpen');
+Route::put('/admin/personnes/{personne}/update/{view_type}', [App\Http\Controllers\Admin\PersonneController::class, 'update'])->name('admin.personnes.update');
+Route::post('/admin/personnes/store/{view_type}', [App\Http\Controllers\Admin\PersonneController::class, 'store'])->name('admin.personnes.store');
+Route::post('/admin/personnes/storeOpen/{view_type}', [App\Http\Controllers\Admin\PersonneController::class, 'storeOpen'])->name('admin.personnes.storeOpen');
+Route::delete('/admin/personnes/{personne}/anonymize/{view_type}', [App\Http\Controllers\Admin\PersonneController::class, 'anonymize'])->name('admin.personnes.anonymize');
+Route::put('/admin/personnes/{personne}/renewAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class, 'renewAbo'])->name('admin.personnes.renewAbo');
+Route::put('/admin/personnes/{personne}/addFreeAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class, 'addFreeAbo'])->name('admin.personnes.addFreeAbo');
 Route::get('/admin/personnes/{view_type}/{ur_id?}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\Admin\PersonneController::class, 'list']);
-Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::class,'index'])->name('personnes.index');
+Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::class, 'index'])->name('personnes.index');
 
 
 //gestion admin reglements
@@ -285,5 +286,5 @@ Route::get('/admin/reversements/attente', [App\Http\Controllers\Admin\Reversemen
 Route::get('/admin/reversements/effectues', [App\Http\Controllers\Admin\ReversementController::class, 'effectues'])->name('reversements.effectues');
 
 //Gestion support
-Route::get('/support', [App\Http\Controllers\SupportController::class,'index'])->name('support.index');
-Route::put('/support', [App\Http\Controllers\SupportController::class,'submit'])->name('support.submit');
+Route::get('/support', [App\Http\Controllers\SupportController::class, 'index'])->name('support.index');
+Route::put('/support', [App\Http\Controllers\SupportController::class, 'submit'])->name('support.submit');

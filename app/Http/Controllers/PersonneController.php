@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Concern\Api;
+use App\Concern\FormationTools;
 use App\Concern\Hash;
 use App\Concern\Invoice;
 use App\Concern\Tools;
@@ -16,11 +17,14 @@ use App\Mail\SendEmailModifiedPassword;
 use App\Mail\SendSupportNotification;
 use App\Models\Adresse;
 use App\Models\Configsaison;
+use App\Models\Formation;
 use App\Models\Historique;
 use App\Models\Historiquemail;
+use App\Models\Inscrit;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Session;
 use App\Models\Souscription;
 use App\Models\Supportmessage;
 use App\Models\Tarif;
@@ -38,6 +42,7 @@ class PersonneController extends Controller
     use Hash;
     use Api;
     use Invoice;
+    use FormationTools;
 
     public function __construct()
     {
@@ -228,7 +233,45 @@ class PersonneController extends Controller
 
     public function mesFormations()
     {
-        return view('personnes.mes_formations');
+        $user = session()->get('user');
+        $personne = Personne::where('id', $user->id)->first();
+        $sessions_id = [];
+        foreach ($personne->inscrits as $inscrit) {
+            array_push($sessions_id, $inscrit->session_id);
+        }
+        $sessions = Session::whereIn('id', $sessions_id)->get();
+        $formations_id = [];
+        foreach ($sessions as $session) {
+            array_push($formations_id, $session->formation_id);
+        }
+        $formations_id = array_unique($formations_id);
+        $formations = Formation::where('published', 1)->whereIn('id', $formations_id)->orderByDesc('created_at')->get();
+        foreach ($formations as $formation) {
+            $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
+
+        }
+
+        return view('personnes.mes_formations', compact('formations'));
+    }
+
+    //affichage du détail d'une des formations à laquelle la personne est inscrite
+    public function formationDetail(Formation $formation)
+    {
+        $user = session()->get('user');
+        $personne = Personne::where('id', $user->id)->first();
+        $inscriptions = [];
+        foreach ($personne->inscrits as $inscrit) {
+            $inscriptions[] = $inscrit->session_id;
+        }
+        $personne_sessions = [];
+        foreach ($formation->sessions as $session) {
+            if (sizeof($session->inscrits->where('personne_id', $personne->id))) {
+                array_push($personne_sessions, $session);
+            }
+        }
+        $formation->sessions = $personne_sessions;
+        $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
+        return view('personnes.mes_formations_detail', compact('formation', 'personne', 'inscriptions'));
     }
 
     // affichage de l'historique des meils envoyés à la personne
@@ -452,7 +495,8 @@ class PersonneController extends Controller
         return view('personnes.florilege', compact('config', 'personne'));
     }
 
-    public function cancelPaiementNewCard(Request $request) {
+    public function cancelPaiementNewCard(Request $request)
+    {
         $personne = Personne::where('monext_token', $request->token)->first();
         if ($personne) {
             $personne->update(['monext_token' => NULL, 'monext_link' => NULL, 'attente_paiement' => 0, 'action_paiement' => NULL]);
@@ -460,7 +504,8 @@ class PersonneController extends Controller
         return redirect()->route('souscription-individuelle')->with('error', 'Votre paiement a été annulé');
     }
 
-    public function cancelPaiementNewAbo(Request $request) {
+    public function cancelPaiementNewAbo(Request $request)
+    {
         $personne = Personne::where('monext_token', $request->token)->first();
         if ($personne) {
             $personne->update(['monext_token' => NULL, 'monext_link' => NULL, 'attente_paiement' => 0, 'action_paiement' => NULL]);
@@ -468,7 +513,8 @@ class PersonneController extends Controller
         return redirect()->route('souscription-abonnement')->with('error', 'Votre paiement a été annulé');
     }
 
-    public function validationPaiementNewCard(Request $request) {
+    public function validationPaiementNewCard(Request $request)
+    {
         $result = $this->getMonextResult($request->token);
         $code = 'ko';
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
@@ -483,10 +529,11 @@ class PersonneController extends Controller
                 }
             }
         }
-        return view('personnes.validation_paiement_new_carte', compact( 'code'));
+        return view('personnes.validation_paiement_new_carte', compact('code'));
     }
 
-    public function validationPaiementNewAbo(Request $request) {
+    public function validationPaiementNewAbo(Request $request)
+    {
         $result = $this->getMonextResult($request->token);
         $code = 'ko';
         if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
@@ -504,10 +551,11 @@ class PersonneController extends Controller
                 }
             }
         }
-        return view('personnes.validation_paiement_new_abo', compact( 'code'));
+        return view('personnes.validation_paiement_new_abo', compact('code'));
     }
 
-    public function attentePaiementValidation() {
+    public function attentePaiementValidation()
+    {
         return view('personnes.attente_paiement_validation');
     }
 
@@ -562,13 +610,15 @@ class PersonneController extends Controller
         return view('personnes.factures', compact('invoices'));
     }
 
-    public function souscriptionIndividuelle() {
+    public function souscriptionIndividuelle()
+    {
         $personne = session()->get('user');
 
         $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
         $tarif = $tarif_adhesion->tarif;
 
-        $ur = null; $available = 0;
+        $ur = null;
+        $available = 0;
         if (sizeof($personne->adresses) != 0) {
             if ($personne->adresses[0]->codepostal != '00000') {
                 $ur = $this->getUrFromCodepostal($personne->adresses[0]->codepostal);
@@ -578,14 +628,16 @@ class PersonneController extends Controller
         return view('personnes.souscription_individuelle', compact('personne', 'ur', 'available', 'tarif'));
     }
 
-    public function souscriptionAbonnement() {
+    public function souscriptionAbonnement()
+    {
         $personne = session()->get('user');
         $cartes = session()->get('cartes');
-        $tarif_reduit = 0; $membre_club = 0;
+        $tarif_reduit = 0;
+        $membre_club = 0;
         foreach ($cartes as $carte) {
             if ($carte->clubs_id) {
                 $membre_club = 1;
-                if (in_array($carte->statut, [2,3])) {
+                if (in_array($carte->statut, [2, 3])) {
                     $tarif_reduit = 1;
                 }
             }
