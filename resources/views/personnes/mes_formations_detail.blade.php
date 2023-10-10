@@ -190,15 +190,15 @@
                                         @if(in_array($session->id, $inscriptions))
                                             @if($session->inscrits->where('personne_id',$personne->id) && ($session->inscrits->where('personne_id',$personne->id)->first()->status == 0))
                                                 <div class="orangeBtn">En attente de paiement</div>
-                                                @if($session->inscrits->where('personne_id',$personne->id)->first()->bridge_link)
-                                                    <a class="underline bold"
-                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->bridge_link}}"
-                                                       target="_blank">Lien Bridge</a>
-                                                @elseif($session->inscrits->where('personne_id',$personne->id)->first()->monext_link)
-                                                    <a class="underline bold"
-                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->monext_link}}"
-                                                       target="_blank">Lien Monext</a>
-                                                @endif
+{{--                                                @if($session->inscrits->where('personne_id',$personne->id)->first()->bridge_link)--}}
+{{--                                                    <a class="underline bold"--}}
+{{--                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->bridge_link}}"--}}
+{{--                                                       target="_blank">Lien Bridge</a>--}}
+{{--                                                @elseif($session->inscrits->where('personne_id',$personne->id)->first()->monext_link)--}}
+{{--                                                    <a class="underline bold"--}}
+{{--                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->monext_link}}"--}}
+{{--                                                       target="_blank">Lien Monext</a>--}}
+{{--                                                @endif--}}
                                             @elseif($session->inscrits->where('personne_id',$personne->id)->first()->personne_id == $personne->id)
                                                 <div class="bold">Vous êtes inscrit.e à cette session</div>
                                             @endif
