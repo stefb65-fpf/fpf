@@ -28,6 +28,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('update:wpsite')
             ->timezone('Europe/Paris')
             ->dailyAt('22:00');
+        $schedule->command('check:inscription')
+            ->timezone('Europe/Paris')
+            ->hourly();
     }
 
     /**

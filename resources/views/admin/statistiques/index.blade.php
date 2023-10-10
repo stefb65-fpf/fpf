@@ -55,6 +55,7 @@
                     <th>Individuel < 18 ans</th>
                     <th>Individuel famille</th>
                     <th>Total</th>
+                    <th>Préinscrits</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -63,13 +64,14 @@
                     <td>{{ $tab_total['ct2'] }}</td>
                     <td>{{ $tab_total['ct3'] }}</td>
                     <td>{{ $tab_total['ct4'] }}</td>
-                    <td>{{ $tab_total['ct5'] }}</td>
                     <td>{{ $tab_total['ct6'] }}</td>
+                    <td>{{ $tab_total['ct5'] }}</td>
                     <td>{{ $tab_total['ct7'] }}</td>
                     <td>{{ $tab_total['ct8'] }}</td>
                     <td>{{ $tab_total['ct9'] }}</td>
                     <td>{{ $tab_total['ctF'] }}</td>
                     <td>{{ $tab_total['total'] }}</td>
+                    <td>{{ $tab_total['preinscrits'] }}</td>
                 </tr>
                 @foreach($tab_repartition as $k => $repartition)
                     <tr>
@@ -77,13 +79,14 @@
                         <td>{{ $repartition['ct2'] ?? '' }}</td>
                         <td>{{ $repartition['ct3'] ?? '' }}</td>
                         <td>{{ $repartition['ct4'] ?? '' }}</td>
-                        <td>{{ $repartition['ct5'] ?? '' }}</td>
                         <td>{{ $repartition['ct6'] ?? '' }}</td>
+                        <td>{{ $repartition['ct5'] ?? '' }}</td>
                         <td>{{ $repartition['ct7'] ?? '' }}</td>
                         <td>{{ $repartition['ct8'] ?? '' }}</td>
                         <td>{{ $repartition['ct9'] ?? '' }}</td>
                         <td>{{ $repartition['ctF'] ?? '' }}</td>
                         <td>{{ $repartition['total'] ?? '' }}</td>
+                        <td>{{ $repartition['preinscrit'] ?? '' }}</td>
                     </tr>
                 @endforeach
                 </tbody>

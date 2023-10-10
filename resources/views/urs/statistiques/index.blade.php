@@ -46,57 +46,61 @@
             </div>
         </div>
 
-{{--        <div class="mt50">--}}
-{{--            <h2>Répartition des cartes</h2>--}}
-{{--            <table class="styled-table">--}}
-{{--                <thead>--}}
-{{--                <tr>--}}
-{{--                    <th>UR / FPF</th>--}}
-{{--                    <th>Adh Club > 25 ans</th>--}}
-{{--                    <th>Adh Club 18 - 25 ans</th>--}}
-{{--                    <th>Adh Club < 18 ans</th>--}}
-{{--                    <th>Adh Club 2nde carte</th>--}}
-{{--                    <th>Adh Club famille</th>--}}
-{{--                    <th>Individuel > 25 ans</th>--}}
-{{--                    <th>Individuel 18 -25 ans</th>--}}
-{{--                    <th>Individuel < 18 ans</th>--}}
-{{--                    <th>Individuel famille</th>--}}
-{{--                    <th>Total</th>--}}
-{{--                </tr>--}}
-{{--                </thead>--}}
-{{--                <tbody>--}}
-{{--                <tr>--}}
-{{--                    <td>FPF</td>--}}
-{{--                    <td>{{ $tab_total['ct2'] }}</td>--}}
-{{--                    <td>{{ $tab_total['ct3'] }}</td>--}}
-{{--                    <td>{{ $tab_total['ct4'] }}</td>--}}
-{{--                    <td>{{ $tab_total['ct5'] }}</td>--}}
-{{--                    <td>{{ $tab_total['ct6'] }}</td>--}}
-{{--                    <td>{{ $tab_total['ct7'] }}</td>--}}
-{{--                    <td>{{ $tab_total['ct8'] }}</td>--}}
-{{--                    <td>{{ $tab_total['ct9'] }}</td>--}}
-{{--                    <td>{{ $tab_total['ctF'] }}</td>--}}
-{{--                    <td>{{ $tab_total['total'] }}</td>--}}
-{{--                </tr>--}}
-{{--                @foreach($tab_repartition as $k => $repartition)--}}
-{{--                    <tr>--}}
-{{--                        <td>{{ $k }}</td>--}}
-{{--                        <td>{{ $repartition['ct2'] ?? '' }}</td>--}}
-{{--                        <td>{{ $repartition['ct3'] ?? '' }}</td>--}}
-{{--                        <td>{{ $repartition['ct4'] ?? '' }}</td>--}}
-{{--                        <td>{{ $repartition['ct5'] ?? '' }}</td>--}}
-{{--                        <td>{{ $repartition['ct6'] ?? '' }}</td>--}}
-{{--                        <td>{{ $repartition['ct7'] ?? '' }}</td>--}}
-{{--                        <td>{{ $repartition['ct8'] ?? '' }}</td>--}}
-{{--                        <td>{{ $repartition['ct9'] ?? '' }}</td>--}}
-{{--                        <td>{{ $repartition['ctF'] ?? '' }}</td>--}}
-{{--                        <td>{{ $repartition['total'] ?? '' }}</td>--}}
-{{--                    </tr>--}}
-{{--                @endforeach--}}
-{{--                </tbody>--}}
-{{--            </table>--}}
-{{--        </div>--}}
-
+        <div class="mt50">
+            <h2>Répartition des cartes</h2>
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Club / UR</th>
+                    <th>Adh > 25 ans</th>
+                    <th>Adh 18 - 25 ans</th>
+                    <th>Adh < 18 ans</th>
+                    <th>Adh 2nde carte</th>
+                    <th>Adh famille</th>
+                    <th>Total</th>
+                    <th>Préinscrits</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>UR</td>
+                    <td>{{ $tab_total['ct2'] + $tab_total['ct7'] }}</td>
+                    <td>{{ $tab_total['ct3'] + $tab_total['ct8'] }}</td>
+                    <td>{{ $tab_total['ct4'] + $tab_total['ct9'] }}</td>
+                    <td>{{ $tab_total['ct6'] }}</td>
+                    <td>{{ $tab_total['ct5'] + $tab_total['ctF'] }}</td>
+                    <td>{{ $tab_total['total'] }}</td>
+                    <td>{{ $tab_total['preinscrits'] }}</td>
+                </tr>
+                @if(isset($tab_repartition[0]))
+                    <tr>
+                        <td>Individuels</td>
+                        <td>{{ $tab_repartition[0]['ct7'] ?? '' }}</td>
+                        <td>{{ $tab_repartition[0]['ct8'] ?? '' }}</td>
+                        <td>{{ $tab_repartition[0]['ct9'] ?? '' }}</td>
+                        <td></td>
+                        <td>{{ $tab_repartition[0]['ctF'] ?? '' }}</td>
+                        <td>{{ $tab_repartition[0]['total'] ?? '' }}</td>
+                        <td>{{ $tab_repartition[0]['preinscrit'] ?? '' }}</td>
+                    </tr>
+                @endif
+                @foreach($tab_repartition as $k => $repartition)
+                    @if($k !== 0)
+                        <tr>
+                            <td>{{ $repartition['club'].' ('.str_pad($repartition['numero'], 4, '0', STR_PAD_LEFT).')' }}</td>
+                            <td>{{ $repartition['ct2'] ?? '' }}</td>
+                            <td>{{ $repartition['ct3'] ?? '' }}</td>
+                            <td>{{ $repartition['ct4'] ?? '' }}</td>
+                            <td>{{ $repartition['ct6'] ?? '' }}</td>
+                            <td>{{ $repartition['ct5'] ?? '' }}</td>
+                            <td>{{ $repartition['total'] ?? '' }}</td>
+                            <td>{{ $repartition['preinscrit'] ?? '' }}</td>
+                        </tr>
+                    @endif
+                @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
     <span style="display: none" id="levelStat">ur</span>
     <span style="display: none" id="urStat">{{ $ur->id }}</span>

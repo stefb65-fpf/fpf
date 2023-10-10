@@ -16,6 +16,7 @@ use App\Models\Formateur;
 use App\Models\Inscrit;
 use App\Models\Motion;
 use App\Models\Pays;
+use App\Models\Personne;
 use App\Models\Session;
 use App\Models\Vote;
 use Illuminate\Http\JsonResponse;
@@ -66,18 +67,25 @@ class FormationController extends Controller
         if (!$session) {
             return new JsonResponse(['erreur' => 'session de formation inexistante'], 400);
         }
-        if (sizeof($session->inscrits->where('status', 1)->where('attente', 0)) >= $session->places) {
-            return new JsonResponse(['erreur' => 'session de formation complète'], 400);
-        }
-        // on regarde si le user n'est pas déjà inscrits
-        foreach ($session->inscrits as $inscrit) {
-            if ($inscrit->personne_id == $user->id) {
-                return new JsonResponse(['erreur' => 'utilisateur déjà inscrit'], 400);
+        if ($request->link == '') {
+            if (sizeof($session->inscrits->where('status', 1)->where('attente', 0)) >= $session->places) {
+                return new JsonResponse(['erreur' => 'session de formation complète'], 400);
+            }
+            // on regarde si le user n'est pas déjà inscrits
+            foreach ($session->inscrits as $inscrit) {
+                if ($inscrit->personne_id == $user->id) {
+                    return new JsonResponse(['erreur' => 'utilisateur déjà inscrit'], 400);
+                }
+            }
+            // on inscrit le user
+            $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'attente_paiement' => 1];
+            $inscrit = Inscrit::create($datai);
+        } else {
+            $inscrit = Inscrit::where('secure_code', $request->link)->first();
+            if (!$inscrit) {
+                return new JsonResponse(['erreur' => 'inscrit inexistant'], 400);
             }
         }
-        // on inscrit le user
-        $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'attente_paiement' => 1];
-        $inscrit = Inscrit::create($datai);
 
         $url = 'https://api.bridgeapi.io/v2/payment-links';
         $transaction = new \stdClass();
@@ -107,7 +115,9 @@ class FormationController extends Controller
             $inscrit->update(['bridge_id' => $reponse->id, 'bridge_link' => $reponse->url]);
             return new JsonResponse(['url' => $reponse->url], 200);
         } else {
-            $inscrit->delete();
+            if ($request->link == '') {
+                $inscrit->delete();
+            }
             return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
         }
     }
@@ -122,18 +132,25 @@ class FormationController extends Controller
         if (!$session) {
             return new JsonResponse(['erreur' => 'session de formation inexistante'], 400);
         }
-        if (sizeof($session->inscrits->where('status', 1)->where('attente', 0)) >= $session->places) {
-            return new JsonResponse(['erreur' => 'session de formation complète'], 400);
-        }
-        // on regarde si le user n'est pas déjà inscrits
-        foreach ($session->inscrits as $inscrit) {
-            if ($inscrit->personne_id == $user->id) {
-                return new JsonResponse(['erreur' => 'utilisateur déjà inscrit'], 400);
+        if ($request->link == '') {
+            if (sizeof($session->inscrits->where('status', 1)->where('attente', 0)) >= $session->places) {
+                return new JsonResponse(['erreur' => 'session de formation complète'], 400);
+            }
+            // on regarde si le user n'est pas déjà inscrits
+            foreach ($session->inscrits as $inscrit) {
+                if ($inscrit->personne_id == $user->id) {
+                    return new JsonResponse(['erreur' => 'utilisateur déjà inscrit'], 400);
+                }
+            }
+            // on inscrit le user
+            $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'attente_paiement' => 1];
+            $inscrit = Inscrit::create($datai);
+        } else {
+            $inscrit = Inscrit::where('secure_code', $request->link)->first();
+            if (!$inscrit) {
+                return new JsonResponse(['erreur' => 'inscrit inexistant'], 400);
             }
         }
-        // on inscrit le user
-        $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'attente_paiement' => 1];
-        $inscrit = Inscrit::create($datai);
 
         $montant = intval($session->price * 100);
         $urls = [
@@ -152,7 +169,9 @@ class FormationController extends Controller
             $inscrit->update(['monext_token' => $result['token'], 'monext_link' => $result['redirectURL']]);
             return new JsonResponse(['url' => $result['redirectURL']], 200);
         } else {
-            $inscrit->delete();
+            if ($request->link == '') {
+                $inscrit->delete();
+            }
             return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
         }
     }
@@ -166,6 +185,7 @@ class FormationController extends Controller
         if (!$session) {
             return new JsonResponse(['erreur' => 'session de formation inexistante'], 400);
         }
+
         if (sizeof($session->inscrits->where('status', 1)->where('attente', 1)) >= $session->waiting_places) {
             return new JsonResponse(['erreur' => 'session de formation complète'], 400);
         }
@@ -195,5 +215,26 @@ class FormationController extends Controller
         $this->registerAction($user->id, 2, $sujet);
 
         return new JsonResponse(['success' => 'OK'], 200);
+    }
+
+    public function addInscritToSession(Request $request) {
+        $personne = Personne::where('email', $request->email)->first();
+        if (!$personne) {
+            return new JsonResponse(['erreur' => "L'adresse email ne correspond à aucune personne"], 400);
+        }
+        $session = Session::where('id', $request->session_id)->first();
+        if (!$session) {
+            return new JsonResponse(['erreur' => "La session de formation n'existe pas"], 400);
+        }
+        // on regarde si la personn n'est pas déjà inscrite
+        $inscrit = Inscrit::where('personne_id', $personne->id)->where('session_id', $session->id)->first();
+        if ($inscrit) {
+            return new JsonResponse(['erreur' => "La personne est déjà inscrite à cette session"], 400);
+        }
+
+        // on ajoute l'inscrit
+        $datai = ['session_id' => $session->id, 'personne_id' => $personne->id, 'attente' => 0, 'status' => 1];
+        Inscrit::create($datai);
+        return new JsonResponse([], 200);
     }
 }

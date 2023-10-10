@@ -8,6 +8,7 @@ use App\Concern\Tools;
 use App\Models\Inscrit;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Souscription;
 use Illuminate\Http\Request;
 
 class ReglementController extends Controller
@@ -110,7 +111,7 @@ class ReglementController extends Controller
             $inscrit = Inscrit::where('monext_token', $request->token)->where('attente_paiement', 1)->first();
             if ($inscrit) {
                 // on met à jour le flag attente_paiement à 0 pour l'inscrit
-                $data = ['attente_paiement' => 0, 'status' => 1];
+                $data = ['attente_paiement' => 0, 'status' => 1, 'secure_code' => null];
                 $inscrit->update($data);
 
                 $description = "Inscription à la formation ".$inscrit->session->formation->name;

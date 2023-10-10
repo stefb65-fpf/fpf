@@ -924,8 +924,63 @@ class UrController extends Controller
         }
         $montant_reversements = Reversement::where('urs_id', $ur->id)->where('created_at', '>=', $debut_saison)->sum('montant');
 
+        $users = Utilisateur::leftjoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
+            ->whereIn('utilisateurs.statut', [2,3])
+            ->selectRaw('COUNT(utilisateurs.id) as nb, utilisateurs.ct, utilisateurs.clubs_id, clubs.nom, clubs.numero')
+            ->whereIn('utilisateurs.ct', [2,3,4,5,6,7,8,9, 'F'])
+            ->where('utilisateurs.urs_id', $ur->id)
+            ->groupBy('utilisateurs.clubs_id')
+            ->groupBy('utilisateurs.ct')
+            ->orderBy('utilisateurs.clubs_id')
+            ->orderBy('utilisateurs.ct')
+            ->get();
+        $preinscrits = Utilisateur::leftjoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
+            ->where('utilisateurs.statut', 1)
+            ->selectRaw('COUNT(utilisateurs.id) as nb, utilisateurs.clubs_id, clubs.nom, clubs.numero')
+            ->where('utilisateurs.urs_id', $ur->id)
+            ->groupBy('utilisateurs.clubs_id')
+            ->orderBy('utilisateurs.clubs_id')
+            ->get();
+        $tab_repartition = array();
+        $tab_total = [
+            'ct2'   => 0,
+            'ct3'   => 0,
+            'ct4'   => 0,
+            'ct5'   => 0,
+            'ct6'   => 0,
+            'ct7'   => 0,
+            'ct8'   => 0,
+            'ct9'   => 0,
+            'ctF'   => 0,
+            'total' => 0,
+            'preinscrits' => 0
+        ];
+        foreach($users as $user) {
+            $club_id = $user->clubs_id ?? 0;
+            $tab_repartition[$club_id]['ct'.$user->ct] = $user->nb;
+            $tab_repartition[$club_id]['numero'] = $user->numero;
+            $tab_repartition[$club_id]['club'] = $user->nom;
+            if (isset($tab_repartition[$club_id]['total'])) {
+                $tab_repartition[$club_id]['total'] += $user->nb;
+            } else {
+                $tab_repartition[$club_id]['total'] = $user->nb;
+            }
+            $tab_total['ct'.$user->ct] += $user->nb;
+            $tab_total['total'] += $user->nb;
+        }
+        foreach ($preinscrits as $preinscrit) {
+            if (!isset($tab_repartition[$preinscrit->clubs_id])) {
+                $tab_repartition[$preinscrit->clubs_id]['numero'] = $preinscrit->numero;
+                $tab_repartition[$preinscrit->clubs_id]['club'] = $preinscrit->nom;
+            }
+            $tab_repartition[$preinscrit->clubs_id]['preinscrit'] = $preinscrit->nb;
+            $tab_total['preinscrits'] += $preinscrit->nb;
+        }
+
+
         return view('urs.statistiques.index', compact('ur', 'nb_adherents', 'nb_adherents_previous', 'ratio_adherents',
-            'nb_clubs', 'nb_clubs_previous', 'ratio_clubs', 'nb_abonnements', 'nb_abonnements_clubs', 'nb_souscriptions', 'montant_reversements'));
+            'nb_clubs', 'nb_clubs_previous', 'ratio_clubs', 'nb_abonnements', 'nb_abonnements_clubs', 'nb_souscriptions', 'montant_reversements',
+            'tab_repartition', 'tab_total'));
     }
     public function statistiquesVotes() {
         $ur = $this->getUr();

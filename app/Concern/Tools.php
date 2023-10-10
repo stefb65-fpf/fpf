@@ -724,7 +724,7 @@ trait Tools
         $menu_ur = false;
         $menu_ur_general = false;
         $menu_admin = $personne->is_administratif;
-        $menu_formation = !$personne->is_administratif;
+        $menu_formation = !$personne->is_administratif && $personne->is_adherent;
 
         $cartes = [];
 //        if (!$personne->is_administratif) {

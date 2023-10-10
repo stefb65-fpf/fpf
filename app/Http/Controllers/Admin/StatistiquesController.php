@@ -40,6 +40,14 @@ class StatistiquesController extends Controller
             ->orderBy('urs_id')
             ->orderBy('ct')
             ->get();
+        $preinscrits = Utilisateur::where('statut', 1)
+            ->selectRaw('COUNT(id) as nb, urs_id')
+            ->whereNotNull('urs_id')
+            ->where('urs_id', '!=', 0)
+            ->groupBy('urs_id')
+            ->orderBy('urs_id')
+            ->get();
+
         $tab_repartition = array();
         $tab_total = [
             'ct2'   => 0,
@@ -51,7 +59,8 @@ class StatistiquesController extends Controller
             'ct8'   => 0,
             'ct9'   => 0,
             'ctF'   => 0,
-            'total' => 0
+            'total' => 0,
+            'preinscrits' => 0
         ];
         foreach($users as $user) {
             $tab_repartition[$user->urs_id]['ct'.$user->ct] = $user->nb;
@@ -62,6 +71,11 @@ class StatistiquesController extends Controller
             }
             $tab_total['ct'.$user->ct] += $user->nb;
             $tab_total['total'] += $user->nb;
+        }
+
+        foreach ($preinscrits as $preinscrit) {
+            $tab_repartition[$preinscrit->urs_id]['preinscrit'] = $preinscrit->nb;
+            $tab_total['preinscrits'] += $preinscrit->nb;
         }
 
         return view('admin.statistiques.index',

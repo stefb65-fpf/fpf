@@ -312,15 +312,19 @@ trait ClubTools
 
         // on calcule le ct par défaut avec la date de naissance
         // on calcule l'âge de la personne à partir de sa date de naissance
-        $date_naissance = new \DateTime($request->datenaissance);
-        $date_now = new \DateTime();
-        $age = $date_now->diff($date_naissance)->y;
-        $ct = 2;
-        if ($age < 18) {
-            $ct = 4;
+        if ($request->datenaissance == '') {
+            $ct = 2;
         } else {
-            if ($age < 25) {
-                $ct = 3;
+            $date_naissance = new \DateTime($request->datenaissance);
+            $date_now = new \DateTime();
+            $age = $date_now->diff($date_naissance)->y;
+            $ct = 2;
+            if ($age < 18) {
+                $ct = 4;
+            } else {
+                if ($age < 25) {
+                    $ct = 3;
+                }
             }
         }
 

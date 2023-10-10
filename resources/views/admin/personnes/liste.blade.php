@@ -164,9 +164,9 @@
                         <th>Identifiant</th>
                         <th>Statut</th>
                         <th>Type carte</th>
-                        @if($view_type != "recherche")
+{{--                        @if($view_type != "recherche")--}}
                             <th>Nom de club</th>
-                        @endif
+{{--                        @endif--}}
                     @endif
                     @if(in_array($view_type,["adherents","ur_adherents","recherche", 'abonnes']))
                         <th>Abonnement - N° fin</th>
@@ -252,9 +252,15 @@
                                     <div></div>
                                 @endswitch
                             </td>
-                            @if($view_type != "recherche")
-                                <td>{{ $utilisateur->club ? $utilisateur->club->nom : '' }}</td>
-                            @endif
+{{--                            @if($view_type != "recherche")--}}
+                                <td>
+                                    @if($utilisateur->club)
+                                        <a style="color: #003d77" href="{{ route('admin.clubs.index', ['all', 'all', 'all', 'all', $utilisateur->club->nom]) }}">
+                                            {{$utilisateur->club->nom}}
+                                        </a>
+                                    @endif
+                                </td>
+{{--                            @endif--}}
                         @endif
                         @if(in_array($view_type,["adherents","ur_adherents","recherche", 'abonnes']))
                             <td>{{$utilisateur->fin?:""}}</td>
@@ -264,8 +270,14 @@
                             <div class="mb3">
                                 @if($level == 'admin')
                                     @if (in_array($view_type, ["adherents", "recherche"]))
-                                        <a href="{{ route('admin.personnes.edit', [$utilisateur->personne_id, 'adherents']) }}"
-                                           class="adminPrimary btnSmall">Editer</a>
+                                        @if($utilisateur->identifiant == '')
+                                            <a href="{{ route('admin.personnes.edit', [$utilisateur->personne_id, 'abonnes']) }}"
+                                               class="adminPrimary btnSmall">Editer</a>
+                                        @else
+                                            <a href="{{ route('admin.personnes.edit', [$utilisateur->personne_id, 'adherents']) }}"
+                                               class="adminPrimary btnSmall">Editer</a>
+                                        @endif
+
                                     @else
                                         <a href="{{ route('admin.personnes.edit', [$utilisateur->id, $view_type]) }}"
                                            class="adminPrimary btnSmall">Editer</a>

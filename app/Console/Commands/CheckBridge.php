@@ -160,7 +160,7 @@ class CheckBridge extends Command
                 $tab_reponse = json_decode($reponse);
                 if ($tab_reponse->status == 'COMPLETED') {
                     // le paiement de l'inscription a été effectué
-                    $data = ['attente_paiement' => 0, 'status' => 1];
+                    $data = ['attente_paiement' => 0, 'status' => 1, 'secure_code' => null];
                     $inscrit->update($data);
                     $formation = $inscrit->session->formation;
 

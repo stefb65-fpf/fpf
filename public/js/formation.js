@@ -15,11 +15,13 @@ $('a[name=paiementInscription]').on('click', function (e) {
 
 $('#formationPayVirement').on('click', function () {
     const ref = $(this).data('ref')
+    const link = $(this).data('link')
     $.ajax({
         url:'/api/formations/payByVirement',
         type: 'POST',
         data: {
             ref: ref,
+            link: link
         },
         dataType: 'JSON',
         success: function (data) {
@@ -33,11 +35,13 @@ $('#formationPayVirement').on('click', function () {
 
 $('#formationPayCb').on('click', function () {
     const ref = $(this).data('ref')
+    const link = $(this).data('link')
     $.ajax({
         url:'/api/formations/payByCb',
         type: 'POST',
         data: {
             ref: ref,
+            link: link
         },
         dataType: 'JSON',
         success: function (data) {

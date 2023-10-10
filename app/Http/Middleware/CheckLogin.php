@@ -18,7 +18,7 @@ class CheckLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // si
+        session()->put('previous_url', $request->getUri());
         $user = $request->session()->get('user');
         if (!$user) {
             return redirect('/login');

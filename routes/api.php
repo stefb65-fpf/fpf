@@ -84,5 +84,6 @@ Route::post('/getReviews', [App\Http\Controllers\Api\FormationController::class,
 Route::post('/formations/payByVirement', [App\Http\Controllers\Api\FormationController::class, 'payByVirement']);
 Route::post('/formations/payByCb', [App\Http\Controllers\Api\FormationController::class, 'payByCb']);
 Route::post('/formations/inscriptionAttente', [App\Http\Controllers\Api\FormationController::class, 'inscriptionAttente']);
+Route::post('/formations/addInscritToSession', [App\Http\Controllers\Api\FormationController::class, 'addInscritToSession']);
 
 Route::post('/checkTrainerEmail', [App\Http\Controllers\Api\FormateurController::class, 'checkTrainerEmail']);

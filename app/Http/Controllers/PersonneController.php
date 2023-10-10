@@ -237,12 +237,12 @@ class PersonneController extends Controller
         $personne = Personne::where('id', $user->id)->first();
         $sessions_id = [];
         foreach ($personne->inscrits as $inscrit) {
-            array_push($sessions_id, $inscrit->session_id);
+            $sessions_id[] = $inscrit->session_id;
         }
         $sessions = Session::whereIn('id', $sessions_id)->get();
         $formations_id = [];
         foreach ($sessions as $session) {
-            array_push($formations_id, $session->formation_id);
+            $formations_id[] = $session->formation_id;
         }
         $formations_id = array_unique($formations_id);
         $formations = Formation::where('published', 1)->whereIn('id', $formations_id)->orderByDesc('created_at')->get();
@@ -266,7 +266,7 @@ class PersonneController extends Controller
         $personne_sessions = [];
         foreach ($formation->sessions as $session) {
             if (sizeof($session->inscrits->where('personne_id', $personne->id))) {
-                array_push($personne_sessions, $session);
+                $personne_sessions[] = $session;
             }
         }
         $formation->sessions = $personne_sessions;

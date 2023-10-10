@@ -34,6 +34,7 @@ $('input[name=adherer]').on('click', function (e) {
     } else {
         let selected = false
         $('input[name=adherer]').each(function () {
+            console.log($(this).is(':checked'))
             if ($(this).is(':checked')) {
                 selected = true
             }
@@ -45,6 +46,8 @@ $('input[name=adherer]').on('click', function (e) {
         })
         if (!selected) {
             $('#renouvellementAdherents').attr('disabled', 'disabled')
+        } else {
+            $('#renouvellementAdherents').removeAttr('disabled')
         }
     }
 })
@@ -65,6 +68,8 @@ $('input[name=abonner]').on('click', function (e) {
         })
         if (!selected) {
             $('#renouvellementAdherents').attr('disabled', 'disabled')
+        } else {
+            $('#renouvellementAdherents').removeAttr('disabled')
         }
     }
 })

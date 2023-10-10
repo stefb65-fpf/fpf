@@ -10,6 +10,7 @@ use App\Mail\SendAnonymisationEmail;
 use App\Mail\SendUtilisateurCreateByAdmin;
 use App\Models\Abonnement;
 use App\Models\Adresse;
+use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Pays;
 use App\Models\Personne;
@@ -56,7 +57,10 @@ class PersonneController extends Controller
         } elseif ($view_type == "abonnes") {
             $query = Personne::where('is_adherent', 0)->where('is_abonne', '!=', 0)->orderBy('nom')->orderBy('prenom');
         } elseif ($view_type == "recherche") {
-            $query = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')->orderBy('personnes.nom')->orderBy('personnes.prenom');
+            $query = Personne::leftjoin('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+                ->orderBy('personnes.nom')
+                ->orderBy('personnes.prenom')
+                ->selectRaw('personnes.*, utilisateurs.*, personnes.id as personne_id');
             if ($term) {
                 //appel de la fonction getPersonsByTerm($club, $term) qui retourne les personnes filtrées selon le term
                 $this->getPersonsByTerm($term, $query);
@@ -94,9 +98,14 @@ class PersonneController extends Controller
                     $personne = Personne::where('id', $utilisateur->personne_id)->first();
                     $utilisateur->personne = $personne;
                 }
+                if ($utilisateur->clubs_id) {
+                    $club = Club::where('id', $utilisateur->clubs_id)->first();
+                    if ($club) {
+                        $utilisateur->club = $club;
+                    }
+                }
             }
         }
-//        dd($utilisateurs);
         $urs = Ur::orderBy('nom')->get();
         $level = 'admin';
 
@@ -410,11 +419,19 @@ class PersonneController extends Controller
             $adresse_2->update($dataa2);
         }
 
-        if($view_type == 'abonnes') {
+        if($view_type == 'abonnes' && $request->fin != '') {
             $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
             if ($abonnement) {
                 $abonnement->update(['fin' => $request->fin]);
+            } else {
+                $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
+                $numeroencours = $config->numeroencours;
+                $debut = $numeroencours;
+                $fin = $numeroencours + 4;
+                $dataa = array('personne_id' => $personne->id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin);
+                Abonnement::create($dataa);
             }
+            $personne->update(['is_abonne' => 1]);
         }
         return redirect('/admin/personnes/' . $view_type)->with('success', "La personne a bien été mise à jour");
     }

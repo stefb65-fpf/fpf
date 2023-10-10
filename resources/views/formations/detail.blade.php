@@ -143,7 +143,7 @@
                 <div class="card p0">
                     <div class="cardTitle">Dates des futures sessions</div>
                     <div class="cardContent">
-                        @foreach($formation->sessions as $session)
+                        @foreach($formation->sessions as $k => $session)
                             @if($session->start_date >= date('Y-m-d'))
                                 <div class="sessionContainer">
                                     <div class="start">
@@ -197,29 +197,28 @@
 
                                     </div>
                                     <div class="inscription">
-
                                         @if(in_array($session->id, $inscriptions))
-                                            @if($session->inscrits->where('personne_id',$personne->id) && ($session->inscrits->where('personne_id',$personne->id)->first()->status == 0))
-                                                <div class="orangeBtn">En attente de paiement</div>
-                                                @if($session->inscrits->where('personne_id',$personne->id)->first()->bridge_link)
-                                                    <a class="underline bold"
-                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->bridge_link}}"
-                                                       target="_blank">Lien Bridge</a>
-                                                @elseif($session->inscrits->where('personne_id',$personne->id)->first()->monext_link)
-                                                    <a class="underline bold"
-                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->monext_link}}"
-                                                       target="_blank">Lien Monext</a>
-                                                @endif
+                                            @if($session->inscrits->where('personne_id',$personne->id) && ($session->inscrits->where('personne_id',$personne->id)->first()->attente_paiement == 1))
+                                                <a class="orangeBtn" href="{{ route('formations.payWithSecureCode', $personne->inscrits->where('session_id', $session->id)->first()->secure_code) }}">En attente de paiement</a>
+{{--                                                @if($session->inscrits->where('personne_id',$personne->id)->first()->bridge_link)--}}
+{{--                                                    <a class="underline bold"--}}
+{{--                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->bridge_link}}"--}}
+{{--                                                       target="_blank">Lien Bridge</a>--}}
+{{--                                                @elseif($session->inscrits->where('personne_id',$personne->id)->first()->monext_link)--}}
+{{--                                                    <a class="underline bold"--}}
+{{--                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->monext_link}}"--}}
+{{--                                                       target="_blank">Lien Monext</a>--}}
+{{--                                                @endif--}}
                                             @elseif($session->inscrits->where('personne_id',$personne->id)->first()->personne_id == $personne->id)
                                                 <div class="bold">Vous êtes inscrit.e à cette session</div>
                                             @endif
                                         @else
-                                            @if(sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places)
+                                            @if((sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places) && $session->full == 0)
                                                 <a name="paiementInscription" data-session="{{ $session->id }}"
                                                    data-price="{{ $session->price }}" class="redBtn uppercase"
                                                    style="cursor: pointer;">S'inscrire</a>
                                             @else
-                                                @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places )
+                                                @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places || $session->full == 1)
                                                     {{--                                            @if(sizeof($session->inscrits->where('status', 1)) >= $session->places && sizeof($session->inscrits->where('status', 1)) < $session->places + $session->waiting_places )--}}
                                                     <a name="attenteInscription" data-session="{{ $session->id }}"
                                                        class="redBtn uppercase bgOrange hMaxContent"
@@ -290,8 +289,8 @@
         </div>
         <div class="modalEditFooter">
             <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
-            <div class="adminPrimary btnMedium mr10" id="formationPayVirement" data-ref="">Payer par virement</div>
-            <div class="adminPrimary btnMedium mr10" id="formationPayCb" data-ref="">Payer par CB</div>
+            <div class="adminPrimary btnMedium mr10" id="formationPayVirement" data-link="" data-ref="">Payer par virement</div>
+            <div class="adminPrimary btnMedium mr10" id="formationPayCb" data-link="" data-ref="">Payer par CB</div>
         </div>
     </div>
 

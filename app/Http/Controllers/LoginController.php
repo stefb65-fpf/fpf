@@ -62,7 +62,13 @@ class LoginController extends Controller
         $action = 'Connexion au site';
         $this->registerAction($personne->id, 3, $action);
 
-        return redirect()->route('accueil');
+        $previous_uri = session()->get('previous_url');
+        if ($previous_uri) {
+            return redirect($previous_uri);
+        } else {
+            return redirect()->route('accueil');
+        }
+//        return redirect()->route('accueil');
     }
 
     // autoload d'un adhérent à partir de l'outil concours Copain
@@ -173,6 +179,7 @@ class LoginController extends Controller
         session()->forget('user');
         session()->forget('menu');
         session()->forget('cartes');
+        session()->forget('previous_url');
         return redirect()->route('login');
     }
 

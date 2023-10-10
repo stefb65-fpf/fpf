@@ -10,6 +10,19 @@
                 </svg>
             </a>
         </h1>
+        <div class="alertInfo w80">
+            <p>
+                <span class="bold">Informations !</span>
+                Si des personnes sont inscrites en liste d'attente, vous pouvez leur transmettre un lien de paiement qu'elles recevront par email.
+                Ce lien est valable 48h. Si le paiement n'est pas effectué dans ce délai, la place sera libérée.<br>
+                Lorsque vous transmettez le lien, si la formation est complète, aucun autre adhérent ne pourra s'inscrire.
+            </p>
+        </div>
+        <div class="d-flex justify-center">
+            <input id="emailAddInscription" type="email" placeholder="Email de l'adhérent à ajouter à la formation" style="width: 300px; margin-right: 5px;" />
+            <a id="addInscription" class="btnSmall adminPrimary mr10" data-session="{{ $session->id }}">inscrire l'adhérent</a>
+            <a href="{{ route('inscrits.export', $session) }}" class="btnSmall adminSuccess ml10">exporter au format excel</a>
+        </div>
         <table class="styled-table">
             <thead>
             <tr>
@@ -35,7 +48,7 @@
                             <a href="{{ route('inscrits.destroy', $inscrit) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer cet inscrit ?" class="btnSmall adminDanger">Supprimer</a>
                         @endif
                         @if($inscrit->attente == 1)
-                            <a href="" class="btnSmall adminPrimary">Envoyer lien paiement</a>
+                            <a href="{{ route('inscrits.sendPaymentLink', $inscrit) }}" data-method="post" data-confirm="Voulez-vous vraiement envoyer le lien de paiement à cette personne ?" class="btnSmall adminPrimary">Envoyer lien paiement</a>
                         @endif
                     </td>
                 </tr>
@@ -47,4 +60,7 @@
 @section('css')
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
     <link href="{{ asset('css/formations_fpf.css') }}" rel="stylesheet">
+@endsection
+@section('js')
+    <script src="{{ asset('js/admin_inscriptions.js') }}?t=<?= time() ?>"></script>
 @endsection
