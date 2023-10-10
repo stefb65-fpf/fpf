@@ -200,15 +200,6 @@
                                         @if(in_array($session->id, $inscriptions))
                                             @if($session->inscrits->where('personne_id',$personne->id) && ($session->inscrits->where('personne_id',$personne->id)->first()->attente_paiement == 1))
                                                 <a class="orangeBtn" href="{{ route('formations.payWithSecureCode', $personne->inscrits->where('session_id', $session->id)->first()->secure_code) }}">En attente de paiement</a>
-{{--                                                @if($session->inscrits->where('personne_id',$personne->id)->first()->bridge_link)--}}
-{{--                                                    <a class="underline bold"--}}
-{{--                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->bridge_link}}"--}}
-{{--                                                       target="_blank">Lien Bridge</a>--}}
-{{--                                                @elseif($session->inscrits->where('personne_id',$personne->id)->first()->monext_link)--}}
-{{--                                                    <a class="underline bold"--}}
-{{--                                                       href="{{$session->inscrits->where('personne_id',$personne->id)->first()->monext_link}}"--}}
-{{--                                                       target="_blank">Lien Monext</a>--}}
-{{--                                                @endif--}}
                                             @elseif($session->inscrits->where('personne_id',$personne->id)->first()->personne_id == $personne->id)
                                                 <div class="bold">Vous êtes inscrit.e à cette session</div>
                                             @endif
