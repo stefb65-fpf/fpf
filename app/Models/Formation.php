@@ -22,6 +22,10 @@ class Formation extends Model
         return $this->hasMany('App\Models\Interest');
     }
 
+    public function demandes() {
+        return $this->hasMany('App\Models\Demande');
+    }
+
     public function categorie() {
         return $this->belongsTo('App\Models\Categorieformation', 'categories_formation_id');
     }

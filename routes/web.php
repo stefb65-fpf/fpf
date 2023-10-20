@@ -45,6 +45,7 @@ Route::put('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'updateU
 
 Route::get('/admin/formations/{formation}/activate', [App\Http\Controllers\Admin\FormationController::class, 'activate'])->name('formations.activate');
 Route::get('/admin/formations/{formation}/deactivate', [App\Http\Controllers\Admin\FormationController::class, 'deactivate'])->name('formations.deactivate');
+Route::get('/admin/formations/{formation}/evaluations', [App\Http\Controllers\Admin\FormationController::class, 'evaluations'])->name('formations.evaluations');
 Route::get('/admin/formations/parametrage', [App\Http\Controllers\Admin\FormationController::class, 'parametrage'])->name('formations.parametrage');
 Route::get('/admin/formations/accueil', [App\Http\Controllers\Admin\FormationController::class, 'accueil'])->name('formations.admin_accueil');
 Route::resource('/admin/formations', App\Http\Controllers\Admin\FormationController::class);
@@ -200,6 +201,7 @@ Route::get('/formations/attente_paiement_validation/{formation}', [App\Http\Cont
 Route::get('/formations/{formation}/detail', [App\Http\Controllers\FormationController::class, 'detail'])->name('formations.detail');
 Route::get('/formations/{secure_code}/payWithSecureCode', [App\Http\Controllers\FormationController::class, 'payWithSecureCode'])->name('formations.payWithSecureCode');
 Route::get('/formations/{md5}/evaluation', [App\Http\Controllers\FormationController::class, 'evaluation'])->name('formations.evaluation');
+Route::post('/formations/{personne_id}/{session_id}/saveEvaluation', [App\Http\Controllers\FormationController::class, 'saveEvaluation'])->name('formations.saveEvaluation');
 
 // gestion des clubs par responsable de clubs
 Route::get('/clubs/gestion', [App\Http\Controllers\ClubController::class, 'gestion'])->name('clubs.gestion');

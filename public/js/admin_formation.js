@@ -6,3 +6,22 @@ $('#typeFormation').on('change', function() {
         $('#divLocalisation').removeClass('d-none-admin')
     }
 })
+$('#generatePdfEvaluations').on('click', function() {
+    const formation = $(this).data('formation')
+    $.ajax({
+        url: '/api/formations/generatePdfEvaluations',
+        type: 'POST',
+        data: {
+            formation: formation
+        },
+        dataType: 'JSON',
+        success: function(data) {
+            // TODO change link
+            $('#linkEvaluationPdf').attr('href', 'https://fpf-new.federation-photo.fr/storage/app/public/uploads/evaluations/' + data.year + '/' + data.file)
+            $('#modalEvaluationPdf').removeClass('d-none')
+        },
+        error: function(err) {
+            console.log(err)
+        }
+    })
+})

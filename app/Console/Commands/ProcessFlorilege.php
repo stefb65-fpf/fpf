@@ -30,12 +30,13 @@ class ProcessFlorilege extends Command
      */
     public function handle()
     {
-//        $souscriptions = Souscription::whereIn('id', [4336])->get();
+//        $souscriptions = Souscription::whereIn('id', [4260])->get();
 ////        $souscriptions = Souscription::whereIn('id', [4316, 4307])->get();
 //        foreach ($souscriptions as $souscription) {
-//            $data = ['statut' => 1];
+////            $data = ['statut' => 1];
 ////            $data = ['statut' => 1, 'monext_token' => null, 'monext_link' => null, 'ref_reglement' => 'Monext ' . $souscription->monext_token];
-//            $souscription->update($data);
+////            $souscription->update($data);
+////            dd($souscription);
 //
 //            if ($souscription->personne_id) {
 //                $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";

@@ -194,7 +194,7 @@ class UtilisateurController extends Controller
             if ($tarif_supp > 0) {
                 $aboSupp = 1;
             }
-            if ($request->premiereCarte && $ct == 2) {
+            if ($request->premiereCarte && $ct == 7) {
                 // on regarde si l'identifiant première carte correspond à un utilisateur valide
                 $firtsUtilisateur = Utilisateur::where('identifiant', $request->premiereCarte)->whereIn('statut', [2,3])->whereIn('ct', [2,7])->first();
                 if ($firtsUtilisateur) {
@@ -245,11 +245,12 @@ class UtilisateurController extends Controller
         $datap['phone_mobile'] = $phone_mobile;
 
         if ($request->type == 'adhesion') {
-            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($request->datenaissance);
-            if ($request->aboPlus == 1 || $ct == 2) {
+//            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($request->datenaissance);
+            $ct = $this->getCtForIndividuel($request->datenaissance);
+            if ($request->aboPlus == 1 || $ct == 7) {
                 $datap['is_abonne'] = 1;
             }
-            if ($request->premiereCarte && $ct == 2) {
+            if ($request->premiereCarte && $ct == 7) {
                 // on regarde si l'identifiant première carte correspond à un utilisateur valide
                 $firtsUtilisateur = Utilisateur::where('identifiant', $request->premiereCarte)->whereIn('statut', [2,3])->whereIn('ct', [2,7])->first();
                 if ($firtsUtilisateur) {
@@ -455,6 +456,46 @@ class UtilisateurController extends Controller
                 return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
             }
         }
+    }
+
+    public function renewIndividuelByAdmin(Request $request) {
+        $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
+        if (!$utilisateur) {
+            return new JsonResponse(['erreur' => 'Untilisateur non trouvé'], 400);
+        }
+        $personne = Personne::where('id', $utilisateur->personne_id)->first();
+        if (!$personne) {
+            return new JsonResponse(['erreur' => 'Personne non trouvée'], 400);
+        }
+
+        // on récupère le montant dur enouvellement pour l'année en cours:
+        $ct = $request->adhesion;
+        list($tarif, $tarif_supp) = $this->getTarifByCt($ct);
+        $montant = $request->abo == 0 ? floatval($tarif) : floatval($tarif_supp) + floatval($tarif);
+
+        $ref = 'ADH-REN-'.$utilisateur->identifiant;
+        $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
+        $num = $last_reglement ? intval(substr($last_reglement->reference, -4)) + 1 : 1;
+        $ref .= '-'.str_pad($num, 4, '0', STR_PAD_LEFT);
+
+        // on crée un règlement
+        $reglement = Reglement::create(['montant' => $montant, 'reference' => $ref, 'statut' => 0]);
+
+        // on crée la liaison reglements utilisateurs
+        $dataru = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $utilisateur->id, 'adhesion' => 1);
+        if ($request->abo == 1) {
+            $dataru['abonnement'] = 1;
+        }
+        DB::table('reglementsutilisateurs')->insert($dataru);
+
+        $datau = array('statut' => 1, 'ct' => $ct);
+        if ($ct == 'F') {
+            $datau['premierecarte'] = $request->premiereCarte;
+        } else {
+            $datau['premierecarte'] = null;
+        }
+        $utilisateur->update($datau);
+        return new JsonResponse(['ref' => $ref], 200);
     }
 
     public function addIndividuel(Request $request) {

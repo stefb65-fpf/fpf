@@ -43,6 +43,10 @@
                     <input value="{{ old('price',  $session->price) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation" name="price"/>
                 </div>
                 <div class="formUnit w100">
+                    <div class="formLabel ">* Prix non adhérent</div>
+                    <input value="{{ old('price_not_member',  $session->price_not_member) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation pour non adhérent" name="price_not_member"/>
+                </div>
+                <div class="formUnit w100">
                     <div class="formLabel ">* Nombre de places</div>
                     <input value="{{ old('places',  $session->places) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Nombre de places la formation" name="places"/>
                 </div>

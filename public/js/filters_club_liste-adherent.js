@@ -28,6 +28,29 @@ $('select[name=selectCt]').on('change', function (e) {
     }
 })
 
+$('#abonnementClub').on('click', function (e) {
+    if ($(this).is(':checked')) {
+        $('#renouvellementAdherents').removeAttr('disabled')
+    } else {
+        let selected = false
+        $('input[name=adherer]').each(function () {
+            if ($(this).is(':checked')) {
+                selected = true
+            }
+        })
+        $('input[name=abonner]').each(function () {
+            if ($(this).is(':checked')) {
+                selected = true
+            }
+        })
+        if (!selected) {
+            $('#renouvellementAdherents').attr('disabled', 'disabled')
+        } else {
+            $('#renouvellementAdherents').removeAttr('disabled')
+        }
+    }
+})
+
 $('input[name=adherer]').on('click', function (e) {
     if ($(this).is(':checked')) {
         $('#renouvellementAdherents').removeAttr('disabled')

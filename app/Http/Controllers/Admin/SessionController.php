@@ -39,6 +39,7 @@ class SessionController extends Controller
     {
         $session = new Session();
         $session->price = $formation->price;
+        $session->price_not_member = $formation->price_not_member;
         $session->places = $formation->places;
         $session->waiting_places = $formation->waiting_places;
         $session->type = $formation->type;
@@ -51,7 +52,7 @@ class SessionController extends Controller
      */
     public function store(SessionRequest $request, Formation $formation)
     {
-        $data = $request->only('price', 'places', 'start_date', 'end_date', 'waiting_places', 'type', 'location');
+        $data = $request->only('price', 'price_not_member', 'places', 'start_date', 'end_date', 'waiting_places', 'type', 'location');
         if ($request->numero_club != null) {
             $club = Club::where('numero', $request->numero_club)->first();
             if (!$club) {
@@ -89,7 +90,7 @@ class SessionController extends Controller
     public function update(Request $request, Session $session)
     {
         $formation  = Formation::where('id', $session->formation_id)->first();
-        $data = $request->only('price', 'places', 'start_date', 'end_date', 'waiting_places', 'type', 'location');
+        $data = $request->only('price', 'price_not_member', 'places', 'start_date', 'end_date', 'waiting_places', 'type', 'location');
         if ($request->numero_club != null) {
             $club = Club::where('numero', $request->numero_club)->first();
             if (!$club) {

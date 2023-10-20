@@ -289,7 +289,7 @@ trait Tools
             }
             if ($reglement->aboClub == 1) {
                 if ($numeroencours > $club->numerofinabonnement) {
-                    $datac['numerofinabonnement'] = $numeroencours + 5;
+                    $datac['numerofinabonnement'] = $numeroencours + 4;
                 } else {
                     $datac['numerofinabonnement'] = $club->numerofinabonnement + 5;
                 }
@@ -340,6 +340,47 @@ trait Tools
         return true;
     }
 
+    protected function getCtForIndividuel($datenaissance) {
+        $ct = 7;
+        if ($datenaissance) {
+            $date_naissance = new \DateTime($datenaissance);
+            $date_now = new \DateTime();
+            $age = $date_now->diff($date_naissance)->y;
+            if ($age > 0) {
+                if ($age < 18) {
+                    $ct = 9;
+                } else {
+                    if ($age < 25) {
+                        $ct = 8;
+                    }
+                }
+            }
+        }
+        return $ct;
+    }
+
+    protected function getTarifByCt($ct)
+    {
+        $tarif_id = match ($ct) {
+            '8' => 14,
+            '9' => 15,
+            'F' => 16,
+            default => 13,
+        };
+        $tarif_id_supp = match ($ct) {
+            '8', '9' => 23,
+            default => 0,
+        };
+        $tarif_adhesion = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
+        $tarif = $tarif_adhesion ? $tarif_adhesion->tarif : 0;
+        $tarif_abo = 0;
+        if ($tarif_id_supp) {
+            $tarif_supp = Tarif::where('statut', 0)->where('id', $tarif_id_supp)->first();
+            $tarif_abo = $tarif_supp ? $tarif_supp->tarif : 0;
+        }
+        return [$tarif, $tarif_abo];
+    }
+
     protected function getTarifAdhesion($datenaissance)
     {
         if ($datenaissance) {
@@ -351,22 +392,22 @@ trait Tools
             }
             $tarif_id = 13;
             $tarif_id_supp = 0;
-            $ct = 2;
+            $ct = 7;
             if ($age < 18) {
                 $tarif_id = 15;
                 $tarif_id_supp = 23;
-                $ct = 4;
+                $ct = 9;
             } else {
                 if ($age < 25) {
                     $tarif_id = 14;
                     $tarif_id_supp = 23;
-                    $ct = 3;
+                    $ct = 8;
                 }
             }
         } else {
             $tarif_id = 13;
             $tarif_id_supp = 0;
-            $ct = 2;
+            $ct = 7;
         }
         $tarif_adhesion = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
         $tarif = $tarif_adhesion ? $tarif_adhesion->tarif : 0;
@@ -667,7 +708,7 @@ trait Tools
         if ($personne->is_adherent) {
             // on recherche les cartes actives
             $tab_cartes = [];
-            $cartes_actives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [1, 2, 3])->selectRaw('id, identifiant, urs_id, clubs_id')->get();
+            $cartes_actives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [1, 2, 3])->selectRaw('id, identifiant, urs_id, clubs_id, statut')->get();
             foreach ($cartes_actives as $carte) {
                 $carte->actif = true;
                 // on cherche les focntions de la carte
@@ -694,7 +735,7 @@ trait Tools
                 $tab_cartes[] = $carte;
             }
 
-            $cartes_inactives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [0, 4])->selectRaw('id, identifiant, urs_id, clubs_id')->get();
+            $cartes_inactives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [0, 4])->selectRaw('id, identifiant, urs_id, clubs_id, statut')->get();
             foreach ($cartes_inactives as $carte) {
                 $carte->actif = false;
                 $tab_cartes[] = $carte;

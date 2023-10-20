@@ -13,6 +13,18 @@
         <div class="d-flex justify-center">
             <a href="{{ route('sessions.create', $formation) }}" class="btnMedium adminPrimary">Ajouter une session</a>
         </div>
+        @if(sizeof($formation->demandes) > 0)
+            <div>
+                Demandes d'organisation de session pour :
+                <ul class="ml50">
+                    @foreach($formation->demandes as $demande)
+                        <li>
+                            {{ $demande->club_id ? 'Club '.$demande->club->nom : 'UR '.$demande->ur->nom }}
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         @if(sizeof($sessions) == 0)
             <div class="emptyList">Aucune session pour cette formation</div>
         @else

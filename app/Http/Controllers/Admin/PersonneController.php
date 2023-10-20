@@ -250,7 +250,8 @@ class PersonneController extends Controller
 
             // on cherche l'ur pour le nouvel utilisateur
             list($identifiant, $urs_id, $numero) = $this->setIdentifiant($personne->adresses[0]->codepostal);
-            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+//            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+            $ct = $this->getCtForIndividuel($personne->datenaissance);
             $datau = [
                 'urs_id' => $urs_id,
                 'personne_id' => $personne->id,

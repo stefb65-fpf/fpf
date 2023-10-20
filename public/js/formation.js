@@ -1,7 +1,20 @@
 $(".favorite svg ").on('click', function (e) {
-
-    $(this).parent('.favorite').toggleClass('active')
-    //TODO appel api pour enregistrer le fait que l'utilisateur est intéressé par cette formation
+    const formation = $(this).parent('.favorite').data('formation')
+    const elem = $(this).parent('.favorite')
+    $.ajax({
+        url:'/api/formations/setInterest',
+        type: 'POST',
+        data: {
+            formation: formation
+        },
+        dataType: 'JSON',
+        success: function () {
+            elem.toggleClass('active')
+        },
+        error: function (e) {
+            alert(e.responseJSON.erreur)
+        }
+    });
 })
 
 $('a[name=paiementInscription]').on('click', function (e) {
@@ -80,7 +93,7 @@ $('#formationInscriptionAttente').on('click', function () {
 
 $('div[name=formateur]').on('click', function (e) {
     e.preventDefault()
-    const id = $(this).attr('id')
+    const id = $(this).data('id')
     $.ajax({
         url: '/api/getFormateur',
         type: 'POST',
@@ -125,45 +138,24 @@ $('div[name=formateur]').on('click', function (e) {
 
 $('div[name=reviews]').on('click', function (e) {
     e.preventDefault()
-    const id = $(this).attr('id')
+    const id = $(this).data('id')
     $.ajax({
         url: '/api/getReviews',
         type: 'POST',
         data: {id},
         dataType: 'JSON',
-        success: function (reponse) {
-            // TODO: activate this
-            // let reviewsList = reponse.reviews.liste
-            let reviewsList = [{
-                prenom: "Euniss",
-                nom: "Lepotini",
-                note: 4.4,
-                date: "16 septembre 2023",
-                text: "formation super , j'ai apprecié"
-            }, {
-                prenom: "Nan",
-                nom: "Zranavic",
-                note: 4.5,
-                date: "10 septembre 2023",
-                text: "je recommande, formateur à l'écoute"
-            }, {
-                prenom: "Marta",
-                nom: "Suplet",
-                note: 3.4,
-                date: "25 septembre 2023",
-                text: "formateur à l'écoute mais manque de temps pour approfondir"
-            }]
+        success: function (data) {
+            const reviewsList = data.reviews
             let stars = '<div class="stars">' + $('div[name=reviews]').html() + '</div>'
             let reviews = ""
 
-            if (reviewsList != []) {
-
-                reviewsList.forEach(function (item) {
+            if (data.nb != 0) {
+                $.each(data.reviews, function (index, item) {
                     let htmlItem = ""
                     let nom = (item.prenom + item.nom).length ? item.prenom + " " + item.nom.substr(1, 1).toUpperCase() + "." : ""
                     let date = item.date.length ? item.date : ""
                     let note = item.note ? item.note : ""
-                    let text = item.text.length ? item.text : ""
+                    let text = item.comment.length ? item.comment : ""
 
                     htmlItem +=
                         '<div class="top">' +
@@ -176,22 +168,47 @@ $('div[name=reviews]').on('click', function (e) {
                         '<div class="small">/5</div>' +
                         '</div>' +
                         '</div>' +
-                        '<div class="bottom">' + item.text + '</div>'
-
+                        '<div class="bottom">' + item.comment + '</div>'
 
                     reviews += '<div class="reviewItem">' + htmlItem + '</div><div class="separator"></div>'
                 })
-
                 reviews = ' <div class="reviewsList">' + reviews + '</div>'
+            } else {
+                reviews = '<div class="noReviews">Aucun avis</div>'
             }
             let chaine = '<div class="modalReviews">' + stars + reviews + '</div>'
             $('.modalContent').html(chaine)
             $(body).addClass('modalVisible')
         }
-
         ,
         error: function (e) {
         }
     });
 
+})
+
+$('a[name=askFormation]').on('click', function (e) {
+    $('#confirmAskFormation').data('level', $(this).data('level'))
+    $('#modalAskFormation').removeClass('d-none')
+})
+$('#confirmAskFormation').on('click', function (e) {
+    const level = $(this).data('level')
+    const formation = $(this).data('formation')
+    $.ajax({
+        url: '/api/formations/askFormation',
+        type: 'POST',
+        data: {
+            level: level,
+            formation: formation
+        },
+        dataType: 'JSON',
+        success: function (reponse) {
+            $('#modalAskFormation').addClass('d-none')
+            alert("Votre demande a été prise en compte")
+        },
+        error: function (e) {
+            $('#modalAskFormation').addClass('d-none')
+            alert(e.responseJSON.erreur)
+        }
+    })
 })

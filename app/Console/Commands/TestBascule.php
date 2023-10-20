@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Concern\Api;
 use App\Mail\SendRenouvellementMail;
 use App\Models\Club;
 use App\Models\Reglement;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Mail;
 
 class TestBascule extends Command
 {
+    use Api;
     /**
      * The name and signature of the console command.
      *
@@ -35,6 +37,10 @@ class TestBascule extends Command
      */
     public function handle()
     {
+        $url = 'https://api.bridgeapi.io/v2/payment-links/c5308f40-943d-4e64-954c-7b2328869098';
+        list($status, $reponse) = $this->callBridge($url, 'GET', null);
+        dd($status, $reponse);
+
 //        $clubs = Club::whereIn('statut', [0,1,2])->get();
 //        $nb = 0;
 //        foreach ($clubs as $club) {

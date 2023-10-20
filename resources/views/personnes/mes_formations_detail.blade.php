@@ -34,7 +34,7 @@
                             @endif
                         </div>
                         @if($formation->reviews)
-                            <div class="right hoverable" name="reviews" id="{{$formation->id}}">
+                            <div class="right hoverable" name="reviews" data-id="{{$formation->id}}">
                                 @if($formation->reviews)
                                     @for($i = 1; $i <= 5; $i++)
                                         @if($i <= floor($formation->stars))
@@ -165,7 +165,19 @@
                                             @endif
                                         @endif
                                     </div>
-                                    <div class="price">{{$session->price}} €</div>
+                                    <div class="price justify-center">
+                                        @if($session->price_not_member != $session->price)
+                                            <div style="font-size: 0.8rem">
+                                                <span>
+                                                    Adhérent: {{ floatval($session->price) == intval($session->price) ? intval($session->price) : floatval($session->price) }} €
+                                                </span>
+                                                <br>
+                                                <span>Non adhérent: {{ floatval($session->price_not_member) == intval($session->price_not_member) ? intval($session->price_not_member) : floatval($session->price_not_member) }} €</span>
+                                            </div>
+                                        @else
+                                            {{ floatval($session->price) == intval($session->price) ? intval($session->price) : floatval($session->price) }} €
+                                        @endif
+                                    </div>
                                     <div class="locations">
                                         <img class="mr10"
                                              src="{{ env('APP_URL').'storage/app/public/map-marker-alt.png' }}" alt="localisation">
@@ -223,7 +235,7 @@
                     <div class="cardContent flexWrap d-flex gap20 justify-center align-center">
                         @foreach($formation->formateurs as $formateur)
                             <div class="formateur" name="formateur"
-                                 id="{{$formateur->id}}">
+                                 data-id="{{$formateur->id}}">
                                 @if($formateur->img)
                                     <img
                                         src="{{ env('APP_URL').'storage/app/public/uploads/formateurs/'.$formateur->img }}"

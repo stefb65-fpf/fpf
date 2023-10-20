@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FormationRequest;
 use App\Models\Categorieformation;
+use App\Models\Evaluationsitem;
 use App\Models\Evaluationstheme;
 use App\Models\Formation;
+use App\Models\Interest;
 use Illuminate\Http\Request;
 
 class FormationController extends Controller
@@ -25,6 +27,16 @@ class FormationController extends Controller
     public function index()
     {
         $formations = Formation::orderByDesc('created_at')->get();
+        foreach($formations as $formation) {
+            $formation->interests = Interest::where('formation_id', $formation->id)->count();
+            $exist_eval = 0;
+            foreach($formation->sessions as $session) {
+                if ($session->evaluations->count() > 0) {
+                    $exist_eval = 1;
+                }
+            }
+            $formation->exist_eval = $exist_eval;
+        }
         return view('admin.formations.index', compact('formations'));
     }
 
@@ -43,7 +55,7 @@ class FormationController extends Controller
      */
     public function store(FormationRequest $request)
     {
-        $data = $request->only('name', 'shortDesc', 'longDesc', 'program', 'categories_formation_id', 'type', 'location', 'level', 'price',
+        $data = $request->only('name', 'shortDesc', 'longDesc', 'program', 'categories_formation_id', 'type', 'location', 'level', 'price', 'price_not_member',
             'places', 'waiting_places', 'duration');
         if (isset($request->new)) {
             $data['new'] = 1;
@@ -70,7 +82,7 @@ class FormationController extends Controller
      */
     public function update(Request $request, Formation $formation)
     {
-        $data = $request->only('name', 'shortDesc', 'longDesc', 'program', 'categories_formation_id', 'type', 'location', 'level', 'price',
+        $data = $request->only('name', 'shortDesc', 'longDesc', 'program', 'categories_formation_id', 'type', 'location', 'level', 'price', 'price_not_member',
             'places', 'waiting_places', 'duration');
         $data['new'] = isset($request->new) ? 1 : 0;
         if ($data['waiting_places'] == null) {
@@ -109,5 +121,36 @@ class FormationController extends Controller
 //        }
 
         return view('admin.formations.parametrage', compact('categories', 'evalthemes'));
+    }
+
+    public function evaluations(Formation $formation) {
+        $tab_evaluations = array();
+        $tab_reviews = array();
+        foreach ($formation->sessions as $session) {
+            foreach ($session->evaluations as $evaluation) {
+                if ($evaluation->comment != '') {
+                    $tab_reviews[] = $evaluation->comment;
+                } else {
+                    if (!isset($tab_evaluations[$evaluation->evaluationsitem_id])) {
+                        // on cherche l'item
+                        $item = Evaluationsitem::where('id', $evaluation->evaluationsitem_id)->first();
+                        if ($item) {
+                            $tab_evaluations[$evaluation->evaluationsitem_id]['name'] = $item->name;
+                        }
+                        $tab_evaluations[$evaluation->evaluationsitem_id]['note'] = $evaluation->stars;
+                        $tab_evaluations[$evaluation->evaluationsitem_id]['nb'] = 1;
+                    } else {
+                        $total = $tab_evaluations[$evaluation->evaluationsitem_id]['note'] * $tab_evaluations[$evaluation->evaluationsitem_id]['nb'];
+                        $total += $evaluation->stars;
+                        $tab_evaluations[$evaluation->evaluationsitem_id]['note'] = round($total / ($tab_evaluations[$evaluation->evaluationsitem_id]['nb'] + 1), 1);
+                        $tab_evaluations[$evaluation->evaluationsitem_id]['nb'] = $tab_evaluations[$evaluation->evaluationsitem_id]['nb'] + 1;
+                    }
+                }
+            }
+        }
+//        foreach ($tab_evaluations as $evaluation) {
+//            dd($evaluation);
+//        }
+        return view('admin.formations.evaluations', compact('formation', 'tab_evaluations', 'tab_reviews'));
     }
 }

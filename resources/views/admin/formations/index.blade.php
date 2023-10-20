@@ -69,9 +69,10 @@
                             </div>
                         </div>
                     </div>
-                    @if($formation->reviews > 0)
+
+                    @if($formation->exist_eval)
                         <div class="inlineMd" style="justify-content: flex-end !important; padding: 0 15px;">
-                            <a href="" class="btnSmall ml10 adminPrimary">Voir les évaluations</a>
+                            <a href="{{ route('formations.evaluations', $formation) }}" class="btnSmall ml10 adminPrimary">Liste des évaluations</a>
                         </div>
                     @endif
                     <div class="formationTitle">{{ $formation->name }}</div>
@@ -110,8 +111,15 @@
                                 @endif
                             </div>
                         </div>
+                        <div class="right">
+                            @if($formation->interests > 0)
+                                <div class="small">
+                                    {{ $formation->interests }} personne(s) intéressée(s)
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div class="d-flex flexEnd align-center mt10">
+                    <div class="d-flex flexEnd align-center">
                         <a href="{{ route('sessions.index', $formation) }}" class="btnSmall ml10 adminYellow">Gestion des sessions</a>
                         <a href="{{ route('formateurs.liste', $formation) }}" class="btnSmall ml10 adminWarning">Gestion formateurs</a>
                         @if($formation->published == 1)

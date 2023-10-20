@@ -18,6 +18,7 @@ Route::post('/utilisateurs/checkBeforeInsertion', [App\Http\Controllers\Api\Util
 Route::post('/utilisateurs/getTarifForNewUser', [App\Http\Controllers\Api\UtilisateurController::class, 'getTarifForNewUser']);
 Route::post('/utilisateurs/register', [App\Http\Controllers\Api\UtilisateurController::class, 'register']);
 Route::post('/utilisateurs/renew/individuel', [App\Http\Controllers\Api\UtilisateurController::class, 'renewIndividuel']);
+Route::post('/admin/renew/individuel', [App\Http\Controllers\Api\UtilisateurController::class, 'renewIndividuelByAdmin']);
 Route::post('/utilisateurs/add/individuel', [App\Http\Controllers\Api\UtilisateurController::class, 'addIndividuel']);
 Route::post('/utilisateurs/add/abonnement', [App\Http\Controllers\Api\UtilisateurController::class, 'addAbonnement']);
 
@@ -80,10 +81,13 @@ Route::post('/gestStatsRepartitionCartes', [App\Http\Controllers\Api\Statistique
 
 // action sur l'affichage des formations
 Route::post('/getFormateur', [App\Http\Controllers\Api\FormationController::class, 'getFormateur']);
+Route::post('/formations/setInterest', [App\Http\Controllers\Api\FormationController::class, 'setInterest']);
+Route::post('/formations/askFormation', [App\Http\Controllers\Api\FormationController::class, 'askFormation']);
 Route::post('/getReviews', [App\Http\Controllers\Api\FormationController::class, 'getReviews']);
 Route::post('/formations/payByVirement', [App\Http\Controllers\Api\FormationController::class, 'payByVirement']);
 Route::post('/formations/payByCb', [App\Http\Controllers\Api\FormationController::class, 'payByCb']);
 Route::post('/formations/inscriptionAttente', [App\Http\Controllers\Api\FormationController::class, 'inscriptionAttente']);
 Route::post('/formations/addInscritToSession', [App\Http\Controllers\Api\FormationController::class, 'addInscritToSession']);
+Route::post('/formations/generatePdfEvaluations', [App\Http\Controllers\Api\FormationController::class, 'generatePdfEvaluations']);
 
 Route::post('/checkTrainerEmail', [App\Http\Controllers\Api\FormateurController::class, 'checkTrainerEmail']);

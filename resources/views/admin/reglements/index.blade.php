@@ -91,7 +91,7 @@
             <br>
             <div class="text-center">
                 <label for="infoValidationRenouvellement">Informations de règlement</label>
-                <input type="text" id="infoValidationRenouvellement">
+                <input type="text" id="infoValidationRenouvellement" maxlength="100" />
             </div>
         </div>
         <div class="modalEditFooter">

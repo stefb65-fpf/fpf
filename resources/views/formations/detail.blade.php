@@ -35,7 +35,7 @@
                             @endif
                         </div>
                         @if($formation->reviews)
-                            <div class="right hoverable" name="reviews" id="{{$formation->id}}">
+                            <div class="right hoverable" name="reviews" data-id="{{ $formation->id }}">
                                 @if($formation->reviews)
                                     @for($i = 1; $i <= 5; $i++)
                                         @if($i <= floor($formation->stars))
@@ -123,8 +123,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="favorite md-mt-15 md-ml-auto pointer mr20"
-                        >
+                        <div class="favorite md-mt-15 md-ml-auto pointer mr20 {{ $formation->interest ? 'active' : '' }}" title='{{ $formation->interest ? "Supprimer votre intérêt pour cette formation" : "Marquer votre intérêt pour la formation" }}' data-formation="{{ $formation->id }}">
                             <svg width="29" height="24" viewBox="0 0 29 24" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -143,6 +142,16 @@
                 <div class="card p0">
                     <div class="cardTitle">Dates des futures sessions</div>
                     <div class="cardContent">
+                        @if($menu['ur'] || $menu['club'])
+                            <div class="mb10">
+                                @if($menu['ur'])
+                                    <a class="redBtn mr10" name="askFormation" data-formation="{{ $formation->id }}" data-level="ur" style="width: max-content; cursor:pointer;">Demande UR pour organiser une session</a>
+                                @endif
+                                @if($menu['club'])
+                                    <a class="redBtn mr10" name="askFormation" data-formation="{{ $formation->id }}" data-level="club" style="width: max-content; cursor:pointer;">Demande Club pour organiser une session</a>
+                                @endif
+                            </div>
+                        @endif
                         @foreach($formation->sessions as $k => $session)
                             @if($session->start_date >= date('Y-m-d'))
                                 <div class="sessionContainer">
@@ -174,7 +183,19 @@
                                             @endif
                                         @endif
                                     </div>
-                                    <div class="price">{{$session->price}} €</div>
+                                    <div class="price justify-center">
+                                        @if($session->price_not_member != $session->price)
+                                            <div style="font-size: 0.8rem">
+                                                <span>
+                                                    Adhérent: {{ floatval($session->price) == intval($session->price) ? intval($session->price) : floatval($session->price) }} €
+                                                </span>
+                                                <br>
+                                                <span>Non adhérent: {{ floatval($session->price_not_member) == intval($session->price_not_member) ? intval($session->price_not_member) : floatval($session->price_not_member) }} €</span>
+                                            </div>
+                                        @else
+                                            {{ floatval($session->price) == intval($session->price) ? intval($session->price) : floatval($session->price) }} €
+                                        @endif
+                                    </div>
                                     <div class="locations">
                                         <img class="mr10"
                                              src="{{ env('APP_URL').'storage/app/public/map-marker-alt.png' }}">
@@ -206,7 +227,7 @@
                                         @else
                                             @if((sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places) && $session->full == 0)
                                                 <a name="paiementInscription" data-session="{{ $session->id }}"
-                                                   data-price="{{ $session->price }}" class="redBtn uppercase"
+                                                   data-price="{{ $personne->price_adherent == 1 ? $session->price : $session->price_not_member }}" class="redBtn uppercase"
                                                    style="cursor: pointer;">S'inscrire</a>
                                             @else
                                                 @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places || $session->full == 1)
@@ -233,8 +254,7 @@
                     <div class="cardTitle">Nos intervenants</div>
                     <div class="cardContent flexWrap d-flex gap20 justify-center align-center">
                         @foreach($formation->formateurs as $formateur)
-                            <div class="formateur" name="formateur"
-                                 id="{{$formateur->id}}">
+                            <div class="formateur" name="formateur" data-id="{{ $formateur->id }}">
                                 @if($formateur->img)
                                     <img
                                         src="{{ env('APP_URL').'storage/app/public/uploads/formateurs/'.$formateur->img }}"
@@ -303,6 +323,24 @@
             <div class="adminPrimary btnMedium mr10" id="formationInscriptionAttente" data-ref="">Confirmer
                 l'inscription en liste d'attente
             </div>
+        </div>
+    </div>
+
+    <div class="modalEdit d-none" id="modalAskFormation">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Demande d'organisation de session</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Vous souhaitez soumettre une demande d'organisation de session de formation <span
+                class="bold">{{ $formation->name }}</span>.<br>
+            Une fois votre demande validée, vous serez contacté par les responsables du département formation.
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="confirmAskFormation" data-formation="{{ $formation->id }}">Valider la demande</div>
         </div>
     </div>
 @endsection

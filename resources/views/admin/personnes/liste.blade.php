@@ -288,6 +288,12 @@
                                                class="adminSuccess btnSmall">nouvelle carte</a>
                                         </div>
                                     @endif
+                                    @if(in_array($utilisateur->ct, [7,8,9,'F']) && !in_array($utilisateur->statut, [1, 2,3]))
+                                        <div class="mt5">
+                                            <a name="renewIndividuel" data-ref="{{ $utilisateur->identifiant }}" data-ct="{{ $utilisateur->ct }}"
+                                               class="adminWarning btnSmall">renew individuel</a>
+                                        </div>
+                                    @endif
 
                                 @else
                                     <a href="{{ route('urs.personnes.edit', [$utilisateur->personne_id, $view_type]) }}"
@@ -304,6 +310,39 @@
             </div>
         @endif
         <span class="d-none" id="viewType">{{ $view_type }}</span>
+    </div>
+
+    <div class="modalEdit d-none" id="modalRenewIndividuel">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Renouvellement individuel</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Vous allez renouveler l'adhérent individuel pour un an. Veuillez contrôler et modifier si nécessaire les informations ci-dessous.
+            <div>
+                <h3>Type de carte</h3>
+                <div>
+                    <input type="radio" name="adhesionIndividuel" value="7" /> >25 ans
+                    <input type="radio" class="ml40" name="adhesionIndividuel" value="8" /> 18 - 25 ans
+                    <input type="radio" class="ml40" name="adhesionIndividuel" value="9" /> <18 ans
+                    <input type="radio" class="ml40" name="adhesionIndividuel" value="F" /> famille
+                    <br>
+                    Première carte pour carte famille <input type="text" id="premiereCarteRenewIndividuel" placeholder="première carte" disabled maxlength="12" />
+                </div>
+                <h3>Abonnement</h3>
+                <div>
+                    <input type="radio" name="aboIndividuel" value="1" checked="checked" disabled /> Oui
+                    <input type="radio" name="aboIndividuel" class="ml50" value="0" disabled /> Non
+                </div>
+            </div>
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="confirmRenewIndividuel" data-identifiante="">Valider
+            </div>
+        </div>
     </div>
 @endsection
 @section('css')

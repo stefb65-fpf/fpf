@@ -70,6 +70,13 @@
                         Le prix pourra être redéfini pour chaque session
                     </div>
                 </div>
+                <div class="formUnit w100">
+                    <div class="formLabel ">* Prix non adhérent</div>
+                    <input value="{{ old('price_not_member',  $formation->price_not_member) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation" name="price_not_member"/>
+                    <div class="w100 helper">
+                        Le prix non adhérent pourra être redéfini pour chaque session
+                    </div>
+                </div>
 
                 <div class="formUnit w100">
                     <div class="formLabel ">* Nombre de places</div>

@@ -14,7 +14,7 @@ class Evaluation extends Model
         return $this->belongsTo('App\Models\Session');
     }
 
-    public function pesonne() {
+    public function personne() {
         return $this->belongsTo('App\Models\Personne');
     }
 }

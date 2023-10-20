@@ -180,7 +180,7 @@ class CheckBridge extends Command
 
                     $description = "Inscription à la formation ".$inscrit->session->formation->name;
                     $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
-                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->session->price, 'personne_id' => $inscrit->personne->id];
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->amount, 'personne_id' => $inscrit->personne->id];
                     $this->createAndSendInvoice($datai);
                 }
                 if ($tab_reponse->status == 'REVOKED' || $tab_reponse->status == 'EXPIRED') {
