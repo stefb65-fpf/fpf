@@ -23,6 +23,7 @@ class FormateurController extends Controller
             ->orderBy('personnes.nom')
             ->orderBy('personnes.prenom')
             ->get();
+
         return view('admin.formateurs.index', compact('formateurs'));
     }
 

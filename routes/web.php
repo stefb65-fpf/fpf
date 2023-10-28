@@ -48,6 +48,7 @@ Route::get('/admin/formations/{formation}/deactivate', [App\Http\Controllers\Adm
 Route::get('/admin/formations/{formation}/evaluations', [App\Http\Controllers\Admin\FormationController::class, 'evaluations'])->name('formations.evaluations');
 Route::get('/admin/formations/parametrage', [App\Http\Controllers\Admin\FormationController::class, 'parametrage'])->name('formations.parametrage');
 Route::get('/admin/formations/accueil', [App\Http\Controllers\Admin\FormationController::class, 'accueil'])->name('formations.admin_accueil');
+Route::get('/admin/formations/export', [App\Http\Controllers\Admin\FormationController::class, 'export'])->name('formations.export');
 Route::resource('/admin/formations', App\Http\Controllers\Admin\FormationController::class);
 Route::resource('/admin/categoriesformations', App\Http\Controllers\Admin\CategorieFormationController::class);
 Route::resource('/admin/evaluationsthemes', App\Http\Controllers\Admin\EvaluationthemeController::class);
@@ -64,6 +65,7 @@ Route::delete('/admin/sessions/{session}/destroy', [App\Http\Controllers\Admin\S
 
 Route::get('/admin/inscrits/{session}/liste', [App\Http\Controllers\Admin\InscritController::class, 'liste'])->name('inscrits.liste');
 Route::delete('/admin/inscrits/{inscrit}/destroy', [App\Http\Controllers\Admin\InscritController::class, 'destroy'])->name('inscrits.destroy');
+Route::delete('/admin/inscrits/{inscrit}/destroyWithCredit', [App\Http\Controllers\Admin\InscritController::class, 'destroyWithCredit'])->name('inscrits.destroyWithCredit');
 Route::post('/admin/inscrits/{inscrit}/sendPaymentLink', [App\Http\Controllers\Admin\InscritController::class, 'sendPaymentLink'])->name('inscrits.sendPaymentLink');
 Route::get('/admin/inscrits/{session}/export', [App\Http\Controllers\Admin\InscritController::class, 'export'])->name('inscrits.export');
 

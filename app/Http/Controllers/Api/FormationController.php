@@ -7,6 +7,7 @@ use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Mail\AnswerSupport;
 use App\Mail\AskFormation;
+use App\Mail\ConfirmationInscriptionFormation;
 use App\Mail\ConfirmationInscriptionFormationAttente;
 use App\Mail\ConfirmVote;
 use App\Mail\RelanceReglement;
@@ -88,6 +89,10 @@ class FormationController extends Controller
         if (!$user) {
             return new JsonResponse(['erreur' => 'session utilisateur inexistante'], 400);
         }
+        $personne = Personne::where('id', $user->id)->first();
+        if (!$personne) {
+            return new JsonResponse(['erreur' => 'utilisateur inexistant'], 400);
+        }
         $session = Session::where('id', $request->ref)->first();
         if (!$session) {
             return new JsonResponse(['erreur' => 'session de formation inexistante'], 400);
@@ -99,6 +104,10 @@ class FormationController extends Controller
                     $price = $session->price;
                 }
             }
+        }
+        if ($personne->avoir_formation > 0) {
+            $price -= $personne->avoir_formation;
+            if ($price < 0) $price = 0;
         }
         if ($request->link == '') {
             if (sizeof($session->inscrits->where('status', 1)->where('attente', 0)) >= $session->places) {
@@ -161,6 +170,10 @@ class FormationController extends Controller
         if (!$user) {
             return new JsonResponse(['erreur' => 'session utilisateur inexistante'], 400);
         }
+        $personne = Personne::where('id', $user->id)->first();
+        if (!$personne) {
+            return new JsonResponse(['erreur' => 'utilisateur inexistant'], 400);
+        }
         $session = Session::where('id', $request->ref)->first();
         if (!$session) {
             return new JsonResponse(['erreur' => 'session de formation inexistante'], 400);
@@ -172,6 +185,10 @@ class FormationController extends Controller
                     $price = $session->price;
                 }
             }
+        }
+        if ($personne->avoir_formation > 0) {
+            $price -= $personne->avoir_formation;
+            if ($price < 0) $price = 0;
         }
         if ($request->link == '') {
             if (sizeof($session->inscrits->where('status', 1)->where('attente', 0)) >= $session->places) {
@@ -215,6 +232,43 @@ class FormationController extends Controller
             }
             return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
         }
+    }
+
+    public function saveWithoutPaiement(Request $request) {
+        $user = session()->get('user');
+        if (!$user) {
+            return new JsonResponse(['erreur' => 'session utilisateur inexistante'], 400);
+        }
+        $personne = Personne::where('id', $user->id)->first();
+        if (!$personne) {
+            return new JsonResponse(['erreur' => 'utilisateur inexistant'], 400);
+        }
+        $session = Session::where('id', $request->ref)->first();
+        if (!$session) {
+            return new JsonResponse(['erreur' => 'session de formation inexistante'], 400);
+        }
+        $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'status' => 1];
+        Inscrit::create($datai);
+
+        // on débite l'avoir du compte du user
+        $personne->update(['avoir_formation' => $personne->avoir_formation - $session->price]);
+
+        // on evnoei le mail de confirmation d'inscription
+        $email = $user->email;
+        $mailSent = Mail::to($email)->send(new ConfirmationInscriptionFormation($session));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+        $sujet = substr("FPF // Inscription à la formation ".$session->formation->name, 0, 255);
+        $mail = new \stdClass();
+        $mail->titre = $sujet;
+        $mail->destinataire = $email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($user->id, $mail);
+
+        $sujet = substr("Inscription à la formation ".$session->formation->name, 0, 255);
+        $this->registerAction($user->id, 2, $sujet);
+
+        return new JsonResponse(['success' => 'OK'], 200);
     }
 
     public function inscriptionAttente(Request $request) {
@@ -328,8 +382,7 @@ class FormationController extends Controller
             $datai['ur_id'] = $user->cartes[0]->urs_id;
         }
         $demande = Demande::create($datai);
-        // TODO mettre adresse email responsable département formation
-        $mail_formation = 'contact@envolinfo.com';
+        $mail_formation = 'dpt.formation@federation-photo.fr';
         if ($request->level == 'club') {
             $str = 'club '.$demande->club->nom;
         } else {
@@ -379,5 +432,31 @@ class FormationController extends Controller
             ->setPaper('a4', 'portrait')
             ->save($dir . '/' . $name);
         return new JsonResponse(['file' => $name, 'year' => date('Y')], 200);
+    }
+
+    public function cancelInscription(Request $request) {
+        // on regarde si la session existe
+        $session = Session::where('id', $request->ref)->first();
+        if (!$session) {
+            return new JsonResponse(['erreur' => "Session de formation introuvable"], 400);
+        }
+        // on regarde si le user est inscrit à la session
+        $user = session()->get('user');
+        if (!$user) {
+            return new JsonResponse(['erreur' => 'session utilisateur inexistante'], 400);
+        }
+        $inscrit = Inscrit::where('session_id', $session->id)->where('personne_id', $user->id)->first();
+        if (!$inscrit) {
+            return new JsonResponse(['erreur' => "Vous n'êtes pas inscrit à cette session"], 400);
+        }
+        $amount = $inscrit->amount;
+        // on supprime l'inscription
+        $inscrit->delete();
+
+        // on crédite le compte du user
+        $personne = Personne::where('id', $user->id)->first();
+        $personne->update(['avoir_formation' => $personne->avoir_formation + $amount]);
+
+        return new JsonResponse(['success' => "Votre désinscription a été prise en compte et votre compte formation a été crédité de $amount €"], 200);
     }
 }

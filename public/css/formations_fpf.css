@@ -236,6 +236,8 @@
     width: 110px;
     height: 110px;
     margin-bottom: 20px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .formateur {

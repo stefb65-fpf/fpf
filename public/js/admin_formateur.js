@@ -23,3 +23,48 @@ $('#searchForAddingTrainer').on('click', function () {
         }
     });
 })
+
+$('a[name=photoFormateur]').on('click', function () {
+    uploader.settings.url = $(this).data('url')
+    $('#browse').trigger('click')
+})
+
+let uploader = new plupload.Uploader({
+    runtimes : 'html5',
+    browse_button : 'browse',
+    drop_element: 'browse',
+    url: $('#browse').data('url'),
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    init: {
+        PostInit: function() {
+            // $('#ajaxLoaderElement').hide();
+            // $('#textUploadElement').show();
+        },
+        FilesAdded: function(up, files) {
+            uploader.start();
+            $('#uploaderWaiting').removeClass('d-none')
+        },
+        UploadProgress: function(up, file) {
+        },
+
+//    , si le code est 20 ou 30, on affiche un message pour dire que ce n'est pas OK.
+        FileUploaded: function(up, file, reponse) {
+            let i = 1;
+            $.each(reponse, function(data, value){
+                $('#uploaderWaiting').addClass('d-none')
+                if (i === 1) {
+                    const datarep = $.parseJSON(value)
+                    if (datarep.success) {
+                        $(location).attr('href', $(location).attr('href'))
+                    } else {
+                        alert(datarep.message)
+                    }
+                }
+                i++;
+            })
+        },
+    }
+});
+uploader.init();

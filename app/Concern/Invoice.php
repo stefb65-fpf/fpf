@@ -46,12 +46,16 @@ trait Invoice
         $dir = $invoice->getStorageDir();
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
+            chown($dir.'/'.$name, 'www-data');
+            chgrp($dir.'/'.$name, 'www-data');
         }
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadView('pdf.facture', compact('invoice', 'adresse', 'personne', 'club'))
             ->setWarnings(false)
             ->setPaper('a4', 'portrait')
             ->save($dir.'/'.$name);
+        chown($dir.'/'.$name, 'www-data');
+        chgrp($dir.'/'.$name, 'www-data');
 
         if ($personne) {
             $email = $personne->email;

@@ -198,29 +198,35 @@
                                             @endif
                                         @endif
                                     </div>
-                                    <div class="inscription">
+                                    <div class="inscription" style="line-height: 20px;">
                                         @if(in_array($session->id, $inscriptions))
                                             @if($session->inscrits->where('personne_id',$personne->id) && ($session->inscrits->where('personne_id',$personne->id)->first()->attente_paiement == 1))
                                                 <a class="orangeBtn" href="{{ route('formations.payWithSecureCode', $personne->inscrits->where('session_id', $session->id)->first()->secure_code) }}">En attente de paiement</a>
                                             @elseif($session->inscrits->where('personne_id',$personne->id)->first()->personne_id == $personne->id)
                                                 <div class="bold">Vous êtes inscrit.e à cette session</div>
-                                            @endif
-                                        @else
-                                            @if(sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places)
-                                                <a name="paiementInscription" data-session="{{ $session->id }}"
-                                                   data-price="{{ $session->price }}" class="redBtn uppercase"
-                                                   style="cursor: pointer;">S'inscrire</a>
-                                            @else
-                                                @if(sizeof($session->inscrits->where('status', 1)) >= $session->places && sizeof($session->inscrits->where('status', 1)) < $session->places + $session->waiting_places )
-                                                    <a name="attenteInscription" data-session="{{ $session->id }}"
-                                                       class="redBtn uppercase bgOrange hMaxContent"
-                                                       style="cursor: pointer;">S'inscrire en liste d'attente</a>
-                                                @else
-                                                    <span class="bold">
-                                                      Inscription terminée
-                                                </span>
+                                                @if($session->diff > 5)
+                                                    <div>
+                                                        <a name="cancelInscription" data-session="{{ $session->id }}" class="redBtn uppercase"
+                                                           style="cursor: pointer;">Annuler</a>
+                                                    </div>
                                                 @endif
                                             @endif
+{{--                                        @else--}}
+{{--                                            @if(sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places)--}}
+{{--                                                <a name="paiementInscription" data-session="{{ $session->id }}"--}}
+{{--                                                   data-price="{{ $session->price }}" class="redBtn uppercase"--}}
+{{--                                                   style="cursor: pointer;">S'inscrire</a>--}}
+{{--                                            @else--}}
+{{--                                                @if(sizeof($session->inscrits->where('status', 1)) >= $session->places && sizeof($session->inscrits->where('status', 1)) < $session->places + $session->waiting_places )--}}
+{{--                                                    <a name="attenteInscription" data-session="{{ $session->id }}"--}}
+{{--                                                       class="redBtn uppercase bgOrange hMaxContent"--}}
+{{--                                                       style="cursor: pointer;">S'inscrire en liste d'attente</a>--}}
+{{--                                                @else--}}
+{{--                                                    <span class="bold">--}}
+{{--                                                      Inscription terminée--}}
+{{--                                                </span>--}}
+{{--                                                @endif--}}
+{{--                                            @endif--}}
                                         @endif
                                     </div>
                                 </div>
@@ -236,9 +242,9 @@
                         @foreach($formation->formateurs as $formateur)
                             <div class="formateur" name="formateur"
                                  data-id="{{$formateur->id}}">
-                                @if($formateur->img)
+                                @if($formateur->image)
                                     <img
-                                        src="{{ env('APP_URL').'storage/app/public/uploads/formateurs/'.$formateur->img }}"
+                                        src="{{ env('APP_URL').'storage/app/public/uploads/formateurs/'.$formateur->image }}"
                                         alt="">
                                 @else
                                     <img
@@ -264,8 +270,39 @@
             </div>
         </div>
     </div>
+    <div class="modalEdit d-none" id="modalCancelFormation">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Annulation d'inscription à une session de formation</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Vous souhaitez vous désinscrire pour la session de formation <span class="bold">{{ $formation->name }}</span>.<br>
+            Il ne sera pas procédé au remboursement de votre inscription mais vous disposerez d'un avoir vous permettant de vous inscrire à une autre session de formation.
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="confirmCancelInscription">Confirmer ma demande d'annulation</div>
+        </div>
+    </div>
+    <div class="modalEdit d-none" id="modalConfirmationCancelFormation">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Annulation d'inscription à une session de formation</div>
+            <div class="modalEditCloseReload">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody" id="bodyConfirmationCancelFormation">
+
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditCloseReload">Fermer</div>
+        </div>
+    </div>
 @endsection
 @section('css')
+    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
     <link href="{{ asset('css/formations_fpf.css') }}" rel="stylesheet">
 @endsection
 @section('js')

@@ -6,6 +6,7 @@ use App\Concern\Api;
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Models\Club;
+use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;

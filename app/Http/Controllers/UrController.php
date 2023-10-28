@@ -494,7 +494,6 @@ class UrController extends Controller
         return view('urs.fonctions.liste', compact('ur', 'fonctions'));
     }
 
-    // affichage de la liste des reversements de l'UR TODO
     public function listeReversements()
     {
         $ur = $this->getUr();

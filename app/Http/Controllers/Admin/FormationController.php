@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\RecapFormations;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FormationRequest;
 use App\Models\Categorieformation;
@@ -10,6 +11,7 @@ use App\Models\Evaluationstheme;
 use App\Models\Formation;
 use App\Models\Interest;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class FormationController extends Controller
 {
@@ -152,5 +154,27 @@ class FormationController extends Controller
 //            dd($evaluation);
 //        }
         return view('admin.formations.evaluations', compact('formation', 'tab_evaluations', 'tab_reviews'));
+    }
+
+    public function export() {
+        $formations = Formation::orderBy('id')->get();
+        foreach ($formations as $j => $formation) {
+            foreach ($formation->sessions as $k => $session) {
+                if ($session->start_date < date('Y-m-d')) {
+                    unset($formation->sessions[$k]);
+                }
+            }
+            if (sizeof($formation->sessions) == 0) {
+                unset($formations[$j]);
+            }
+        }
+        $fichier = 'recap_formation' . date('YmdHis') . '.xls';
+        if (Excel::store(new RecapFormations($formations), $fichier, 'xls')) {
+            $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
+            $texte = "Vous pouvez télécharger le fichier en cliquant sur le lien suivant : <a href='" . $file_to_download . "'>Télécharger</a>";
+            return redirect()->route('formations.index')->with('success', $texte);
+        } else {
+            return redirect()->route('formations.index')->with('success', "Un problème est survenu lors de l'export");
+        }
     }
 }

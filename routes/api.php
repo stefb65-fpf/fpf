@@ -87,7 +87,11 @@ Route::post('/getReviews', [App\Http\Controllers\Api\FormationController::class,
 Route::post('/formations/payByVirement', [App\Http\Controllers\Api\FormationController::class, 'payByVirement']);
 Route::post('/formations/payByCb', [App\Http\Controllers\Api\FormationController::class, 'payByCb']);
 Route::post('/formations/inscriptionAttente', [App\Http\Controllers\Api\FormationController::class, 'inscriptionAttente']);
+Route::post('/formations/saveWithoutPaiement', [App\Http\Controllers\Api\FormationController::class, 'saveWithoutPaiement']);
 Route::post('/formations/addInscritToSession', [App\Http\Controllers\Api\FormationController::class, 'addInscritToSession']);
 Route::post('/formations/generatePdfEvaluations', [App\Http\Controllers\Api\FormationController::class, 'generatePdfEvaluations']);
+Route::post('/formations/cancelInscription', [App\Http\Controllers\Api\FormationController::class, 'cancelInscription']);
 
 Route::post('/checkTrainerEmail', [App\Http\Controllers\Api\FormateurController::class, 'checkTrainerEmail']);
+
+Route::post('/formateurs/upload/{formateur}', [App\Http\Controllers\Api\FormateurController::class, 'upload'])->name('formateurs.upload');

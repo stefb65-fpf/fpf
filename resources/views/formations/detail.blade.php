@@ -227,7 +227,7 @@
                                         @else
                                             @if((sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places) && $session->full == 0)
                                                 <a name="paiementInscription" data-session="{{ $session->id }}"
-                                                   data-price="{{ $personne->price_adherent == 1 ? $session->price : $session->price_not_member }}" class="redBtn uppercase"
+                                                   data-price="{{ $personne->price_adherent == 1 ? $session->price : $session->price_not_member }}" data-avoir="{{ $personne->avoir_formation }}" class="redBtn uppercase"
                                                    style="cursor: pointer;">S'inscrire</a>
                                             @else
                                                 @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places || $session->full == 1)
@@ -255,9 +255,9 @@
                     <div class="cardContent flexWrap d-flex gap20 justify-center align-center">
                         @foreach($formation->formateurs as $formateur)
                             <div class="formateur" name="formateur" data-id="{{ $formateur->id }}">
-                                @if($formateur->img)
+                                @if($formateur->image)
                                     <img
-                                        src="{{ env('APP_URL').'storage/app/public/uploads/formateurs/'.$formateur->img }}"
+                                        src="{{ env('APP_URL').'storage/app/public/uploads/formateurs/'.$formateur->image }}"
                                         alt="">
                                 @else
                                     <img
@@ -293,15 +293,27 @@
         </div>
         <div class="modalEditBody">
             Vous allez vous inscrire pour la session de formation <span class="bold">{{ $formation->name }}</span>.<br>
-            Pour valider votre inscription, vous devez payer la somme de <span id="priceModalPaiementFormation"
-                                                                               class="bold"></span> par virement
-            immédiat ou carte bancaire.<br>
-            Aucune autre méthode de paiement ne sera acceptée.
+            @if($personne->avoir_formation > 0)
+                <div>
+                    Vous disposez d'un avoir de <span class="bold">{{ $personne->avoir_formation }} €</span> sur votre compte.
+                </div>
+            @endif
+            <div id="paiementFormationNeeded">
+                Pour valider votre inscription, vous devez payer la somme de <span id="priceModalPaiementFormation"
+                                                                                   class="bold"></span> par virement
+                immédiat ou carte bancaire.<br>
+                Aucune autre méthode de paiement ne sera acceptée.
+            </div>
+            <div id="paiementFormationNotNeeded" class="d-none">
+                Votre avoir étant supérieur au prix de la formation, vous n'avez pas besoin de payer pour valider votre inscription.<br>
+                Vous pouvez valider votre inscription en cliquant sur le bouton ci-dessous.
+            </div>
         </div>
         <div class="modalEditFooter">
             <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
             <div class="adminPrimary btnMedium mr10" id="formationPayVirement" data-link="" data-ref="">Payer par virement</div>
             <div class="adminPrimary btnMedium mr10" id="formationPayCb" data-link="" data-ref="">Payer par CB</div>
+            <div class="adminPrimary btnMedium mr10 d-none" id="saveFormationWithoutPaiement" data-ref="">Valider mon inscription</div>
         </div>
     </div>
 

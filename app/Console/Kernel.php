@@ -31,6 +31,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('check:inscription')
             ->timezone('Europe/Paris')
             ->hourly();
+        $schedule->command('send:evaluation')
+            ->timezone('Europe/Paris')
+            ->dailyAt('07:00');
     }
 
     /**

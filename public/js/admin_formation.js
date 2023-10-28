@@ -16,8 +16,7 @@ $('#generatePdfEvaluations').on('click', function() {
         },
         dataType: 'JSON',
         success: function(data) {
-            // TODO change link
-            $('#linkEvaluationPdf').attr('href', 'https://fpf-new.federation-photo.fr/storage/app/public/uploads/evaluations/' + data.year + '/' + data.file)
+            $('#linkEvaluationPdf').attr('href', 'https://fpf.federation-photo.fr/storage/app/public/uploads/evaluations/' + data.year + '/' + data.file)
             $('#modalEvaluationPdf').removeClass('d-none')
         },
         error: function(err) {

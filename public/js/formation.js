@@ -17,13 +17,74 @@ $(".favorite svg ").on('click', function (e) {
     });
 })
 
+$('a[name=cancelInscription]').on('click', function (e) {
+    const session = $(this).data('session')
+    $('#confirmCancelInscription').data('ref', session)
+    $('#modalCancelFormation').removeClass('d-none')
+})
+
+$('#confirmCancelInscription').on('click', function () {
+    const ref = $(this).data('ref')
+    $.ajax({
+        url:'/api/formations/cancelInscription',
+        type: 'POST',
+        data: {
+            ref: ref,
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            $('#modalCancelFormation').addClass('d-none')
+            $('#bodyConfirmationCancelFormation').html(data.success)
+            $('#modalConfirmationCancelFormation').removeClass('d-none')
+        },
+        error: function (e) {
+            alert(e.responseJSON.erreur)
+        }
+    });
+})
+
 $('a[name=paiementInscription]').on('click', function (e) {
     const session = $(this).data('session')
-    const price = $(this).data('price')
-    $('#priceModalPaiementFormation').html(price + ' €')
-    $('#formationPayVirement').data('ref', session)
-    $('#formationPayCb').data('ref', session)
+    const avoir = parseFloat($(this).data('avoir'))
+    const price = parseFloat($(this).data('price'))
+    const real_price = price > avoir ? price - avoir : 0
+    if (real_price == 0) {
+        $('#paiementFormationNeeded').addClass('d-none')
+        $('#paiementFormationNotNeeded').removeClass('d-none')
+        $('#formationPayVirement').addClass('d-none')
+        $('#formationPayCb').addClass('d-none')
+        $('#saveFormationWithoutPaiement').data('ref', session)
+        $('#saveFormationWithoutPaiement').removeClass('d-none')
+    } else {
+        $('#priceModalPaiementFormation').html(real_price + ' €')
+        $('#paiementFormationNeeded').removeClass('d-none')
+        $('#paiementFormationNotNeeded').addClass('d-none')
+        $('#formationPayVirement').data('ref', session)
+        $('#formationPayCb').data('ref', session)
+        $('#formationPayVirement').removeClass('d-none')
+        $('#formationPayCb').removeClass('d-none')
+        $('#saveFormationWithoutPaiement').addClass('d-none')
+    }
+
     $('#modalPaiementFormation').removeClass('d-none')
+})
+
+$('#saveFormationWithoutPaiement').on('click', function () {
+    const ref = $(this).data('ref')
+    $.ajax({
+        url:'/api/formations/saveWithoutPaiement',
+        type: 'POST',
+        data: {
+            ref: ref,
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            $(location).attr('href', $(location).attr('href'))
+        },
+        error: function (e) {
+            alert(e.responseJSON.erreur)
+        }
+    });
 })
 
 $('#formationPayVirement').on('click', function () {

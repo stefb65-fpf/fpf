@@ -248,10 +248,9 @@ class PersonneController extends Controller
         $formations = Formation::where('published', 1)->whereIn('id', $formations_id)->orderByDesc('created_at')->get();
         foreach ($formations as $formation) {
             $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
-
         }
 
-        return view('personnes.mes_formations', compact('formations'));
+        return view('personnes.mes_formations', compact('formations', 'personne'));
     }
 
     //affichage du détail d'une des formations à laquelle la personne est inscrite
@@ -264,7 +263,11 @@ class PersonneController extends Controller
             $inscriptions[] = $inscrit->session_id;
         }
         $personne_sessions = [];
+        $now = new \DateTimeImmutable(date('Y-m-d'));
         foreach ($formation->sessions as $session) {
+            $session_start_date = new \DateTimeImmutable($session->start_date);
+            $interval = $now->diff($session_start_date);
+            $session->diff = $interval->format('%a');
             if (sizeof($session->inscrits->where('personne_id', $personne->id))) {
                 $personne_sessions[] = $session;
             }

@@ -9,6 +9,7 @@ use App\Exports\InscritExport;
 use App\Http\Controllers\Controller;
 use App\Mail\SendFormationPaymentLink;
 use App\Models\Inscrit;
+use App\Models\Personne;
 use App\Models\Session;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,6 +31,22 @@ class InscritController extends Controller
     public function destroy(Inscrit $inscrit) {
         $session = $inscrit->session;
         $inscrit->delete();
+        return redirect()->route('inscrits.liste', $session)->with('success', 'Inscription supprimée avec succès');
+    }
+
+    public function destroyWithCredit(Inscrit $inscrit) {
+        $session = $inscrit->session;
+        $personne = Personne::where('id', $inscrit->personne_id)->first();
+        if (!$personne) {
+            return redirect()->route('inscrits.liste', $session)->with('error', 'Une erreur est survenue');
+        }
+        $amount = $inscrit->amount;
+        // on supprime l'inscription
+        $inscrit->delete();
+
+        // on crédite le compte du user
+        $personne->update(['avoir_formation' => $personne->avoir_formation + $amount]);
+
         return redirect()->route('inscrits.liste', $session)->with('success', 'Inscription supprimée avec succès');
     }
 

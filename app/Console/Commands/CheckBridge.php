@@ -164,6 +164,9 @@ class CheckBridge extends Command
                     $inscrit->update($data);
                     $formation = $inscrit->session->formation;
 
+                    $personne = Personne::where('id', $inscrit->personne_id)->first();
+                    $personne->update(['avoir_formation' => 0]);
+
                     $email = $inscrit->personne->email;
                     $mailSent = Mail::to($email)->send(new ConfirmationInscriptionFormation($inscrit->session));
                     $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();

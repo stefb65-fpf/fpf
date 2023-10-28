@@ -45,7 +45,8 @@
                     </td>
                     <td>
                         @if($inscrit->attente == 0)
-                            <a href="{{ route('inscrits.destroy', $inscrit) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer cet inscrit ?" class="btnSmall adminDanger">Supprimer</a>
+                            <a href="{{ route('inscrits.destroy', $inscrit) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer cet inscrit sans compensation ?" class="btnSmall adminDanger">Supprimer</a>
+                            <a href="{{ route('inscrits.destroyWithCredit', $inscrit) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer cet inscrit ? Un avoir formation du montant de son incription lui sera accordé." class="btnSmall adminWarning mt5">Supprimer avec avoir</a>
                         @endif
                         @if($inscrit->attente == 1)
                             <a href="{{ route('inscrits.sendPaymentLink', $inscrit) }}" data-method="post" data-confirm="Voulez-vous vraiement envoyer le lien de paiement à cette personne ?" class="btnSmall adminPrimary">Envoyer lien paiement</a>

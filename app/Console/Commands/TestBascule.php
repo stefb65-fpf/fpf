@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Concern\Api;
 use App\Mail\SendRenouvellementMail;
 use App\Models\Club;
+use App\Models\Invoice;
+use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Tarif;
 use App\Models\Utilisateur;
@@ -37,9 +39,39 @@ class TestBascule extends Command
      */
     public function handle()
     {
-        $url = 'https://api.bridgeapi.io/v2/payment-links/c5308f40-943d-4e64-954c-7b2328869098';
-        list($status, $reponse) = $this->callBridge($url, 'GET', null);
-        dd($status, $reponse);
+//        $dir = '/home/vhosts/fpf.federation-photo.fr/htdocs/storage/app/public/uploads/invoices/stephane';
+//        mkdir($dir, 0777, true);
+//        chown($dir, 'www-data');
+//        chgrp($dir, 'www-data');
+//        $invoices = Invoice::where('id', '>', 900)->get();
+//        foreach ($invoices as $invoice) {
+//            $dir = $invoice->getStorageDir();
+//            $name = $invoice->numero.'.pdf';
+//            $file = $dir.'/'.$name;
+//            if (!file_exists($file)) {
+//                $adresse = null; $personne = null; $club = null;
+//                if ($invoice->personne_id) {
+//                    $personne = Personne::where('id', $invoice->personne_id)->first();
+//                    $adresse = $personne->adresses()->first();
+//                } else {
+//                    if ($invoice->club_id) {
+//                        $club = Club::where('id', $invoice->club_id)->first();
+//                        $adresse = $club->adresse;
+//                    }
+//                }
+//                $pdf = App::make('dompdf.wrapper');
+//                $pdf->loadView('pdf.facture', compact('invoice', 'adresse', 'personne', 'club'))
+//                    ->setWarnings(false)
+//                    ->setPaper('a4', 'portrait')
+//                    ->save($dir.'/'.$name);
+//                chown($dir.'/'.$name, 'www-data');
+//                chgrp($dir.'/'.$name, 'www-data');
+//            }
+//        }
+
+//        $url = 'https://api.bridgeapi.io/v2/payment-links/c5308f40-943d-4e64-954c-7b2328869098';
+//        list($status, $reponse) = $this->callBridge($url, 'GET', null);
+//        dd($status, $reponse);
 
 //        $clubs = Club::whereIn('statut', [0,1,2])->get();
 //        $nb = 0;

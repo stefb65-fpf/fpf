@@ -325,7 +325,6 @@ $('#connectConcours').on('click', function (e) {
             form += '<input type="hidden" name="email" value="' + email + '">';
             form += '<input type="hidden" name="password" value="' + password + '">';
             form += '<input type="hidden" name="cartes" value="' + cartes + '">';
-            // TODO change URL to prod
             $('<form action="' + $('#app_url_copain').html() + 'webroot/utilisateurs/autoload" method="POST">' + form + '</form>').appendTo($(document.body)).submit();
         },
         error: function (err) {

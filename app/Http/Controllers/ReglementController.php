@@ -114,6 +114,9 @@ class ReglementController extends Controller
                 $data = ['attente_paiement' => 0, 'status' => 1, 'secure_code' => null];
                 $inscrit->update($data);
 
+                $personne = Personne::where('id', $inscrit->personne_id)->first();
+                $personne->update(['avoir_formation' => 0]);
+
                 $description = "Inscription à la formation ".$inscrit->session->formation->name;
                 $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
                 $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->amount, 'personne_id' => $inscrit->personne->id];

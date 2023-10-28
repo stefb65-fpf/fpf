@@ -34,6 +34,10 @@ class FormationController extends Controller
     {
         $formations = Formation::where('published', 1)->orderByDesc('created_at')->get();
         foreach ($formations as $formation) {
+//            foreach($formation->sessions->where('start_date', '>', date('Y-m-d')) as $session) {
+//                dd($session->start_date->format('d/m/Y'));
+//            }
+
             $formation->location = $this->getFormationCities($formation, $formation->location);
         }
 
@@ -110,6 +114,9 @@ class FormationController extends Controller
                 $data = ['attente_paiement' => 0, 'status' => 1, 'secure_code' => null];
                 $inscrit->update($data);
                 $formation = $inscrit->session->formation;
+
+                $personne = Personne::where('id', $inscrit->personne_id)->first();
+                $personne->update(['avoir_formation' => 0]);
 
                 $email = $inscrit->personne->email;
                 $mailSent = Mail::to($email)->send(new ConfirmationInscriptionFormation($inscrit->session));

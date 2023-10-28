@@ -21,6 +21,7 @@
                 <thead>
                     <tr>
                         <th>Formateur</th>
+                        <th></th>
                         <th>Email</th>
                         <th>Téléphone</th>
                         <th>Titre</th>
@@ -32,12 +33,18 @@
                     <tr>
                         <td>{{ $formateur->nom }} {{ $formateur->prenom }}</td>
                         <td>
+                            @if($formateur->image)
+                                <img src="{{ asset('storage/app/public/uploads/formateurs/'.$formateur->image) }}" style="height: 100px; width: 100px; border-radius: 50%; object-fit: cover;" alt="Photo de {{ $formateur->nom }} {{ $formateur->prenom }}" class="photoFormateur">
+                            @endif
+                        </td>
+                        <td>
                             <a href="{{ $formateur->email }}">{{ $formateur->email }}</a>
                         </td>
                         <td>{{ $formateur->phone_mobile }}</td>
                         <td>{{ $formateur->title }}</td>
                         <td>
                             <a href="{{ route('formateurs.edit', $formateur) }}" class="btnSmall adminPrimary">Modifier</a>
+                            <a class="btnSmall adminWarning mt5" name="photoFormateur"  data-url="{{ route('formateurs.upload', $formateur) }}">Photo</a>
                             @if(sizeof($formateur->formations) == 0)
                                 <a href="{{ route('formateurs.destroy', $formateur) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer ce formateur ?" class="btnSmall adminDanger mt5">Supprimer</a>
                             @endif
@@ -48,7 +55,19 @@
             </table>
         @endif
     </div>
+    <div id="plupload">
+        <div id="browse" data-url="">
+            &nbsp;
+        </div>
+    </div>
+    <div id="uploaderWaiting" class="waiting d-none p100">
+        <img src="{{ url('storage/app/public/ajax-loader.gif') }}" style="max-width: 150px;">
+    </div>
 @endsection
 @section('css')
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
+@endsection
+@section('js')
+    <script src="{{ asset('js/plupload.js') }}" ></script>
+    <script src="{{ asset('js/admin_formateur.js') }}" ></script>
 @endsection
