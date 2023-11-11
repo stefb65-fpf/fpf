@@ -120,6 +120,14 @@
                         @endif
                     @endif
                 @endif
+
+                @if(in_array('SUPPORT', $droits_fpf))
+                    <li class="leftMenuItem">
+                        <a href="{{ route('supports.index') }}">
+                            Support
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
 

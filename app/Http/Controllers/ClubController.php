@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Concern\Api;
 use App\Concern\ClubTools;
+use App\Concern\Hash;
 use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubAbonnementRequest;
 use App\Http\Requests\ClubReunionRequest;
+use App\Mail\SendEmailReinitPassword;
 use App\Mail\SendModificationEmail;
 use App\Models\Abonnement;
 use App\Models\Adresse;
@@ -31,10 +33,11 @@ class ClubController extends Controller
     use ClubTools;
     use Api;
     use Invoice;
+    use Hash;
 
     public function __construct()
     {
-        $this->middleware(['checkLogin', 'clubAccess'])->except(['updateAdherent']);
+        $this->middleware(['checkLogin', 'clubAccess'])->except(['updateAdherent', 'removeAdherent', 'sendReinitLink']);
     }
 
     // affichage de la page d'accueil de gestion des clubs
@@ -97,6 +100,7 @@ class ClubController extends Controller
         $abonnement = $abonnement ?? "all";
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('utilisateurs.clubs_id', $club->id)
+            ->where('utilisateurs.adherent_club', 1)
             ->orderBy('personnes.nom')->orderBy('personnes.prenom')
             ->selectRaw('*, utilisateurs.id as id_utilisateur');
         if (in_array($statut, [0, 1, 2, 3, 4])) {
@@ -525,5 +529,40 @@ class ClubController extends Controller
             return redirect()->route('accueil')->with('error', "Un problème est survenu lors de la récupération des informations club");
         }
         return $club;
+    }
+
+    public function removeAdherent($utilisateur_id) {
+        $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
+        if (!$utilisateur) {
+            return redirect()->back()->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+        }
+        $data = ['adherent_club' => 0];
+        $utilisateur->update($data);
+        return redirect()->back()->with('success', "L'adhérent a bien été enlevé de la liste visible du club. L'identifiant carte est conservé et son nom sera encore visible dans l'historique des concours.");
+    }
+
+    public function sendReinitLink($personne_id) {
+        $personne = Personne::where('id', $personne_id)->first();
+        if (!$personne) {
+            return redirect()->back()->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+        }
+
+        $crypt = $this->encodeShortReinit();
+        $personne->secure_code = $crypt;
+        $personne->save();
+
+        $link = env('APP_URL')."reinitPassword/" . $crypt;
+        $mailSent = Mail::to($personne->email)->send(new SendEmailReinitPassword($link));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+        $this->registerAction($personne->id, 3, "Demande génération mot de passe");
+
+        $mail = new \stdClass();
+        $mail->titre = "Demande de réinitialisation de mot de passe";
+        $mail->destinataire = $personne->email;
+        $mail->contenu = $htmlContent;
+
+        $this->registerMail($personne->id, $mail);
+        return redirect()->back()->with('success', "Un mail a été envoyé à l'adhérent pour réinitialiser son mot de passe");
     }
 }

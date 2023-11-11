@@ -101,7 +101,7 @@
             <th>Courriel</th>
             <th>Abonnement - N° fin</th>
             <th>Type carte</th>
-            <th></th>
+            <th colspan="2">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -166,8 +166,29 @@
                     </div>
                 </td>
                 <td>
+                    <a href="{{ route('clubs.sendReinitLink', $adherent->personne->id) }}" data-confirm="Confirmez-vous l'envoi d'un lien d'initialisation du mot de passe ?" data-method="post" style="transform: rotate(90deg); width: 25px; height: 25px; cursor: pointer; display: block"  title="{{ $adherent->personne->premiere_connexion == 1 ? "Mot de passe non initialisé" : "Mot de passe initialisé" }} - Envoyer un lien d'initialisation">
+                        @if($adherent->personne->premiere_connexion == 1)
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#800" class="bi bi-key-fill" viewBox="0 0 16 16">
+                                <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                            </svg>
+                        @else
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#080" class="bi bi-key-fill" viewBox="0 0 16 16" >
+                                <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                            </svg>
+                        @endif
+                    </a>
+                </td>
+                <td>
                     <a href="{{ route($prefix.'clubs.adherents.edit', $adherent->id_utilisateur) }}"
                        class="adminPrimary btnSmall">éditer</a>
+                    @if(in_array($adherent->statut, [0,4]))
+                        <div class="mt5">
+                            <a href="{{ route('clubs.removeAdherent', $adherent->id_utilisateur) }}" data-confirm="Cet adhérent ne sera plus visible dans votre liste d'adhérent club. Vous ne pourrez plus le réactiver par la suite mais la carte est conservée et le nom apparaitra toujours dans les résultats des concours. Confirmez-vous votre demande ? " data-method="delete"
+                               class="adminDanger btnSmall">plus dans club</a>
+                        </div>
+
+                    @endif
+
                 </td>
             </tr>
         @endforeach

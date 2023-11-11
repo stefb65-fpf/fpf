@@ -15,6 +15,7 @@ function drawChartClubs() {
         },
         dataType: 'JSON',
         success: function (reponse) {
+            console.log(reponse)
             data = google.visualization.arrayToDataTable([
                 ['Statut', 'Nombre de clubs'],
                 ['Non renouvelés', reponse.non_renouveles],

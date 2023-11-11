@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 
 use App\Mail\SendEmailReinitPassword;
 use App\Mail\SendRenouvellementMail;
+use App\Models\Abonnement;
 use App\Models\Adresse;
 use App\Models\Club;
 use App\Models\Pays;
@@ -36,9 +37,16 @@ class UtilisateurController extends Controller
         $utilisateurs = Utilisateur::where('clubs_id', $club)->whereNotNull('personne_id')->orderBy('identifiant')->get();
         foreach ($utilisateurs as $utilisateur) {
             if ($utilisateur->personne->is_abonne) {
-                $utilisateur->fin = isset($utilisateur->personne->abonnements->where('etat', 1)[0]) ?
-                    $utilisateur->personne->abonnements->where('etat', 1)[0]->fin :
-                    $utilisateur->personne->abonnements->where('etat', 1)[1]->fin;
+                $abonnement = Abonnement::where('personne_id', $utilisateur->personne_id)->where('etat', 1)->first();
+                if ($abonnement) {
+                    $utilisateur->fin = $abonnement->fin;
+                } else {
+                    $utilisateur->fin = '';
+                }
+//                dd($utilisateur->personne->abonnements->where('etat', 1)[1]);
+//                $utilisateur->fin = isset($utilisateur->personne->abonnements->where('etat', 1)[0]) ?
+//                    $utilisateur->personne->abonnements->where('etat', 1)[0]->fin :
+//                    $utilisateur->personne->abonnements->where('etat', 1)[1]->fin;
             } else {
                 $utilisateur->fin = '';
             }

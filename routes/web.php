@@ -12,6 +12,8 @@ Route::get('/clubs/factures', [App\Http\Controllers\ClubController::class, 'fact
 Route::get('/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\ClubController::class, 'editAdherent'])->name('clubs.adherents.edit');
 Route::get('/clubs/adherents/create', [App\Http\Controllers\ClubController::class, 'createAdherent'])->name('clubs.adherents.create');
 Route::post('/clubs/adherents/store', [App\Http\Controllers\ClubController::class, 'storeAdherent'])->name('clubs.adherents.store');
+Route::post('/clubs/sendReinitLink/{personne_id}', [App\Http\Controllers\ClubController::class, 'sendReinitLink'])->name('clubs.sendReinitLink');
+Route::delete('/clubs/removeAdherent/{utilisateur_id}', [App\Http\Controllers\ClubController::class, 'removeAdherent'])->name('clubs.removeAdherent');
 Route::post('/clubs/adherents/storeExistingAdherent', [App\Http\Controllers\ClubController::class, 'storeExistingAdherent'])->name('clubs.adherents.storeExistingAdherent');
 Route::put('/clubs/adherents/{utilisateur_id}/update', [App\Http\Controllers\ClubController::class, 'updateAdherent'])->name('clubs.adherents.update');
 Route::get('/clubs/adherents/{statut?}/{abonnement?}', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.adherents.index');

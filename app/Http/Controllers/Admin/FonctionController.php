@@ -220,6 +220,9 @@ class FonctionController extends Controller
         if ($utilisateur->ca === 1) {
             return redirect()->route('admin.fonctions.ca')->with('error', "L'adhérent est déjà au CA");
         }
+        if (!in_array($utilisateur->statut, [2, 3])) {
+            return redirect()->route('admin.fonctions.ca')->with('error', "L'adhérent doit avoir une carte en cours de validité pour être ajouté au CA");
+        }
         $data = array('ca' => 1);
         $utilisateur->update($data);
         return redirect()->route('admin.fonctions.ca')->with('success', "L'adhérent a été ajouté au CA");

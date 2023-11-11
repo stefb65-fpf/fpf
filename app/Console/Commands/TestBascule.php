@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Concern\Api;
 use App\Mail\SendRenouvellementMail;
 use App\Models\Club;
+use App\Models\Historique;
 use App\Models\Invoice;
 use App\Models\Personne;
 use App\Models\Reglement;
@@ -39,6 +40,15 @@ class TestBascule extends Command
      */
     public function handle()
     {
+        //SELECT DISTINCT personne_id FROM `historiques` WHERE `action` LIKE 'Modification du mot de passe'
+//        $datap = ['premiere_connexion' => 0];
+//        $histos = Historique::where('action', 'Modification du mot de passe')->selectRaw('DISTINCT personne_id')->get();
+//        foreach ($histos as $histo) {
+//            $personne = Personne::where('id', $histo->personne_id)->first();
+//            if ($personne) {
+//                $personne->update($datap);
+//            }
+//        }
 //        $dir = '/home/vhosts/fpf.federation-photo.fr/htdocs/storage/app/public/uploads/invoices/stephane';
 //        mkdir($dir, 0777, true);
 //        chown($dir, 'www-data');

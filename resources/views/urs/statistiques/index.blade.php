@@ -64,37 +64,37 @@
                 <tbody>
                 <tr>
                     <td>UR</td>
-                    <td>{{ $tab_total['ct2'] + $tab_total['ct7'] }}</td>
-                    <td>{{ $tab_total['ct3'] + $tab_total['ct8'] }}</td>
-                    <td>{{ $tab_total['ct4'] + $tab_total['ct9'] }}</td>
-                    <td>{{ $tab_total['ct6'] }}</td>
-                    <td>{{ $tab_total['ct5'] + $tab_total['ctF'] }}</td>
-                    <td>{{ $tab_total['total'] }}</td>
-                    <td>{{ $tab_total['preinscrits'] }}</td>
+                    <td style="text-align: right">{{ $tab_total['ct2'] + $tab_total['ct7'] }}</td>
+                    <td style="text-align: right">{{ $tab_total['ct3'] + $tab_total['ct8'] }}</td>
+                    <td style="text-align: right">{{ $tab_total['ct4'] + $tab_total['ct9'] }}</td>
+                    <td style="text-align: right">{{ $tab_total['ct6'] }}</td>
+                    <td style="text-align: right">{{ $tab_total['ct5'] + $tab_total['ctF'] }}</td>
+                    <td style="text-align: right">{{ $tab_total['total'] }}</td>
+                    <td style="text-align: right">{{ $tab_total['preinscrits'] }}</td>
                 </tr>
                 @if(isset($tab_repartition[0]))
                     <tr>
                         <td>Individuels</td>
-                        <td>{{ $tab_repartition[0]['ct7'] ?? '' }}</td>
-                        <td>{{ $tab_repartition[0]['ct8'] ?? '' }}</td>
-                        <td>{{ $tab_repartition[0]['ct9'] ?? '' }}</td>
-                        <td></td>
-                        <td>{{ $tab_repartition[0]['ctF'] ?? '' }}</td>
-                        <td>{{ $tab_repartition[0]['total'] ?? '' }}</td>
-                        <td>{{ $tab_repartition[0]['preinscrit'] ?? '' }}</td>
+                        <td style="text-align: right">{{ $tab_repartition[0]['ct7'] ?? '' }}</td>
+                        <td style="text-align: right">{{ $tab_repartition[0]['ct8'] ?? '' }}</td>
+                        <td style="text-align: right">{{ $tab_repartition[0]['ct9'] ?? '' }}</td>
+                        <td style="text-align: right"></td>
+                        <td style="text-align: right">{{ $tab_repartition[0]['ctF'] ?? '' }}</td>
+                        <td style="text-align: right">{{ $tab_repartition[0]['total'] ?? '' }}</td>
+                        <td style="text-align: right">{{ $tab_repartition[0]['preinscrit'] ?? '' }}</td>
                     </tr>
                 @endif
                 @foreach($tab_repartition as $k => $repartition)
                     @if($k !== 0)
                         <tr>
                             <td>{{ $repartition['club'].' ('.str_pad($repartition['numero'], 4, '0', STR_PAD_LEFT).')' }}</td>
-                            <td>{{ $repartition['ct2'] ?? '' }}</td>
-                            <td>{{ $repartition['ct3'] ?? '' }}</td>
-                            <td>{{ $repartition['ct4'] ?? '' }}</td>
-                            <td>{{ $repartition['ct6'] ?? '' }}</td>
-                            <td>{{ $repartition['ct5'] ?? '' }}</td>
-                            <td>{{ $repartition['total'] ?? '' }}</td>
-                            <td>{{ $repartition['preinscrit'] ?? '' }}</td>
+                            <td style="text-align: right">{{ $repartition['ct2'] ?? '' }}</td>
+                            <td style="text-align: right">{{ $repartition['ct3'] ?? '' }}</td>
+                            <td style="text-align: right">{{ $repartition['ct4'] ?? '' }}</td>
+                            <td style="text-align: right">{{ $repartition['ct6'] ?? '' }}</td>
+                            <td style="text-align: right">{{ $repartition['ct5'] ?? '' }}</td>
+                            <td style="text-align: right">{{ $repartition['total'] ?? '' }}</td>
+                            <td style="text-align: right">{{ $repartition['preinscrit'] ?? '' }}</td>
                         </tr>
                     @endif
                 @endforeach

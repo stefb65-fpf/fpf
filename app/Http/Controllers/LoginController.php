@@ -234,7 +234,7 @@ class LoginController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function resetPassword(ResetPasswordRequest $request, Personne $personne){
-        $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null);
+        $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null, 'premiere_connexion' => 0);
         $personne->update($datap);
 
         $this->updateWpUser($personne->email, $request->password);
