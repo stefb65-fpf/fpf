@@ -237,7 +237,7 @@ class LoginController extends Controller
         $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null, 'premiere_connexion' => 0);
         $personne->update($datap);
 
-        $this->updateWpUser($personne->email, $request->password);
+        $this->updateWpUser($personne, $request->password);
 
         $this->registerAction($personne->id, 4, "Modification du mot de passe");
 
@@ -302,7 +302,7 @@ class LoginController extends Controller
         $datap = array('email' => $personne->nouvel_email, 'secure_code' => null,"nouvel_email"=>null);
         $personne->update($datap);
 
-        $this->updateWpUserEmail($old_email, $personne->email);
+        $this->updateWpUserEmail($old_email, $personne);
 
         //on enregistre la modification dans l'historique des actions
         $this->registerAction(1, 4, "Modification se l'email");

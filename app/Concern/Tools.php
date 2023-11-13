@@ -931,15 +931,17 @@ trait Tools
         }
     }
 
-    protected function updateWpUser($email, $password)
+    protected function updateWpUser($personne, $password)
     {
         try {
             DB::beginTransaction();
-            $wp_user = DB::connection('mysqlwp')->select("SELECT ID FROM wp_users WHERE user_email = '" . $email . "'");
+            $wp_user = DB::connection('mysqlwp')->select("SELECT ID FROM wp_users WHERE user_email = '" . $personne->email . "'");
             if (sizeof($wp_user) > 0) {
                 $userId = $wp_user[0]->ID;
                 $passwp = md5($password);
                 DB::connection('mysqlwp')->statement("UPDATE wp_users SET user_pass = '" . $passwp . "' WHERE ID = $userId LIMIT 1");
+            } else {
+                $this->insertWpUser($personne->prenom, $personne->nom, $personne->email, $password);
             }
 
             DB::commit();
@@ -950,14 +952,16 @@ trait Tools
         }
     }
 
-    protected function updateWpUserEmail($email, $new_email)
+    protected function updateWpUserEmail($email, $personne)
     {
         try {
             DB::beginTransaction();
             $wp_user = DB::connection('mysqlwp')->select("SELECT ID FROM wp_users WHERE user_email = '" . $email . "'");
             if (sizeof($wp_user) > 0) {
                 $userId = $wp_user[0]->ID;
-                DB::connection('mysqlwp')->statement("UPDATE wp_users SET user_email = '" . $new_email . "' WHERE ID = $userId LIMIT 1");
+                DB::connection('mysqlwp')->statement("UPDATE wp_users SET user_email = '" . $personne->email . "' WHERE ID = $userId LIMIT 1");
+            } else {
+                $this->insertWpUser($personne->prenom, $personne->nom, $personne->email, $personne->password);
             }
 
             DB::commit();

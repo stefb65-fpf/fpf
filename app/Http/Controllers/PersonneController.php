@@ -296,7 +296,7 @@ class PersonneController extends Controller
         $datap = array('password' => $this->encodePwd($request->password), 'secure_code' => null);
         $personne->update($datap);
 
-        $this->updateWpUser($personne->email, $request->password);
+        $this->updateWpUser($personne, $request->password);
 
 //        $request->session()->put('user', $personne);
         $this->registerAction($personne->id, 4, "Modification de votre mot de passe");
