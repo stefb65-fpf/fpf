@@ -89,14 +89,23 @@
                                 <img class="mr10" src="{{ env('APP_URL').'storage/app/public/dashboard.png' }}"
                                      alt="">
                                 @switch($formation->level)
+                                    @case (5)
+                                        Tous niveaux
+                                        @break
+                                    @case (4)
+                                        Intermédiaire/Confirmé
+                                        @break
+                                    @case (3)
+                                        Débutant/Intermédiaire
+                                        @break
                                     @case (2)
-                                    confirmé
+                                    Confirmé
                                     @break
                                     @case(1)
-                                    intermédiaire
+                                    Intermédiaire
                                     @break
                                     @default
-                                    initiation
+                                    Débutant
                                 @endswitch
                             </div>
                             @if($formation->duration)

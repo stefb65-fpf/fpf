@@ -41,8 +41,11 @@
                     <div class="formLabel ">* Niveau</div>
                     <select name="level" class="w75" style="padding: 5px;">
                         <option value="0" {{ old('level', $formation->level) == 0 ? 'selected=selected' : '' }}>Débutant</option>
+                        <option value="3" {{ old('level', $formation->level) == 3 ? 'selected=selected' : '' }}>Débutant/Intermédiaire</option>
                         <option value="1" {{ old('level', $formation->level) == 1 ? 'selected=selected' : '' }}>Intermédiaire</option>
+                        <option value="4" {{ old('level', $formation->level) == 4 ? 'selected=selected' : '' }}>Intermédiaire/Confirmé</option>
                         <option value="2" {{ old('level', $formation->level) == 2 ? 'selected=selected' : '' }}>Confirmé</option>
+                        <option value="5" {{ old('level', $formation->level) == 5 ? 'selected=selected' : '' }}>Tous niveaux</option>
                     </select>
                 </div>
                 <div class="formUnit w100 align-start">

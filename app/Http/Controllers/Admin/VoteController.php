@@ -163,7 +163,7 @@ class VoteController extends Controller
     }
 
     public function electionsUpdate(Request $request, Vote $vote, Election $election) {
-        $data = $request->only('nom', 'ordre');
+        $data = $request->only('nom', 'ordre', 'contenu');
         $election->update($data);
         return redirect()->route('votes.elections.index', $vote)->with('success', 'L\'élection a bien été modifiée.');
     }

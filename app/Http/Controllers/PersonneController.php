@@ -81,7 +81,8 @@ class PersonneController extends Controller
                 $tab_fonctions[] = $fonction->id;
             }
 
-            if ($cartes[0]->saison >= date('Y') && $cartes[0]->statut < 4) {
+            if (in_array($cartes[0]->statut, [2,3])) {
+//            if ($cartes[0]->saison >= date('Y') && $cartes[0]->statut < 4) {
                 $phase2_available = 0;
                 $phase3_available = 0;
                 foreach ($cartes[0]->fonctions as $la_fonction) {

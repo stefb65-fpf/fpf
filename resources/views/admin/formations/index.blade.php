@@ -102,6 +102,15 @@
                                     @case(2)
                                         Confirmé
                                         @break
+                                    @case (5)
+                                        Tous niveaux
+                                        @break
+                                    @case (4)
+                                        Intermédiaire/Confirmé
+                                        @break
+                                    @case (3)
+                                        Débutant/Intermédiaire
+                                        @break
                                 @endswitch
                             </div>
                             @if($formation->duration != '')

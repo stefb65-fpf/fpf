@@ -123,3 +123,6 @@
 @section('js')
     <script src="{{ asset('js/moncompte.js') }}?t=<?= time() ?>"></script>
 @endsection
+@section('css')
+    <link href="{{ asset('css/vote.css') }}" rel="stylesheet">
+@endsection
