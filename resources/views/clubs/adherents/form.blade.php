@@ -51,15 +51,21 @@
             </div>
             <div class="formLine">
                 <div class="formLabel">Code Postal *</div>
-                <input name="codepostal" type="text" id="adresseCodepostal" value="{{ old('codepostal', str_pad($utilisateur->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT)) }}" class="inputFormAction formValue modifying" maxlength="10" required/>
+                <div class="suggestionWrapper">
+                    <input name="codepostal" type="text" id="adresseCodepostal" value="{{ old('codepostal', str_pad($utilisateur->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT)) }}" class="inputFormAction formValue modifying" maxlength="10" required/>
+                    <div class="suggestion"></div>
+                </div>
             </div>
             <div class="formLine">
                 <div class="formLabel">Ville *</div>
-                <input name="ville" type="text" id="adresseVille" value="{{ old('ville', $utilisateur->personne->adresses[0]->ville) }}" class="inputFormAction formValue modifying w70" value="" maxlength="70" required/>
+                <div class="suggestionWrapper">
+                    <input name="ville" type="text" id="adresseVille" value="{{ old('ville', $utilisateur->personne->adresses[0]->ville) }}" class="inputFormAction formValue modifying w70" value="" maxlength="70" required/>
+                    <div class="suggestion"></div>
+                </div>
             </div>
             <div class="formLine">
                 <div class="formLabel">Pays *</div>
-                <select class="inputFormAction formValue modifying" name="pays" id="selectPays">
+                <select class="inputFormAction formValue modifying pays" name="pays" id="selectPays">
                     @foreach($countries as $country)
                             <option value="{{$country->id}}" {{strtolower($country->nom) == strtolower($utilisateur->personne->adresses[0]->pays)? "selected" : ""}}
                             data-indicator="{{$country->indicatif}}">{{$country->nom}}</option>

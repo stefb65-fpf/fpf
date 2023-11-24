@@ -28,9 +28,9 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($utilisateurs as $utilisateur)
+            @foreach($utilisateurs->sortBy('personne.nom') as $utilisateur)
                 <tr>
-                    <td>{{ $utilisateur->personne->prenom.' '.$utilisateur->personne->nom }}</td>
+                    <td>{{ $utilisateur->personne->nom.' '.$utilisateur->personne->prenom }}</td>
                     <td>{{ $utilisateur->identifiant }}</td>
                     <td><a href="mailto:{{ $utilisateur->personne->email }}">{{ $utilisateur->personne->email }}</a></td>
                     <td>

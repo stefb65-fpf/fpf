@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concern\Tools;
 use App\Exports\FlorilegeExport;
 use App\Exports\RoutageFedeExport;
 use App\Exports\RoutageFpExport;
@@ -21,17 +22,24 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class PublicationController extends Controller
 {
+    use Tools;
     public function __construct() {
         $this->middleware(['checkLogin', 'adminAccess'])->except(['createEtiquettes', 'createRoutageFede']);
     }
 
     public function index()
     {
+        if (!$this->checkDroit('GESPUB')) {
+            return redirect()->route('accueil');
+        }
         return view('admin.publications.index');
     }
 
     public function routageFP()
     {
+        if (!$this->checkDroit('GESPUB')) {
+            return redirect()->route('accueil');
+        }
         $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
         $numeroencours = $config->numeroencours;
 
@@ -79,6 +87,9 @@ class PublicationController extends Controller
 
     public function routageFede()
     {
+        if (!$this->checkDroit('GESPUB')) {
+            return redirect()->route('accueil');
+        }
         $saison = (in_array(date('m'), ['09', '10', '11', '12']) ? date('Y') : date('Y') - 1);
         $nb_clubs = Club::where('statut', 2)->count();
         $nb_individuels = Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', ['7', '8', '9', 'F'])->count();
@@ -99,6 +110,9 @@ class PublicationController extends Controller
 
     public function etiquettes()
     {
+        if (!$this->checkDroit('GESPUB')) {
+            return redirect()->route('accueil');
+        }
         $nb_clubs = Club::where('statut', 2)->count();
         $nb_individuels = Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', ['7', '8', '9', 'F'])->count();
         $nb_ca = Utilisateur::where('ca', 1)->count();
@@ -245,6 +259,9 @@ class PublicationController extends Controller
     }
 
     public function florilege() {
+        if (!$this->checkDroit('GESPUB')) {
+            return redirect()->route('accueil');
+        }
         // on rcupère le nb d'exemplaires à imprimer
         $total = Souscription::where('statut', 1)->selectRaw('SUM(nbexemplaires) as nb')->first();
         $nb_exemplaires = $total->nb;

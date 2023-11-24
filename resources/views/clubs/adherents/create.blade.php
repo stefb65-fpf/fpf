@@ -69,5 +69,6 @@
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection
 @section('js')
+    <script src="{{ asset('js/autocompleteCommune.js') }}?t=<?= time() ?>"></script>
     <script src="{{ asset('js/gestion_adherents.js') }}?t=<?= time() ?>"></script>
 @endsection

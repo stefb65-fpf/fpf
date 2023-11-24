@@ -832,7 +832,7 @@ trait Tools
                 if (!$menu_ur) {
                     if (sizeof($cartes[0]->droits) > 0) {
                         foreach ($cartes[0]->droits as $droit) {
-                            if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])) {
+                            if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'GESVOTUR'])) {
                                 $menu_ur = true;
                             }
                         }
@@ -841,7 +841,7 @@ trait Tools
                         foreach ($cartes[0]->fonctions as $fonction) {
                             if ($fonction->instance == 2) {
                                 foreach ($fonction->droits as $droit) {
-                                    if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])) {
+                                    if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'GESVOTUR'])) {
                                         $menu_ur = true;
                                     }
                                 }

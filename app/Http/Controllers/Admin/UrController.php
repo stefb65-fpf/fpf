@@ -31,6 +31,9 @@ class UrController extends Controller
      */
     public function index()
     {
+        if (!$this->checkDroit('GESSTR')) {
+            return redirect()->route('accueil');
+        }
         $urs = Ur::orderBy('id')->get();
         foreach ($urs as $ur) {
             $president = DB::table('fonctionsutilisateurs')->join('utilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
@@ -53,6 +56,9 @@ class UrController extends Controller
 
     public function edit(Ur $ur)
     {
+        if (!$this->checkDroit('GESSTR')) {
+            return redirect()->route('accueil');
+        }
         $ur->departements = DB::table('departements')->where('urs_id', $ur->id)->get();
         $ur->adresse->telephonemobile = $this->format_phone_number_visual($ur->adresse->telephonemobile);
         $ur->adresse->telephonedomicile = $this->format_phone_number_visual($ur->adresse->telephonedomicile);
@@ -90,6 +96,9 @@ class UrController extends Controller
     }
 
     public function fonctions(Ur $ur) {
+        if (!$this->checkDroit('GESSTR')) {
+            return redirect()->route('accueil');
+        }
         $fonctions = Fonction::join('fonctionsurs', 'fonctionsurs.fonctions_id', '=', 'fonctions.id')
             ->where('fonctionsurs.urs_id', $ur->id)
             ->orderBy('fonctions.urs_id')

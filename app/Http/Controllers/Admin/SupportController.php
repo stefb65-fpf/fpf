@@ -21,6 +21,9 @@ class SupportController extends Controller
     }
 
     public function index($type = null) {
+        if (!$this->checkDroit('SUPPORT')) {
+            return redirect()->route('accueil');
+        }
         $query = Supportmessage::orderByDesc('id');
         if ($type == 'non-traites') {
             $query->where('statut', 0);

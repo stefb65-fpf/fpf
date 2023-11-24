@@ -63,7 +63,7 @@
                             <div>
                                 <select name="fonction" class="selectFormAction formValue modifying">
                                     <option value="-1">-- Fonction à choisir --</option>
-                                    @if(in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'VISUSTATUR'])))
+                                    @if(in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'VISUSTATUR', 'GESVOTUR'])))
                                         @foreach($fonctions_urs as $fonction)
                                             <option value="{{ $fonction->id }}">{{ $fonction->libelle }}</option>
                                         @endforeach

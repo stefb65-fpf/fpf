@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concern\Tools;
 use App\Exports\RecapFormations;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FormationRequest;
@@ -15,6 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class FormationController extends Controller
 {
+    use Tools;
     public function __construct() {
         $this->middleware(['checkLogin', 'adminAccess']);
     }
@@ -28,6 +30,9 @@ class FormationController extends Controller
      */
     public function index()
     {
+        if (!$this->checkDroit('GESFOR')) {
+            return redirect()->route('accueil');
+        }
         $formations = Formation::orderByDesc('created_at')->get();
         foreach($formations as $formation) {
             $formation->interests = Interest::where('formation_id', $formation->id)->count();
@@ -47,6 +52,9 @@ class FormationController extends Controller
      */
     public function create()
     {
+        if (!$this->checkDroit('GESFOR')) {
+            return redirect()->route('accueil');
+        }
         $formation = new Formation();
         $categories = Categorieformation::orderBy('id')->get();
         return view('admin.formations.create', compact('formation', 'categories'));
@@ -75,6 +83,9 @@ class FormationController extends Controller
      */
     public function edit(Formation $formation)
     {
+        if (!$this->checkDroit('GESFOR')) {
+            return redirect()->route('accueil');
+        }
         $categories = Categorieformation::orderBy('id')->get();
         return view('admin.formations.edit', compact('formation', 'categories'));
     }
@@ -116,6 +127,9 @@ class FormationController extends Controller
     }
 
     public function parametrage() {
+        if (!$this->checkDroit('GESFOR')) {
+            return redirect()->route('accueil');
+        }
         $categories = Categorieformation::orderBy('id')->get();
         $evalthemes = Evaluationstheme::orderBy('position')->get();
 //        foreach ($evalthemes as $evaltheme) {

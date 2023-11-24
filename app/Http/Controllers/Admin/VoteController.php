@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ElectionRequest;
 use App\Http\Requests\VoteRequest;
@@ -15,15 +16,27 @@ use Illuminate\Http\Request;
 
 class VoteController extends Controller
 {
+    use Tools;
     public function __construct() {
-        $this->middleware(['checkLogin', 'adminAccess']);
+        $this->middleware(['checkLogin']);
+//        $this->middleware(['checkLogin', 'adminAccess']);
     }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $votes = Vote::orderByDesc('annee')->orderByDesc('debut')->paginate(20);
+        if (!$this->checkDroit('GESVOT') && !$this->checkDroit('GESVOTUR')) {
+            return redirect()->route('accueil');
+        }
+        $query = Vote::orderByDesc('annee')->orderByDesc('debut');
+
+        $cartes = session()->get('cartes');
+        if (!$this->checkDroit('GESVOT')) {
+            $query->where('urs_id', $cartes[0]->urs_id);
+        }
+        $votes = $query->paginate(20);
+//        $votes = Vote::orderByDesc('annee')->orderByDesc('debut')->paginate(20);
         return view('admin.votes.index', compact('votes'));
     }
 
@@ -32,8 +45,16 @@ class VoteController extends Controller
      */
     public function create()
     {
+        if (!$this->checkDroit('GESVOT') && !$this->checkDroit('GESVOTUR')) {
+            return redirect()->route('accueil');
+        }
         $vote = new Vote();
-        return view('admin.votes.create', compact('vote'));
+        $portee = 'FPF';
+        if (!$this->checkDroit('GESVOT')) {
+            $cartes = session()->get('cartes');
+            $portee = $cartes[0]->urs_id;
+        }
+        return view('admin.votes.create', compact('vote', 'portee'));
     }
 
     /**
@@ -74,7 +95,15 @@ class VoteController extends Controller
      */
     public function edit(Vote $vote)
     {
-        return view('admin.votes.edit', compact('vote'));
+        if (!$this->checkDroit('GESVOT') && !$this->checkDroit('GESVOTUR')) {
+            return redirect()->route('accueil');
+        }
+        $portee = 'FPF';
+        if (!$this->checkDroit('GESVOT')) {
+            $cartes = session()->get('cartes');
+            $portee = $cartes[0]->urs_id;
+        }
+        return view('admin.votes.edit', compact('vote', 'portee'));
     }
 
     /**
@@ -111,11 +140,17 @@ class VoteController extends Controller
     }
 
     public function electionsList(Vote $vote) {
+        if (!$this->checkDroit('GESVOT') && !$this->checkDroit('GESVOTUR')) {
+            return redirect()->route('accueil');
+        }
         $elections = Election::where('votes_id', $vote->id)->orderBy('ordre')->get();
         return view('admin.votes.elections', compact('elections', 'vote'));
     }
 
     public function electionsCreate(Vote $vote) {
+        if (!$this->checkDroit('GESVOT') && !$this->checkDroit('GESVOTUR')) {
+            return redirect()->route('accueil');
+        }
         $election = new Election();
         return view('admin.votes.elections_create', compact('election', 'vote'));
     }
@@ -159,6 +194,9 @@ class VoteController extends Controller
     }
 
     public function electionsEdit(Vote $vote, Election $election) {
+        if (!$this->checkDroit('GESVOT') && !$this->checkDroit('GESVOTUR')) {
+            return redirect()->route('accueil');
+        }
         return view('admin.votes.elections_edit', compact('election', 'vote'));
     }
 
@@ -174,6 +212,9 @@ class VoteController extends Controller
     }
 
     public function candidatsList(Vote $vote, Election $election) {
+        if (!$this->checkDroit('GESVOT') && !$this->checkDroit('GESVOTUR')) {
+            return redirect()->route('accueil');
+        }
         $candidats = Candidat::where('elections_id', $election->id)->orderBy('ordre')->get();
         foreach ($candidats as $candidat) {
             $candidat->utilisateur = Utilisateur::where('id', $candidat->utilisateurs_id)->first();
@@ -218,6 +259,9 @@ class VoteController extends Controller
     }
 
     public function resultats(Vote $vote, Election $election) {
+        if (!$this->checkDroit('GESVOT') && !$this->checkDroit('GESVOTUR')) {
+            return redirect()->route('accueil');
+        }
         $candidats = null;
         $motions = null;
         if ($election->type == 2) {

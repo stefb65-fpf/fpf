@@ -20,6 +20,9 @@ class FonctionController extends Controller
      */
     public function index()
     {
+        if (!$this->checkDroit('GESSTR')) {
+            return redirect()->route('accueil');
+        }
         $admin_fonctions = Fonction::where('instance', 1)->orderBy('ordre')->get();
         foreach ($admin_fonctions as $fonction) {
             $utilisateur = Utilisateur::join('fonctionsutilisateurs', 'utilisateurs.id', '=', 'fonctionsutilisateurs.utilisateurs_id')
@@ -41,12 +44,18 @@ class FonctionController extends Controller
 
     public function ca()
     {
+        if (!$this->checkDroit('GESSTR')) {
+            return redirect()->route('accueil');
+        }
         $utilisateurs = Utilisateur::where('ca', 1)->get();
         return view('admin.fonctions.ca', compact('utilisateurs'));
     }
 
     public function ce()
     {
+        if (!$this->checkDroit('GESSTR')) {
+            return redirect()->route('accueil');
+        }
         $utilisateurs = Utilisateur::join('fonctionsutilisateurs', 'utilisateurs.id', '=', 'fonctionsutilisateurs.utilisateurs_id')
             ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
             ->where('fonctions.ce', 1)
@@ -63,6 +72,9 @@ class FonctionController extends Controller
      */
     public function create()
     {
+        if (!$this->checkDroit('GESSTR')) {
+            return redirect()->route('accueil');
+        }
         $fonction = new Fonction();
         return view('admin.fonctions.create', compact('fonction'));
     }
@@ -127,6 +139,9 @@ class FonctionController extends Controller
      */
     public function edit(Fonction $fonction)
     {
+        if (!$this->checkDroit('GESSTR')) {
+            return redirect()->route('accueil');
+        }
         $utilisateur = Utilisateur::join('fonctionsutilisateurs', 'utilisateurs.id', '=', 'fonctionsutilisateurs.utilisateurs_id')
             ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
             ->first();
