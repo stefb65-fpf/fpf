@@ -20,6 +20,7 @@
             Le fichier Excel a été généré avec succès. Vous pouvez le <a class="blue" id="linkAlertFlorilege"  target="_blank">télécharger</a>.
         </div>
         <div class="flexEnd">
+            <button class="adminSuccess btnMedium mt10 mr10" type="text" id="btnSouscriptionsColisage">Liste de colisage</button>
             <button class="adminPrimary btnMedium mt10" type="text" id="btnSouscriptionsList">Liste des souscriptions au format Excel</button>
         </div>
         <div class="w100">

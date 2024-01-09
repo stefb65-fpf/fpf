@@ -26,7 +26,7 @@ $('a[name=editEtiquettes]').on('click', function() {
 })
 
 $('#btnRoutageFede').on('click', function() {
-    $('#alertFedeRoutage').hide()
+    $('#alertFedeRoutage').addClass('d-none')
     let tab = []
     $('input[name=ckbRoutageFede]').each(function() {
         if ($(this).is(':checked')) {
@@ -46,7 +46,7 @@ $('#btnRoutageFede').on('click', function() {
         dataType: 'JSON',
         success: function (reponse) {
            $('#linkFedeRoutage').attr('href', reponse.file)
-            $('#alertFedeRoutage').show()
+            $('#alertFedeRoutage').removeClass('d-none')
         },
         error: function (e) {
         }

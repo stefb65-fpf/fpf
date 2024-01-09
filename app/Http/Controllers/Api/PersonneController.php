@@ -167,13 +167,15 @@ class PersonneController extends Controller
         if (filter_var($term, FILTER_VALIDATE_EMAIL)) {
             $personne = Personne::where('email', $term)->first();
             $return = 0;
-            if ($personne->is_adherent == 1) {
-                $return = 1;
-            } else {
-                if ($personne->is_adherent == 2) {
-                    foreach ($personne->utilisateurs as $utilisateur) {
-                        if ($utilisateur->saison == date('Y')) {
-                            $return = 1;
+            if ($personne) {
+                if ($personne->is_adherent == 1) {
+                    $return = 1;
+                } else {
+                    if ($personne->is_adherent == 2) {
+                        foreach ($personne->utilisateurs as $utilisateur) {
+                            if ($utilisateur->saison == date('Y')) {
+                                $return = 1;
+                            }
                         }
                     }
                 }

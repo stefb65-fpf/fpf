@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FonctionRequest;
 use App\Models\Fonction;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class FonctionController extends Controller
 {
+    use Tools;
     public function __construct() {
         $this->middleware(['checkLogin', 'adminAccess'])->except(['updateFonctionCe']);
     }

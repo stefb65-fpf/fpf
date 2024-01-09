@@ -791,7 +791,11 @@ trait Tools
                             }
                             $prec_statut3 = $fonctions[0]->instance;
                         } else {
-                            $cartes[] = $utilisateur;
+                            if (isset($cartes[0]) && !in_array($cartes[0]->statut, [2,3])) {
+                                array_unshift($cartes, $utilisateur);
+                            } else {
+                                $cartes[] = $utilisateur;
+                            }
                         }
                     } else {
                         $cartes[] = $utilisateur;

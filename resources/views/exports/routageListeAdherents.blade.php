@@ -23,11 +23,11 @@
             <td>{{ $utilisateur->identifiant }}</td>
             <td>{{ $utilisateur->personne->nom }}</td>
             <td>{{ $utilisateur->personne->prenom }}</td>
-            <td>{{ $utilisateur->personne->adresses[0]->libelle1 }}</td>
-            <td>{{ $utilisateur->personne->adresses[0]->libelle2 }}</td>
-            <td>{{ str_pad($utilisateur->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT) }}</td>
-            <td>{{ strtoupper($utilisateur->personne->adresses[0]->ville) }}</td>
-            <td>{{ strtoupper($utilisateur->personne->adresses[0]->pays) }}</td>
+            <td>{{ sizeof($utilisateur->personne->adresses) > 0 ? $utilisateur->personne->adresses[0]->libelle1 : '' }}</td>
+            <td>{{ sizeof($utilisateur->personne->adresses) > 0 ? $utilisateur->personne->adresses[0]->libelle2 : '' }}</td>
+            <td>{{ sizeof($utilisateur->personne->adresses) > 0 ? str_pad($utilisateur->personne->adresses[0]->codepostal, 5, '0', STR_PAD_LEFT) : '' }}</td>
+            <td>{{ sizeof($utilisateur->personne->adresses) > 0 ? strtoupper($utilisateur->personne->adresses[0]->ville) : '' }}</td>
+            <td>{{ sizeof($utilisateur->personne->adresses) > 0 ? strtoupper($utilisateur->personne->adresses[0]->pays) : '' }}</td>
             <td>{{ $utilisateur->personne->email }}</td>
             <td>{{ $utilisateur->personne->phone_mobile }}</td>
             <td>

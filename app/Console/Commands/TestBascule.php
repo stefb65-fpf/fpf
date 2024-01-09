@@ -40,20 +40,25 @@ class TestBascule extends Command
      */
     public function handle()
     {
-        //SELECT DISTINCT personne_id FROM `historiques` WHERE `action` LIKE 'Modification du mot de passe'
-//        $datap = ['premiere_connexion' => 0];
-//        $histos = Historique::where('action', 'Modification du mot de passe')->selectRaw('DISTINCT personne_id')->get();
-//        foreach ($histos as $histo) {
-//            $personne = Personne::where('id', $histo->personne_id)->first();
-//            if ($personne) {
-//                $personne->update($datap);
-//            }
-//        }
-//        $dir = '/home/vhosts/fpf.federation-photo.fr/htdocs/storage/app/public/uploads/invoices/stephane';
-//        mkdir($dir, 0777, true);
-//        chown($dir, 'www-data');
-//        chgrp($dir, 'www-data');
-//        $invoices = Invoice::where('id', '>', 900)->get();
+        $personnes = Personne::where('is_adherent', 1)->selectRaw('id, email')->get();
+        $tab_personnes = [];
+        foreach ($personnes as $personne) {
+            $tab_personnes[$personne->email] = $personne->id;
+        }
+        $wp_users = DB::connection('mysqlwp')->select("SELECT DISTINCT U.ID, U.user_email FROM wp_users U, wp_usermeta M WHERE M.user_id = U.id AND M.meta_key = 'wp_user_level' AND M.meta_value = 0");
+        $nb = 0;
+        foreach ($wp_users as $wp_user) {
+            if (!isset($tab_personnes[$wp_user->user_email])) {
+                var_dump($wp_user);
+                $nb++;
+                // on supprime des tables wp_posts et wp_postmeta
+//                $user_id = $wp_user->ID;
+//                DB::connection('mysqlwp')->statement("DELETE FROM wp_users WHERE ID = $user_id LIMIT 1");
+//                DB::connection('mysqlwp')->statement("DELETE FROM wp_usermeta WHERE user_id = $user_id");
+            }
+        }
+        dd($nb);
+//        $invoices = Invoice::where('id', '>', 1600)->get();
 //        foreach ($invoices as $invoice) {
 //            $dir = $invoice->getStorageDir();
 //            $name = $invoice->numero.'.pdf';

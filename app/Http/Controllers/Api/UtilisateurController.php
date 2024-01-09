@@ -50,6 +50,7 @@ class UtilisateurController extends Controller
             } else {
                 $utilisateur->fin = '';
             }
+//            var_dump(sizeof($utilisateur->personne->adresses));
         }
         $fichier = 'liste_adherents_' . date('YmdHis') . '.xls';
         if (Excel::store(new RoutageListAdherents($utilisateurs), $fichier, 'xls')) {

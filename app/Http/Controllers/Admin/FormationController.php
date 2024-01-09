@@ -150,8 +150,9 @@ class FormationController extends Controller
                     if (!isset($tab_evaluations[$evaluation->evaluationsitem_id])) {
                         // on cherche l'item
                         $item = Evaluationsitem::where('id', $evaluation->evaluationsitem_id)->first();
+//                        dd($item->evaluationstheme->name);
                         if ($item) {
-                            $tab_evaluations[$evaluation->evaluationsitem_id]['name'] = $item->name;
+                            $tab_evaluations[$evaluation->evaluationsitem_id]['name'] = $item->evaluationstheme->name.' - '.$item->name;
                         }
                         $tab_evaluations[$evaluation->evaluationsitem_id]['note'] = $evaluation->stars;
                         $tab_evaluations[$evaluation->evaluationsitem_id]['nb'] = 1;

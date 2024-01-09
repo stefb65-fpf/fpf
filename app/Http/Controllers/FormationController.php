@@ -17,6 +17,7 @@ use App\Models\Personne;
 use App\Models\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use function Psy\debug;
 
 class FormationController extends Controller
 {
@@ -34,12 +35,15 @@ class FormationController extends Controller
     {
         $formations = Formation::where('published', 1)->orderByDesc('created_at')->get();
         foreach ($formations as $formation) {
-//            foreach($formation->sessions->where('start_date', '>', date('Y-m-d')) as $session) {
-//                dd($session->start_date->format('d/m/Y'));
-//            }
+            if (sizeof($formation->sessions->where('start_date', '>=', date('Y-m-d'))) > 0) {
+                $formation->first_date = $formation->sessions->sortBy('start_date')->where('start_date', '>=', date('Y-m-d'))->first()->start_date;
+            } else {
+                $formation->first_date = '2222-01-01';
+            }
 
             $formation->location = $this->getFormationCities($formation, $formation->location);
         }
+        $formations = $formations->sortBy('first_date');
 
         return view('formations.accueil', compact('formations'));
     }

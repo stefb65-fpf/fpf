@@ -408,7 +408,7 @@ class FormationController extends Controller
                         // on cherche l'item
                         $item = Evaluationsitem::where('id', $evaluation->evaluationsitem_id)->first();
                         if ($item) {
-                            $tab_evaluations[$evaluation->evaluationsitem_id]['name'] = $item->name;
+                            $tab_evaluations[$evaluation->evaluationsitem_id]['name'] = $item->evaluationstheme->name."\n".$item->name;
                         }
                         $tab_evaluations[$evaluation->evaluationsitem_id]['note'] = $evaluation->stars;
                         $tab_evaluations[$evaluation->evaluationsitem_id]['nb'] = 1;

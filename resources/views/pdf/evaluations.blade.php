@@ -15,7 +15,7 @@
                 <tbody>
                 @foreach($tab_evaluations as $evaluation)
                     <tr style="border-bottom: 1px solid #dddddd;">
-                        <td style="padding: 12px 15px;">{{ $evaluation['name'] }}</td>
+                        <td style="padding: 12px 15px;">{!! nl2br($evaluation['name']) !!}</td>
                         <td style="padding: 12px 15px;">{{ $evaluation['nb'] }}</td>
                         <td style="padding: 12px 15px;">{{ $evaluation['note'] }} / 5</td>
                     </tr>

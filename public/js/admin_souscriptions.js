@@ -15,3 +15,19 @@ $('#btnSouscriptionsList').on('click', function () {
         }
     });
 })
+
+$('#btnSouscriptionsColisage').on('click', function () {
+    $.ajax({
+        url:'/api/generateSouscriptionsColisage',
+        type: 'POST',
+        data: {
+        },
+        dataType: 'JSON',
+        success: function (reponse) {
+
+        },
+        error: function (e) {
+            console.log(e)
+        }
+    });
+})
