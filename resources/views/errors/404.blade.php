@@ -1,4 +1,4 @@
-@extends('layouts.default')
+@extends('layouts.login')
 @section('content')
     <div class="errorContainer container">
         <h1 class="noSubtitledTitle">

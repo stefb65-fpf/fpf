@@ -138,6 +138,12 @@ class PersonneController extends Controller
 
         // on récupère les cartes utilisateurs
         list($menu, $cartes) = $this->getMenu($personne);
+        if (!$cartes && isset($request->open)) {
+            $utilisateur = Utilisateur::where('personne_id', $personne->id)->where('statut', 12)->selectRaw('id, urs_id, clubs_id, identifiant, statut, saison')->first();
+            if ($utilisateur) {
+                $cartes = [$utilisateur];
+            }
+        }
 
         return new JsonResponse(['success' => 'OK', 'cartes' => $cartes, 'personne' => $personne], 200);
     }
@@ -150,6 +156,12 @@ class PersonneController extends Controller
 
         // on récupère les cartes utilisateurs
         list($menu, $cartes) = $this->getMenu($personne);
+        if (!$cartes && isset($request->open)) {
+            $utilisateur = Utilisateur::where('personne_id', $personne->id)->where('statut', 12)->selectRaw('id, urs_id, clubs_id, identifiant, statut, saison')->first();
+            if ($utilisateur) {
+                $cartes = [$utilisateur];
+            }
+        }
 
         return new JsonResponse(['success' => 'OK', 'cartes' => $cartes, 'personne' => $personne], 200);
     }

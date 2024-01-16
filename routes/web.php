@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/registerAdhesion', [App\Http\Controllers\LoginController::class, 'registerAdhesion'])->name('registerAdhesion');
 
 //gestion des adhésions et abonnements club par responsable de clubs
