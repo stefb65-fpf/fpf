@@ -31,7 +31,7 @@ class sendEvaluationLink extends Command
     public function handle()
     {
         // on regarde si des sessions de formation se sont terminées la veille
-        $yesterday = date('Y-m-d', strtotime('-3 day'));
+        $yesterday = date('Y-m-d', strtotime('-1 day'));
         $sessions = Session::where(function (Builder $query) use ($yesterday) {
             $query->orWhere(function (Builder $query) use ($yesterday) {
                     $query->whereNull('end_date')
@@ -45,7 +45,7 @@ class sendEvaluationLink extends Command
         })->get();
         foreach ($sessions as $session) {
             // pour chaque inscrit, on envoie un mail avec le lien vers le formulaire d'évaluation de la formation
-            foreach ($session->inscrits->where('status', 1) as $inscrit) {
+            foreach ($session->inscrits->where('status', 1)->where('attente', 0) as $inscrit) {
                 $email = $inscrit->personne->email;
                 $mailSent = Mail::to($email)->send(new \App\Mail\SendEvaluationLink($session));
                 $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();

@@ -149,6 +149,7 @@ class UpdateWpSite extends Command
 
                 $max_post = DB::connection('mysqlwp')->select("SELECT MAX(ID) as max FROM wp_posts");
                 $post_id = $max_post[0]->max;
+                var_dump($post_id);
 
                 $guid = "https://federation-photo.fr/?post_type=club-ur&#038;p=".$post_id;
                 DB::connection('mysqlwp')->statement("UPDATE wp_posts SET guid = '$guid' WHERE ID = $post_id LIMIT 1");
@@ -181,7 +182,7 @@ class UpdateWpSite extends Command
                     'ptb_ville'             => strtoupper(addslashes($club->adresse->ville)),
                     'ptb_code_postal'       => $codepostal,
                     'ptb_email'             => $club->courriel,
-                    'ptb_reunion_frequence' => $club->frequencereunions,
+                    'ptb_reunion_frequence' => addslashes($club->frequencereunions),
                     'ptb_reunion_horaires'  => addslashes($club->horairesreunions),
                     'ptb_commentaire'       => addslashes($club->reunions),
                     'ptb_activites'         => $chaine_activites,
@@ -195,6 +196,7 @@ class UpdateWpSite extends Command
                     'ptb_telephone_mobile'  => $club->adresse->telephonemobile,
                     'ptb_site_internet'     => $chaine_site
                 );
+                var_dump($metakeys);
                 foreach ($fonctions as $fonction) {
                     $name = addslashes(ucfirst(strtolower($fonction->personne->prenom)).' '.ucfirst(strtolower($fonction->personne->nom)));
                     switch ($fonction->fonctions_id) {
@@ -212,9 +214,12 @@ class UpdateWpSite extends Command
                 // insertion cu club dans l'ur
                 $ur_id = str_pad($club->urs_id, 2, '0', STR_PAD_LEFT);
                 $wp_ur = DB::connection('mysqlwp')->select("SELECT ID FROM wp_posts WHERE post_name LIKE '$ur_id%' AND post_type = 'ur'");
+                var_dump($wp_ur);
                 if ($wp_ur) {
                     $ur_post_id = $wp_ur[0]->ID;
+                    var_dump($ur_post_id);
                     $meta_ur = DB::connection('mysqlwp')->select("SELECT meta_value, meta_id FROM wp_postmeta WHERE post_id = $ur_post_id AND meta_key = 'ptb_clubs'");
+                    var_dump($meta_ur);
                     if ($meta_ur) {
                         if ($meta_ur[0]->meta_value == '') {
 //                            $chainemeta = $post_id;

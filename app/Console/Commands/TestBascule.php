@@ -40,23 +40,40 @@ class TestBascule extends Command
      */
     public function handle()
     {
-        $personnes = Personne::where('is_adherent', 1)->selectRaw('id, email')->get();
-        $tab_personnes = [];
-        foreach ($personnes as $personne) {
-            $tab_personnes[$personne->email] = $personne->id;
-        }
-        $wp_users = DB::connection('mysqlwp')->select("SELECT DISTINCT U.ID, U.user_email FROM wp_users U, wp_usermeta M WHERE M.user_id = U.id AND M.meta_key = 'wp_user_level' AND M.meta_value = 0");
-        $nb = 0;
-        foreach ($wp_users as $wp_user) {
-            if (!isset($tab_personnes[$wp_user->user_email])) {
-                var_dump($wp_user);
-                $nb++;
-                // on supprime des tables wp_posts et wp_postmeta
-//                $user_id = $wp_user->ID;
-//                DB::connection('mysqlwp')->statement("DELETE FROM wp_users WHERE ID = $user_id LIMIT 1");
-//                DB::connection('mysqlwp')->statement("DELETE FROM wp_usermeta WHERE user_id = $user_id");
-            }
-        }
+        $postnames = DB::connection('mysqlwp')->select("SELECT COUNT(ID) as nb, post_name FROM `wp_posts` WHERE `post_type` LIKE 'club-ur' GROUP BY post_name HAVING nb > 1");
+//        foreach ($postnames as $postname) {
+//            $posts = DB::connection('mysqlwp')->select("SELECT ID, post_name FROM `wp_posts` WHERE `post_type` LIKE 'club-ur' AND post_name = '$postname->post_name' ORDER BY ID DESC");
+//            foreach($posts as $k => $post) {
+//                if ($k > 0) {
+//                    DB::connection('mysqlwp')->statement("DELETE FROM wp_posts WHERE ID = $post->ID LIMIT 1");
+//                    DB::connection('mysqlwp')->statement("DELETE FROM wp_postmeta WHERE post_id = $post->ID");
+//                }
+//            }
+//        }
+
+        dd($postnames);
+
+
+
+
+
+//        $personnes = Personne::where('is_adherent', 1)->selectRaw('id, email')->get();
+//        $tab_personnes = [];
+//        foreach ($personnes as $personne) {
+//            $tab_personnes[$personne->email] = $personne->id;
+//        }
+//        $wp_users = DB::connection('mysqlwp')->select("SELECT DISTINCT U.ID, U.user_email FROM wp_users U, wp_usermeta M WHERE M.user_id = U.id AND M.meta_key = 'wp_user_level' AND M.meta_value = 0");
+//        $nb = 0;
+//        foreach ($wp_users as $wp_user) {
+//            if (!isset($tab_personnes[$wp_user->user_email])) {
+//                var_dump($wp_user);
+//                $nb++;
+//                // on supprime des tables wp_posts et wp_postmeta
+////                $user_id = $wp_user->ID;
+////                DB::connection('mysqlwp')->statement("DELETE FROM wp_users WHERE ID = $user_id LIMIT 1");
+////                DB::connection('mysqlwp')->statement("DELETE FROM wp_usermeta WHERE user_id = $user_id");
+//            }
+//        }
         dd($nb);
 //        $invoices = Invoice::where('id', '>', 1600)->get();
 //        foreach ($invoices as $invoice) {

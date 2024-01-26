@@ -25,6 +25,7 @@ Route::get('/clubs/validation_paiement_carte', [App\Http\Controllers\ClubControl
 Route::get('/reglements/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiement'])->name('reglements.notification_paiement');
 Route::get('/personnes/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiementPersonne'])->name('personnes.notification_paiement');
 Route::get('/personnes/notification_paiement_new_card', [App\Http\Controllers\ReglementController::class, 'notificationPaiementNewCard'])->name('personnes.notification_paiement_new_card');
+Route::get('/personnes/notification_paiement_new_abo', [App\Http\Controllers\ReglementController::class, 'notificationPaiementNewAbo'])->name('personnes.notification_paiement_new_abo');
 Route::get('/florilege/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiementFlorilege'])->name('florilege.notification_paiement');
 
 Route::get('/utilisateurs/attente_paiement_validation', [App\Http\Controllers\UtilisateurController::class, 'attentePaiementValidation'])->name('utilisateurs.attente_paiement_validation');
