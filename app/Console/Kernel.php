@@ -16,6 +16,19 @@ class Kernel extends ConsoleKernel
         $schedule->command('check:bridge')
             ->timezone('Europe/Paris')
             ->everyFiveMinutes();
+
+        $schedule->command('clean:otherfiles')
+            ->timezone('Europe/Paris')
+            ->yearlyOn(8, 1, '04:00');
+
+        $schedule->command('clean:photofiles')
+            ->timezone('Europe/Paris')
+            ->yearlyOn(8, 1, '05:00');
+
+        $schedule->command('clean:tempfiles')
+            ->timezone('Europe/Paris')
+            ->weeklyOn(1, '03:00');
+
         $schedule->command('update:saison')
             ->timezone('Europe/Paris')
             ->yearlyOn(9, 1, '04:00');

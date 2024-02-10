@@ -177,7 +177,7 @@ class UrController extends Controller
             'sexe' => $personne->sexe,
             'nom' => $personne->nom,
             'prenom' => $personne->prenom,
-            'ct' => 2,
+            'ct' => 7,
             'statut' => 0,
             'saison' => date('Y') - 1,
         ];

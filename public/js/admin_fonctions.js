@@ -22,11 +22,11 @@ $('input[name=ceFonction]').on('click', function() {
 })
 $('span[name=toExpandUr]').on('click', function() {
     if ($(this).data('expand') == 0) {
-        $(this).parent().parent().find('div[name=expandUr]').show()
+        $(this).parent().parent().find('div[name=expandUr]').removeClass('d-none')
         $(this).data('expand', 1)
         $(this).html('fermer')
     }  else {
-        $(this).parent().parent().find('div[name=expandUr]').hide()
+        $(this).parent().parent().find('div[name=expandUr]').addClass('d-none')
         $(this).data('expand', 0)
         $(this).html('voir')
     }
