@@ -617,9 +617,20 @@ class PersonneController extends Controller
     public function souscriptionIndividuelle()
     {
         $personne = session()->get('user');
+        $cartes = session()->get('cartes');
+        $is_actif = 0;
+        if (isset($cartes[0])) {
+            if (in_array($cartes[0]->statut, [2,3])) {
+                $is_actif = 1;
+            }
+        }
 
-        $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
-        $tarif = $tarif_adhesion->tarif;
+        list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+//        $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
+//        $tarif = $tarif_adhesion->tarif;
+        if ($is_actif == 1) {
+            $tarif = $tarif / 2;
+        }
 
         $ur = null;
         $available = 0;

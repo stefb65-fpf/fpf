@@ -7,6 +7,7 @@ use App\Concern\ClubTools;
 use App\Concern\Hash;
 use App\Concern\Invoice;
 use App\Concern\Tools;
+use App\Concern\VoteTools;
 use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubAbonnementRequest;
@@ -23,6 +24,7 @@ use App\Models\Reglement;
 use App\Models\Souscription;
 use App\Models\Tarif;
 use App\Models\Utilisateur;
+use App\Models\Vote;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -34,6 +36,7 @@ class ClubController extends Controller
     use Api;
     use Invoice;
     use Hash;
+    use VoteTools;
 
     public function __construct()
     {
@@ -513,6 +516,13 @@ class ClubController extends Controller
             ->get();
         return view('clubs.statistiques.index', compact('club', 'nb_adherents', 'nb_abonnements', 'nb_souscriptions',
             'ratio_adherents', 'nb_adherents_previous', 'classements_nationaux', 'classements_regionaux'));
+    }
+
+    public function statistiquesVotesPhases()
+    {
+        $club = $this->getClub();
+        list($vote, $adherents) = $this->getNotVotedAdherents($club);
+        return view('clubs.statistiques.vote_detail', compact('vote', 'club', 'adherents'));
     }
 
     // fonction de récupération des infos club en fonction de l'identifiant de l'utilisateur

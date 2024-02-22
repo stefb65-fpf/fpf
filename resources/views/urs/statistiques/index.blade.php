@@ -17,12 +17,20 @@
             @if($menu['admin'] && in_array('VISUSTAT', $droits_fpf))
                 <a class="tabIndex" href="{{ route('admin.statistiques') }}">Adhésions FPF</a>
                 <a class="tabIndex" href="{{ route('admin.statistiques_votes') }}">Votes FPF</a>
+                @if($exist_vote)
+                    <a class="tabIndex" href="{{ route('admin.statistiques_votes_phases') }}">Stats Votes AG</a>
+                @endif
             @endif
+
             <a class="tabIndex active">Adhésions UR</a>
             <a class="tabIndex" href="{{ route('urs.statistiques_votes') }}">Votes UR</a>
+            @if(!$menu['admin'] && $exist_vote)
+                <a class="tabIndex" href="{{ route('urs.statistiques_votes_phases') }}">Stats Votes AG FPF</a>
+            @endif
             @if($menu['club'])
                 <a class="tabIndex" href="{{ route('clubs.statistiques') }}">Club</a>
             @endif
+
         </div>
         <div class="d-flex">
             <div class="flex-1 p10" style="background-color: white">

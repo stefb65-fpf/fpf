@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concern\VoteTools;
 use App\Http\Controllers\Controller;
 use App\Models\Abonnement;
 use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Souscription;
+use App\Models\Ur;
 use App\Models\Utilisateur;
 use App\Models\Vote;
 use Illuminate\Http\Request;
@@ -14,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class StatistiquesController extends Controller
 {
+    use VoteTools;
     public function __construct() {
         $this->middleware(['checkLogin', 'adminAccess']);
     }
@@ -87,5 +90,28 @@ class StatistiquesController extends Controller
         // on prend les 20 derniers votes existants pour lesquels la date de début est passée
         $votes = Vote::where('debut', '<=', date('Y-m-d'))->where('urs_id', 0)->orderByDesc('id')->paginate(20);
         return view('admin.statistiques.votes', compact('votes'));
+    }
+
+    public function statistiquesVotesPhases(){
+        list($vote, $details) = $this->getVoteDetail();
+        $ur = '0';
+        return view('admin.statistiques.votesphases', compact('details', 'vote', 'ur'));
+    }
+
+    public function statistiquesVoteDetail(Vote $vote, $ur_id) {
+        $details = $this->getVoteDetailByUr($vote, $ur_id);
+        $ur = Ur::where('id', $ur_id)->first();
+//        dd($details);
+        return view('admin.statistiques.votesdetail', compact('details', 'vote', 'ur'));
+    }
+
+    public function statistiquesListeVoteByClub(Vote $vote, $club_id, $ur_id) {
+        $club = Club::where('id', $club_id)->first();
+        if (!$club) {
+            return redirect()->route('admin.statistiques.votesphases')->with('error', 'Ce club n\'existe pas');
+        }
+        list($vote, $adherents) = $this->getNotVotedAdherents($club);
+        return view('admin.statistiques.listevotesbyclub', compact('adherents', 'vote', 'club'));
+
     }
 }

@@ -522,8 +522,18 @@ trait Tools
     public function saveNewCard($personne, $type) {
         // on crée un règlement
         $numero_cheque = ($type == 'Bridge') ? 'Bridge ' . $personne->bridge_id : 'Monext ' . $personne->monext_token;
-        $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
-        $montant = $tarif_adhesion->tarif;
+//        $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
+        list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+        $exist_card = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [2,3])->first();
+        if ($exist_card) {
+            $tarif = $tarif / 2;
+        }
+        $add_abo = 0;
+        if (!$exist_card && $ct == 7) {
+            $add_abo = 1;
+        }
+        $montant = $tarif;
+//        $montant = $tarif_adhesion->tarif;
         $ref = 'ADH-NEW-CARD-' . $personne->id;
         $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
         $num = $last_reglement ? intval(substr($last_reglement->reference, -4)) + 1 : 1;
@@ -546,7 +556,8 @@ trait Tools
             'sexe' => $personne->sexe,
             'nom' => $personne->nom,
             'prenom' => $personne->prenom,
-            'ct' => 2,
+            'ct' => $ct,
+//            'ct' => 2,
             'statut' => 2,
             'saison' => date('Y'),
         ];
@@ -558,28 +569,33 @@ trait Tools
                     'reglements_id' => $reglement->id,
                     'utilisateurs_id' => $utilisateur->id,
                     'adhesion' => 1,
-                    'abonnement' => 1
+                    'abonnement' => $add_abo
                 ]
             );
 
         // on regarde s'il existe un abonnement en cours
-        $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
-        if ($abonnement) {
-            $fin = $abonnement->fin + 5;
-            $dataa = array('fin' => $fin);
-            $abonnement->update($dataa);
-        } else {
-            // on crée un abonnement avec état 1
-            $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
-            $debut = $numeroencours;
-            $fin = $numeroencours + 4;
-            $dataa = array('personne_id' => $personne->id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
-            Abonnement::create($dataa);
+        if ($add_abo == 1) {
+            $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
+            if ($abonnement) {
+                $fin = $abonnement->fin + 5;
+                $dataa = array('fin' => $fin);
+                $abonnement->update($dataa);
+            } else {
+                // on crée un abonnement avec état 1
+                $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+                $debut = $numeroencours;
+                $fin = $numeroencours + 4;
+                $dataa = array('personne_id' => $personne->id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
+                Abonnement::create($dataa);
+            }
         }
 
         // on met à jour la personne
         $datap = ['attente_paiement' => 0, 'action_paiement' => null, 'monext_token' => null, 'monext_link' => null,
-            'bridge_id' => null, 'bridge_link' => null, 'is_abonne' => 1, 'is_adherent' => 1];
+            'bridge_id' => null, 'bridge_link' => null, 'is_adherent' => 1];
+        if ($add_abo == 1) {
+            $datap['is_abonne'] = 1;
+        }
         $personne->update($datap);
         $code = 'ok';
 

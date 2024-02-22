@@ -18,8 +18,9 @@ class ComposerServiceProvider extends ServiceProvider
             'App\Http\ViewComposers\PersonneAccountComposer'
         );
         view()->composer(
-            ['layouts.menu', 'layouts.header', 'urs.gestion', 'admin.statistiques.index', 'admin.statistiques.votes',
-                'clubs.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes', 'formations.detail'],
+            ['layouts.menu', 'layouts.header', 'urs.gestion', 'admin.statistiques.index', 'admin.statistiques.votes', 'admin.statistiques.votesphases',
+                'clubs.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes', 'urs.statistiques.votesphases', 'formations.detail',
+                'admin.statistiques.votesdetail','admin.statistiques.listevotesbyclub', 'urs.statistiques.votesdetail','urs.statistiques.listevotesbyclub'],
             'App\Http\ViewComposers\MenuComposer'
         );
 
@@ -32,6 +33,11 @@ class ComposerServiceProvider extends ServiceProvider
         view()->composer(
             ['layouts.accountMenu', 'clubs.gestion'],
             'App\Http\ViewComposers\FlorilegeMenuComposer'
+        );
+
+        view()->composer(
+            ['admin.statistiques.votes', 'admin.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes', 'clubs.statistiques.index'],
+            'App\Http\ViewComposers\VoteComposer'
         );
     }
 

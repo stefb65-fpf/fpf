@@ -4,7 +4,7 @@
     <div class="pageCanva">
         <h1 class="pageTitle">
             <div>
-                Gestion Union Régionale - Statistiques
+                Gestion Union Régionale - Statistiques votes AG FPF
                 <div class="urTitle">{{ $ur->nom }}</div>
             </div>
             <a class="previousPage" title="Retour page précédente" href="{{ route('urs.gestion') }}">
@@ -17,23 +17,16 @@
             @if($menu['admin'] && in_array('VISUSTAT', $droits_fpf))
                 <a class="tabIndex" href="{{ route('admin.statistiques') }}">Adhésions FPF</a>
                 <a class="tabIndex" href="{{ route('admin.statistiques_votes') }}">Votes FPF</a>
-                @if($exist_vote)
-                    <a class="tabIndex" href="{{ route('admin.statistiques_votes_phases') }}">Stats Votes AG</a>
-                @endif
             @endif
             <a class="tabIndex" href="{{ route('urs.statistiques') }}">Adhésions UR</a>
-            <a class="tabIndex active">Votes UR</a>
-                @if(!$menu['admin'] && $exist_vote)
-                    <a class="tabIndex" href="{{ route('urs.statistiques_votes_phases') }}">Stats Votes AG FPF</a>
-                @endif
+            <a class="tabIndex" href="{{ route('urs.statistiques_votes') }}">Votes UR</a>
+            @if(!$menu['admin'])
+                <a class="tabIndex active" href="{{ route('urs.statistiques_votes_phases') }}">Stats Votes AG FPF</a>
+            @endif
             @if($menu['club'])
                 <a class="tabIndex" href="{{ route('clubs.statistiques') }}">Club</a>
             @endif
-
         </div>
-        @include('admin.statistiques.liste_votes')
-        <div class="pagination">
-            {{ $votes->render( "pagination::default") }}
-        </div>
+        @include('admin.statistiques.detail_votes_by_ur', ['level' => 'urs'])
     </div>
 @endsection

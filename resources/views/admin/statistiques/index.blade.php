@@ -15,6 +15,9 @@
         <div class="d-flex align-center">
             <a class="tabIndex active">Adhésions FPF</a>
             <a class="tabIndex" href="{{ route('admin.statistiques_votes') }}">Votes FPF</a>
+            @if($exist_vote)
+                <a class="tabIndex" href="{{ route('admin.statistiques_votes_phases') }}">Stats Votes AG</a>
+            @endif
             @if($menu['ur'])
                 <a class="tabIndex" href="{{ route('urs.statistiques') }}">Adhésions UR</a>
                 <a class="tabIndex" href="{{ route('urs.statistiques_votes') }}">Votes UR</a>

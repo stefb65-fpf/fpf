@@ -7,6 +7,8 @@ Route::get('/registerAdhesion', [App\Http\Controllers\LoginController::class, 'r
 //gestion des adhésions et abonnements club par responsable de clubs
 Route::get('/clubs/florilege', [App\Http\Controllers\ClubController::class, 'florilege'])->name('clubs.florilege');
 Route::get('/clubs/statistiques', [App\Http\Controllers\ClubController::class, 'statistiques'])->name('clubs.statistiques');
+Route::get('/clubs/statistiques_votes_phases', [App\Http\Controllers\ClubController::class, 'statistiquesVotesPhases'])->name('clubs.statistiques_votes_phases');
+Route::get('/clubs/statistiques_vote_detail/{vote}', [App\Http\Controllers\ClubController::class, 'statistiquesVoteDetail'])->name('clubs.statistiques_vote_detail');
 Route::get('/clubs/factures', [App\Http\Controllers\ClubController::class, 'factures'])->name('clubs.factures');
 Route::get('/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\ClubController::class, 'editAdherent'])->name('clubs.adherents.edit');
 Route::get('/clubs/adherents/create', [App\Http\Controllers\ClubController::class, 'createAdherent'])->name('clubs.adherents.create');
@@ -35,6 +37,9 @@ Route::get('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'infosUr
 
 Route::get('/urs/statistiques', [App\Http\Controllers\UrController::class, 'statistiques'])->name('urs.statistiques');
 Route::get('/urs/statistiques_votes', [App\Http\Controllers\UrController::class, 'statistiquesVotes'])->name('urs.statistiques_votes');
+Route::get('/urs/statistiques_votes_phases', [App\Http\Controllers\UrController::class, 'statistiquesVotesPhases'])->name('urs.statistiques_votes_phases');
+Route::get('/urs/statistiques_vote_detail/{vote}/{ur}', [App\Http\Controllers\UrController::class, 'statistiquesVoteDetail'])->name('urs.statistiques_vote_detail');
+Route::get('/urs/liste_votes_by_club/{vote}/{club_id}/{ur_id}', [App\Http\Controllers\UrController::class, 'statistiquesListeVoteByClub'])->name('urs.statistiques.liste_votes_by_club');
 Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class, 'listeReversements'])->name('urs.liste_reversements');
 Route::get('/urs/fonctions/liste', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.fonctions.liste');
 Route::get('/urs/{fonction}/change_attribution', [App\Http\Controllers\UrController::class, 'changeAttribution'])->name('urs.fonctions.change_attribution');
@@ -228,6 +233,9 @@ Route::get('/admin/informations', [App\Http\Controllers\Admin\UserController::cl
 
 Route::get('/admin/statistiques', [App\Http\Controllers\Admin\StatistiquesController::class, 'index'])->name('admin.statistiques');
 Route::get('/admin/statistiques_votes', [App\Http\Controllers\Admin\StatistiquesController::class, 'statistiquesVotes'])->name('admin.statistiques_votes');
+Route::get('/admin/statistiques_votes_phases', [App\Http\Controllers\Admin\StatistiquesController::class, 'statistiquesVotesPhases'])->name('admin.statistiques_votes_phases');
+Route::get('/admin/statistiques_vote_detail/{vote}/{ur}', [App\Http\Controllers\Admin\StatistiquesController::class, 'statistiquesVoteDetail'])->name('admin.statistiques_vote_detail');
+Route::get('/admin/statistiques/liste_votes_by_club/{vote}/{club_id}/{ur_id}', [App\Http\Controllers\Admin\StatistiquesController::class, 'statistiquesListeVoteByClub'])->name('admin.statistiques.liste_votes_by_club');
 
 //Gestion clubs par responsable fpf
 Route::get('/admin/clubs/adherents/{utilisateur_id}/edit', [App\Http\Controllers\Admin\ClubController::class, 'editAdherent'])->name('admin.clubs.adherents.edit');

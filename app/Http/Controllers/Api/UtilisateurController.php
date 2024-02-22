@@ -163,7 +163,6 @@ class UtilisateurController extends Controller
             $mailSent = Mail::to($email)->cc($user->email)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant));
             $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
-//            $this->registerAction($contact->personne->id, 1, "Validation du bordereau pour renouvellement FPF");
             $this->registerAction($user->id, 1, "Validation du bordereau pour renouvellement FPF");
 
             $mail = new \stdClass();
@@ -512,11 +511,18 @@ class UtilisateurController extends Controller
         if (!$personne) {
             return new JsonResponse(['erreur' => 'Personne non trouvée'], 400);
         }
-        $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
-        if (!$tarif_adhesion) {
-            return new JsonResponse(['erreur' => 'impossible de récupérer le tarif'], 400);
+        list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+        $exist_card = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [2,3])->first();
+        if ($exist_card) {
+            $tarif = $tarif / 2;
         }
-        $montant = $tarif_adhesion->tarif;
+//        $tarif_adhesion = Tarif::where('statut', 0)->where('id', 13)->first();
+//        if (!$tarif_adhesion) {
+//            return new JsonResponse(['erreur' => 'impossible de récupérer le tarif'], 400);
+//        }
+
+        $montant = $tarif;
+//        $montant = $tarif_adhesion->tarif;
         $montant_cents = intval($montant * 100);
         $ref = 'ADH-NEW-CARD-'.$personne->id;
         $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
@@ -643,7 +649,7 @@ class UtilisateurController extends Controller
         if (!$club) {
             return new JsonResponse(['erreur' => 'impossible de récupérer le club'], 400);
         }
-        $montant_adhesion_club = 0; $montant_abonnement_club = 0; $montant_adhesion_club_ur = 0;
+        $montant_adhesion_club = 0; $montant_abonnement_club = 0; $montant_adhesion_club_ur = 0; $renew_old = 0;
         if ($club->statut !== 2) {
             // club non encore validé, on doit faire le renouvellement
             switch ($club->ct) {
@@ -657,9 +663,18 @@ class UtilisateurController extends Controller
                     $tarif_id = 1;
                     break;
             }
+            if ($club->statut == 3) {
+                // on regarde si le club est présent dans clubs_prec
+                $club_prec = DB::table('clubs_prec')->where('id', $club->id)->first();
+                if ($club_prec->statut == 3) {
+                    // le club a au moins deux ans de non renouvellement ==> tarif moitié prix
+                    $renew_old = 1;
+                }
+            }
+
             $tarif = Tarif::where('id', $tarif_id)->where('statut', 0)->first();
             $montant_adhesion_club = $tarif->tarif;
-            if ($club->second_year == 1) {
+            if ($club->second_year == 1 || $renew_old == 1) {
                 $montant_adhesion_club = $tarif->tarif / 2;
             }
 
@@ -667,7 +682,7 @@ class UtilisateurController extends Controller
             $tarif = Tarif::where('id', 6)->where('statut', 0)->first();
             $montant_adhesion_club_ur = $tarif->tarif;
 
-            if ($club->second_year == 1) {
+            if ($club->second_year == 1 || $renew_old == 1) {
                 $montant_adhesion_club_ur = $tarif->tarif / 2;
             }
         }

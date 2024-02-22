@@ -15,19 +15,31 @@
                 </svg>
             </a>
         </h1>
-        @if($menu['ur'] || $menu['admin'])
+
             <div class="d-flex align-center">
-                @if($menu['admin'] && in_array('VISUSTAT', $droits_fpf))
-                    <a class="tabIndex" href="{{ route('admin.statistiques') }}">Adhésions FPF</a>
-                    <a class="tabIndex" href="{{ route('admin.statistiques_votes') }}">Votes FPF</a>
+                @if($menu['ur'] || $menu['admin'])
+                    @if($menu['admin'] && in_array('VISUSTAT', $droits_fpf))
+                        <a class="tabIndex" href="{{ route('admin.statistiques') }}">Adhésions FPF</a>
+                        <a class="tabIndex" href="{{ route('admin.statistiques_votes') }}">Votes FPF</a>
+                        @if($exist_vote)
+                            <a class="tabIndex" href="{{ route('admin.statistiques_votes_phases') }}">Stats Votes AG</a>
+                        @endif
+                    @endif
+                    @if($menu['ur'])
+                        <a class="tabIndex" href="{{ route('urs.statistiques') }}">Adhésions UR</a>
+                        <a class="tabIndex" href="{{ route('urs.statistiques_votes') }}">Votes UR</a>
+                        @if(!$menu['admin'] && $exist_vote)
+                            <a class="tabIndex" href="{{ route('urs.statistiques_votes_phases') }}">Stats Votes AG FPF</a>
+                        @endif
+                    @endif
+                        <a class="tabIndex active">Club</a>
+                @else
+                    <a class="tabIndex active">Club</a>
+                    @if($exist_vote)
+                        <a class="tabIndex" href="{{ route('clubs.statistiques_votes_phases') }}">Stats Votes AG FPF</a>
+                    @endif
                 @endif
-                @if($menu['ur'])
-                    <a class="tabIndex" href="{{ route('urs.statistiques') }}">Adhésions UR</a>
-                    <a class="tabIndex" href="{{ route('urs.statistiques_votes') }}">Votes UR</a>
-                @endif
-                <a class="tabIndex active">Club</a>
             </div>
-        @endif
         <div class="d-flex">
             <div class="flex-1 p10" style="background-color: white">
                 <div class="mt50 mb50 bolder">

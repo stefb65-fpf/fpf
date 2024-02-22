@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Concern\ClubTools;
 use App\Concern\Tools;
 use App\Concern\UrTools;
+use App\Concern\VoteTools;
 use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
@@ -34,6 +35,7 @@ class UrController extends Controller
     use Tools;
     use ClubTools;
     use UrTools;
+    use VoteTools;
 
     public function __construct()
     {
@@ -998,5 +1000,32 @@ class UrController extends Controller
         // on prend les 20 derniers votes existants pour lesquels la date de début est passée
         $votes = Vote::where('debut', '<=', date('Y-m-d'))->where('urs_id', $ur->id)->orderByDesc('id')->paginate(20);
         return view('urs.statistiques.votes', compact('votes', 'ur'));
+    }
+
+    public function statistiquesVotesPhases()
+    {
+        $ur = $this->getUr();
+        list($vote, $details) = $this->getVoteDetail();
+        return view('urs.statistiques.votesphases', compact('details', 'vote', 'ur'));
+    }
+
+    public function statistiquesVoteDetail(Vote $vote, $ur_id) {
+        $ur = $this->getUr();
+        $details = $this->getVoteDetailByUr($vote, $ur->id);
+        return view('urs.statistiques.votesdetail', compact('details', 'vote', 'ur'));
+    }
+
+    public function statistiquesListeVoteByClub(Vote $vote, $club_id, $ur_id) {
+        $club = Club::where('id', $club_id)->first();
+        if (!$club) {
+            return redirect()->route('urs.statistiques_votes_phases')->with('error', 'Ce club n\'existe pas');
+        }
+        $ur = $this->getUr();
+        if ($ur->id != $club->urs_id) {
+            return redirect()->route('urs.statistiques_votes_phases')->with('error', 'Ce club ne vous appartient pas');
+        }
+        list($vote, $adherents) = $this->getNotVotedAdherents($club);
+        return view('urs.statistiques.listevotesbyclub', compact('adherents', 'vote', 'club'));
+
     }
 }
