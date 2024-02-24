@@ -701,56 +701,63 @@ class UtilisateurController extends Controller
                 if (!$utilisateur) {
                     return new JsonResponse(['erreur' => 'impossible de récupérer l\'utilisateur'], 400);
                 }
-                switch ($adherent['ct']) {
-//                switch ($utilisateur->ct) {
-                    case 3 :
-                        $ct = '18 - 25 ans';
-                        $tarif_id = 9;
-                        break;
-                    case 4 :
-                        $ct = '<18 ans';
-                        $tarif_id = 10;
-                        break;
-                    case 5 :
-                        $ct = 'Famille';
-                        $tarif_id = 11;
-                        break;
-                    case 6 :
-                        $ct = 'Second club';
-                        $tarif_id = 12;
-                        break;
-                    default :
-                        $ct = '>25 ans';
-                        $tarif_id = 8;
-                        break;
+                $personne = Personne::where('id', $utilisateur->personne_id)->first();
+                if (!$personne) {
+                    return new JsonResponse(['erreur' => 'impossible de récupérer la personne'], 400);
+                }
+                $ct = '>25 ans';
+                $tarif_id = 8;
+                if ($personne->datenaissance) {
+                    $date_naissance = new \DateTime($personne->datenaissance);
+                    $date_now = new \DateTime();
+                    $age = $date_now->diff($date_naissance)->y;
+                    if ($age > 0) {
+                        if ($age < 18) {
+                            $ct = '<18 ans';
+                            $tarif_id = 10;
+                        } else {
+                            if ($age < 25) {
+                                $ct = '18 - 25 ans';
+                                $tarif_id = 9;
+                            }
+                        }
+                    }
                 }
 
+                $tarif_second = 0;
                 if ($adherent['ct'] == 5) {
                     // on vérifie que la seconde acrte indiquée existe bien et est au tarif normal
                     $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->first();
-//                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->whereIn('ct', [2,7])->first();
-                    if (!$autre_carte) {
-                        $ct = '>25 ans';
-                        $tarif_id = 8;
-                        $adherent['ct'] = 2;
+                    if ($autre_carte) {
+                        $tarif_second = 1;
+                        $ct = 'Famille';
                     }
+//                    if (!$autre_carte) {
+//                        $ct = '>25 ans';
+//                        $tarif_id = 8;
+//                        $adherent['ct'] = 2;
+//                    }
                 }
 
                 if ($adherent['ct'] == 6) {
                     // on vérifie l'existence de la carte d'un autre club au tarif plein et appartenant à la même personne
-                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->whereIn('ct', [2,3,4,5,6])->first();
-//                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->where('ct', 2)->first();
-                    if (!$autre_carte) {
-                        $ct = '>25 ans';
-                        $tarif_id = 8;
-                        $adherent['ct'] = 2;
-                    } else {
-                        if ($autre_carte->personne_id != $utilisateur->personne_id) {
-                            $ct = '>25 ans';
-                            $tarif_id = 8;
-                            $adherent['ct'] = 2;
-                        }
+//                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->whereIn('ct', [2,3,4,5,6])->first();
+                    $autre_carte = Utilisateur::where('identifiant', $adherent['secondeCarte'])->whereIn('statut', [2,3])->first();
+                    if ($autre_carte && $autre_carte->personne_id == $utilisateur->personne_id) {
+                        $tarif_second = 1;
+                        $ct = '2nde carte';
                     }
+//                    if (!$autre_carte) {
+//                        $ct = '>25 ans';
+//                        $tarif_id = 8;
+//                        $adherent['ct'] = 2;
+//                    } else {
+//                        if ($autre_carte->personne_id != $utilisateur->personne_id) {
+//                            $ct = '>25 ans';
+//                            $tarif_id = 8;
+//                            $adherent['ct'] = 2;
+//                        }
+//                    }
                 }
 
 
@@ -758,11 +765,15 @@ class UtilisateurController extends Controller
                 $line = ['prenom' => $utilisateur->personne->prenom, 'nom' => $utilisateur->personne->nom, 'identifiant' => $utilisateur->identifiant,
                     'ct' => $ct, 'id' => $utilisateur->id, 'ctInt' => $adherent['ct'], 'premierecarte' => $adherent['secondeCarte']
                 ];
+                $montant_tarif = $tarif->tarif;
+                if ($tarif_second == 1) {
+                    $montant_tarif = $tarif->tarif / 2;
+                }
 
                 $tab_adherents[$utilisateur->identifiant]['adherent'] = $line;
-                $tab_adherents[$utilisateur->identifiant]['adhesion'] = $tarif->tarif;
-                $tab_adherents[$utilisateur->identifiant]['total'] = $tarif->tarif;
-                $total_adhesion += $tarif->tarif;
+                $tab_adherents[$utilisateur->identifiant]['adhesion'] = $montant_tarif;
+                $tab_adherents[$utilisateur->identifiant]['total'] = $montant_tarif;
+                $total_adhesion += $montant_tarif;
             }
         }
         if ($abonnes) {

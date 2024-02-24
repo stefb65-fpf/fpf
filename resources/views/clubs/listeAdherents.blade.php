@@ -156,7 +156,7 @@
                         <option value="3" {{ $adherent->ct == 3 ? 'selected' : '' }}>18 - 25 ans</option>
                         <option value="4" {{ $adherent->ct == 4 ? 'selected' : '' }}><18 ans</option>
                         <option value="5" {{ $adherent->ct == 5 ? 'selected' : '' }}>famille</option>
-                        <option value="6" {{ $adherent->ct == 6 ? 'selected' : '' }}>2eme club</option>
+                        <option value="6" {{ $adherent->ct == 6 ? 'selected' : '' }}>2nde carte</option>
                     </select>
                     <div name="divSecondeCarte" {{ !in_array($adherent->ct, [5,6]) ? 'class=d-none' : '' }}>
                         <input name="inputSecondeCarte" maxlength="12" id="secondeCarte_{{ $adherent->id_utilisateur }}"

@@ -97,7 +97,7 @@
                                 <option value="3" {{  $type_carte == 3 ? 'selected' : '' }}>18 - 25 ans</option>
                                 <option value="4" {{  $type_carte == 4 ? 'selected' : '' }}><18 ans</option>
                                 <option value="5" {{  $type_carte == 5 ? 'selected' : '' }}>famille</option>
-                                <option value="6" {{  $type_carte == 6 ? 'selected' : '' }}>2eme club</option>
+                                <option value="6" {{  $type_carte == 6 ? 'selected' : '' }}>2nde carte</option>
                                 <option value="7" {{  $type_carte == 7 ? 'selected' : '' }}>individuel >25ans</option>
                                 <option value="8" {{  $type_carte == 8 ? 'selected' : '' }}> individuel 18-25</option>
                                 <option value="9" {{  $type_carte == 9 ? 'selected' : '' }}> individuel <18ans</option>
@@ -234,7 +234,7 @@
                                     <div>famille</div>
                                     @break
                                     @case(6)
-                                    <div>2eme club</div>
+                                    <div>2nde carte</div>
                                     @break
                                     @case(7)
                                     <div>>25 ans</div>

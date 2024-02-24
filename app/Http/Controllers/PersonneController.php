@@ -401,7 +401,8 @@ class PersonneController extends Controller
                 if ($new_adress) {
                     // on ajoute une ligne à la table pivot adresse_personne (le 'defaut' est à 1 pour "adresse de facturation"):
                     $data_ap = array('adresse_id' => $new_adress->id, 'personne_id' => $personne->id, 'defaut' => 1);
-                    DB::table('adresse_personne')->insert($data_ap);
+                    $personne->adresses()->attach($new_adress->id);
+//                    DB::table('adresse_personne')->insert($data_ap);
 
                     $user = session()->get('user');
                     $user->adresses[] = $new_adress;
