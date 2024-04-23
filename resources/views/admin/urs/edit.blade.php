@@ -25,7 +25,7 @@
                     {{ csrf_field() }}
                     <div class="formBlockWrapper">
                         <div class="formUnit w100">
-                            <div class="formLabel">Nom</div>
+                            <div class="formLabel">Nom UR</div>
                             <input name="nom" class="formValue modifying w70"
                                    type="text" value="{{$ur->nom?$ur->nom:""}}"
                                    maxlength="120" required>

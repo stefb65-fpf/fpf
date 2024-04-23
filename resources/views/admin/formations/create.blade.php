@@ -18,7 +18,7 @@
     <link href="{{asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection
 @section('js')
-    <script src="https://cdn.tiny.cloud/1/40cakvroazrt9qmtcvc4jhwddimpi2cj26v8c03jxkfbc499/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/0tfgoauksbtjlp4sye52sgt384u2fu2caznkjrvnvtncd64s/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="{{ asset('/js/editor.js') }}"></script>
     <script src="{{ asset('/js/admin_formation.js') }}"></script>
 @endsection

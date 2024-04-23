@@ -1,4 +1,4 @@
-@extends('layouts.pdf')
+@extends('layouts.pdf-etiquettes')
 
 @section('content')
     <table style="width: 100%; font-size: 13px">
@@ -8,9 +8,9 @@
                 <tr>
                     @endif
                     <td>
-                        <div style="width:330px;height: 132px;padding: 5px;{{ $nb%2 === 0 ? 'margin-left:30px' : 'margin-left:0px' }}">
-                            <table style="width: 100%">
-                                <tr style="padding: 0; margin: 0">
+                        <div style="width:330px;height: 132px;padding: 10px;{{ $nb%2 === 0 ? 'margin-left:30px' : 'margin-left:0px' }}">
+                            <table style="width: 100%; padding: 30px 0px 0px">
+                                <tr style="padding: 0; margin: 0;">
                                     <td style="padding: 0; margin: 0">**C**</td>
                                     <td style="padding: 0; margin: 0">{{ $etiquette->identifiant }}</td>
                                 </tr>

@@ -90,12 +90,23 @@
                     <input type="checkbox" name="ckbRoutageFede" data-ref="7">
                 </td>
                 <td>
-                    Contacts de clubs
+                    Contacts de clubs ({{ $nb_clubs }})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="8">
+                </td>
+                <td>
+                    Adhérents individuels et clubs sans doublon, sans carte 2nd club ou famille ({{ $nb_adherents_clubs_individuels }})
                 </td>
             </tr>
             </tbody>
         </table>
         <button class="adminPrimary btnMedium" id="btnRoutageFede">Générer le fichier de routage</button>
+    </div>
+    <div id="uploaderWaiting" class="waiting d-none p100">
+        <img src="{{ url('storage/app/public/ajax-loader.gif') }}" style="max-width: 150px;">
     </div>
 @endsection
 @section('css')

@@ -304,5 +304,5 @@ Route::get('/admin/reversements/attente', [App\Http\Controllers\Admin\Reversemen
 Route::get('/admin/reversements/effectues', [App\Http\Controllers\Admin\ReversementController::class, 'effectues'])->name('reversements.effectues');
 
 //Gestion support
-Route::get('/support', [App\Http\Controllers\SupportController::class,'index'])->name('support.index');
-Route::put('/support', [App\Http\Controllers\SupportController::class,'submit'])->name('support.submit');
+//Route::get('/support', [App\Http\Controllers\SupportController::class,'index'])->name('support.index');
+//Route::put('/support', [App\Http\Controllers\SupportController::class,'submit'])->name('support.submit');

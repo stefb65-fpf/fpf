@@ -107,7 +107,8 @@
                     <a id="connectConcours">Outil concours</a>
                 </li>
                 <li>
-                    <a name="linkDropdownHeader" href="/support">Support</a>
+                    <a name="linkDropdownHeader" href="https://federation-photo.atlassian.net/servicedesk/customer/portals" target="_blank">Support</a>
+{{--                    <a name="linkDropdownHeader" href="/support">Support</a>--}}
                 </li>
                 <li>
                     <a name="linkDropdownHeader" href="/logout">Se déconnecter</a>

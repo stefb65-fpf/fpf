@@ -19,6 +19,7 @@ $('a[name=editEtiquettes]').on('click', function() {
             const pdf_url = $('#app_url').html() + 'storage/app/public/uploads/etiquettes/' + reponse.file
             elem.parent().parent().find('a[name=viewEtiquettes]').attr('href', pdf_url)
             elem.parent().parent().find('a[name=viewEtiquettes]').show()
+            elem.parent().parent().find('a[name=viewEtiquettes]').removeClass('d-none')
         },
         error: function (e) {
         }
@@ -37,6 +38,7 @@ $('#btnRoutageFede').on('click', function() {
         alert('Veuillez sélectionner au moins une liste')
         return
     }
+    $('#uploaderWaiting').removeClass('d-none')
     $.ajax({
         url:'/api/editRoutageFede',
         type: 'POST',
@@ -45,6 +47,7 @@ $('#btnRoutageFede').on('click', function() {
         },
         dataType: 'JSON',
         success: function (reponse) {
+            $('#uploaderWaiting').addClass('d-none')
            $('#linkFedeRoutage').attr('href', reponse.file)
             $('#alertFedeRoutage').removeClass('d-none')
         },

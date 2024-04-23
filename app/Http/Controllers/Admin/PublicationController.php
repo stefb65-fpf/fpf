@@ -96,6 +96,11 @@ class PublicationController extends Controller
         $nb_abonnes = Personne::where('is_abonne', 1)->where('is_adherent', 0)->count();
         $nb_ca = Utilisateur::where('ca', 1)->count();
         $nb_adherents_clubs = Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', [2, 3, 4, 5, 6])->count();
+        $nb_adherents_clubs_individuels = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->whereIn('utilisateurs.statut', [2, 3])
+            ->whereNotIn('utilisateurs.ct', ['F', 5, 6])
+            ->selectRaw('DISTINCT personnes.id')
+            ->count();
         $nb_adherents_prec = Utilisateur::where('statut', 0)->where('urs_id', '<>', 0)->where('saison', $saison)->count();
         $ce = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
             ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
@@ -105,7 +110,7 @@ class PublicationController extends Controller
         $nb_ce = sizeof($ce);
         $urs = Ur::orderBy('id')->get();
         return view('admin.publications.routageFede',
-            compact('nb_clubs', 'nb_individuels', 'nb_ca', 'nb_ce', 'urs', 'nb_abonnes', 'nb_adherents_clubs', 'nb_adherents_prec'));
+            compact('nb_clubs', 'nb_individuels', 'nb_ca', 'nb_ce', 'urs', 'nb_abonnes', 'nb_adherents_clubs', 'nb_adherents_prec', 'nb_adherents_clubs_individuels'));
     }
 
     public function etiquettes()
@@ -197,6 +202,9 @@ class PublicationController extends Controller
                 case 7 : // contacts club
                     $urs_id = $request->ur;
                     $utilisateurs = $this->getContactsClub($urs_id);
+                    break;
+                case 8 : // adhérents club
+                    $utilisateurs = $this->getDistinctAdherents();
                     break;
                 default : break;
             }
@@ -381,14 +389,24 @@ class PublicationController extends Controller
     }
 
     protected function getAdherentsClub() {
-        // on récupère les adhérents non renouvelés n-1
-        $saison = (in_array(date('m'), ['09', '10', '11', '12']) ? date('Y') : date('Y') - 1);
-        return Utilisateur::where('statut', 0)->where('urs_id', '<>', 0)->where('saison', $saison)->orderBy('identifiant')->get();
+        // on récupère les adhérents de club
+        return Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', [2, 3, 4, 5, 6])->whereNotNull('utilisateurs.personne_id')->orderBy('identifiant')->get();
+    }
+
+    protected function getDistinctAdherents() {
+        // on récupère les adhérents de club
+        return Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+            ->whereIn('utilisateurs.statut', [2, 3])
+            ->whereNotIn('utilisateurs.ct', ['F', 5, 6])
+            ->selectRaw('DISTINCT personnes.id, utilisateurs.*')
+            ->orderBy('identifiant')
+            ->get();
     }
 
     protected function getAdherentsPrec() {
-        // on récupère les adhérents de club
-        return Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', [2, 3, 4, 5, 6])->whereNotNull('utilisateurs.personne_id')->orderBy('identifiant')->get();
+        // on récupère les adhérents non renouvelés n-1
+        $saison = (in_array(date('m'), ['09', '10', '11', '12']) ? date('Y') : date('Y') - 1);
+        return Utilisateur::where('statut', 0)->where('urs_id', '<>', 0)->where('saison', $saison)->orderBy('identifiant')->get();
     }
 
     protected function getAbonnesSeuls() {
