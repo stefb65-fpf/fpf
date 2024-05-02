@@ -20,7 +20,7 @@
             @endif
             <a class="tabIndex" href="{{ route('urs.statistiques') }}">Adhésions UR</a>
             <a class="tabIndex" href="{{ route('urs.statistiques_votes') }}">Votes UR</a>
-            @if(!$menu['admin'])
+            @if((!$menu['admin'] || !in_array('VISUSTAT', $droits_fpf)) && $exist_vote)
                 <a class="tabIndex active" href="{{ route('urs.statistiques_votes_phases') }}">Stats Votes AG FPF</a>
             @endif
             @if($menu['club'])

@@ -191,6 +191,7 @@ trait VoteTools
             $tab_votes[$adherent->id]['nom'] = $adherent->nom;
             $tab_votes[$adherent->id]['numero'] = $adherent->numero;
             $tab_votes[$adherent->id]['nb'] = $adherent->nb;
+            $tab_votes[$adherent->id]['vote_club'] = 0;
 
             $table1 = $vote->phase == 1 ? 'votes_utilisateurs' : 'votes_utilisateurs_'.$vote->id.'_phase_1';
             $vote_P1 = DB::table($table1)

@@ -26,7 +26,7 @@ class ComposerServiceProvider extends ServiceProvider
 
         view()->composer(
             ['admin.accueil', 'admin.personnes.form', 'urs.gestion', 'layouts.menu', 'admin.statistiques.index',
-                'clubs.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes'],
+                'clubs.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes', 'urs.statistiques.votesphases', 'urs.statistiques.votesdetail', 'urs.statistiques.listevotesbyclub'],
             'App\Http\ViewComposers\DroitsComposer'
         );
 
@@ -36,7 +36,8 @@ class ComposerServiceProvider extends ServiceProvider
         );
 
         view()->composer(
-            ['admin.statistiques.votes', 'admin.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes', 'clubs.statistiques.index'],
+            ['admin.statistiques.votes', 'admin.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes', 'clubs.statistiques.index', 'urs.statistiques.votesphases',
+                'urs.statistiques.votesdetail', 'urs.statistiques.listevotesbyclub'],
             'App\Http\ViewComposers\VoteComposer'
         );
     }

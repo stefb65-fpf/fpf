@@ -1,3 +1,6 @@
+Redirect 301 /webroot/utilisateurs/accueil /
+Redirect 301 //utilisateurs/accueil /
+
 AddType application/octet-stream txt
 
 <FilesMatch "\.(pdf)$">
