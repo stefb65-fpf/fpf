@@ -80,7 +80,7 @@
                                 <span class="bolder">{{ $v->nom }}</span>
                                 <ul class="ml40">
                                     <li>
-                                        vote de tous les adhérents : du <?= substr($v->debut, 8, 2).'/'.substr($v->debut, 5, 2).'/'.substr($v->debut, 0, 4) ?> 3h00 au <?= substr($v->fin_phase1, 8, 2).'/'.substr($v->fin_phase1, 5, 2).'/'.substr($v->fin_phase1, 0, 4) ?> 23h59. Lors de cette phase, vous pouvez voter directement. Si vous ne votez pas, votre voix sera transférée directement au président de club pour la seconde phase. Si vous souhaitez que ce ne soit pas le cas, cliquez sur le bouton "je ne donne pas mon pouvoir".
+                                        vote de tous les adhérents : du <?= substr($v->debut, 8, 2).'/'.substr($v->debut, 5, 2).'/'.substr($v->debut, 0, 4) ?> 3h00 au <?= substr($v->fin_phase1, 8, 2).'/'.substr($v->fin_phase1, 5, 2).'/'.substr($v->fin_phase1, 0, 4) ?> 23h59. Lors de cette phase, vous pouvez voter directement. Si vous ne votez pas, votre voix sera transférée directement au président de club pour la seconde phase. Si vous souhaitez que ce ne soit pas le cas, cliquez sur le bouton "JE NE DONNE PAS MON VOTE".
                                     </li>
                                     <li>
                                         vote responsables clubs (voix du club et pouvoirs des adhérents): du <?= substr($v->debut_phase2, 8, 2).'/'.substr($v->debut_phase2, 5, 2).'/'.substr($v->debut_phase2, 0, 4) ?> 3h00 au <?= substr($v->fin_phase2, 8, 2).'/'.substr($v->fin_phase2, 5, 2).'/'.substr($v->fin_phase2, 0, 4) ?> 23h59. Lors de cette phase, vous pouvez voter ou transférer vos voix au président d'UR.
@@ -97,7 +97,7 @@
                                 <button class="btnRegister primary" name="givePouvoir" data-vote="{{ $v->id }}">JE DONNE MES POUVOIRS AU PR&Eacute;SIDENT D'UR</button>
                             @endif
                             @if($v->type == 1 && $v->phase == 1)
-                                <button class="btnRegister primary" name="cancelPouvoir" data-vote="{{ $v->id }}">JE NE DONNE PAS MON POUVOIR</button>
+                                <button class="btnRegister primary" name="cancelPouvoir" data-vote="{{ $v->id }}">JE NE DONNE PAS MON VOTE</button>
                             @endif
                         </div>
                     </div>
