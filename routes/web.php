@@ -102,7 +102,7 @@ Route::get('/admin/reglements/cartes', [App\Http\Controllers\Admin\ReglementCont
 Route::get('/admin/reglements/cartes/historique', [App\Http\Controllers\Admin\ReglementController::class, 'historiqueCartes'])->name('reglements.cartes.historique');
 //Route::resource('/admin/reglements', App\Http\Controllers\Admin\ReglementController::class);
 
-Route::get('/admin/factures', [App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('admin.factures');
+Route::get('/admin/factures/{term?}', [App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('admin.factures');
 
 Route::get('/admin/supports/{type?}', [App\Http\Controllers\Admin\SupportController::class, 'index'])->name('supports.index');
 

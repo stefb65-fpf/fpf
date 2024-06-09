@@ -10,14 +10,15 @@
                 </svg>
             </a>
         </h1>
-{{--        <div class="alertInfo w80">--}}
-{{--            <p>--}}
-{{--                <span class="bold">Informations !</span>--}}
-{{--                Vous pouvez ajouter des droits d'accès à l'amdinistration de la base en ligne pour les utilisateurs via leur identifiant ou les fonctions qu'ils occupent.--}}
-{{--                L'attribution de droits à une fonction concernera tous les utilisateurs ayant cette fonction.<br>--}}
-{{--                Pour ajouter un droit, sélectionnez une fonction ou un utilisateur et cliquez sur le bouton "ajouter".--}}
-{{--            </p>--}}
-{{--        </div>--}}
+        @if($term)
+            <div class="searchedTerm mt25">
+                <div class="title mt25">Vous avez cherché les factures contenant l'expression :</div>
+                <div class="d-flex mt25 center">
+                    <div class="value">{{$term}}</div>
+                    <div class="close">X</div>
+                </div>
+            </div>
+        @endif
         <div class="w100">
             <div class="pagination">
                 {{ $invoices->render("pagination::default") }}

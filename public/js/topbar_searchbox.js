@@ -65,3 +65,10 @@ $('.searchBox.payment input').on('keypress', function (e) {
     }
 })
 
+$('.searchBox.invoice input').on('keypress', function (e) {
+    if (e.which === 13) {
+        const url = '/admin/factures/' + $(this).val()
+        window.location.href = url;
+    }
+})
+
