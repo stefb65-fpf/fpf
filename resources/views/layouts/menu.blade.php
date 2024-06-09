@@ -66,6 +66,12 @@
                             <a class="btnCard" href="{{ route('souscription-abonnement') }}">{{ $user->is_abonne ? 'prolonger mon abonnement' : 'ajouter un abonnement' }}</a>
                         </div>
                     @endif
+                @else
+                    @if($user->renew_abo)
+                        <div class="mt10">
+                            <a class="btnCard" href="{{ route('souscription-abonnement') }}">{{ $user->is_abonne ? 'prolonger mon abonnement' : 'ajouter un abonnement' }}</a>
+                        </div>
+                    @endif
                 @endif
             </div>
             <ul class="leftMenu" id="navMenu">

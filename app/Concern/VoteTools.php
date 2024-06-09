@@ -80,6 +80,7 @@ trait VoteTools
             $votes_phase_1 = $votes;
         }
 
+
 //        if ($vote->phase == 2) {
 //            $votes_phase_2 = $votes;
 //        }
@@ -246,11 +247,13 @@ trait VoteTools
         foreach ($tab_votes as $k => $tab_vote) {
             // on calcule le poyurcentage
             if ($tab_vote['nb'] + $tab_vote['vote_club'] > 0) {
-                $tab_votes[$k]['pourcentage'] = round($tab_vote['nb_voix'] * 100 / ($tab_vote['nb'] + $tab_vote['vote_club']), 0);
+                $tab_votes[$k]['pourcentage'] = round($tab_vote['nb_voix'] * 100 / ($tab_vote['nb']), 0);
+//                $tab_votes[$k]['pourcentage'] = round($tab_vote['nb_voix'] * 100 / ($tab_vote['nb'] + $tab_vote['vote_club']), 0);
             } else {
                 $tab_votes[$k]['pourcentage'] = 0;
             }
         }
+//        dd($tab_votes);
         return $tab_votes;
     }
 

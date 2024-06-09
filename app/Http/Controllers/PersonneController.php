@@ -80,6 +80,7 @@ class PersonneController extends Controller
             foreach ($cartes[0]->fonctions as $fonction) {
                 $tab_fonctions[] = $fonction->id;
             }
+//            dd($tab_fonctions);
 
             if (in_array($cartes[0]->statut, [2,3])) {
 //            if ($cartes[0]->saison >= date('Y') && $cartes[0]->statut < 4) {
@@ -182,8 +183,13 @@ class PersonneController extends Controller
 
 
                     if ($v->fonctions_id == 9999) {
-                        if ($_SESSION['Utilisateur']->ca == 0) {
+                        $search_user = Utilisateur::where('id', $cartes[0]->id)->selectRaw('ca')->first();
+                        if (!$search_user) {
                             unset($votes_futurs[$k]);
+                        } else {
+                            if ($search_user->ca == 0) {
+                                unset($votes_futurs[$k]);
+                            }
                         }
                     }
                 }
@@ -659,9 +665,12 @@ class PersonneController extends Controller
             }
         }
         if ($membre_club == 0) {
-            return redirect()->route('accueil');
+            $tarif_id = 19;
+//            return redirect()->route('accueil');
+        } else {
+            $tarif_id = $tarif_reduit ? 17 : 19;
         }
-        $tarif_id = $tarif_reduit ? 17 : 19;
+//        $tarif_id = $tarif_reduit ? 17 : 19;
         $tarif_abonnement = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
         $tarif = $tarif_abonnement->tarif;
 

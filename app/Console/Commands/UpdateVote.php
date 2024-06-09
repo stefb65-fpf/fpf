@@ -68,20 +68,21 @@ class UpdateVote extends Command
                     // on insère dans la table cumul_votes_club
                     $datacvc = array('votes_id' => $vote->id, 'clubs_id' => $club->id, 'statut' => 0, 'nb_voix' => $nb_voix, 'updated_at' => date('Y-m-d'), 'pouvoir' => 0);
                     DB::table('cumul_votes_clubs')->insert($datacvc);
-
-                    // on clone la table votes_utilisateurs
-                    $tabledest = 'votes_utilisateurs_'.$vote->id.'_phase_1';
-                    DB::statement("DROP TABLE IF EXISTS ".$tabledest);
-                    DB::statement("CREATE TABLE $tabledest LIKE votes_utilisateurs");
-                    $statement = "INSERT $tabledest SELECT * FROM votes_utilisateurs";
-                    DB::statement($statement);
-
-                    // on supprime de la la tabble clonée tout ce qui ne concerne pas le vote
-                    DB::table($tabledest)->where('votes_id', '!=', $vote->id)->delete();
-
-                    // on supprime de la table votes_utilisateurs tout ce qui concerne le vote
-                    DB::table('votes_utilisateurs')->where('votes_id', $vote->id)->delete();
                 }
+
+                // on clone la table votes_utilisateurs
+                $tabledest = 'votes_utilisateurs_'.$vote->id.'_phase_1';
+                DB::statement("DROP TABLE IF EXISTS ".$tabledest);
+                DB::statement("CREATE TABLE $tabledest LIKE votes_utilisateurs");
+                $statement = "INSERT $tabledest SELECT * FROM votes_utilisateurs";
+                DB::statement($statement);
+
+                // on supprime de la la tabble clonée tout ce qui ne concerne pas le vote
+                DB::table($tabledest)->where('votes_id', '!=', $vote->id)->delete();
+
+                // on supprime de la table votes_utilisateurs tout ce qui concerne le vote
+                DB::table('votes_utilisateurs')->where('votes_id', $vote->id)->delete();
+
                 // on passe le vote en phase 2
                 $vote->update(['phase' => 2]);
             }
@@ -122,20 +123,20 @@ class UpdateVote extends Command
 
                         $datacvu = array('votes_id' => $vote->id, 'urs_id' => $ur->id, 'statut' => 0, 'nb_voix' => $nb_voix_ur, 'updated_at' => date('Y-m-d'));
                         DB::table('cumul_votes_urs')->insert($datacvu);
-
-                        // on clone la table votes_utilisateurs
-                        $tabledest = 'votes_utilisateurs_'.$vote->id.'_phase_2';
-                        DB::statement("DROP TABLE IF EXISTS ".$tabledest);
-                        DB::statement("CREATE TABLE $tabledest LIKE votes_utilisateurs");
-                        $statement = "INSERT $tabledest SELECT * FROM votes_utilisateurs";
-                        DB::statement($statement);
-
-                        // on supprime de la la tabble clonée tout ce qui ne concerne pas le vote
-                        DB::table($tabledest)->where('votes_id', '!=', $vote->id)->delete();
-
-                        // on supprime de la table votes_utilisateurs tout ce qui concerne le vote
-                        DB::table('votes_utilisateurs')->where('votes_id', $vote->id)->delete();
                     }
+
+                    // on clone la table votes_utilisateurs
+                    $tabledest = 'votes_utilisateurs_'.$vote->id.'_phase_2';
+                    DB::statement("DROP TABLE IF EXISTS ".$tabledest);
+                    DB::statement("CREATE TABLE $tabledest LIKE votes_utilisateurs");
+                    $statement = "INSERT $tabledest SELECT * FROM votes_utilisateurs";
+                    DB::statement($statement);
+
+                    // on supprime de la la tabble clonée tout ce qui ne concerne pas le vote
+                    DB::table($tabledest)->where('votes_id', '!=', $vote->id)->delete();
+
+                    // on supprime de la table votes_utilisateurs tout ce qui concerne le vote
+                    DB::table('votes_utilisateurs')->where('votes_id', $vote->id)->delete();
                 }
 
                 // on passe le vote en phase 3

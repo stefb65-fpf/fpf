@@ -605,15 +605,21 @@ trait Tools
 
     public function saveNewAbo($personne, $type) {
         $tarif_reduit = 0;
+        $membre_club = 0;
         foreach ($personne->utilisateurs as $carte) {
             if ($carte->clubs_id) {
+                $membre_club = 1;
                 if (in_array($carte->statut, [2,3])) {
                     $tarif_reduit = 1;
                 }
             }
         }
-        $tarif_id = $tarif_reduit ? 17 : 19;
-        $utilisateur = Utilisateur::where('id', $personne->utilisateurs[0]->id)->first();
+        if ($membre_club == 0) {
+            $tarif_id = 19;
+        } else {
+            $tarif_id = $tarif_reduit ? 17 : 19;
+        }
+//        $tarif_id = $tarif_reduit ? 17 : 19;
 
         // on crée un règlement
         $numero_cheque = ($type == 'Bridge') ? 'Bridge ' . $personne->bridge_id : 'Monext ' . $personne->monext_token;
@@ -633,14 +639,17 @@ trait Tools
         $reglement = Reglement::create($datar);
 
         // on insère une ligne dans la table reglementsutilisateurs
-        DB::table('reglementsutilisateurs')
-            ->insert([
-                    'reglements_id' => $reglement->id,
-                    'utilisateurs_id' => $utilisateur->id,
-                    'adhesion' => 0,
-                    'abonnement' => 1
-                ]
-            );
+        if ($membre_club == 1) {
+            $utilisateur = Utilisateur::where('id', $personne->utilisateurs[0]->id)->first();
+            DB::table('reglementsutilisateurs')
+                ->insert([
+                        'reglements_id' => $reglement->id,
+                        'utilisateurs_id' => $utilisateur->id,
+                        'adhesion' => 0,
+                        'abonnement' => 1
+                    ]
+                );
+        }
 
         $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
         if ($abonnement) {
