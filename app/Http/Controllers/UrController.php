@@ -653,9 +653,11 @@ class UrController extends Controller
         }
 
         // on envoie un mail d'alerte sur les adresses des responsables informatiques
-        Mail::to('stephane.benhamou@federation-photo.fr')
-            ->cc('dominique.gury@federation-photo.fr')
-            ->send(new SendAlertFonction(trim($request->libelle), $this->getUr()->id));
+        if ($request->libelle != '') {
+            Mail::to('stephane.benhamou@federation-photo.fr')
+                ->cc('dominique.gury@federation-photo.fr')
+                ->send(new SendAlertFonction(trim($request->libelle), $this->getUr()->id));
+        }
 
         return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été créée");
     }
