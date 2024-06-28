@@ -11,6 +11,8 @@ use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
 use App\Http\Requests\OpenRequest;
 use App\Http\Requests\PersonneRequest;
+use App\Mail\SendAlertFonction;
+use App\Mail\SendAlertSupport;
 use App\Mail\SendUtilisateurCreateByAdmin;
 use App\Models\Abonnement;
 use App\Models\Adresse;
@@ -649,6 +651,11 @@ class UrController extends Controller
         if ($user) {
             $this->MailAndHistoricize($user, "Ajout d'une fonction pour votre UR. ");
         }
+
+        // on envoie un mail d'alerte sur les adresses des responsables informatiques
+        Mail::to('stephane.benhamou@federation-photo.fr')
+            ->cc('dominique.gury@federation-photo.fr')
+            ->send(new SendAlertFonction(trim($request->libelle), $this->getUr()->id));
 
         return redirect()->route('urs.fonctions.liste')->with('success', "La fonction a été créée");
     }
