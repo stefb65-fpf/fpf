@@ -22,6 +22,7 @@
                         <th style="text-align: center">Adhésion club</th>
                         <th style="text-align: center">Adhésion UR</th>
                         <th style="text-align: center">Abonnement club</th>
+                        <th style="text-align: center">Florilège</th>
                         <th style="text-align: center">Total club</th>
                     </tr>
                     </thead>
@@ -30,6 +31,7 @@
                         <td style="text-align: center">{{ $montant_adhesion_club == 0 ? '' : number_format($montant_adhesion_club, 2, ',', '').'€' }}</td>
                         <td style="text-align: center">{{ $montant_adhesion_club_ur == 0 ? '' : number_format($montant_adhesion_club_ur, 2, ',', '').'€' }}</td>
                         <td style="text-align: center">{{ $montant_abonnement_club == 0 ? '' : number_format($montant_abonnement_club, 2, ',', '').'€' }}</td>
+                        <td style="text-align: center">{{ $montant_florilege_club == 0 ? '' : number_format($montant_florilege_club, 2, ',', '').'€' }}</td>
                         <td style="text-align: center">{{ number_format($total_club, 2, ',', '').'€' }}</td>
                     </tr>
                     </tbody>
@@ -45,6 +47,7 @@
                     <th style="text-align: left">Type carte</th>
                     <th style="text-align: right">Adhésion</th>
                     <th style="text-align: right">Abonnement</th>
+                    <th style="text-align: right">Florilège</th>
                     <th style="text-align: right">Total</th>
                 </tr>
                 </thead>
@@ -64,6 +67,9 @@
                             {{ isset($adherent['abonnement']) ? number_format($adherent['abonnement'], 2, ',', '').'€' : '' }}
                         </td>
                         <td style="text-align: right">
+                            {{ isset($adherent['florilege']) ? number_format($adherent['florilege'], 2, ',', '').'€' : '' }}
+                        </td>
+                        <td style="text-align: right">
                             {{ number_format($adherent['total'], 2, ',', '').'€' }}
                         </td>
                     </tr>
@@ -77,6 +83,9 @@
                     </td>
                     <td style="text-align: right; font-weight: bolder;">
                         {{ $total_abonnement > 0 ? number_format($total_abonnement, 2, ',', '').'€' : '' }}
+                    </td>
+                    <td style="text-align: right; font-weight: bolder;">
+                        {{ $total_florilege > 0 ? number_format($total_florilege, 2, ',', '').'€' : '' }}
                     </td>
                     <td style="text-align: right; font-weight: bolder;">
                         {{ number_format($total_adherents, 2, ',', '').'€' }}

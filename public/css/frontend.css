@@ -208,6 +208,24 @@ a {
     color: white;
 }
 
+.accountColor {
+    background-color: #58151c;
+    color: #fff;
+}
+
+.btnNormal {
+    font-size: 0.9rem !important;
+    display: block;
+    text-align: center;
+    min-height: 28px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    width: max-content;
+}
+
 .btnSmall {
     font-size: 0.7rem !important;
     display: block;
@@ -2567,6 +2585,8 @@ select.formValue {
     border-radius: 50%;
     height: 20px;
     width: 20px;
+    min-height: 20px;
+    min-width: 20px;
     margin: 0 7px 0 25px;
     box-shadow: 2px 2px 2px #cbcbcb;
     border: 2px solid #fff;

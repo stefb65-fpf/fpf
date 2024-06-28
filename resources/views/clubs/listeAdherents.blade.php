@@ -1,18 +1,13 @@
 <div class="alertInfo w80">
     <span class="bold">Informations !</span>
-    Vous pouvez gérer le renouvellement des adhésions et abonnements des membres de votre club. Pour cela, cochez les
-    adhérents que vous souhaitez renouveler ou abonner puis cliquez sur le bouton "Renouveler".<br>
+    Vous pouvez gérer le renouvellement des adhésions et abonnements des membres de votre club ainsi que la commande de Florilège (si la période de commande est ouverte).
+    Pour cela, dans la colonne de gauche du tableau, sélectionner les options de renouvellement et indiqué le nombre de Florilège puis cliquez sur le bouton "Renouveler".<br>
     L'abonnement d'un membre du club se fait au tarif "abonné club" lorsque l'adhésion du membre est également renouvelée ou que celui-ci est déjà adhérent.
     Dan,s le cas contraire, le tarif appliqué est celui de l'abonnement normal.<br>
     Le club est automatiquement renouvelé lors du premier renouvellement des adhérents dans la saison.<br>
-    Vous pouvez également abonner votre club au France Photo à tout moment.<br>
+    Vous pouvez également abonner votre club au France Photo ou commander des Florilèges à tout moment.<br>
     Après génération du bordereau de renouvellement, si vous n'effectuez pas le paiement immédiatement, les adhérents sont en statut pré-inscrits.
-    Ils sont alors cochés par défaut dans la liste des adhérents. Si vous souhaitez modifier votre bordereau, vous devez
-    <ul class="ml50">
-        <li>les laisser cochés pour prendre en compte leur adhésion</li>
-        <li>les décocher si vous ne voulez finalement pas les renouveler</li>
-    </ul>
-
+    Ils sont alors cochés par défaut dans la liste des adhérents. Si vous souhaitez modifier votre bordereau, vous devez changer la sélection et cliquer de nouveau sur "Renouveler".
 </div>
 <div class="alertSuccess w80" style="display: none;" id="alertAdherentsList">
     Le fichier des adhérents a bien été généré. Vous pouvez le télécharger en cliquant sur le lient suivant: <a
@@ -77,42 +72,130 @@
                 un adhérent</a>
         @endif
 
-        <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-club="{{$club->id}}" {{ $club->statut != 1 ? 'disabled' : '' }}>Renouveler
+        <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-club="{{$club->id}}" {{ $exist_reglement_en_cours == 0 ? 'disabled' : '' }}>Renouveler
         </button>
     </div>
     <div class="d-flex justify-between mt20 w100">
-        <div>
+        <div style="flex: 1">
+        @if ($club->numerofinabonnement < $numeroencours + 4)
             <input type="checkbox" class="mr10" id="abonnementClub" {{ $club->aboPreinscrit ? 'checked=checked' : '' }}>
-            Abonner le club jusqu'au
+            Abonner le club à France Photographie jusqu'au
             numéro {{ $club->numero_fin_reabonnement }}
+        @else
+            Club abonné à France Photographie jusqu'au numéro {{ $club->numerofinabonnement }}
+        @endif
+        </div>
+        <div style="flex: 1">
+            @if($florilege_actif)
+            <div class="d-flex">
+                <div>
+                    <input type="number" min="0" value="{{ $club->florilegePreinscrit }}" style="width: 60px; text-align: center" id="florilegeClub" />
+                </div>
+                <div class="ml10">
+                    Nombre de Florilèges à commander pour le club
+                    @if($club->nb_florileges > 0)
+                        <br>({{ $club->nb_florileges }} numéros déjà commandés pour le club)
+                    @endif
+                </div>
+
+            </div>
+
+            <div class="alertInfo" style="width: 100%; margin-top: 10px; font-size: 0.9rem;">
+                <span class="bold">Attention</span> : les florilèges destinés aux adhérents doivent être commandés en regard de leur nom dans la liste des adhérents
+            </div>
+            @else
+                La période de commande des Florilèges est terminée.
+            @endif
         </div>
         {{--        <div>--}}
         {{--            <a class="adminPrimary btnMedium" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>--}}
         {{--        </div>--}}
     </div>
-    <table class="styled-table">
+    <small>* : nombre de Florilèges déjà commandés pour l'adhérent</small>
+    <table class="styled-table tablesorter">
         <thead>
         <tr>
-            <th>Adhérer</th>
-            <th>Abonner</th>
-            <th>N°carte</th>
-            <th>Nom</th>
-            <th>Statut</th>
-            <th>Courriel</th>
-            <th>Abonnement - N° fin</th>
-            <th>Type carte</th>
+            <th>Adhésion / Abonnement</th>
+            <th style="text-align: start">Nb Florilège <small>/ *</small></th>
+            <th>
+                <div class="innerThead">
+                    <div class="mr5">N°carte</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16">
+                        <path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                    </svg>
+                </div>
+            </th>
+            <th>
+                <div class="innerThead">
+                    <div class="mr5">Nom</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16">
+                        <path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                    </svg>
+                </div>
+            </th>
+            <th>
+                Statut
+            </th>
+            <th>
+                <div class="innerThead">
+                    <div class="mr5">Courriel</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16">
+                        <path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                    </svg>
+                </div>
+            </th>
+            <th>
+                <div class="innerThead">
+                    <div class="mr5">Abonnement - N° fin</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down" viewBox="0 0 16 16">
+                        <path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                    </svg>
+                </div>
+            </th>
+            <th>
+                Type carte
+            </th>
             <th colspan="2">Actions</th>
         </tr>
         </thead>
         <tbody>
         @foreach($adherents as $adherent)
             <tr>
+                <td style="text-align: left">
+                    @if(in_array($adherent->statut, [2, 3]) && $adherent->fin >= $numeroencours + 4)
+                        &nbsp;
+                    @else
+                        <select name="adh_abo" data-ref="{{ $adherent->id_utilisateur }}" data-identifiant="{{ $adherent->identifiant }}" style="width: 200px;">
+                            <option value="0"></option>
+                            @if(!in_array($adherent->statut, [2, 3]))
+                                <option value="1" {{ $adherent->statut == 1 && $adherent->aboPreinscrit == 0 ? 'selected=selected' : '' }}>Adhésion seule</option>
+                            @endif
+                            @if($adherent->fin == '' || $adherent->fin < $numeroencours + 4)
+                                <option value="2" {{ $adherent->statut != 1 && $adherent->aboPreinscrit == 1 ? 'selected=selected' : '' }}>Abonnement seul</option>
+                            @endif
+                            @if(!in_array($adherent->statut, [2, 3]) && ($adherent->fin == '' || $adherent->fin < $numeroencours + 4))
+                                <option value="3" {{ $adherent->statut == 1 && $adherent->aboPreinscrit == 1 ? 'selected=selected' : '' }}>Adhésion et abonnement</option>
+                            @endif
+                        </select>
+                    @endif
+                </td>
+
+{{--                @if(in_array($adherent->statut, [0, 1, 4]))--}}
+{{--                    <input type="checkbox" name="adherer" data-ref="{{ $adherent->id_utilisateur }}"--}}
+{{--                               data-identifiant="{{ $adherent->identifiant }}" {{ $adherent->statut == 1 ? 'checked=checked' : '' }} />--}}
+{{--                @endif--}}
                 <td>
-                @if(in_array($adherent->statut, [0, 1, 4]))
-                    <input type="checkbox" name="adherer" data-ref="{{ $adherent->id_utilisateur }}"
-                               data-identifiant="{{ $adherent->identifiant }}" {{ $adherent->statut == 1 ? 'checked=checked' : '' }} />
-                @endif
-                <td><input type="checkbox" name="abonner" data-ref="{{ $adherent->id_utilisateur }}"  {{ $adherent->aboPreinscrit == 1 ? 'checked=checked' : '' }} /></td>
+                    <div class="d-flex">
+                        @if($florilege_actif)
+                            <input type="number" min="0" name="florilege" data-ref="{{ $adherent->id_utilisateur }}" value="{{ $adherent->florilegePreinscrit ?? 0 }}" style="width: 50px; text-align: center" />
+                        @endif
+                        @if($adherent->nb_florileges > 0)
+                            <div class="small ml5">/ {{ $adherent->nb_florileges }}</div>
+                        @endif
+                    </div>
+
+                </td>
+{{--                <td><input type="checkbox" name="abonner" data-ref="{{ $adherent->id_utilisateur }}"  {{ $adherent->aboPreinscrit == 1 ? 'checked=checked' : '' }} /></td>--}}
                 <td>{{$adherent->identifiant}}</td>
                 <td>{{$adherent->personne->nom}} {{$adherent->personne->prenom}} </td>
                 <td>
@@ -211,8 +294,9 @@
                 informations seront enregistrées et vous
                 pourrez télécharger le bordereau club.
                 <span class="bolder">
-                Tout autre bordereau créé et n'ayant pas été validé par un
-                règlement enregistré par la FPF sera supprimé. Donc si vous avez un paiement en cours mais non pris en compte par la FPF, ne validez pas ce bordereau.
+                    Tout autre bordereau créé et n'ayant pas été validé par un règlement enregistré par la FPF sera supprimé.
+                    Donc si vous avez un paiement en cours mais non pris en compte par la FPF, ne validez pas ce bordereau.<br>
+                    En cas d'erreur de saisie de votre part, aucune correction ne sera effectuée par les services administratifs de la FPF.
                 </span>
             </div>
             <div class="mt25 bold">
@@ -224,7 +308,9 @@
                 Renouvellement des adhésions pour les adhérents sélectionnés: <span class="bold"
                                                                                     id="montantRenouvellementAdhesion"></span>€<br>
                 Renouvellement des abonnements pour les adhérents sélectionnés: <span class="bold"
-                                                                                      id="montantRenouvellementAbonnement"></span>€
+                                                                                      id="montantRenouvellementAbonnement"></span>€<br>
+                Commande de Florileges pour les adhérents: <span class="bold"
+                                                                                      id="montantRenouvellementFlorilege"></span>€
             </div>
             <div class="mt25" id="divRenouvellementClub" class="d-none">
                 <div id="divRenouvellementAdhesionClub" class="d-none">
@@ -234,6 +320,9 @@
                 <div id="divRenouvellementAbonnementClub" class="d-none">
                     Abonnement du club: <span class="bold" id="montantClubAbonnement"></span>€
                 </div>
+                <div id="divRenouvellementFlorilegeClub" class="d-none">
+                    Florileges pour le club: <span class="bold" id="montantClubFlorilege"></span>€
+                </div>
 
             </div>
             <div class="mt25">
@@ -242,6 +331,7 @@
                     <div class="bold flex-1 small">Type carte</div>
                     <div class="bold flex-1 small">Adhésion</div>
                     <div class="bold flex-1 small">Abonnement</div>
+                    <div class="bold flex-1 small">Florilège</div>
                     <div class="bold flex-1 small">Total</div>
                 </div>
                 <div id="renouvellementListe"></div>
@@ -287,4 +377,8 @@
     <script src="{{ asset('js/filters_club_liste-adherent.js') }}?t=<?= time() ?>"></script>
     <script src="{{ asset('js/excel_adherent_file.js') }}?t=<?= time() ?>"></script>
     <script src="{{ asset('js/club_paiement.js') }}?t=<?= time() ?>"></script>
+    <script src="{{ asset('js/jquery.tablesorter.js') }}"></script>*
+    <script>
+        $(".tablesorter").tablesorter({ headers: { 0: { sorter: false}, 1: {sorter: false}, 4: {sorter: false}, 7: {sorter: false}, 8: {sorter: false} }});
+    </script>
 @endsection

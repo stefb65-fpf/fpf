@@ -75,9 +75,14 @@ trait Invoice
                     ->where('fonctionsutilisateurs.fonctions_id', 97)
                     ->first();
                 if ($contact) {
-                    $user = session()->get('user');
                     $email = $contact->personne->email;
-                    $mailSent = Mail::to($email)->cc($user->email)->send(new SendInvoice($invoice, $dir.'/'.$name));
+                    $user = session()->get('user');
+                    if ($user) {
+                        $mailSent = Mail::to($email)->cc($user->email)->send(new SendInvoice($invoice, $dir.'/'.$name));
+                    } else {
+                        $mailSent = Mail::to($email)->send(new SendInvoice($invoice, $dir.'/'.$name));
+                    }
+
                     $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
                     $mail = new \stdClass();
@@ -85,7 +90,9 @@ trait Invoice
                     $mail->destinataire = $email;
                     $mail->contenu = $htmlContent;
                     $this->registerMail($contact->personne->id, $mail);
-                    $this->registerMail($user->id, $mail);
+                    if ($user) {
+                        $this->registerMail($user->id, $mail);
+                    }
                 }
             }
         }

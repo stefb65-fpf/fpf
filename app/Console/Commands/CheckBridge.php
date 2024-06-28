@@ -42,7 +42,6 @@ class CheckBridge extends Command
         foreach($reglements as $reglement) {
             $url = 'https://api.bridgeapi.io/v2/payment-links/'. $reglement->bridge_id;
             list($status, $reponse) = $this->callBridge($url, 'GET', null);
-
             if ($status == 200) {
                 $tab_reponse = json_decode($reponse);
                 if ($tab_reponse->status == 'COMPLETED') {

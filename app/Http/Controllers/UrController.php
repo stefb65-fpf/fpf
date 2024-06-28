@@ -271,7 +271,10 @@ class UrController extends Controller
             return redirect('/urs/personnes/' . $view_type)->with('error', "Vous ne pouvez pas accéder aux information de cette personne ne possédant pas de cartes dans cette UR");
         }
         if (sizeof($personne->adresses) == 0) {
-            return redirect('/urs/personnes/' . $view_type)->with('error', "Un problème est survenu lors de la récupération des adresses de la personne");
+                $new_adresse = new Adresse();
+                $new_adresse->pays = 'France';
+                $personne->adresses[] = $new_adresse;
+//            return redirect('/urs/personnes/' . $view_type)->with('error', "Un problème est survenu lors de la récupération des adresses de la personne");
         }
         foreach ($personne->adresses as $adresse) {
             $pays = Pays::where('nom', $adresse->pays)->first();
@@ -404,7 +407,9 @@ class UrController extends Controller
         if (!($club->urs_id == $ur->id)) {
             return redirect()->route('accueil')->with('error', "La liste des adhérents du club à laquelle vous avez cherché à accéder n'appartient pas à l'UR que vous gérez");
         }
-        $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+        $config = Configsaison::where('id', 1)->selectRaw('numeroencours, datedebutflorilege, datefinflorilege')->first();
+        $numeroencours = $config->numeroencours;
+        $florilege_actif = date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege;
         $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
         $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
         $statut = $statut ?? "init";
@@ -427,13 +432,23 @@ class UrController extends Controller
         $adherents = $query->get();
 
         $reglement_en_cours = Reglement::where('statut', 0)->where('clubs_id', $club->id)->first();
+        $florilege_club = 0;
+        $exist_reglement_en_cours = 0;
         $abo_club = 0;
-        if ($reglement_en_cours && $club->statut == 1) {
+        if ($reglement_en_cours) {
+//        if ($reglement_en_cours && $club->statut == 1) {
             if ($reglement_en_cours->aboClub == 1) {
                 $abo_club = 1;
             }
+            $florilege_club = $reglement_en_cours->florilegeClub;
+            $exist_reglement_en_cours = 1;
         }
         $club->aboPreinscrit = $abo_club;
+        $club->florilegePreinscrit = $florilege_club;
+
+        $nb_florileges_club = Souscription::where('clubs_id', $club->id)->where('statut', 1)->sum('nbexemplaires');
+        $club->nb_florileges = $nb_florileges_club;
+
         foreach ($adherents as $adherent) {
             $fin = '';
             if ($adherent->personne->is_abonne) {
@@ -444,6 +459,7 @@ class UrController extends Controller
             }
             $adherent->fin = $fin;
             $abo_adherent = 0;
+            $florilege_adherent = 0;
             if ($reglement_en_cours) {
                 $reglement_utilisateur = DB::table('reglementsutilisateurs')
                     ->where('reglements_id', $reglement_en_cours->id)
@@ -453,9 +469,16 @@ class UrController extends Controller
                     if ($reglement_utilisateur->abonnement == 1) {
                         $abo_adherent = 1;
                     }
+                    if ($reglement_utilisateur->florilege > 0) {
+                        $florilege_adherent = $reglement_utilisateur->florilege;
+                    }
                 }
                 $adherent->aboPreinscrit = $abo_adherent;
+                $adherent->florilegePreinscrit = $florilege_adherent;
             }
+            // on regarde s'il y a une souscription en cours
+            $nb_florileges = Souscription::where('personne_id', $adherent->personne_id)->where('statut', 1)->sum('nbexemplaires');
+            $adherent->nb_florileges = $nb_florileges;
         }
 //        foreach ($adherents as $adherent) {
 //            $fin = '';
@@ -467,7 +490,8 @@ class UrController extends Controller
 //            }
 //            $adherent->fin = $fin;
 //        }
-        return view('urs.liste_adherents_club', compact('ur', 'club', 'adherents', 'statut', 'abonnement'));
+        return view('urs.liste_adherents_club', compact('ur', 'club', 'adherents', 'statut', 'abonnement',
+            'exist_reglement_en_cours', 'numeroencours', 'florilege_actif'));
     }
 
     // affichage de la liste des fonctions de l'UR
@@ -481,14 +505,14 @@ class UrController extends Controller
             ->selectRaw('fonctions.*')
             ->get();
         foreach ($fonctions as $k => $fonction) {
-            $utilisateur = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            $utilisateurs = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
                 ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
                 ->whereNotNull('utilisateurs.personne_id')
                 ->where('utilisateurs.urs_id', $ur->id)
-                ->first();
+                ->get();
 
-            if ($utilisateur) {
-                $fonction->utilisateur = $utilisateur;
+            if ($utilisateurs) {
+                $fonction->utilisateurs = $utilisateurs;
             } else {
                 unset($fonctions[$k]);
             }
@@ -649,6 +673,18 @@ class UrController extends Controller
         return view('urs.fonctions.change_attribution', compact('fonction', 'ur'));
     }
 
+    public function manageAttribution(Fonction $fonction)
+    {
+        $ur = $this->getUr();
+        // on cherche tous les utilisateurs ayant cette fonction
+        $utilisateurs = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
+            ->whereNotNull('utilisateurs.personne_id')
+            ->where('utilisateurs.urs_id', $ur->id)
+            ->get();
+        return view('urs.fonctions.manage_attribution', compact('fonction', 'ur', 'utilisateurs'));
+    }
+
     public function deleteAttribution(Fonction $fonction, Utilisateur $utilisateur) {
         $ur = $this->getUr();
         DB::table('fonctionsutilisateurs')
@@ -660,6 +696,16 @@ class UrController extends Controller
             ->where('urs_id', $ur->id)
             ->delete();
         return redirect()->route('urs.fonctions.liste')->with('success', "L'attribution de la fonction a été supprimée");
+    }
+
+    public function deleteAttributionMultiple(Fonction $fonction, Utilisateur $utilisateur)
+    {
+        $ur = $this->getUr();
+        DB::table('fonctionsutilisateurs')
+            ->where('fonctions_id', $fonction->id)
+            ->where('utilisateurs_id', $utilisateur->id)
+            ->delete();
+        return redirect()->route('urs.fonctions.manage_attribution', $fonction)->with('success', "L'attribution de la fonction a été supprimée");
     }
 
     // changement de l'attribution de la fonction UR
@@ -706,6 +752,25 @@ class UrController extends Controller
             $this->MailAndHistoricize($user, "Modification de l'attribution de la fonction\"" . $fonction->libelle . "\" de votre UR.");
         }
         return redirect()->route('urs.fonctions.liste')->with('success', "L'attribution de la fonction a été modifiée");
+    }
+
+    public function attribuateFonction(Request $request, $fonction_id)
+    {
+        $ur = $this->getUr();
+        $fonction = Fonction::where('id', $fonction_id)->first();
+        if (!$fonction) {
+            return redirect()->route('urs.index')->with('error', "La fonction n'existe pas");
+        }
+        $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
+        if (!$utilisateur) {
+            return redirect()->route('urs.fonctions.manage_attribution', $fonction)->with('error', "L'identifiant saisi n'est pas valide");
+        }
+        if ($utilisateur->urs_id != $ur->id) {
+            return redirect()->route('urs.fonctions.manage_attribution', $fonction)->with('error', "L'adhérent doit faire partie de l'UR");
+        }
+        $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
+        DB::table('fonctionsutilisateurs')->insert($datafu);
+        return redirect()->route('urs.fonctions.manage_attribution', $fonction)->with('success', "L'attribution a été effectuée");
     }
 
     // affichage des informations d'un adhérent
@@ -792,6 +857,9 @@ class UrController extends Controller
         $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
         if (!$utilisateur) {
             return redirect()->route('urs.clubs.adherents.create', $club_id)->with('error', "L'identifiant renseigné ne correspond à aucun adhérent existant");
+        }
+        if ($utilisateur->clubs_id == $club->id) {
+            return redirect()->route('urs.clubs.adherents.create', $club_id)->with('error', "Cet adhérent fait déjà partie de ce club et peut dont être renouvelé");
         }
         $code = $this->storeExistingClubAdherent($utilisateur, $club);
         if ($code == '0') {

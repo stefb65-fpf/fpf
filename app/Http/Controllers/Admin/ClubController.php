@@ -20,6 +20,7 @@ use App\Models\Equipement;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Souscription;
 use App\Models\Tarif;
 use App\Models\Ur;
 use App\Models\Utilisateur;
@@ -388,6 +389,9 @@ class ClubController extends Controller
         if (!$utilisateur) {
             return redirect()->route('admin.clubs.adherents.create', $club_id)->with('error', "L'identifiant renseigné ne correspond à aucun adhérent existant");
         }
+        if ($utilisateur->clubs_id == $club->id) {
+            return redirect()->route('admin.clubs.adherents.create', $club_id)->with('error', "Cet adhérent fait déjà partie de ce club et peut dont être renouvelé");
+        }
         $code = $this->storeExistingClubAdherent($utilisateur, $club);
         if ($code == '0') {
             return redirect()->route('admin.clubs.liste_adherents_club', $club_id)->with('success', "L'adhérent a bien  été ajouté");
@@ -480,7 +484,9 @@ class ClubController extends Controller
         return redirect()->route('admin.clubs.edit', $club)->with('success', "Les informations de réunion du club ont été mises à jour");
     }
     public function listeAdherent(Club $club, $statut = null,$abonnement = null){
-        $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+        $config = Configsaison::where('id', 1)->selectRaw('numeroencours, datedebutflorilege, datefinflorilege')->first();
+        $numeroencours = $config->numeroencours;
+        $florilege_actif = date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege;
         $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
         $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
         $statut = $statut ?? "init";
@@ -504,12 +510,22 @@ class ClubController extends Controller
 
         $reglement_en_cours = Reglement::where('statut', 0)->where('clubs_id', $club->id)->first();
         $abo_club = 0;
-        if ($reglement_en_cours && $club->statut == 1) {
+        $florilege_club = 0;
+        $exist_reglement_en_cours = 0;
+//        if ($reglement_en_cours && $club->statut == 1) {
+        if ($reglement_en_cours) {
             if ($reglement_en_cours->aboClub == 1) {
                 $abo_club = 1;
             }
+            $florilege_club = $reglement_en_cours->florilegeClub;
+            $exist_reglement_en_cours = 1;
         }
         $club->aboPreinscrit = $abo_club;
+        $club->florilegePreinscrit = $florilege_club;
+
+        $nb_florileges_club = Souscription::where('clubs_id', $club->id)->where('statut', 1)->sum('nbexemplaires');
+        $club->nb_florileges = $nb_florileges_club;
+
         foreach ($adherents as $adherent) {
             $fin = '';
             if ($adherent->personne->is_abonne) {
@@ -520,6 +536,7 @@ class ClubController extends Controller
             }
             $adherent->fin = $fin;
             $abo_adherent = 0;
+            $florilege_adherent = 0;
             if ($reglement_en_cours) {
                 $reglement_utilisateur = DB::table('reglementsutilisateurs')
                     ->where('reglements_id', $reglement_en_cours->id)
@@ -529,9 +546,16 @@ class ClubController extends Controller
                     if ($reglement_utilisateur->abonnement == 1) {
                         $abo_adherent = 1;
                     }
+                    if ($reglement_utilisateur->florilege > 0) {
+                        $florilege_adherent = $reglement_utilisateur->florilege;
+                    }
                 }
                 $adherent->aboPreinscrit = $abo_adherent;
+                $adherent->florilegePreinscrit = $florilege_adherent;
             }
+            // on regarde s'il y a une souscription en cours
+            $nb_florileges = Souscription::where('personne_id', $adherent->personne_id)->where('statut', 1)->sum('nbexemplaires');
+            $adherent->nb_florileges = $nb_florileges;
         }
 
 //        foreach ($adherents as $adherent) {
@@ -546,7 +570,8 @@ class ClubController extends Controller
 ////            $adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[0]['fin'] : '';
 //        }
 
-        return view('admin.clubs.liste_adherents_club',compact('club','adherents', 'statut', 'abonnement'));
+        return view('admin.clubs.liste_adherents_club',compact('club','adherents', 'statut', 'abonnement',
+            'exist_reglement_en_cours', 'numeroencours', 'florilege_actif'));
     }
 
 

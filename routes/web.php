@@ -43,11 +43,14 @@ Route::get('/urs/liste_votes_by_club/{vote}/{club_id}/{ur_id}', [App\Http\Contro
 Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class, 'listeReversements'])->name('urs.liste_reversements');
 Route::get('/urs/fonctions/liste', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.fonctions.liste');
 Route::get('/urs/{fonction}/change_attribution', [App\Http\Controllers\UrController::class, 'changeAttribution'])->name('urs.fonctions.change_attribution');
+Route::get('/urs/{fonction}/manage_attribution', [App\Http\Controllers\UrController::class, 'manageAttribution'])->name('urs.fonctions.manage_attribution');
 Route::delete('/urs/{fonction}/{utilisateur}/delete_attribution', [App\Http\Controllers\UrController::class, 'deleteAttribution'])->name('urs.fonctions.delete_attribution');
+Route::delete('/urs/{fonction}/{utilisateur}/delete_attribution_multiple', [App\Http\Controllers\UrController::class, 'deleteAttributionMultiple'])->name('urs.fonctions.delete_attribution_multiple');
 Route::delete('/urs/{fonction}/destroy_fonction', [App\Http\Controllers\UrController::class, 'destroyFonction'])->name('urs.fonctions.destroy');
 Route::get('/urs/fonctions/create', [App\Http\Controllers\UrController::class, 'createFonction'])->name('urs.fonctions.create');
 Route::post('/urs/fonctions/store', [App\Http\Controllers\UrController::class, 'storeFonction'])->name('urs.fonctions.store');
 Route::post('/urs/fonctions/{fonction}/update', [App\Http\Controllers\UrController::class, 'updateFonction'])->name('urs.fonctions.update');
+Route::post('/urs/fonctions/{fonction}/attribuate', [App\Http\Controllers\UrController::class, 'attribuateFonction'])->name('urs.fonctions.attribuate');
 Route::put('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'updateUr'])->name('urs.infos.update');
 
 Route::get('/admin/formations/{formation}/activate', [App\Http\Controllers\Admin\FormationController::class, 'activate'])->name('formations.activate');
@@ -108,9 +111,12 @@ Route::get('/admin/supports/{type?}', [App\Http\Controllers\Admin\SupportControl
 
 Route::get('/admin/urs/{ur}/fonctions', [App\Http\Controllers\Admin\UrController::class, 'fonctions'])->name('admin.urs.fonctions');
 Route::get('/admin/urs/fonctions/{fonction_id}/{ur_id}/change_attribution_fonctionur', [App\Http\Controllers\Admin\UrController::class, 'changeAttributionUr'])->name('admin.urs.fonctions.change_attribution');
+Route::get('/admin/urs/fonctions/{fonction_id}/{ur_id}/manage_attribution_fonctionur', [App\Http\Controllers\Admin\UrController::class, 'manageAttributionUr'])->name('admin.urs.fonctions.manage_attribution');
 Route::delete('/admin/urs/{fonction}/{utilisateur}/delete_attribution', [App\Http\Controllers\Admin\UrController::class, 'deleteAttribution'])->name('admin.urs.fonctions.delete_attribution');
+Route::delete('/admin/urs/{fonction}/{utilisateur}/delete_attribution_multiple', [App\Http\Controllers\Admin\UrController::class, 'deleteAttributionMultiple'])->name('admin.urs.fonctions.delete_attribution_multiple');
 Route::delete('/admin/urs/fonctions/{fonction_id}/{ur_id}/destroy_fonctionur', [App\Http\Controllers\Admin\UrController::class, 'destroyFonctionUr'])->name('admin.urs.fonctions.destroy');
 Route::post('/admin/urs/fonctions/{fonction_id}/{ur_id}/update', [App\Http\Controllers\Admin\UrController::class, 'updateFonctionForUr'])->name('admin.urs.fonctions.update');
+Route::post('/admin/urs/fonctions/{fonction_id}/{ur_id}/attribuate', [App\Http\Controllers\Admin\UrController::class, 'attribuateFonctionForUr'])->name('admin.urs.fonctions.attribuate');
 Route::resource('/admin/urs', App\Http\Controllers\Admin\UrController::class);
 //Gestion urs par responsable fpf
 //Route::get('/admin/urs/{ur}/edit', [App\Http\Controllers\Admin\UrController::class, 'urEdit'])->name('urs.edit');
@@ -188,6 +194,11 @@ Route::get('/mes-actions', [App\Http\Controllers\PersonneController::class, 'mes
 Route::get('/mes-formations', [App\Http\Controllers\PersonneController::class, 'mesFormations']);
 Route::get('/mes-formations/{formation}/detail', [App\Http\Controllers\PersonneController::class, 'formationDetail'])->name('mes-formations.detail');
 Route::get('/mon-profil', [App\Http\Controllers\PersonneController::class, 'monProfil'])->name('mon-profil');
+Route::get('/adhesion', [App\Http\Controllers\PersonneController::class, 'adhesion'])->name('adhesion');
+Route::get('/adhesion/renouveler', [App\Http\Controllers\PersonneController::class, 'adhesionRenew'])->name('adhesion.renouveler');
+Route::get('/adhesion/contactClub', [App\Http\Controllers\PersonneController::class, 'adhesionContactClub'])->name('adhesion.contactClub');
+Route::post('/adhesion/sendMessage', [App\Http\Controllers\PersonneController::class, 'adhesionSendMessage'])->name('adhesion.sendMessage');
+Route::get('/abonnement', [App\Http\Controllers\PersonneController::class, 'abonnement'])->name('abonnement');
 Route::get('/souscription-individuelle', [App\Http\Controllers\PersonneController::class, 'souscriptionIndividuelle'])->name('souscription-individuelle');
 Route::get('/souscription-abonnement', [App\Http\Controllers\PersonneController::class, 'souscriptionAbonnement'])->name('souscription-abonnement');
 Route::get('/florilege', [App\Http\Controllers\PersonneController::class, 'florilege'])->name('florilege');
@@ -291,6 +302,7 @@ Route::post('/admin/personnes/storeOpen/{view_type}', [App\Http\Controllers\Admi
 Route::delete('/admin/personnes/{personne}/anonymize/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'anonymize'])->name('admin.personnes.anonymize');
 Route::put('/admin/personnes/{personne}/renewAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'renewAbo'])->name('admin.personnes.renewAbo');
 Route::put('/admin/personnes/{personne}/addFreeAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'addFreeAbo'])->name('admin.personnes.addFreeAbo');
+Route::put('/admin/personnes/{personne}/addCarteIndividuelle/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'addCarteIndividuelle'])->name('admin.personnes.addCarteIndividuelle');
 Route::get('/admin/personnes/{view_type}/{ur_id?}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\Admin\PersonneController::class, 'list']);
 Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::class,'index'])->name('personnes.index');
 

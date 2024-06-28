@@ -18,6 +18,7 @@ use App\Models\Historiquemail;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Souscription;
 use App\Models\Tarif;
 use App\Models\Ur;
 use App\Models\Utilisateur;
@@ -236,8 +237,9 @@ trait Tools
 
     protected function saveReglement($reglement)
     {
-        $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
+        $config = Configsaison::where('id', 1)->selectRaw('numeroencours, prixflorilegefrance')->first();
         $numeroencours = $config->numeroencours;
+        $prix_florilege = $config->prixflorilegefrance;
 
         // on traite tous les utilisateurs en passant leur statut à 2 et / ou en prologeant ou créant leur abonnement
         $utilisateurs = Utilisateur::join('reglementsutilisateurs', 'utilisateurs.id', '=', 'reglementsutilisateurs.utilisateurs_id')
@@ -272,6 +274,13 @@ trait Tools
                     Abonnement::create($dataa);
                 }
             }
+            if ($utilisateur->florilege > 0) {
+                // on insère des florilege dans la souscription
+                $datas = array('personne_id' => $utilisateur->personne_id, 'reference' => $reglement->reference, 'nbexemplaires' => $utilisateur->florilege,
+                    'montanttotal' => round($prix_florilege * $utilisateur->florilege, 2), 'statut' => 1,
+                    'ref_reglement' => $reglement->reference);
+                Souscription::create($datas);
+            }
             $personne = Personne::where('id', $utilisateur->personne_id)->first();
             $personne->update($datap);
         }
@@ -295,6 +304,14 @@ trait Tools
                 }
             }
             $club->update($datac);
+        }
+
+        if ($reglement->florilegeClub > 0) {
+            // on insère des florilege dans la souscription
+            $datas = array('clubs_id' => $reglement->clubs_id, 'reference' => $reglement->reference, 'nbexemplaires' => $reglement->florilegeClub,
+                'montanttotal' => round($prix_florilege * $reglement->florilegeClub, 2), 'statut' => 1,
+                'ref_reglement' => $reglement->reference);
+            Souscription::create($datas);
         }
 
         if ($reglement->clubs_id) {
@@ -733,7 +750,7 @@ trait Tools
         if ($personne->is_adherent) {
             // on recherche les cartes actives
             $tab_cartes = [];
-            $cartes_actives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [1, 2, 3])->selectRaw('id, identifiant, urs_id, clubs_id, statut')->get();
+            $cartes_actives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [1, 2, 3])->selectRaw('id, identifiant, urs_id, clubs_id, statut, ct')->get();
             foreach ($cartes_actives as $carte) {
                 $carte->actif = true;
                 // on cherche les focntions de la carte
@@ -760,7 +777,7 @@ trait Tools
                 $tab_cartes[] = $carte;
             }
 
-            $cartes_inactives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [0, 4])->selectRaw('id, identifiant, urs_id, clubs_id, statut')->get();
+            $cartes_inactives = Utilisateur::where('personne_id', $personne->id)->whereIn('statut', [0, 4])->selectRaw('id, identifiant, urs_id, clubs_id, statut, ct')->get();
             foreach ($cartes_inactives as $carte) {
                 $carte->actif = false;
                 $tab_cartes[] = $carte;
@@ -796,7 +813,7 @@ trait Tools
 //        if (!$personne->is_administratif) {
         if (!$personne->is_administratif && $personne->is_adherent != 0) {
             // on regarde les functions sur chaque carte
-            $utilisateurs = Utilisateur::where('personne_id', $personne->id)->where('statut', '<', 10)->orderBy('statut')->selectRaw('id, urs_id, clubs_id, identifiant, statut, saison')->get();
+            $utilisateurs = Utilisateur::where('personne_id', $personne->id)->where('statut', '<', 10)->orderBy('statut')->selectRaw('id, urs_id, clubs_id, identifiant, statut, saison, ct')->get();
             if (sizeof($utilisateurs) > 0) {
                 $prec_statut3 = 4;
                 foreach ($utilisateurs as $utilisateur) {

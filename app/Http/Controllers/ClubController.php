@@ -96,7 +96,9 @@ class ClubController extends Controller
     public function gestionAdherents($statut = null, $abonnement = null)
     {
         $club = $this->getClub();
-        $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+        $config = Configsaison::where('id', 1)->selectRaw('numeroencours, datedebutflorilege, datefinflorilege')->first();
+        $numeroencours = $config->numeroencours;
+        $florilege_actif = date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege;
         $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
         $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
         $statut = $statut ?? "init";
@@ -121,13 +123,24 @@ class ClubController extends Controller
 
 
         $reglement_en_cours = Reglement::where('statut', 0)->where('clubs_id', $club->id)->first();
+
         $abo_club = 0;
-        if ($reglement_en_cours && $club->statut == 1) {
+        $florilege_club = 0;
+        $exist_reglement_en_cours = 0;
+        if ($reglement_en_cours) {
+//        if ($reglement_en_cours && $club->statut == 1) {
             if ($reglement_en_cours->aboClub == 1) {
                 $abo_club = 1;
             }
+            $florilege_club = $reglement_en_cours->florilegeClub;
+            $exist_reglement_en_cours = 1;
         }
+
         $club->aboPreinscrit = $abo_club;
+        $club->florilegePreinscrit = $florilege_club;
+        $nb_florileges_club = Souscription::where('clubs_id', $club->id)->where('statut', 1)->sum('nbexemplaires');
+        $club->nb_florileges = $nb_florileges_club;
+
         foreach ($adherents as $adherent) {
             $fin = '';
             if ($adherent->personne->is_abonne) {
@@ -138,6 +151,7 @@ class ClubController extends Controller
             }
             $adherent->fin = $fin;
             $abo_adherent = 0;
+            $florilege_adherent = 0;
             if ($reglement_en_cours) {
                 $reglement_utilisateur = DB::table('reglementsutilisateurs')
                     ->where('reglements_id', $reglement_en_cours->id)
@@ -147,11 +161,20 @@ class ClubController extends Controller
                     if ($reglement_utilisateur->abonnement == 1) {
                         $abo_adherent = 1;
                     }
+                    if ($reglement_utilisateur->florilege > 0) {
+                        $florilege_adherent = $reglement_utilisateur->florilege;
+                    }
                 }
                 $adherent->aboPreinscrit = $abo_adherent;
+                $adherent->florilegePreinscrit = $florilege_adherent;
             }
+
+            // on regarde s'il y a une souscription en cours
+            $nb_florileges = Souscription::where('personne_id', $adherent->personne_id)->where('statut', 1)->sum('nbexemplaires');
+            $adherent->nb_florileges = $nb_florileges;
         }
-        return view('clubs.adherents.index', compact('club', 'statut', 'abonnement', 'adherents'));
+        return view('clubs.adherents.index', compact('club', 'statut', 'abonnement', 'adherents', 'numeroencours',
+            'exist_reglement_en_cours', 'florilege_actif'));
     }
 
     // affichage de la vue permettant la saisie pour la création d'un adhérent par responsable de club
@@ -200,6 +223,9 @@ class ClubController extends Controller
             return redirect()->route('clubs.adherents.create')->with('error', "L'identifiant renseigné ne correspond à aucun adhérent existant");
         }
         $club = $this->getClub();
+        if ($utilisateur->clubs_id == $club->id) {
+            return redirect()->route('clubs.adherents.create')->with('error', "Cet adhérent fait déjà partie de votre club. Vous pouvez donc le renouveler");
+        }
         $code = $this->storeExistingClubAdherent($utilisateur, $club);
         if ($code == '0') {
             $user = session()->get('user');

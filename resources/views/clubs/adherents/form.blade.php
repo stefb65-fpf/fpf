@@ -150,7 +150,7 @@
         @if($action == 'update')
             <button type="submit" class="adminSuccess btnMedium">Enregistrer les modifications</button>
         @else
-            <button class="adminSuccess btnMedium" id="checkBeforeInsertion">Ajouter l'adhérent</button>
+            <button class="adminSuccess btnMedium" id="checkBeforeInsertion" data-club="{{ $club->id }}">Ajouter l'adhérent</button>
         @endif
     </div>
 </form>

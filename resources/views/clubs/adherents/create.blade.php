@@ -21,6 +21,25 @@
             @include('clubs.adherents.form', ['action' => 'store'])
         </div>
     </div>
+
+    <div class="modalEdit d-none" id="modalExistMailInClub">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Ajout d'un adhérent</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            <div class="alertDanger mt10 mxauto mb0">
+                Cette adresse email correspond à un adhérent déjà présent dans votre club avec le ou les identifiant(s): <span id="identidiantsSameClub"></span>.<br>
+                Pour renouveler son adhésion, vérifiez que le filtre de Statut en haut de page de la liste des adhérents est bien positionné sur “Tous”, ce qui le fera appraitre et vous permettra de procéder au renouvellement de son adhésion.
+            </div>
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Fermer</div>
+        </div>
+    </div>
+
     <div class="modalEdit d-none" id="modalSameEmail">
         <div class="modalEditHeader">
             <div class="modalEditTitle">Ajout d'un adhérent</div>

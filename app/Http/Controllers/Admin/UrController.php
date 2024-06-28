@@ -106,14 +106,14 @@ class UrController extends Controller
             ->selectRaw('fonctions.*')
             ->get();
         foreach ($fonctions as $k => $fonction) {
-            $utilisateur = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            $utilisateurs = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
                 ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
                 ->whereNotNull('utilisateurs.personne_id')
                 ->where('utilisateurs.urs_id', $ur->id)
-                ->first();
+                ->get();
 
-            if ($utilisateur) {
-                $fonction->utilisateur = $utilisateur;
+            if ($utilisateurs) {
+                $fonction->utilisateurs = $utilisateurs;
             } else {
                 unset($fonctions[$k]);
             }
@@ -133,6 +133,25 @@ class UrController extends Controller
         return view('admin.urs.change_attribution', compact('fonction', 'ur'));
     }
 
+    public function manageAttributionUr($fonction_id, $ur_id) {
+        $fonction = Fonction::where('id', $fonction_id)->first();
+        if (!$fonction) {
+            return redirect()->route('urs.index')->with('error', "La fonction n'existe pas");
+        }
+        $ur = Ur::where('id', $ur_id)->first();
+        if (!$ur) {
+            return redirect()->route('urs.index')->with('error', "L'UR n'existe pas");
+        }
+        // on cherche tous les utilisateurs ayant cette fonction
+        $utilisateurs = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
+            ->whereNotNull('utilisateurs.personne_id')
+            ->where('utilisateurs.urs_id', $ur->id)
+            ->get();
+
+        return view('admin.urs.manage_attribution', compact('fonction', 'ur', 'utilisateurs'));
+    }
+
     public function deleteAttribution(Fonction $fonction, Utilisateur $utilisateur) {
         $ur = Ur::where('id', $utilisateur->urs_id)->first();
         DB::table('fonctionsutilisateurs')
@@ -145,6 +164,17 @@ class UrController extends Controller
             ->delete();
         return redirect()->route('admin.urs.fonctions', $ur)->with('success', "L'attribution de la fonction a été supprimée");
     }
+
+    public function deleteAttributionMultiple(Fonction $fonction, Utilisateur $utilisateur) {
+        $ur = Ur::where('id', $utilisateur->urs_id)->first();
+        DB::table('fonctionsutilisateurs')
+            ->where('fonctions_id', $fonction->id)
+            ->where('utilisateurs_id', $utilisateur->id)
+            ->delete();
+        return redirect()->route('admin.urs.fonctions.manage_attribution', [$fonction, $ur])->with('success', "L'attribution de la fonction a été supprimée");
+    }
+
+
 
     public function updateFonctionForUr(Request $request, $fonction_id, $ur_id) {
         $ur = Ur::where('id', $ur_id)->first();
@@ -166,6 +196,28 @@ class UrController extends Controller
             return redirect()->route('admin.urs.fonctions.change_attribution', [$fonction->id, $ur->id])->with('error', "L'adhérent doit faire partie de votre UR");
         }
         return redirect()->route('admin.urs.fonctions', $ur)->with('success', "L'attribution de la fonction a été modifiée");
+    }
+
+    public function attribuateFonctionForUr(Request $request, $fonction_id, $ur_id) {
+        $ur = Ur::where('id', $ur_id)->first();
+        if (!$ur) {
+            return redirect()->route('urs.index')->with('error', "L'UR n'existe pas");
+        }
+        $fonction = Fonction::where('id', $fonction_id)->first();
+        if (!$fonction) {
+            return redirect()->route('urs.index')->with('error', "La fonction n'existe pas");
+        }
+        $utilisateur = Utilisateur::where('identifiant', $request->identifiant)->first();
+
+        if (!$utilisateur) {
+            return redirect()->route('admin.urs.fonctions.manage_attribution', [$fonction, $ur])->with('error', "L'identifiant saisi n'est pas valide");
+        }
+        if ($utilisateur->urs_id != $ur_id) {
+            return redirect()->route('admin.urs.fonctions.manage_attribution', [$fonction, $ur])->with('error', "L'adhérent doit faire partie de l'UR");
+        }
+        $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
+        DB::table('fonctionsutilisateurs')->insert($datafu);
+        return redirect()->route('admin.urs.fonctions.manage_attribution', [$fonction, $ur])->with('success', "L'attribution a été effectuée");
     }
 
     public function destroyFonctionUr($fonction_id, $ur_id) {

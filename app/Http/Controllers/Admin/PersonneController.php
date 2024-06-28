@@ -524,4 +524,34 @@ class PersonneController extends Controller
 
         return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('success', "L'abonnement a bien été créé pour la personne");
     }
+
+    public function addCarteIndividuelle(Personne $personne, $view_type) {
+        // on cherche l'ur pour le nouvel utilisateur
+        list($identifiant, $urs_id, $numero) = $this->setIdentifiant($personne->adresses[0]->codepostal);
+        $ct = $this->getCtForIndividuel($personne->datenaissance);
+        list($tarif, $tarif_supp) = $this->getTarifByCt($ct);
+        $datau = [
+            'urs_id' => $urs_id,
+            'personne_id' => $personne->id,
+            'identifiant' => $identifiant,
+            'numeroutilisateur' => $numero,
+            'sexe' => $personne->sexe,
+            'nom' => $personne->nom,
+            'prenom' => $personne->prenom,
+            'ct' => $ct,
+            'statut' => 1,
+            'saison' => date('Y') - 1,
+        ];
+        $utilisateur = Utilisateur::create($datau);
+
+        $montant = floatval($tarif_supp) + floatval($tarif);
+        $ref = 'ADH-NEW-'.$utilisateur->identifiant.'-0001';
+        $reglement = Reglement::create(['montant' => $montant, 'reference' => $ref, 'statut' => 0]);
+
+        // on crée la liaison reglements utilisateurs
+        $dataru = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $utilisateur->id, 'adhesion' => 1);
+        DB::table('reglementsutilisateurs')->insert($dataru);
+
+        return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('success', "Le règlement $ref a bien été créé. Pour finaliser l'adhésion, merci de le valider dans la gestion des règlements");
+    }
 }

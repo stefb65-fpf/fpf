@@ -15,7 +15,7 @@ class FonctionController extends Controller
 {
     use Tools;
     public function __construct() {
-        $this->middleware(['checkLogin', 'adminAccess'])->except(['updateFonctionCe']);
+        $this->middleware(['checkLogin', 'adminAccess'])->except(['updateFonctionCe', 'updateAttribution']);
     }
     /**
      * Display a listing of the resource.
@@ -36,7 +36,7 @@ class FonctionController extends Controller
                 $fonction->utilisateur = null;
             }
         }
-        $ur_fonctions = Fonction::where('instance', 2)->where('urs_id', 0)->orderBy('id')->get();
+        $ur_fonctions = Fonction::where('instance', 2)->where('urs_id', 0)->orderBy('ordre')->orderBy('id')->get();
         foreach ($ur_fonctions as $fonction) {
             $urs = Ur::join('fonctionsurs', 'fonctionsurs.urs_id', '=', 'urs.id')->where('fonctionsurs.fonctions_id', $fonction->id)->orderBy('urs.nom')->get();
             $fonction->urs = $urs;
@@ -252,6 +252,17 @@ class FonctionController extends Controller
             return response()->json(['error' => 'Fonction non trouvée'], 404);
         }
         $data = array('ce' => $request->ce);
+        $fonction->update($data);
+        return response()->json(['success' => 'Fonction mise à jour'], 200);
+    }
+
+    public function updateAttribution(Request $request)
+    {
+        $fonction = Fonction::where('id', $request->ref)->first();
+        if (!$fonction) {
+            return response()->json(['error' => 'Fonction non trouvée'], 404);
+        }
+        $data = array('multiple' => $request->multiple);
         $fonction->update($data);
         return response()->json(['success' => 'Fonction mise à jour'], 200);
     }

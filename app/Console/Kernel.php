@@ -47,6 +47,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('send:evaluation')
             ->timezone('Europe/Paris')
             ->dailyAt('07:00');
+        $schedule->command('renew:abo')
+            ->monthlyOn(1, '04:00');
     }
 
     /**

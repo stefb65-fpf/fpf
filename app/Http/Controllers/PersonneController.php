@@ -11,11 +11,14 @@ use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\CiviliteRequest;
 use App\Http\Requests\EmailRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Mail\ConfirmVote;
+use App\Mail\ContactClub;
 use App\Mail\SendAnonymisationEmail;
 use App\Mail\SendEmailChangeEmailAddress;
 use App\Mail\SendEmailModifiedPassword;
 use App\Mail\SendSupportNotification;
 use App\Models\Adresse;
+use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Formation;
 use App\Models\Historique;
@@ -228,6 +231,89 @@ class PersonneController extends Controller
 
         $countries = Pays::all();
         return view('personnes.mon_profil', compact('personne', 'nbadresses', 'countries'));
+    }
+
+    public function adhesion() {
+        $user = session()->get('user');
+        foreach ($user->cartes as $carte) {
+            if ($carte->clubs_id) {
+                $club = Club::where('id', $carte->clubs_id)->selectRaw('nom')->first();
+                if ($club) {
+                    $carte->club = $club;
+                }
+            }
+        }
+        return view('personnes.adhesion', compact('user'));
+    }
+
+    public function adhesionRenew() {
+        $personne = session()->get('user');
+        $cartes = session()->get('cartes');
+        if ($cartes[0]->clubs_id || in_array($cartes[0]->statut, [2,3])) {
+            return redirect()->route('adhesion');
+        }
+
+        $tarif = 0;
+        $tarif_supp = 0;
+        $ct = 0;
+        if (in_array($personne->is_adherent, [1, 2])) {
+            // on récupère le montant dur enouvellement pour l'année en cours:
+            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+        }
+
+        return view('personnes.adhesion_renew', compact('personne', 'tarif', 'tarif_supp', 'ct', 'cartes'));
+    }
+
+    public function adhesionContactClub() {
+        $personne = session()->get('user');
+        $cartes = session()->get('cartes');
+        if (!$cartes[0]->clubs_id) {
+            return redirect()->route('adhesion');
+        }
+
+        $club = Club::where('id', $cartes[0]->clubs_id)->selectRaw('nom')->first();
+        if (!$club) {
+            return redirect()->route('adhesion');
+        }
+
+        return view('personnes.adhesion_contact_club', compact('personne', 'club', 'cartes'));
+    }
+
+    public function adhesionSendMessage(Request $request) {
+        $personne = session()->get('user');
+        $cartes = session()->get('cartes');
+        if ($request->message == '') {
+            return redirect()->back()->with('error', "Vous devez saisir un message");
+        }
+        $club = Club::where('id', $cartes[0]->clubs_id)->selectRaw('nom')->first();
+        if (!$club) {
+            return redirect()->back()->with('error', "Impossible de trouver le club correspondant à votre identifiant FPF");
+        }
+
+        // on cherche le contact du club
+        $contact = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+            ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('utilisateurs.clubs_id', $cartes[0]->clubs_id)
+            ->where('fonctionsutilisateurs.fonctions_id', 97)
+            ->selectRaw('personnes.id, personnes.nom, personnes.prenom, personnes.email')
+            ->first();
+        if (!$contact) {
+            return redirect()->back()->with('error', "Impossible de trouver le contact du club correspondant à votre identifiant FPF");
+        }
+
+        // on envoie le mail au contact
+        Mail::to($contact->email)->send(new ContactClub($request->message, $cartes[0]->identifiant, $personne));
+
+        return redirect()->route('adhesion')->with('success', "Votre message a bien été envoyé au contact du club $contact->nom $contact->prenom");
+    }
+
+    public function abonnement() {
+        $user = session()->get('user');
+        // on cherche les infos sur le numéro en cours
+        $config_saison = DB::table('configsaisons')->where('id', 1)->first();
+        $numero_encours = $config_saison->numeroencours;
+
+        return view('personnes.abonnement', compact('user', 'numero_encours'));
     }
 
     // affcihage de l'historique des actions effectuées par la personne

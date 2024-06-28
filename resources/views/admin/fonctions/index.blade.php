@@ -66,6 +66,7 @@
                 <thead>
                 <tr>
                     <th>Fonction régionale</th>
+                    <th>Attribution multiple</th>
                     <th>URs ayant déclaré la fonction</th>
                     <th></th>
                 </tr>
@@ -74,6 +75,9 @@
                 @foreach($ur_fonctions as $fonction)
                     <tr>
                         <td>{{ $fonction->libelle }}</td>
+                        <td>
+                            <input type="checkbox" name="multipleAttribution" data-ref="{{ $fonction->id }}" {{ $fonction->multiple == 1 ? 'checked=checked' : '' }} />
+                        </td>
                         <td>
                             <div>
                                 <span>{{ sizeof($fonction->urs) }}</span> <span class="adminPrimary fs07rem" data-expand="0" name="toExpandUr">voir</span>

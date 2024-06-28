@@ -308,6 +308,24 @@ $('a[name=changeCardUser]').on('click', function (e) {
     })
 })
 
+$('a[name=btnReadhesion]').on('click', function (e) {
+    const ref = $(this).data('ref')
+    const newurl = $(this).data('url')
+    $.ajax({
+        url: '/api/personnes/updateSession',
+        type: 'POST',
+        data: {
+            ref: ref
+        },
+        success: function (data) {
+            $(location).attr('href', newurl)
+        },
+        error: function (err) {
+            alert("Erreur lors de la prise en compte du changement de carte")
+        }
+    })
+})
+
 $('a[name=linkDropdownHeader]').on('click', function (e) {
     e.stopPropagation()
 })

@@ -14,6 +14,7 @@ use App\Mail\SendRenouvellementMail;
 use App\Models\Abonnement;
 use App\Models\Adresse;
 use App\Models\Club;
+use App\Models\Configsaison;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
@@ -62,25 +63,27 @@ class UtilisateurController extends Controller
     }
 
     public function checkRenouvellementAdherents(Request $request) {
-        list($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur) = $this->getMontantRenouvellementClub($request->club, $request->aboClub);
-        list($tab_adherents, $total_adhesion, $total_abonnement) = $this->getMontantRenouvellementAdherents($request->adherents, $request->abonnes);
-        $total_montant = $total_adhesion + $total_abonnement + $montant_abonnement_club + $montant_adhesion_club + $montant_adhesion_club_ur;
+        list($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur, $montant_florilege_club) = $this->getMontantRenouvellementClub($request->club, $request->aboClub, $request->florilegeClub);
+        list($tab_adherents, $total_adhesion, $total_abonnement, $total_florilege) = $this->getMontantRenouvellementAdherents($request->adherents, $request->abonnes, $request->florileges);
+        $total_montant = $total_adhesion + $total_abonnement + $montant_abonnement_club + $montant_adhesion_club + $montant_adhesion_club_ur + $montant_florilege_club + $total_florilege;
         return new JsonResponse(['adherents' => $tab_adherents,
             'total_adhesion' => $total_adhesion,
             'total_abonnement' => $total_abonnement,
+            'total_florilege' => $total_florilege,
             'total_montant' => $total_montant,
             'montant_abonnement_club' => $montant_abonnement_club,
             'montant_adhesion_club' => $montant_adhesion_club,
+            'montant_florilege_club' => $montant_florilege_club,
             'montant_adhesion_club_ur' => $montant_adhesion_club_ur
             ], 200);
     }
 
     public function validRenouvellementAdherents(Request $request) {
         $club = Club::where('id', $request->club)->first();
-        list($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur) = $this->getMontantRenouvellementClub($request->club, $request->aboClub);
-        list($tab_adherents, $total_adhesion, $total_abonnement) = $this->getMontantRenouvellementAdherents($request->adherents, $request->abonnes);
-        $total_montant = $total_adhesion + $total_abonnement + $montant_abonnement_club + $montant_adhesion_club + $montant_adhesion_club_ur;
-        $total_club = $montant_abonnement_club + $montant_adhesion_club + $montant_adhesion_club_ur;
+        list($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur, $montant_florilege_club) = $this->getMontantRenouvellementClub($request->club, $request->aboClub, $request->florilegeClub);
+        list($tab_adherents, $total_adhesion, $total_abonnement, $total_florilege) = $this->getMontantRenouvellementAdherents($request->adherents, $request->abonnes, $request->florileges);
+        $total_montant = $total_adhesion + $total_abonnement + $montant_abonnement_club + $montant_adhesion_club + $montant_adhesion_club_ur + $montant_florilege_club + $total_florilege;
+        $total_club = $montant_abonnement_club + $montant_adhesion_club + $montant_adhesion_club_ur +$montant_florilege_club;
         $total_adherents = $total_adhesion + $total_abonnement;
         // on supprime le règlement potentiellement en attente pour le club
         $old_reglement = Reglement::where('clubs_id', $club->id)->where('statut', 0)->first();
@@ -98,7 +101,7 @@ class UtilisateurController extends Controller
         $nb_reglements = Reglement::where('reference', 'LIKE', $ref_club.'%')->count();
         $ref = $ref_club.'-'.str_pad($nb_reglements+1, 4, '0', STR_PAD_LEFT);
 
-        $data = array('clubs_id' => $club->id, 'montant' => $total_montant, 'statut' => 0, 'reference' => $ref);
+        $data = array('clubs_id' => $club->id, 'montant' => $total_montant, 'statut' => 0, 'reference' => $ref, 'florilegeClub' => $request->florilegeClub);
         if ($montant_adhesion_club > 0) {
             $data['adhClub'] = 1;
         }
@@ -132,6 +135,9 @@ class UtilisateurController extends Controller
             if (isset($adherent['abonnement'])) {
                 $datar['abonnement'] = 1;
             }
+            if (isset($adherent['nb_florilege'])) {
+                $datar['florilege'] = $adherent['nb_florilege'];
+            }
             DB::table('reglementsutilisateurs')->insert($datar);
         }
 
@@ -148,7 +154,8 @@ class UtilisateurController extends Controller
         }
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadView('pdf.borderauclub', compact('tab_adherents', 'ref', 'club', 'total_montant', 'total_club',
-            'montant_adhesion_club', 'montant_abonnement_club', 'montant_adhesion_club_ur', 'total_adhesion', 'total_abonnement', 'total_adherents'))
+            'montant_adhesion_club', 'montant_abonnement_club', 'montant_adhesion_club_ur', 'total_adhesion', 'total_abonnement', 'total_adherents',
+            'montant_florilege_club', 'total_florilege'))
             ->setWarnings(false)
             ->setPaper('a4', 'portrait')
             ->save($dir.'/'.$name);
@@ -185,7 +192,22 @@ class UtilisateurController extends Controller
         }
         $personne = Personne::where('email', trim($request->email))->first();
         if ($personne) {
-            return new JsonResponse(['code' => '10', 'personne' => $personne], 200);
+            // on recherche les identifiants
+            $utilisateurs = Utilisateur::where('personne_id', $personne->id)->selectRaw('utilisateurs.identifiant, utilisateurs.clubs_id')->get();
+            if (sizeof($utilisateurs) > 0) {
+                $same_club = 0;
+                if (isset($request->club)) {
+                    foreach ($utilisateurs as $utilisateur) {
+                        if ($utilisateur->clubs_id == $request->club) {
+                            $same_club = 1;
+                        }
+                    }
+                }
+                return new JsonResponse(['code' => '40', 'personne' => $personne, 'utilisateurs' => $utilisateurs, 'same_club' => $same_club], 200);
+            } else {
+                return new JsonResponse(['code' => '10', 'personne' => $personne], 200);
+            }
+
         }
         $personnes = Personne::where('nom', trim($request->nom))->where('prenom', trim($request->prenom))->get();
         if (sizeof($personnes) > 0) {
@@ -644,12 +666,12 @@ class UtilisateurController extends Controller
         }
     }
 
-    protected function getMontantRenouvellementClub($club_id, $abo_club) {
+    protected function getMontantRenouvellementClub($club_id, $abo_club, $florilege_club) {
         $club = Club::where('id', $club_id)->first();
         if (!$club) {
             return new JsonResponse(['erreur' => 'impossible de récupérer le club'], 400);
         }
-        $montant_adhesion_club = 0; $montant_abonnement_club = 0; $montant_adhesion_club_ur = 0; $renew_old = 0;
+        $montant_adhesion_club = 0; $montant_abonnement_club = 0; $montant_adhesion_club_ur = 0; $renew_old = 0; $montant_florilege = 0;
         if ($club->statut !== 2) {
             // club non encore validé, on doit faire le renouvellement
             switch ($club->ct) {
@@ -690,11 +712,16 @@ class UtilisateurController extends Controller
             $tarif = Tarif::where('id', 5)->where('statut', 0)->first();
             $montant_abonnement_club = $tarif->tarif;
         }
-        return array($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur);
+
+        if ($florilege_club > 0) {
+            $configsaison = Configsaison::where('id', 1)->first();
+            $montant_florilege = round($florilege_club * $configsaison->prixflorilegefrance, 2);
+        }
+        return array($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur, $montant_florilege);
     }
 
-    protected function getMontantRenouvellementAdherents($adherents, $abonnes) {
-        $tab_adherents = []; $total_adhesion = 0; $total_abonnement = 0;
+    protected function getMontantRenouvellementAdherents($adherents, $abonnes, $florileges) {
+        $tab_adherents = []; $total_adhesion = 0; $total_abonnement = 0; $total_florilege = 0;
         if ($adherents) {
             foreach ($adherents as $adherent) {
                 $utilisateur = Utilisateur::where('id', $adherent['id'])->first();
@@ -802,8 +829,29 @@ class UtilisateurController extends Controller
                 $total_abonnement += $montant_abonne;
             }
         }
+        if ($florileges) {
+            $configsaison = Configsaison::where('id', 1)->first();
+            $montant_florilege = $configsaison->prixflorilegefrance;
+            foreach ($florileges as $florilege) {
+                $utilisateur = Utilisateur::where('id', $florilege['id'])->first();
+                if (!$utilisateur) {
+                    return new JsonResponse(['erreur' => 'impossible de récupérer l\'utilisateur'], 400);
+                }
+                if (!isset($tab_adherents[$utilisateur->identifiant])) {
+                    $line = ['prenom' => $utilisateur->personne->prenom, 'nom' => $utilisateur->personne->nom, 'identifiant' => $utilisateur->identifiant,
+                        'id' => $utilisateur->id];
+                    $tab_adherents[$utilisateur->identifiant]['adherent'] = $line;
+                    $tab_adherents[$utilisateur->identifiant]['total'] = $montant_florilege * $florilege['quantite'];
+                } else {
+                    $tab_adherents[$utilisateur->identifiant]['total'] += $montant_florilege * $florilege['quantite'];
+                }
+                $tab_adherents[$utilisateur->identifiant]['florilege'] = $montant_florilege * $florilege['quantite'];
+                $tab_adherents[$utilisateur->identifiant]['nb_florilege'] = $florilege['quantite'];
+                $total_florilege += round($montant_florilege * $florilege['quantite'], 2);
+            }
+        }
         ksort($tab_adherents);
 
-        return array($tab_adherents, $total_adhesion, $total_abonnement);
+        return array($tab_adherents, $total_adhesion, $total_abonnement, $total_florilege);
     }
 }

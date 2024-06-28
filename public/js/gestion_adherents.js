@@ -9,6 +9,7 @@ $('#selectPaysAdresse2').on('change', function() {
 })
 $('#checkBeforeInsertion').on('click', function(e) {
     e.preventDefault();
+    const club_id = $(this).data('club')
     if ($('#personneNom').val() == '') {
         alert('Veuillez renseigner le nom de la personne')
         return
@@ -50,9 +51,27 @@ $('#checkBeforeInsertion').on('click', function(e) {
         data: {
             nom: $('#personneNom').val(),
             prenom: $('#personnePrenom').val(),
-            email: $('#personneEmail').val()
+            email: $('#personneEmail').val(),
+            club: club_id
         },
         success: function(data) {
+            if (data.code == 40) {
+                if (data.same_club == 1) {
+                    $('#modalExistMailInClub').removeClass('d-none')
+                    let chaine = ''
+                    $.each(data.utilisateurs, function(index, utilisateur) {
+                        if (utilisateur.clubs_id == club_id) {
+                            chaine += utilisateur.identifiant + ' '
+                        }
+                    })
+                    $('#identidiantsSameClub').html(chaine)
+                } else {
+                    $('#nameSameEmail').html(data.personne.prenom + ' ' + data.personne.nom)
+                    $('#confirmSameEmail').data('personne', data.personne.id)
+                    $('#modalSameEmail').removeClass('d-none')
+                }
+                return
+            }
             if (data.code == 10) {
                 $('#nameSameEmail').html(data.personne.prenom + ' ' + data.personne.nom)
                 $('#confirmSameEmail').data('personne', data.personne.id)

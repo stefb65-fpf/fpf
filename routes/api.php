@@ -11,6 +11,7 @@ Route::post('/generateSouscriptionsColisage', [App\Http\Controllers\Admin\Public
 
 // mise à jour de l'appartenance au CE d'une fonction FPF
 Route::post('/updateFonctionCe', [App\Http\Controllers\Admin\FonctionController::class, 'updateFonctionCe']);
+Route::post('/updateAttribution', [App\Http\Controllers\Admin\FonctionController::class, 'updateAttribution']);
 
 // actions sur les utilisateurs
 Route::post('/checkRenouvellementAdherents', [App\Http\Controllers\Api\UtilisateurController::class, 'checkRenouvellementAdherents']);
