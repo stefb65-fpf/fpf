@@ -152,7 +152,7 @@
                     <div class="cardTitle">Dates des futures sessions</div>
                     <div class="cardContent">
                         @if($menu['ur'] || $menu['club'])
-                            <div class="mb10">
+                            <div class="mb10 d-flex">
                                 @if($menu['ur'])
                                     <a class="redBtn mr10" name="askFormation" data-formation="{{ $formation->id }}" data-level="ur" style="width: max-content; cursor:pointer;">Demande UR pour organiser une session</a>
                                 @endif

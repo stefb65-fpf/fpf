@@ -34,7 +34,7 @@
                         <option value="2" {{ old('type', $session->type) == 2 ? 'selected=selected' : '' }}>Les deux</option>
                     </select>
                 </div>
-                <div class="formUnit w100 d-none-admin" id="divLocalisation">
+                <div class="formUnit w100 {{ $session->type == 0 ? 'd-none-admin' : '' }}" id="divLocalisation">
                     <div class="formLabel ">Localisation</div>
                     <input value="{{ old('location',  $session->location) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Localisation de la session" name="location"/>
                 </div>
