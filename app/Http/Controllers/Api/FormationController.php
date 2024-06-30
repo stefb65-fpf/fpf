@@ -7,6 +7,7 @@ use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Mail\AnswerSupport;
 use App\Mail\AskFormation;
+use App\Mail\ConfirmationDemandeSession;
 use App\Mail\ConfirmationInscriptionFormation;
 use App\Mail\ConfirmationInscriptionFormationAttente;
 use App\Mail\ConfirmVote;
@@ -359,6 +360,7 @@ class FormationController extends Controller
         if (!$user) {
             return new JsonResponse(['erreur' => 'session utilisateur inexistante'], 400);
         }
+        $personne = Personne::where('id', $user->id)->first();
         $formation = Formation::where('id', $request->formation)->first();
         if (!$formation) {
             return new JsonResponse(['erreur' => "Formation introuvable"], 400);
@@ -388,7 +390,12 @@ class FormationController extends Controller
         } else {
             $str = 'UR '.$demande->ur->nom;
         }
-        Mail::to($mail_formation)->send(new AskFormation($formation, $str));
+        Mail::to($mail_formation)->send(new AskFormation($formation, $str, $personne));
+
+        // on envoie un mail de confirmation au demandeur
+        $email = $user->email;
+        Mail::to($email)->send(new ConfirmationDemandeSession($formation, $str));
+
         return new JsonResponse([], 200);
     }
 

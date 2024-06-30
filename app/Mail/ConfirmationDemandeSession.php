@@ -9,18 +9,16 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class AskFormation extends Mailable
+class ConfirmationDemandeSession extends Mailable
 {
     use Queueable, SerializesModels;
 
-
     /**
      * Create a new message instance.
-     * @param $formation
-     * @param $structure
      */
-    public function __construct(public $formation, public $structure, public $personne)
+    public function __construct(public $formation, public $structure)
     {
+        //
     }
 
     /**
@@ -39,7 +37,7 @@ class AskFormation extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.AskFormation',
+            view: 'emails.ConfirmationDemandeSession',
         );
     }
 

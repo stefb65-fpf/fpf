@@ -30,7 +30,7 @@
                         Le type pourra être redéfini pour chaque session
                     </div>
                 </div>
-                <div class="formUnit w100 d-none-admin" id="divLocalisation">
+                <div class="formUnit w100 {{ $formation->type == 0 ? 'd-none-admin' : '' }}" id="divLocalisation">
                     <div class="formLabel ">Localisation</div>
                     <input value="{{ old('location',  $formation->location) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Localisation de la formation" name="location"/>
                     <div class="w100 helper">

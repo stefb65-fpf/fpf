@@ -35,6 +35,7 @@ class FormationController extends Controller
         }
         $formations = Formation::orderByDesc('created_at')->get();
         foreach($formations as $formation) {
+            $formation->trinom = isset($formation->formateurs[0]) ? $formation->formateurs[0]->personne->nom : '';
             $formation->interests = Interest::where('formation_id', $formation->id)->count();
             $exist_eval = 0;
             foreach($formation->sessions as $session) {
@@ -44,6 +45,9 @@ class FormationController extends Controller
             }
             $formation->exist_eval = $exist_eval;
         }
+        $formations = $formations->sort(function($a, $b) {
+            return $a->trinom > $b->trinom;
+        });
         return view('admin.formations.index', compact('formations'));
     }
 

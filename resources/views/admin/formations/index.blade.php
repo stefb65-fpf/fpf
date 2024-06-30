@@ -29,14 +29,19 @@
                                 <div class="tag bgPurpleLight">Présentiel</div>
                             @endif
                             <div class="tag bgGreen">{{ $formation->categorie->name }}</div>
-                                @if(sizeof($formation->sessions->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))) > 0)
-                                    <div class="tag" style="background-color: #3c3c3c">
-                                        Prochaines dates
-                                        @foreach($formation->sessions->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
-                                            <span class="ml10">{{ date("d/m/Y",strtotime($session->start_date)) }}</span>
-                                        @endforeach
-                                    </div>
-                                @endif
+                            @if(sizeof($formation->sessions->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))) > 0)
+                                <div class="tag" style="background-color: #3c3c3c">
+                                    Prochaines dates
+                                    @foreach($formation->sessions->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
+                                        <span class="ml10">{{ date("d/m/Y",strtotime($session->start_date)) }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            @if(isset($formation->formateurs[0]))
+                                <div class="tag adminWarning">
+                                    {{ $formation->formateurs[0]->personne->nom }} {{ $formation->formateurs[0]->personne->prenom }}
+                                </div>
+                            @endif
                         </div>
                         <div class="right">
                             <svg width="19" height="18" viewBox="0 0 19 18" fill="none" xmlns="http://www.w3.org/2000/svg">
