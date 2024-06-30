@@ -25,6 +25,19 @@ class DroitController extends Controller
             return redirect()->route('accueil');
         }
         $droits = Droit::orderBy('position')->get();
+        foreach ($droits as $droit) {
+            foreach ($droit->fonctions as $fonction) {
+                // on regarde si cette fonction est parent_id d'autres fonctions
+                $child_fonctions = Fonction::where('parent_id', $fonction->id)->get();
+                foreach ($child_fonctions as $child_fonction) {
+                        $droit->fonctions[] = $child_fonction;
+                }
+            }
+            // on trie le tbaleau des fonctions par ordre
+            $droit->fonctions = $droit->fonctions->sort(function($a, $b) {
+                return $a['ordre'] > $b['ordre'];
+            });
+        }
         $fonctions = Fonction::where('instance', 1)->orderBy('ordre')->selectRaw('libelle, id')->get();
         $fonctions_urs = Fonction::where('instance', 2)->where('urs_id', 0)->orderBy('ordre')->selectRaw('libelle, id')->get();
         return view('admin.droits.index', compact('droits', 'fonctions', 'fonctions_urs'));

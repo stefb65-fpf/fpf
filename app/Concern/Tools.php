@@ -819,7 +819,7 @@ trait Tools
                 foreach ($utilisateurs as $utilisateur) {
                     $fonctions = Fonction::join('fonctionsutilisateurs', 'fonctionsutilisateurs.fonctions_id', '=', 'fonctions.id')
                         ->where('fonctionsutilisateurs.utilisateurs_id', $utilisateur->id)
-                        ->selectRaw('fonctions.id, fonctions.libelle, fonctions.instance')
+                        ->selectRaw('fonctions.id, fonctions.libelle, fonctions.instance, fonctions.parent_id')
                         ->orderBy('fonctions.instance')
                         ->orderBy('fonctions.ordre')
                         ->get();
@@ -848,7 +848,7 @@ trait Tools
                         if (in_array($fonction->id, config('app.club_functions'))) {
                             $menu_club = true;
                         }
-                        if (in_array($fonction->id, config('app.ur_functions'))) {
+                        if (in_array($fonction->id, config('app.ur_functions')) || in_array($fonction->parent_id, config('app.ur_functions'))) {
                             $menu_ur = true;
                         }
 

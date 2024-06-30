@@ -503,6 +503,7 @@ class UrController extends Controller
         $fonctions = Fonction::join('fonctionsurs', 'fonctionsurs.fonctions_id', '=', 'fonctions.id')
             ->where('fonctionsurs.urs_id', $ur->id)
             ->orderBy('fonctions.urs_id')
+            ->orderBy('fonctions.ordre')
             ->orderBy('fonctions.id')
             ->selectRaw('fonctions.*')
             ->get();
@@ -592,7 +593,7 @@ class UrController extends Controller
     {
         $ur = $this->getUr();
         // on liste toutes les fonctions FPF
-        $fonctions = Fonction::where('urs_id', 0)->where('instance', 2)->get();
+        $fonctions = Fonction::where('urs_id', 0)->where('instance', 2)->orderBy('urs_id')->orderBy('ordre')->get();
         // on retire toutes les fonctions déjà attribuées à l'UR
         foreach ($fonctions as $k => $fonction) {
             $fonctionur = DB::table('fonctionsurs')->where('fonctions_id', $fonction->id)->where('urs_id', $ur->id)->first();

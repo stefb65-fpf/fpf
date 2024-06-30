@@ -70,7 +70,6 @@ class UpdateAnnee extends Command
                 if (!isset($tab_personnes[$wp_user->user_email])) {
                     // on supprime des tables wp_posts et wp_postmeta
                     $user_id = $wp_user->ID;
-                    var_dump($wp_user->user_email);
                     $nb++;
                     DB::connection('mysqlwp')->statement("DELETE FROM wp_users WHERE ID = $user_id LIMIT 1");
                     DB::connection('mysqlwp')->statement("DELETE FROM wp_usermeta WHERE user_id = $user_id");

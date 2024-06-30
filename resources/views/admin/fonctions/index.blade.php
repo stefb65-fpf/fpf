@@ -66,6 +66,7 @@
                 <thead>
                 <tr>
                     <th>Fonction régionale</th>
+                    <th>Fonction maître</th>
                     <th>Attribution multiple</th>
                     <th>URs ayant déclaré la fonction</th>
                     <th></th>
@@ -75,6 +76,7 @@
                 @foreach($ur_fonctions as $fonction)
                     <tr>
                         <td>{{ $fonction->libelle }}</td>
+                        <td>{{ $fonction->fonction_maitre??'' }}</td>
                         <td>
                             <input type="checkbox" name="multipleAttribution" data-ref="{{ $fonction->id }}" {{ $fonction->multiple == 1 ? 'checked=checked' : '' }} />
                         </td>

@@ -40,6 +40,15 @@ class FonctionController extends Controller
         foreach ($ur_fonctions as $fonction) {
             $urs = Ur::join('fonctionsurs', 'fonctionsurs.urs_id', '=', 'urs.id')->where('fonctionsurs.fonctions_id', $fonction->id)->orderBy('urs.nom')->get();
             $fonction->urs = $urs;
+            if ($fonction->parent_id) {
+                // on cherche la fonction maitre
+                $fonction_maitre = Fonction::where('id', $fonction->parent_id)->first();
+                if ($fonction_maitre) {
+                    $fonction->fonction_maitre = $fonction_maitre->libelle;
+                } else {
+                    $fonction->fonction_maitre = null;
+                }
+            }
         }
         return view('admin.fonctions.index', compact('admin_fonctions', 'ur_fonctions'));
     }

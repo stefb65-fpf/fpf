@@ -3,6 +3,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\Droit;
+use App\Models\Fonction;
 use Illuminate\View\View;
 
 class DroitsComposer
@@ -26,6 +27,12 @@ class DroitsComposer
             foreach (session()->get('cartes')[0]->fonctions as $fonction) {
                 foreach ($fonction->droits as $droit) {
                     $tab_droits[] = $droit->label;
+                }
+                if ($fonction->parent_id) {
+                    $parent = Fonction::where('id', $fonction->parent_id)->first();
+                    foreach ($parent->droits as $droit) {
+                        $tab_droits[] = $droit->label;
+                    }
                 }
             }
         } else {

@@ -102,6 +102,7 @@ class UrController extends Controller
         $fonctions = Fonction::join('fonctionsurs', 'fonctionsurs.fonctions_id', '=', 'fonctions.id')
             ->where('fonctionsurs.urs_id', $ur->id)
             ->orderBy('fonctions.urs_id')
+            ->orderBy('fonctions.ordre')
             ->orderBy('fonctions.id')
             ->selectRaw('fonctions.*')
             ->get();
@@ -112,7 +113,7 @@ class UrController extends Controller
                 ->where('utilisateurs.urs_id', $ur->id)
                 ->get();
 
-            if ($utilisateurs) {
+            if (sizeof($utilisateurs) > 0) {
                 $fonction->utilisateurs = $utilisateurs;
             } else {
                 unset($fonctions[$k]);
