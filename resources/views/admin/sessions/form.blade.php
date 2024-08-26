@@ -86,7 +86,7 @@
                     <div class="formLabel ">Fin d'inscription</div>
                     <input value="{{ old('end_inscription',  $session->end_inscription) }}" class="inputFormAction formValue modifying w75" type="date" name="end_inscription"/>
                     <div class="w100 helper">
-                        Si vous laisse vide, une date par défaut à J-2 sera attribuée. Ainsi, pour une formation commençant le 10/10/2025, la date de fin d'inscription sera le 08/10/2025 à 23h59
+                        Si vous laissez vide, une date par défaut à J-2 sera attribuée. Ainsi, pour une formation commençant le 10/10/2025, la date de fin d'inscription sera le 08/10/2025 à 23h59
                     </div>
                 </div>
 
