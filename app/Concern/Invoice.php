@@ -8,6 +8,7 @@ use App\Mail\SendInvoice;
 use App\Mail\SendRenouvellementMail;
 use App\Models\Club;
 use App\Models\Personne;
+use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
@@ -16,7 +17,7 @@ trait Invoice
 {
     protected function createAndSendInvoice($datas) {
         $datai = ['reference' => $datas['reference'], 'description' => $datas['description'], 'montant' => $datas['montant']];
-        $adresse = null; $personne = null; $club = null;
+        $adresse = null; $personne = null; $club = null; $ur = null;
         if (isset($datas['personne_id'])) {
             $personne = Personne::where('id', $datas['personne_id'])->first();
             if (!$personne) {
@@ -32,6 +33,15 @@ trait Invoice
                 }
                 $datai['club_id'] = $club->id;
                 $adresse = $club->adresse;
+            } else {
+                if (isset($datas['ur_id'])) {
+                    $ur = Ur::where('id', $datas['ur_id'])->first();
+                    if (!$ur) {
+                        return false;
+                    }
+                    $datai['ur_id'] = $ur->id;
+                    $adresse = $ur->adresse;
+                }
             }
         }
         $ref = date('y').'-'.date('m');
@@ -50,7 +60,7 @@ trait Invoice
             chgrp($dir, 'www-data');
         }
         $pdf = App::make('dompdf.wrapper');
-        $pdf->loadView('pdf.facture', compact('invoice', 'adresse', 'personne', 'club'))
+        $pdf->loadView('pdf.facture', compact('invoice', 'adresse', 'personne', 'club', 'ur'))
             ->setWarnings(false)
             ->setPaper('a4', 'portrait')
             ->save($dir.'/'.$name);
@@ -68,31 +78,40 @@ trait Invoice
             $mail->contenu = $htmlContent;
             $this->registerMail($personne->id, $mail);
         } else {
+            $contact = null;
             if ($club) {
                 // on cherche le contact du club
                 $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
                     ->where('utilisateurs.clubs_id', $club->id)
                     ->where('fonctionsutilisateurs.fonctions_id', 97)
                     ->first();
-                if ($contact) {
-                    $email = $contact->personne->email;
-                    $user = session()->get('user');
-                    if ($user) {
-                        $mailSent = Mail::to($email)->cc($user->email)->send(new SendInvoice($invoice, $dir.'/'.$name));
-                    } else {
-                        $mailSent = Mail::to($email)->send(new SendInvoice($invoice, $dir.'/'.$name));
-                    }
 
-                    $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+            } else {
+                if ($ur) {
+                    $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                        ->where('utilisateurs.urs_id', $ur->id)
+                        ->where('fonctionsutilisateurs.fonctions_id', 57)
+                        ->first();
+                }
+            }
+            if ($contact) {
+                $email = $contact->personne->email;
+                $user = session()->get('user');
+                if ($user) {
+                    $mailSent = Mail::to($email)->cc($user->email)->send(new SendInvoice($invoice, $dir.'/'.$name));
+                } else {
+                    $mailSent = Mail::to($email)->send(new SendInvoice($invoice, $dir.'/'.$name));
+                }
 
-                    $mail = new \stdClass();
-                    $mail->titre = "Facture émise par la FPF";
-                    $mail->destinataire = $email;
-                    $mail->contenu = $htmlContent;
-                    $this->registerMail($contact->personne->id, $mail);
-                    if ($user) {
-                        $this->registerMail($user->id, $mail);
-                    }
+                $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+                $mail = new \stdClass();
+                $mail->titre = "Facture émise par la FPF";
+                $mail->destinataire = $email;
+                $mail->contenu = $htmlContent;
+                $this->registerMail($contact->personne->id, $mail);
+                if ($user) {
+                    $this->registerMail($user->id, $mail);
                 }
             }
         }

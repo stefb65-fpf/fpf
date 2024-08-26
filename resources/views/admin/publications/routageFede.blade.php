@@ -90,7 +90,15 @@
                     <input type="checkbox" name="ckbRoutageFede" data-ref="7">
                 </td>
                 <td>
-                    Contacts de clubs ({{ $nb_clubs }})
+                    Contacts de clubs saison courante ({{ $nb_clubs }})
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="ckbRoutageFede" data-ref="9">
+                </td>
+                <td>
+                    Contacts de clubs saison courante et saison précédente ({{ $nb_clubs_old }})
                 </td>
             </tr>
             <tr>

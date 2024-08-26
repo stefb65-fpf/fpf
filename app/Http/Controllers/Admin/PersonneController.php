@@ -403,8 +403,15 @@ class PersonneController extends Controller
             }
         }
 
-        $adresse_1 = $personne->adresses[0];
-        $adresse_1->update($dataa);
+        if (sizeof($personne->adresses) > 0) {
+            $adresse = $personne->adresses[0];
+            $adresse->update($dataa);
+        } else {
+            // si l'adresse n'existe pas, on la crée
+            $adresse = Adresse::create($dataa);
+            // on attache l'adresse à la personne
+            $personne->adresses()->attach($adresse->id);
+        }
 
         if (isset($request->villeLivraison) && isset($request->codepostalLivraison) && isset($request->paysLivraison) && isset($personne->adresses[1])) {
             $dataa2 = $request->only('libelle1Livraison', 'libelle2Livraison', 'codepostalLivraison', 'villeLivraison');
@@ -416,8 +423,15 @@ class PersonneController extends Controller
                 $dataa2['pays'] = 'France';
                 $dataa2['telephonedomicileLivraison'] = $this->format_fixe_for_base($request->telephonedomicileLivraison);
             }
-            $adresse_2 = $personne->adresses[1];
-            $adresse_2->update($dataa2);
+            if (sizeof($personne->adresses) > 1) {
+                $adresse_2 = $personne->adresses[1];
+                $adresse_2->update($dataa2);
+            } else {
+                // si l'adresse n'existe pas, on la crée
+                $adresse_2 = Adresse::create($dataa2);
+                // on attache l'adresse à la personne
+                $personne->adresses()->attach($adresse_2->id);
+            }
         }
 
         if($view_type == 'abonnes' && $request->fin != '') {

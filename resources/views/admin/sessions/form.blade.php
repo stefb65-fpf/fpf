@@ -38,6 +38,22 @@
                     <div class="formLabel ">Localisation</div>
                     <input value="{{ old('location',  $session->location) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Localisation de la session" name="location"/>
                 </div>
+                @if($formation->global_price > 0)
+                    <div class="formUnit w100">
+                        <div class="formLabel ">
+                            Coût global formation: {{ $formation->global_price }}€ - Si la structure organisatrice prend en charge tout ou partie du financement,
+                            vous devez modifier le prix d'inscription en conséquence selon la formule : (Coût global - Prise en charge) / Nombre de places
+                        </div>
+{{--                        <input value="{{ $formation->global_price }}" class="inputFormAction formValue modifying w75 disabled" readonly type="text" />--}}
+                    </div>
+                @endif
+                <div class="formUnit w100">
+                    <div class="formLabel ">Prise en charge</div>
+                    <input value="{{ old('pec',  $session->pec) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Montant de la prise en charge" name="pec"/>
+                    <div class="w100 helper">
+                        Ne saisir que si la session est prise en charge par une structure. Ce montant de prise en charge sera indiqué sur l'interface des adhérents.
+                    </div>
+                </div>
                 <div class="formUnit w100">
                     <div class="formLabel ">* Prix</div>
                     <input value="{{ old('price',  $session->price) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation" name="price"/>
@@ -63,6 +79,14 @@
                     <input value="{{ old('end_date',  $session->end_date) }}" class="inputFormAction formValue modifying w75" type="date" name="end_date"/>
                     <div class="w100 helper">
                         Laissez vide si la formation se déroule sur une seule journée
+                    </div>
+                </div>
+
+                <div class="formUnit w100">
+                    <div class="formLabel ">Fin d'inscription</div>
+                    <input value="{{ old('end_inscription',  $session->end_inscription) }}" class="inputFormAction formValue modifying w75" type="date" name="end_inscription"/>
+                    <div class="w100 helper">
+                        Si vous laisse vide, une date par défaut à J-2 sera attribuée. Ainsi, pour une formation commençant le 10/10/2025, la date de fin d'inscription sera le 08/10/2025 à 23h59
                     </div>
                 </div>
 

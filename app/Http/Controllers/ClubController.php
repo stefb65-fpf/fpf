@@ -8,6 +8,7 @@ use App\Concern\Hash;
 use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Concern\VoteTools;
+use App\Exports\InscritExport;
 use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubAbonnementRequest;
@@ -21,6 +22,7 @@ use App\Models\Configsaison;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Session;
 use App\Models\Souscription;
 use App\Models\Tarif;
 use App\Models\Utilisateur;
@@ -28,6 +30,7 @@ use App\Models\Vote;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClubController extends Controller
 {
@@ -47,7 +50,8 @@ class ClubController extends Controller
     public function gestion()
     {
         $club = $this->getClub();
-        return view('clubs.gestion', compact('club'));
+        $nb_sessions = Session::where('club_id', $club->id)->where('start_date', '>=', date('Y-m-d'))->orderBy('start_date')->count();
+        return view('clubs.gestion', compact('club', 'nb_sessions'));
     }
 
     // affichage de la vue d'informations générales du club
@@ -600,5 +604,42 @@ class ClubController extends Controller
 
         $this->registerMail($personne->id, $mail);
         return redirect()->back()->with('success', "Un mail a été envoyé à l'adhérent pour réinitialiser son mot de passe");
+    }
+
+
+
+
+    public function formations() {
+        $club = $this->getClub();
+        $sessions = Session::where('club_id', $club->id)->orderByDesc('start_date')->get();
+//        $sessions = Session::where('club_id', $club->id)->where('start_date', '>=', date('Y-m-d'))->orderByDesc('start_date')->get();
+        return view('clubs.formations.index', compact('sessions', 'club'));
+    }
+
+    public function inscrits(Session $session) {
+        return view('clubs.formations.inscrits', compact('session'));
+    }
+
+    public function export(Session $session) {
+        // on récupère tous les inscrits de la session
+        $inscrits = $session->inscrits->where('attente', 0)->where('status', 1);
+        foreach ($inscrits as $inscrit) {
+            $utilisateur = Utilisateur::where('personne_id', $inscrit->personne_id)
+                ->whereIn('statut', [0,1,2,3])
+                ->orderByDesc('statut')
+                ->selectRaw('identifiant')
+                ->first();
+            if ($utilisateur) {
+                $inscrit->identifiant = $utilisateur->identifiant;
+            }
+        }
+        $fichier = 'session_'.$session->id.'_inscrits_' . date('YmdHis') . '.xls';
+        if (Excel::store(new InscritExport($inscrits), $fichier, 'xls')) {
+            $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
+            $texte = "Vous pouvez télécharger le fichier en cliquant sur le lien suivant : <a href='" . $file_to_download . "'>Télécharger</a>";
+            return redirect()->route('clubs.sessions.inscrits', $session)->with('success', $texte);
+        } else {
+            return redirect()->route('clubs.sessions.inscrits', $session)->with('success', "Un problème est survenu lors de l'export");
+        }
     }
 }

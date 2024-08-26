@@ -152,105 +152,147 @@
                     <div class="cardTitle">Dates des futures sessions</div>
                     <div class="cardContent">
                         @if($menu['ur'] || $menu['club'])
-                            <div class="mb10 d-flex">
+                            <div class="mb10 askSession">
                                 @if($menu['ur'])
-                                    <a class="redBtn mr10" name="askFormation" data-formation="{{ $formation->id }}" data-level="ur" style="width: max-content; cursor:pointer;">Demande UR pour organiser une session</a>
+                                    <a class="redBtn mr10 mb5" name="askFormation" data-formation="{{ $formation->id }}" data-level="ur" data-cout="{{ $formation->global_price }}" style="width: max-content; cursor:pointer;">Demande UR pour organiser une session</a>
                                 @endif
                                 @if($menu['club'])
-                                    <a class="redBtn mr10" name="askFormation" data-formation="{{ $formation->id }}" data-level="club" style="width: max-content; cursor:pointer;">Demande Club pour organiser une session</a>
+                                    <a class="redBtn mr10 mb5" name="askFormation" data-formation="{{ $formation->id }}" data-level="club"  data-cout="{{ $formation->global_price }}" style="width: max-content; cursor:pointer;">Demande Club pour organiser une session</a>
                                 @endif
                             </div>
                         @endif
                         @foreach($formation->sessions as $k => $session)
                             @if($session->start_date >= date('Y-m-d'))
                                 <div class="sessionContainer">
-                                    <div class="start">
-                                        <div class="icon mr10">
-                                            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
-                                                 xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M1 11C1 7.229 1 5.343 2.172 4.172C3.343 3 5.229 3 9 3H13C16.771 3 18.657 3 19.828 4.172C21 5.343 21 7.229 21 11V13C21 16.771 21 18.657 19.828 19.828C18.657 21 16.771 21 13 21H9C5.229 21 3.343 21 2.172 19.828C1 18.657 1 16.771 1 13V11Z"
-                                                    stroke="#454545" stroke-width="1.5"/>
-                                                <path d="M6 3V1.5M16 3V1.5M1.5 8H20.5" stroke="#454545"
-                                                      stroke-width="1.5"
-                                                      stroke-linecap="round"/>
-                                                <path
-                                                    d="M17 16C17 16.2652 16.8946 16.5196 16.7071 16.7071C16.5196 16.8946 16.2652 17 16 17C15.7348 17 15.4804 16.8946 15.2929 16.7071C15.1054 16.5196 15 16.2652 15 16C15 15.7348 15.1054 15.4804 15.2929 15.2929C15.4804 15.1054 15.7348 15 16 15C16.2652 15 16.5196 15.1054 16.7071 15.2929C16.8946 15.4804 17 15.7348 17 16ZM17 12C17 12.2652 16.8946 12.5196 16.7071 12.7071C16.5196 12.8946 16.2652 13 16 13C15.7348 13 15.4804 12.8946 15.2929 12.7071C15.1054 12.5196 15 12.2652 15 12C15 11.7348 15.1054 11.4804 15.2929 11.2929C15.4804 11.1054 15.7348 11 16 11C16.2652 11 16.5196 11.1054 16.7071 11.2929C16.8946 11.4804 17 11.7348 17 12ZM12 16C12 16.2652 11.8946 16.5196 11.7071 16.7071C11.5196 16.8946 11.2652 17 11 17C10.7348 17 10.4804 16.8946 10.2929 16.7071C10.1054 16.5196 10 16.2652 10 16C10 15.7348 10.1054 15.4804 10.2929 15.2929C10.4804 15.1054 10.7348 15 11 15C11.2652 15 11.5196 15.1054 11.7071 15.2929C11.8946 15.4804 12 15.7348 12 16ZM12 12C12 12.2652 11.8946 12.5196 11.7071 12.7071C11.5196 12.8946 11.2652 13 11 13C10.7348 13 10.4804 12.8946 10.2929 12.7071C10.1054 12.5196 10 12.2652 10 12C10 11.7348 10.1054 11.4804 10.2929 11.2929C10.4804 11.1054 10.7348 11 11 11C11.2652 11 11.5196 11.1054 11.7071 11.2929C11.8946 11.4804 12 11.7348 12 12ZM7 16C7 16.2652 6.89464 16.5196 6.70711 16.7071C6.51957 16.8946 6.26522 17 6 17C5.73478 17 5.48043 16.8946 5.29289 16.7071C5.10536 16.5196 5 16.2652 5 16C5 15.7348 5.10536 15.4804 5.29289 15.2929C5.48043 15.1054 5.73478 15 6 15C6.26522 15 6.51957 15.1054 6.70711 15.2929C6.89464 15.4804 7 15.7348 7 16ZM7 12C7 12.2652 6.89464 12.5196 6.70711 12.7071C6.51957 12.8946 6.26522 13 6 13C5.73478 13 5.48043 12.8946 5.29289 12.7071C5.10536 12.5196 5 12.2652 5 12C5 11.7348 5.10536 11.4804 5.29289 11.2929C5.48043 11.1054 5.73478 11 6 11C6.26522 11 6.51957 11.1054 6.70711 11.2929C6.89464 11.4804 7 11.7348 7 12Z"
-                                                    fill="#454545"/>
-                                            </svg>
-                                        </div>
-                                        {{ date("d/m/Y",strtotime($session->start_date)) }}
-                                    </div>
-                                    <div class="places">
-                                        @if(sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places)
-                                            <div class="green">Places disponibles</div>
-                                        @else
-                                            @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places )
-                                                <div class="green">Places disponibles en liste d'attente</div>
-                                            @else
-                                                <div class="red">Complet</div>
+                                    @if($session->club_id)
+                                        <div class="bold">
+                                            Organisé par le club {{ $session->nom_club }}
+                                            @if($session->pec > 0)
+                                                <span class="ml10">- Montant pris en charge par le club: {{ $session->pec }}€</span>
                                             @endif
-                                        @endif
-                                    </div>
-                                    <div class="price justify-center">
-                                        @if($session->price_not_member != $session->price)
-                                            <div style="font-size: 0.8rem">
-                                                <span>
-                                                    Adhérent: {{ floatval($session->price) == intval($session->price) ? intval($session->price) : floatval($session->price) }} €
-                                                </span>
-                                                <br>
-                                                <span>Non adhérent: {{ floatval($session->price_not_member) == intval($session->price_not_member) ? intval($session->price_not_member) : floatval($session->price_not_member) }} €</span>
+                                        </div>
+                                    @else
+                                        @if($session->ur_id)
+                                            <div class="bold">
+                                                Organisé par l'UR {{ str_pad($session->ur_id, 2, '0', STR_PAD_LEFT) }}
+                                                @if($session->pec > 0)
+                                                    <span class="ml10">- Montant pris en charge par l'UR: {{ $session->pec }}€</span>
+                                                @endif
                                             </div>
                                         @else
-                                            {{ floatval($session->price) == intval($session->price) ? intval($session->price) : floatval($session->price) }} €
+                                            <div class="bold">
+                                                Organisé par la FPF
+                                                @if($session->pec > 0)
+                                                    <span class="ml10">- Montant pris en charge par la FPF: {{ $session->pec }}€</span>
+                                                @endif
+                                            </div>
                                         @endif
-                                    </div>
-                                    <div class="locations">
-                                        <img class="mr10"
-                                             src="{{ env('APP_URL').'storage/app/public/map-marker-alt.png' }}">
-                                        @if(!$session->type)
-                                            À distance
-                                        @elseif($session->type == 1)
-                                            @if($session->location)
-                                                {{$session->location}}
-                                            @else
-                                                {{$formation->location}}
-                                            @endif
-                                        @else
-                                            À distance
-                                            @if($session->location)
-                                                / {{$session->location}}
-                                            @else
-                                                /  {{$formation->location}}
-                                            @endif
-                                        @endif
+                                    @endif
+                                    <div class="sessionContainerWrapper">
+                                        <div class="start">
+                                            <div class="icon mr10">
+                                                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M1 11C1 7.229 1 5.343 2.172 4.172C3.343 3 5.229 3 9 3H13C16.771 3 18.657 3 19.828 4.172C21 5.343 21 7.229 21 11V13C21 16.771 21 18.657 19.828 19.828C18.657 21 16.771 21 13 21H9C5.229 21 3.343 21 2.172 19.828C1 18.657 1 16.771 1 13V11Z"
+                                                        stroke="#454545" stroke-width="1.5"/>
+                                                    <path d="M6 3V1.5M16 3V1.5M1.5 8H20.5" stroke="#454545"
+                                                          stroke-width="1.5"
+                                                          stroke-linecap="round"/>
+                                                    <path
+                                                        d="M17 16C17 16.2652 16.8946 16.5196 16.7071 16.7071C16.5196 16.8946 16.2652 17 16 17C15.7348 17 15.4804 16.8946 15.2929 16.7071C15.1054 16.5196 15 16.2652 15 16C15 15.7348 15.1054 15.4804 15.2929 15.2929C15.4804 15.1054 15.7348 15 16 15C16.2652 15 16.5196 15.1054 16.7071 15.2929C16.8946 15.4804 17 15.7348 17 16ZM17 12C17 12.2652 16.8946 12.5196 16.7071 12.7071C16.5196 12.8946 16.2652 13 16 13C15.7348 13 15.4804 12.8946 15.2929 12.7071C15.1054 12.5196 15 12.2652 15 12C15 11.7348 15.1054 11.4804 15.2929 11.2929C15.4804 11.1054 15.7348 11 16 11C16.2652 11 16.5196 11.1054 16.7071 11.2929C16.8946 11.4804 17 11.7348 17 12ZM12 16C12 16.2652 11.8946 16.5196 11.7071 16.7071C11.5196 16.8946 11.2652 17 11 17C10.7348 17 10.4804 16.8946 10.2929 16.7071C10.1054 16.5196 10 16.2652 10 16C10 15.7348 10.1054 15.4804 10.2929 15.2929C10.4804 15.1054 10.7348 15 11 15C11.2652 15 11.5196 15.1054 11.7071 15.2929C11.8946 15.4804 12 15.7348 12 16ZM12 12C12 12.2652 11.8946 12.5196 11.7071 12.7071C11.5196 12.8946 11.2652 13 11 13C10.7348 13 10.4804 12.8946 10.2929 12.7071C10.1054 12.5196 10 12.2652 10 12C10 11.7348 10.1054 11.4804 10.2929 11.2929C10.4804 11.1054 10.7348 11 11 11C11.2652 11 11.5196 11.1054 11.7071 11.2929C11.8946 11.4804 12 11.7348 12 12ZM7 16C7 16.2652 6.89464 16.5196 6.70711 16.7071C6.51957 16.8946 6.26522 17 6 17C5.73478 17 5.48043 16.8946 5.29289 16.7071C5.10536 16.5196 5 16.2652 5 16C5 15.7348 5.10536 15.4804 5.29289 15.2929C5.48043 15.1054 5.73478 15 6 15C6.26522 15 6.51957 15.1054 6.70711 15.2929C6.89464 15.4804 7 15.7348 7 16ZM7 12C7 12.2652 6.89464 12.5196 6.70711 12.7071C6.51957 12.8946 6.26522 13 6 13C5.73478 13 5.48043 12.8946 5.29289 12.7071C5.10536 12.5196 5 12.2652 5 12C5 11.7348 5.10536 11.4804 5.29289 11.2929C5.48043 11.1054 5.73478 11 6 11C6.26522 11 6.51957 11.1054 6.70711 11.2929C6.89464 11.4804 7 11.7348 7 12Z"
+                                                        fill="#454545"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    {{ date("d/m/Y",strtotime($session->start_date)) }}
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                    </div>
-                                    <div class="inscription">
-                                        @if(in_array($session->id, $inscriptions))
-                                            @if($session->inscrits->where('personne_id',$personne->id) && ($session->inscrits->where('personne_id',$personne->id)->first()->attente_paiement == 1))
-                                                <a class="orangeBtn" href="{{ route('formations.payWithSecureCode', $personne->inscrits->where('session_id', $session->id)->first()->secure_code) }}">En attente de paiement</a>
-                                            @elseif($session->inscrits->where('personne_id',$personne->id)->first()->personne_id == $personne->id)
-                                                <div class="bold">Vous êtes inscrit.e à cette session</div>
-                                            @endif
-                                        @else
-                                            @if((sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places) && $session->full == 0)
-                                                <a name="paiementInscription" data-session="{{ $session->id }}"
-                                                   data-price="{{ $personne->price_adherent == 1 ? $session->price : $session->price_not_member }}" data-avoir="{{ $personne->avoir_formation }}" class="redBtn uppercase"
-                                                   style="cursor: pointer;">S'inscrire</a>
+
+
+                                        <div class="places">
+                                            @if(sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places)
+                                                <div class="green">Places disponibles</div>
                                             @else
-                                                @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places || $session->full == 1)
-                                                    {{--                                            @if(sizeof($session->inscrits->where('status', 1)) >= $session->places && sizeof($session->inscrits->where('status', 1)) < $session->places + $session->waiting_places )--}}
-                                                    <a name="attenteInscription" data-session="{{ $session->id }}"
-                                                       class="redBtn uppercase bgOrange hMaxContent"
-                                                       style="cursor: pointer;">S'inscrire en liste d'attente</a>
+                                                @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places )
+                                                    <div class="green">Places disponibles en liste d'attente</div>
                                                 @else
-                                                    <span class="bold">
-                                                      Inscription terminée
-                                                </span>
+                                                    <div class="red">Complet</div>
                                                 @endif
                                             @endif
-                                        @endif
+                                        </div>
+                                        <div class="price justify-center">
+                                            @if($session->price_not_member != $session->price)
+                                                <div style="font-size: 0.8rem">
+                                                    <span>
+                                                        Adhérent: {{ floatval($session->price) == intval($session->price) ? intval($session->price) : floatval($session->price) }} €
+                                                    </span>
+                                                    <br>
+                                                    <span>Non adhérent: {{ floatval($session->price_not_member) == intval($session->price_not_member) ? intval($session->price_not_member) : floatval($session->price_not_member) }} €</span>
+                                                </div>
+                                            @else
+                                                {{ floatval($session->price) == intval($session->price) ? intval($session->price) : floatval($session->price) }} €
+                                            @endif
+                                        </div>
+                                        <div class="locations">
+                                            <img class="mr10"
+                                                 src="{{ env('APP_URL').'storage/app/public/map-marker-alt.png' }}">
+                                            @if(!$session->type)
+                                                À distance
+                                            @elseif($session->type == 1)
+                                                @if($session->location)
+                                                    {{$session->location}}
+                                                @else
+                                                    {{$formation->location}}
+                                                @endif
+                                            @else
+                                                À distance
+                                                @if($session->location)
+                                                    / {{$session->location}}
+                                                @else
+                                                    /  {{$formation->location}}
+                                                @endif
+                                            @endif
+
+                                        </div>
+                                        <div class="inscription">
+                                            @if(in_array($session->id, $inscriptions))
+                                                @if($session->inscrits->where('personne_id',$personne->id) && ($session->inscrits->where('personne_id',$personne->id)->first()->attente_paiement == 1))
+                                                    <a class="orangeBtn" href="{{ route('formations.payWithSecureCode', $personne->inscrits->where('session_id', $session->id)->first()->secure_code) }}">En attente de paiement</a>
+                                                @elseif($session->inscrits->where('personne_id',$personne->id)->first()->personne_id == $personne->id)
+                                                    <div class="bold">Vous êtes inscrit.e à cette session</div>
+                                                @endif
+                                            @else
+                                                @if($session->end_inscription >= date('Y-m-d'))
+                                                    @if((sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places) && $session->full == 0)
+                                                        <a name="paiementInscription" data-session="{{ $session->id }}"
+                                                           data-price="{{ $personne->price_adherent == 1 ? $session->price : $session->price_not_member }}" data-avoir="{{ $personne->avoir_formation }}" class="redBtn uppercase"
+                                                           style="cursor: pointer;">S'inscrire</a>
+                                                    @else
+                                                        @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places || $session->full == 1)
+                                                            {{--                                            @if(sizeof($session->inscrits->where('status', 1)) >= $session->places && sizeof($session->inscrits->where('status', 1)) < $session->places + $session->waiting_places )--}}
+                                                            <a name="attenteInscription" data-session="{{ $session->id }}"
+                                                               class="redBtn uppercase bgOrange hMaxContent"
+                                                               style="cursor: pointer;">S'inscrire en liste d'attente</a>
+                                                        @else
+                                                            <span class="bold">
+                                                              Inscription terminée
+                                                        </span>
+                                                        @endif
+                                                    @endif
+                                                @else
+                                                    <span class="bold">
+                                                        Inscription terminée
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div>
+                                        Date limite d'inscription: {{ date("d/m/Y",strtotime($session->end_inscription)) }} - 23h59
                                     </div>
                                 </div>
                             @endif
@@ -314,7 +356,8 @@
                 Aucune autre méthode de paiement ne sera acceptée.
             </div>
             <div id="paiementFormationNotNeeded" class="d-none">
-                Votre avoir étant supérieur au prix de la formation, vous n'avez pas besoin de payer pour valider votre inscription.<br>
+                <div id="notNeededAvoir" class="d-none">Votre avoir étant supérieur au prix de la formation, vous n'avez pas besoin de payer pour valider votre inscription.</div>
+                <div id="notNeededPec" class="d-none">Le prix restant à charge des adhérents étant de 0€, vous n'avez aucun paiement à effectuer.</div>
                 Vous pouvez valider votre inscription en cliquant sur le bouton ci-dessous.
             </div>
         </div>
@@ -358,10 +401,26 @@
             Vous souhaitez soumettre une demande d'organisation de session de formation <span
                 class="bold">{{ $formation->name }}</span>.<br>
             Une fois votre demande validée, vous serez contacté par les responsables du département formation.
+            @if($formation->global_price > 0)
+                <div class="mt10">
+                    Le financement de cette formation peut être pris en charge, totalement ou partiellement, par votre structure.
+                    Si tel est le cas, les inscrits à la formation devront :
+                    <ul style="list-style-type: circle; margin-left: 40px;">
+                        <li>ne rien débourser si vous prenez la totalité de la formation à votre charge</li>
+                        <li>débourser la somme résultant du calcul : (coût formation - montant prise en charge) / nombre de places</li>
+                    </ul>
+                    <br>
+                    Le coût global de la formation est de <span class="bold">{{ $formation->global_price }} €</span>.
+                    <div class="mt10">
+                        <label for="askFormationGlobalPrice">Montant de la prise en charge (laissez à 0 si pas de prise en charge)</label>
+                        <input type="number" id="askFormationGlobalPrice" name="askFormationGlobalPrice" value="0" style="width: 150px; text-align: center" />
+                    </div>
+                </div>
+            @endif
         </div>
         <div class="modalEditFooter">
             <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
-            <div class="adminPrimary btnMedium mr10" id="confirmAskFormation" data-formation="{{ $formation->id }}">Valider la demande</div>
+            <div class="adminPrimary btnMedium mr10" id="confirmAskFormation" data-formation="{{ $formation->id }}" data-cout="{{ $formation->global_price }}" data-pec="{{ $formation->global_price > 0 ? 1 : 0 }}">Valider la demande</div>
         </div>
     </div>
 @endsection

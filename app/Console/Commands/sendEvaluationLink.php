@@ -47,7 +47,7 @@ class sendEvaluationLink extends Command
             // pour chaque inscrit, on envoie un mail avec le lien vers le formulaire d'évaluation de la formation
             foreach ($session->inscrits->where('status', 1)->where('attente', 0) as $inscrit) {
                 $email = $inscrit->personne->email;
-                $mailSent = Mail::to($email)->send(new \App\Mail\SendEvaluationLink($session));
+                $mailSent = Mail::mailer('smtp2')->to($email)->send(new \App\Mail\SendEvaluationLink($session));
                 $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
                 $sujet = "FPF // Lien d'évaluation pour la formation ".$session->formation->name;

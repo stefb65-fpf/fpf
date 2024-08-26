@@ -11,6 +11,7 @@ use App\Mail\SendFormationPaymentLink;
 use App\Models\Inscrit;
 use App\Models\Personne;
 use App\Models\Session;
+use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -25,6 +26,9 @@ class InscritController extends Controller
     }
 
     public function liste(Session $session) {
+        if (!$this->checkDroit('GESFOR')) {
+            return redirect()->route('accueil');
+        }
         return view('admin.inscrits.liste', compact('session'));
     }
 
@@ -71,6 +75,16 @@ class InscritController extends Controller
     public function export(Session $session) {
         // on récupère tous les inscrits de la session
         $inscrits = $session->inscrits->where('attente', 0)->where('status', 1);
+        foreach ($inscrits as $inscrit) {
+            $utilisateur = Utilisateur::where('personne_id', $inscrit->personne_id)
+                ->whereIn('statut', [0,1,2,3])
+                ->orderByDesc('statut')
+                ->selectRaw('identifiant')
+                ->first();
+            if ($utilisateur) {
+                $inscrit->identifiant = $utilisateur->identifiant;
+            }
+        }
         $fichier = 'session_'.$session->id.'_inscrits_' . date('YmdHis') . '.xls';
         if (Excel::store(new InscritExport($inscrits), $fichier, 'xls')) {
             $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;

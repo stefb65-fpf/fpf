@@ -70,7 +70,7 @@ class FormationController extends Controller
     public function store(FormationRequest $request)
     {
         $data = $request->only('name', 'shortDesc', 'longDesc', 'program', 'categories_formation_id', 'type', 'location', 'level', 'price', 'price_not_member',
-            'places', 'waiting_places', 'duration');
+            'places', 'waiting_places', 'duration', 'global_price');
         if (isset($request->new)) {
             $data['new'] = 1;
         }
@@ -100,7 +100,7 @@ class FormationController extends Controller
     public function update(Request $request, Formation $formation)
     {
         $data = $request->only('name', 'shortDesc', 'longDesc', 'program', 'categories_formation_id', 'type', 'location', 'level', 'price', 'price_not_member',
-            'places', 'waiting_places', 'duration');
+            'places', 'waiting_places', 'duration', 'global_price');
         $data['new'] = isset($request->new) ? 1 : 0;
         if ($data['waiting_places'] == null) {
             $data['waiting_places'] = 0;

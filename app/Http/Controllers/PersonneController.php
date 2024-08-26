@@ -85,7 +85,9 @@ class PersonneController extends Controller
             }
 //            dd($tab_fonctions);
 
-            if (in_array($cartes[0]->statut, [2,3])) {
+            // si le vote a lieu entre Janvier et Aout, il faut que la le statut soit 2 ou 3, sinon l statut peut être inférieur à 4 avec la saison > n - 1
+            if ((intval(date('m')) < 9 && in_array($cartes[0]->statut, [2,3])) || (intval(date('m')) >= 9) && intval($cartes[0]->saison) >= date('Y')) {
+//            if (in_array($cartes[0]->statut, [2,3])) {
 //            if ($cartes[0]->saison >= date('Y') && $cartes[0]->statut < 4) {
                 $phase2_available = 0;
                 $phase3_available = 0;
@@ -357,12 +359,16 @@ class PersonneController extends Controller
         }
         $personne_sessions = [];
         $now = new \DateTimeImmutable(date('Y-m-d'));
-        foreach ($formation->sessions as $session) {
+        foreach ($formation->sessions as $k => $session) {
             $session_start_date = new \DateTimeImmutable($session->start_date);
             $interval = $now->diff($session_start_date);
             $session->diff = $interval->format('%a');
             if (sizeof($session->inscrits->where('personne_id', $personne->id))) {
                 $personne_sessions[] = $session;
+            }
+            $club = Club::where('id', $session->club_id)->selectRaw('nom')->first();
+            if ($club) {
+                $formation->sessions[$k]->nom_club = $club->nom;
             }
         }
         $formation->sessions = $personne_sessions;

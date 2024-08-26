@@ -87,12 +87,21 @@ class PersonneController extends Controller
                 $tab_droits[] = $droit->label;
             }
             $fonctions = Fonction::join('fonctionsutilisateurs', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
-                ->select('fonctions.id', 'fonctions.libelle')
+                ->select('fonctions.id', 'fonctions.libelle', 'fonctions.parent_id')
                 ->where('fonctionsutilisateurs.utilisateurs_id', $cartes[0]->id)->get();
             foreach ($fonctions as $fonction) {
                 if ($fonction->droits) {
                     foreach ($fonction->droits as $droit) {
                         $tab_droits[] = $droit->label;
+                    }
+                }
+                if ($fonction->parent_id) {
+                    // on regarde si la fonction matitre a des droits
+                    $fonction_parent = Fonction::where('id', $fonction->parent_id)->first();
+                    if ($fonction_parent->droits) {
+                        foreach ($fonction_parent->droits as $droit) {
+                            $tab_droits[] = $droit->label;
+                        }
                     }
                 }
             }

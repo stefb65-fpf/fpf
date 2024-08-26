@@ -18,6 +18,10 @@ class Invoice extends Model
         return $this->belongsTo('App\Models\Club', 'club_id');
     }
 
+    public function ur() {
+        return $this->belongsTo('App\Models\Ur', 'ur_id');
+    }
+
     public function getStorageDir() {
         return storage_path().'/app/public/uploads/invoices/'.ceil($this->id / 100);
     }

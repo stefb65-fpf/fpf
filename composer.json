@@ -13,6 +13,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "maatwebsite/excel": "^3.1",
+        "microsoft/microsoft-graph": "^2.12",
         "monext/payline-sdk": "^4.75"
     },
     "require-dev": {

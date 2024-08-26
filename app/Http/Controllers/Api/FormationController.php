@@ -256,7 +256,7 @@ class FormationController extends Controller
 
         // on evnoei le mail de confirmation d'inscription
         $email = $user->email;
-        $mailSent = Mail::to($email)->send(new ConfirmationInscriptionFormation($session));
+        $mailSent = Mail::mailer('smtp2')->to($email)->send(new ConfirmationInscriptionFormation($session));
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
         $sujet = substr("FPF // Inscription à la formation ".$session->formation->name, 0, 255);
@@ -297,7 +297,7 @@ class FormationController extends Controller
 
         // on envoie le mail pour confirmer l'inscription en attente
         $email = $user->email;
-        $mailSent = Mail::to($email)->send(new ConfirmationInscriptionFormationAttente($session));
+        $mailSent = Mail::mailer('smtp2')->to($email)->send(new ConfirmationInscriptionFormationAttente($session));
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
         $sujet = substr("FPF // Inscription en liste d'attente à la formation ".$session->formation->name, 0, 255);
@@ -356,6 +356,7 @@ class FormationController extends Controller
     }
 
     public function askFormation(Request $request) {
+//        dd(config('mail.mailers.smtp2'));
         $user = session()->get('user');
         if (!$user) {
             return new JsonResponse(['erreur' => 'session utilisateur inexistante'], 400);
@@ -377,24 +378,24 @@ class FormationController extends Controller
             return new JsonResponse(['erreur' => "Une demande a déjà été faite pour cette formation"], 400);
         }
         // on ajoute la demande
-        $datai = ['formation_id' => $formation->id];
+        $datai = ['formation_id' => $formation->id, 'pec' => $request->montant_pec];
         if ($request->level == 'club') {
             $datai['club_id'] = $user->cartes[0]->clubs_id;
         } else {
             $datai['ur_id'] = $user->cartes[0]->urs_id;
         }
         $demande = Demande::create($datai);
-        $mail_formation = 'dpt.formation@federation-photo.fr';
+        $mail_formation = 'formations@federation-photo.fr';
         if ($request->level == 'club') {
             $str = 'club '.$demande->club->nom;
         } else {
             $str = 'UR '.$demande->ur->nom;
         }
-        Mail::to($mail_formation)->send(new AskFormation($formation, $str, $personne));
+        Mail::mailer('smtp2')->to($mail_formation)->send(new AskFormation($formation, $str, $personne));
 
         // on envoie un mail de confirmation au demandeur
         $email = $user->email;
-        Mail::to($email)->send(new ConfirmationDemandeSession($formation, $str));
+        Mail::mailer('smtp2')->to($email)->send(new ConfirmationDemandeSession($formation, $str));
 
         return new JsonResponse([], 200);
     }

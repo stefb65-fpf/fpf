@@ -27,6 +27,7 @@ class ConfirmationDemandeSession extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: 'formations@federation-photo.fr',
             subject: 'FPF // Demande d\'organisation pour la formation '.$this->formation->name,
         );
     }

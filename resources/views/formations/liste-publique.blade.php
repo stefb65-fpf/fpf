@@ -1,17 +1,24 @@
-@extends('layouts.account')
-@section('contentaccount')
-    <div class="accountContent">
-        <h1 class="mt25">MES FORMATIONS</h1>
-        @if($personne->avoir_formation > 0)
-            <div class="alertInfo w80">
-                <p>
-                    <span class="bold">Informations !</span>
-                    Suite à désinscription d'une ou plusieurs sessions de formation, vous disposez d'un avoir formation de {{ number_format($personne->avoir_formation, 2, ',', ' ') }} €.
-                    Vous pouvez l'utiliser pour vous inscrire à une nouvelle formation.
-                </p>
-            </div>
-        @endif
-        <div class="cardList mt25">
+@extends('layouts.login')
+@section('content')
+{{--    <div class="alertInfo mb25 w80">--}}
+{{--        <div>--}}
+{{--            <span class="bold">Problème de connexion ?</span>--}}
+{{--            Vous n'arrivez pas à vous connecter avec vos indentifiants FPF ?--}}
+{{--            C'est normal, nous avons changé de système d'authentification. Désormais vous allez devoir vous connecter avec votre adresse e-mail et votre mot de passe.--}}
+{{--            A votre première connexion, vous devrez initialiser votre mot de passe en cliquant sur le lien "Vous avez un compte FPF mais c'est votre première connexion ?"--}}
+{{--            sur la <a href="{{ env('APP_URL') }}login" style="text-decoration: underline; font-weight: bolder;">page d'authentification</a>.--}}
+{{--        </div>--}}
+{{--    </div>--}}
+    <div class="w80 mb25 mt25" style="margin: 0 auto">
+        <div>
+            Découvrez les formations proposées par la Fédération Photographique de France. Vous pouvez consulter les formations ci-dessous mais pour vous inscire, vous devez adhérer à la FPF.<br>
+            Pour ce faire, vous pouvez :
+            <ul class="ml40">
+                <li>devenir adhérent individuel en <a href="{{ route('registerAdhesion') }}" class="blue">créant un compte</a></li>
+                <li>adhérer à un club dont vous pouvez trouver <a href="https://federation-photo.fr/les-clubs/" class="blue">la liste sur notre site public</a></li>
+            </ul>
+        </div>
+        <div class="cardList mt50">
             @foreach($formations as $formation)
                 <div class="card">
                     <div class="inlineMd">
@@ -25,21 +32,21 @@
                             @if($formation->type == 1 || $formation->type == 2)
                                 <div class="tag bgPurpleLight">Présentiel</div>
                             @endif
-                            {{--                                TODO: gérer le tag dernières places en fonction des places réservées et des places disponibles--}}
                             @if($formation->places <  5)
                                 <div class="tag bgRed">Dernières Places</div>
                             @endif
                             @if($formation->categorie)
                                 <div class="tag bgGreen">{{$formation->categorie->name}}</div>
                             @endif
-                                @if(sizeof($formation->sessions->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))) > 0)
-                                    <div class="tag" style="background-color: #3c3c3c">
-                                        Prochaines dates
-                                        @foreach($formation->sessions->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
-                                            <span class="ml10">{{ date("d/m/Y",strtotime($session->start_date)) }}</span>
-                                        @endforeach
-                                    </div>
-                                @endif
+                            @if(sizeof($formation->sessions->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))) > 0)
+                                <div class="tag" style="background-color: #3c3c3c">
+                                    Prochaines dates
+                                    @foreach($formation->sessions->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
+                                        <span class="ml10">{{ date("d/m/Y",strtotime($session->start_date)) }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+
                         </div>
                         <div class="right">
                             @if($formation->reviews)
@@ -105,14 +112,14 @@
                                         Débutant/Intermédiaire
                                         @break
                                     @case (2)
-                                    Confirmé
-                                    @break
+                                        Confirmé
+                                        @break
                                     @case(1)
-                                    Intermédiaire
-                                    @break
+                                        Intermédiaire
+                                        @break
                                     @default
-                                    Débutant
-                                    @break
+                                        Débutant
+                                        @break
                                 @endswitch
                             </div>
                             @if($formation->duration)
@@ -136,20 +143,14 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="d-flex gap20">
                         <a class="redBtn md-mt-15 md-mx-auto"
-                           href="{{ route('mes-formations.detail', $formation->id) }}">Voir la Formation</a>
-                        <a class="orangeBtn md-mt-15 md-mx-auto"
-                           href="mailto:formations@federation-photo.fr?subject=Formation FPF : {{ $formation->name }}">Contactez-nous</a>
-                        </div>
+                           href="{{ route('formations.publiques.detail', $formation->id) }}">Voir la Formation</a>
                     </div>
                 </div>
             @endforeach
         </div>
-
     </div>
 @endsection
-
 @section('css')
     <link href="{{ asset('css/formations_fpf.css') }}" rel="stylesheet">
 @endsection

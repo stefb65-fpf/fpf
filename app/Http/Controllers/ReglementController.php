@@ -8,6 +8,7 @@ use App\Concern\Tools;
 use App\Models\Inscrit;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Session;
 use App\Models\Souscription;
 use Illuminate\Http\Request;
 
@@ -139,6 +140,34 @@ class ReglementController extends Controller
                 $description = "Inscription à la formation ".$inscrit->session->formation->name;
                 $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
                 $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->amount, 'personne_id' => $inscrit->personne->id];
+                $this->createAndSendInvoice($datai);
+            }
+        }
+        // sinon on ne fait rien
+        echo 'ok';
+    }
+
+
+
+    public function notificationPaiementSession(Request $request) {
+        $result = $this->getMonextResult($request->token);
+        if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
+            // on traite le règlement
+            $session = Session::where('monext_token', $request->token)->where('attente_paiement', 1)->first();
+            if ($session) {
+                // on met à jour le flag attente_paiement à 0 pour l'inscrit
+                $data = ['attente_paiement' => 0, 'paiement_status' => 1];
+                $session->update($data);
+
+                $description = "Prise en charge de la session de formation ".$session->formation->name;
+                if ($session->club_id) {
+                    $ref = 'SESSION-FORMATION-'.$session->club_id.'-'.$session->id;
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'club_id' => $session->club_id];
+                } else {
+                    $ref = 'SESSION-FORMATION-'.$session->ur_id.'-'.$session->id;
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'ur_id' => $session->ur_id];
+                }
+
                 $this->createAndSendInvoice($datai);
             }
         }

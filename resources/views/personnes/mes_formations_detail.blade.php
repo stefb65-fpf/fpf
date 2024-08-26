@@ -146,6 +146,16 @@
                         @foreach($formation->sessions as $session)
                             @if($session->start_date >= date('Y-m-d'))
                                 <div class="sessionContainer">
+                                    @if($session->club_id)
+                                        <div class="bold">Organisé par le club {{ $session->nom_club }}</div>
+                                    @else
+                                        @if($session->ur_id)
+                                            <div class="bold">Organisé par l'UR {{ str_pad($session->ur_id, 2, '0', STR_PAD_LEFT) }}</div>
+                                        @else
+                                            <div class="bold">Organisé par la FPF</div>
+                                        @endif
+                                    @endif
+                                    <div class="sessionContainerWrapper">
                                     <div class="start">
                                         <div class="icon mr10">
                                             <svg width="22" height="22" viewBox="0 0 22 22" fill="none"
@@ -237,6 +247,7 @@
 {{--                                                @endif--}}
 {{--                                            @endif--}}
                                         @endif
+                                    </div>
                                     </div>
                                 </div>
                             @endif

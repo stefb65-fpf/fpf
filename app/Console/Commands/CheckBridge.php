@@ -6,9 +6,11 @@ use App\Concern\Api;
 use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Mail\ConfirmationInscriptionFormation;
+use App\Mail\ConfirmationPriseEnChargeSession;
 use App\Models\Inscrit;
 use App\Models\Personne;
 use App\Models\Reglement;
+use App\Models\Session;
 use App\Models\Souscription;
 use App\Models\Utilisateur;
 use Illuminate\Console\Command;
@@ -167,7 +169,7 @@ class CheckBridge extends Command
                     $personne->update(['avoir_formation' => 0]);
 
                     $email = $inscrit->personne->email;
-                    $mailSent = Mail::to($email)->send(new ConfirmationInscriptionFormation($inscrit->session));
+                    $mailSent = Mail::mailer('smtp2')->to($email)->send(new ConfirmationInscriptionFormation($inscrit->session));
                     $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
                     $sujet = "FPF // Inscription à la formation $formation->name";
@@ -187,6 +189,64 @@ class CheckBridge extends Command
                 }
                 if ($tab_reponse->status == 'REVOKED' || $tab_reponse->status == 'EXPIRED') {
                     $inscrit->delete();
+                }
+            }
+        }
+
+
+
+        $sessions = Session::where('attente_paiement', 1)->whereNotNull('bridge_id')->get();
+        foreach ($sessions as $session) {
+            $url = 'https://api.bridgeapi.io/v2/payment-links/'. $session->bridge_id;
+            list($status, $reponse) = $this->callBridge($url, 'GET', null);
+            if ($status == 200) {
+                $tab_reponse = json_decode($reponse);
+                if ($tab_reponse->status == 'COMPLETED') {
+                    // le paiement de la session de formation a été effectué
+                    $data = ['attente_paiement' => 0, 'paiement_status' => 1];
+                    $session->update($data);
+
+                    $description = "Prise en charge de la session de formation ".$session->formation->name;
+                    $contact = null;
+                    if ($session->club_id) {
+                        $ref = 'SESSION-FORMATION-'.$session->club_id.'-'.$session->id;
+                        $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'club_id' => $session->club_id];
+
+                        // on récupère le contact du club
+                        $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                            ->where('utilisateurs.clubs_id', $session->club_id)
+                            ->where('fonctionsutilisateurs.fonctions_id', 97)
+                            ->first();
+                    } else {
+                        $ref = 'SESSION-FORMATION-'.$session->ur_id.'-'.$session->id;
+                        $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'ur_id' => $session->ur_id];
+
+                        // on récupère le président UR
+                        $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                            ->where('utilisateurs.urs_id', $session->ur_id)
+                            ->where('fonctionsutilisateurs.fonctions_id', 57)
+                            ->first();
+                    }
+                    $this->createAndSendInvoice($datai);
+
+                    if ($contact) {
+                        $email = $contact->personne->email;
+                        $mailSent = Mail::to($email)->send(new ConfirmationPriseEnChargeSession($session));
+                        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+                        $sujet = "Prise en charge de la session de formation ".$session->formation->name;
+                        $mail = new \stdClass();
+                        $mail->titre = $sujet;
+                        $mail->destinataire = $email;
+                        $mail->contenu = $htmlContent;
+                        $this->registerMail($contact->personne->id, $mail);
+
+                        $this->registerAction($contact->personne->id, 2, $sujet);
+                    }
+                }
+                if ($tab_reponse->status == 'REVOKED' || $tab_reponse->status == 'EXPIRED') {
+                    $data = ['attente_paiement' => 0, 'bridge_id' => null, 'bridge_link' => null];
+                    $session->update($data);
                 }
             }
         }

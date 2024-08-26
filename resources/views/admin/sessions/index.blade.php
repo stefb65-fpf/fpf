@@ -20,6 +20,11 @@
                     @foreach($formation->demandes as $demande)
                         <li>
                             {{ $demande->club_id ? 'Club '.$demande->club->nom : 'UR '.$demande->ur->nom }}
+                            @if($demande->pec > 0)
+                                - Montant de la prise en charge {{ $demande->pec }} €
+                                - Prix restant à charge des adhérents: {{ round(($formation->global_price - $demande->pec) / $formation->places, 2) }} €
+                                (sur la base de {{ $formation->places }} places)
+                            @endif
                         </li>
                     @endforeach
                 </ul>
@@ -32,13 +37,16 @@
                 <thead>
                 <tr>
                     <th>Date de début</th>
+                    <th>Fin inscription</th>
                     <th>UR / Club</th>
                     <th>Type</th>
                     <th>Prix</th>
+                    <th>Prise en charge</th>
                     <th>Places</th>
                     <th>Places en attente</th>
                     <th>Inscrits</th>
                     <th>Statut facturation</th>
+                    <th>Paiement organisateur</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -46,6 +54,7 @@
                 @foreach($sessions as $session)
                     <tr>
                         <td>{{ substr($session->start_date, 8, 2).'/'.substr($session->start_date, 5, 2).'/'.substr($session->start_date, 0, 4) }}</td>
+                        <td>{{ substr($session->end_inscription, 8, 2).'/'.substr($session->end_inscription, 5, 2).'/'.substr($session->end_inscription, 0, 4) }}</td>
                         <td>
                             @if($session->ur_id)
                                 UR {{ str_pad($session->ur_id, 2, '0', STR_PAD_LEFT) }}
@@ -67,6 +76,7 @@
                             @endif
                         </td>
                         <td>{{ $session->price }} €</td>
+                        <td>{{ $session->pec }} €</td>
                         <td>{{ $session->places }}</td>
                         <td>{{ $session->waiting_places }}</td>
                         <td>
@@ -86,6 +96,19 @@
                                 Facture payée
                                 @break
                             @endswitch
+                        </td>
+                        <td>
+                            @if($session->pec > 0)
+                                @if($session->paiement_status == 1)
+                                    <span class="alertSuccess">Paiement effectué</span>
+                                @else
+                                    @if($session->attente_paiement == 1)
+                                        <span class="alertWarning">Paiement en cours</span>
+                                    @else
+                                        <span class="alertDanger">Paiement non effectué</span>
+                                    @endif
+                                @endif
+                            @endif
                         </td>
                         <td>
                             <a href="{{ route('sessions.edit', $session) }}" class="btnSmall adminPrimary">Modifier</a>

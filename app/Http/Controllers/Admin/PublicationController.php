@@ -92,6 +92,7 @@ class PublicationController extends Controller
         }
         $saison = (in_array(date('m'), ['09', '10', '11', '12']) ? date('Y') : date('Y') - 1);
         $nb_clubs = Club::where('statut', 2)->count();
+        $nb_clubs_old = Club::where('statut', '<', 3)->count();
         $nb_individuels = Utilisateur::whereIn('statut', [2, 3])->whereIn('ct', ['7', '8', '9', 'F'])->count();
         $nb_abonnes = Personne::where('is_abonne', 1)->where('is_adherent', 0)->count();
         $nb_ca = Utilisateur::where('ca', 1)->count();
@@ -110,7 +111,7 @@ class PublicationController extends Controller
         $nb_ce = sizeof($ce);
         $urs = Ur::orderBy('id')->get();
         return view('admin.publications.routageFede',
-            compact('nb_clubs', 'nb_individuels', 'nb_ca', 'nb_ce', 'urs', 'nb_abonnes', 'nb_adherents_clubs', 'nb_adherents_prec', 'nb_adherents_clubs_individuels'));
+            compact('nb_clubs', 'nb_clubs_old', 'nb_individuels', 'nb_ca', 'nb_ce', 'urs', 'nb_abonnes', 'nb_adherents_clubs', 'nb_adherents_prec', 'nb_adherents_clubs_individuels'));
     }
 
     public function etiquettes()
@@ -205,6 +206,10 @@ class PublicationController extends Controller
                     break;
                 case 8 : // adhérents club
                     $utilisateurs = $this->getDistinctAdherents();
+                    break;
+                case 9 : // contacts club
+                    $urs_id = $request->ur;
+                    $utilisateurs = $this->getContactsOldClub($urs_id);
                     break;
                 default : break;
             }
@@ -446,6 +451,20 @@ class PublicationController extends Controller
             ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
             ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
             ->where('clubs.statut', 2)
+            ->whereNotNull('utilisateurs.personne_id')
+            ->where('fonctions.id', 97);
+        if ($urs_id != 0) {
+            $query->where('clubs.urs_id', $urs_id);
+        }
+        return  $query->selectRaw('DISTINCT utilisateurs.id, utilisateurs.*')->orderBy('identifiant')->get();
+    }
+
+    protected function getContactsOldClub($urs_id) {
+        // on récupère les contacts des clubs
+        $query =  Utilisateur::join('clubs', 'utilisateurs.clubs_id', '=', 'clubs.id')
+            ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
+            ->where('clubs.statut', '<', 3)
             ->whereNotNull('utilisateurs.personne_id')
             ->where('fonctions.id', 97);
         if ($urs_id != 0) {

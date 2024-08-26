@@ -52,7 +52,7 @@ class SessionController extends Controller
      */
     public function store(SessionRequest $request, Formation $formation)
     {
-        $data = $request->only('price', 'price_not_member', 'places', 'start_date', 'end_date', 'waiting_places', 'type', 'location');
+        $data = $request->only('price', 'price_not_member', 'places', 'start_date', 'end_date', 'waiting_places', 'type', 'location', 'end_inscription');
         if ($request->numero_club != null) {
             $club = Club::where('numero', $request->numero_club)->first();
             if (!$club) {
@@ -60,6 +60,21 @@ class SessionController extends Controller
             }
             $data['club_id'] = $club->id;
         }
+        if ($request->pec) {
+            $data['pec'] = $request->pec;
+        } else {
+            $data['pec'] = 0;
+        }
+        // si la date d'inscription n'est pas renseignée, on prend la date de début de la session moins deux jours
+        if ($request->end_inscription == null) {
+            $data['end_inscription'] = date('Y-m-d', strtotime($request->start_date . ' -2 days'));
+        } else {
+            // si la date d'inscription est renseignée, on vérifie si elle est inférieure à la date de début de la session
+            if ($request->end_inscription >= $request->start_date) {
+                return redirect()->back()->with('error', 'La date de fin d\'inscription doit être inférieure à la date de début de la session')->withInput();
+            }
+        }
+
         if ($request->ur_id != 0) {
             $data['ur_id'] = $request->ur_id;
         }
@@ -90,13 +105,27 @@ class SessionController extends Controller
     public function update(Request $request, Session $session)
     {
         $formation  = Formation::where('id', $session->formation_id)->first();
-        $data = $request->only('price', 'price_not_member', 'places', 'start_date', 'end_date', 'waiting_places', 'type', 'location');
+        $data = $request->only('price', 'price_not_member', 'places', 'start_date', 'end_date', 'waiting_places', 'type', 'location', 'end_inscription');
         if ($request->numero_club != null) {
             $club = Club::where('numero', $request->numero_club)->first();
             if (!$club) {
                 return redirect()->back()->with('error', 'Le n\'existe pas')->withInput();
             }
             $data['club_id'] = $club->id;
+        }
+        if ($request->pec) {
+            $data['pec'] = $request->pec;
+        } else {
+            $data['pec'] = 0;
+        }
+        // si la date d'inscription n'est pas renseignée, on prend la date de début de la session moins deux jours
+        if ($request->end_inscription == null) {
+            $data['end_inscription'] = date('Y-m-d', strtotime($request->start_date . ' -2 days'));
+        } else {
+            // si la date d'inscription est renseignée, on vérifie si elle est inférieure à la date de début de la session
+            if ($request->end_inscription >= $request->start_date) {
+                return redirect()->back()->with('error', 'La date de fin d\'inscription doit être inférieure à la date de début de la session')->withInput();
+            }
         }
         if ($request->ur_id != 0) {
             $data['ur_id'] = $request->ur_id;

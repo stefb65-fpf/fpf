@@ -7,7 +7,9 @@ use App\Concern\FormationTools;
 use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Mail\ConfirmationInscriptionFormation;
+use App\Mail\ConfirmationPriseEnChargeSession;
 use App\Mail\SendInvoice;
+use App\Models\Club;
 use App\Models\Evaluation;
 use App\Models\Evaluationstheme;
 use App\Models\Formation;
@@ -15,6 +17,7 @@ use App\Models\Inscrit;
 use App\Models\Interest;
 use App\Models\Personne;
 use App\Models\Session;
+use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use function Psy\debug;
@@ -28,7 +31,7 @@ class FormationController extends Controller
 
     public function __construct()
     {
-        $this->middleware('checkLogin');
+        $this->middleware('checkLogin')->except(['listePublique', 'detailPublique']);
     }
 
     public function accueil()
@@ -74,6 +77,10 @@ class FormationController extends Controller
                 }
             }
             if ($session->club_id != '') {
+                $club = Club::where('id', $session->club_id)->selectRaw('nom')->first();
+                if ($club) {
+                    $formation->sessions[$k]->nom_club = $club->nom;
+                }
                 // on regarde si l'ur de la session est la même sque celui du user
                 if ($user->cartes[0]->clubs_id != $session->club_id) {
                     $session_full = 1;
@@ -108,6 +115,31 @@ class FormationController extends Controller
         }
     }
 
+    public function cancelPaiementSession(Request $request) {
+        $session = Session::where('monext_token', $request->token)->first();
+        if ($session) {
+            $datas = ['monext_token' => null, 'monext_link' => null, 'attente_paiement' => 0];
+            $session->update($datas);
+            if ($session->club_id) {
+                return redirect()->route('clubs.formations')->with('error', "Votre paiement a été annulé");
+            } else {
+                return redirect()->route('urs.formations')->with('error', "Votre paiement a été annulé");
+            }
+        } else {
+            return redirect()->route('clubs.formations')->with('error', "Le paiement a été annulé");
+        }
+    }
+
+    public function attentePaiementValidationSession($session_is)
+    {
+        $session = Session::where('id', $session_is)->first();
+        if ($session->club_id) {
+            return redirect()->route('clubs.formations')->with('success', "Si vous avez procédé au paiement par virement de la prise en charge, celle-ci sera traitée d'ici quelques minutes et un email vous informera de sa prise en compte");
+        } else {
+            return redirect()->route('urs.formations')->with('success', "Si vous avez procédé au paiement par virement de la prise en charge, celle-ci sera traitée d'ici quelques minutes et un email vous informera de sa prise en compte");
+        }
+    }
+
     public function validationPaiement(Request $request)
     {
         $result = $this->getMonextResult($request->token);
@@ -123,7 +155,7 @@ class FormationController extends Controller
                 $personne->update(['avoir_formation' => 0]);
 
                 $email = $inscrit->personne->email;
-                $mailSent = Mail::to($email)->send(new ConfirmationInscriptionFormation($inscrit->session));
+                $mailSent = Mail::mailer('smtp2')->to($email)->send(new ConfirmationInscriptionFormation($inscrit->session));
                 $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
                 $sujet = "FPF // Inscription à la formation $formation->name";
@@ -141,6 +173,64 @@ class FormationController extends Controller
                 $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->amount, 'personne_id' => $inscrit->personne->id];
                 $this->createAndSendInvoice($datai);
                 return redirect()->route('formations.detail', $formation->id)->with('success', "Votre paiement a été pris en compte et vous êtes désormais inscrit à cette formation");
+            }
+        } else {
+            return redirect()->route('formations.accueil')->with('error', "Votre paiement n'a pas été accepté");
+        }
+    }
+
+    public function validationPaiementSession(Request $request)
+    {
+        $result = $this->getMonextResult($request->token);
+        if ($result['code'] == '00000' && $result['message'] == 'ACCEPTED') {
+            $session = Session::where('monext_token', $request->token)->where('attente_paiement', 1)->first();
+            if ($session) {
+                // on met à jour le flag attente_paiement à 0 pour la session
+                $data = ['attente_paiement' => 0, 'paiement_status' => 1];
+                $session->update($data);
+
+                $description = "Prise en charge de la session de formation ".$session->formation->name;
+                $contact = null;
+                if ($session->club_id) {
+                    $ref = 'SESSION-FORMATION-'.$session->club_id.'-'.$session->id;
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'club_id' => $session->club_id];
+
+                    // on récupère le contact du club
+                    $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                        ->where('utilisateurs.clubs_id', $session->club_id)
+                        ->where('fonctionsutilisateurs.fonctions_id', 97)
+                        ->first();
+                } else {
+                    $ref = 'SESSION-FORMATION-'.$session->ur_id.'-'.$session->id;
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'ur_id' => $session->ur_id];
+
+                    // on récupère le président UR
+                    $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                        ->where('utilisateurs.urs_id', $session->ur_id)
+                        ->where('fonctionsutilisateurs.fonctions_id', 57)
+                        ->first();
+                }
+                $this->createAndSendInvoice($datai);
+
+                if ($contact) {
+                    $email = $contact->personne->email;
+                    $mailSent = Mail::to($email)->send(new ConfirmationPriseEnChargeSession($session));
+                    $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+                    $sujet = "Prise en charge de la session de formation ".$session->formation->name;
+                    $mail = new \stdClass();
+                    $mail->titre = $sujet;
+                    $mail->destinataire = $email;
+                    $mail->contenu = $htmlContent;
+                    $this->registerMail($contact->personne->id, $mail);
+
+                    $this->registerAction($contact->personne->id, 2, $sujet);
+                }
+                if ($session->club_id) {
+                    return redirect()->route('clubs.formations')->with('success', "Votre paiement pour la prise en charge de la session a bien été pris en compte");
+                } else {
+                    return redirect()->route('urs.formations')->with('success', "Votre paiement pour la prise en charge de la session a bien été pris en compte");
+                }
             }
         } else {
             return redirect()->route('formations.accueil')->with('error', "Votre paiement n'a pas été accepté");
@@ -252,6 +342,35 @@ class FormationController extends Controller
             $formation->update($dataf);
         }
         return redirect()->route('accueil')->with('success', "Votre évaluation a bien été prise en compte");
+    }
+
+    public function listePublique() {
+        $formations = Formation::where('published', 1)->orderByDesc('created_at')->get();
+        foreach ($formations as $formation) {
+            if (sizeof($formation->sessions->where('start_date', '>=', date('Y-m-d'))) > 0) {
+                $formation->first_date = $formation->sessions->sortBy('start_date')->where('start_date', '>=', date('Y-m-d'))->first()->start_date;
+            } else {
+                $formation->first_date = '2222-01-01';
+            }
+
+            $formation->location = $this->getFormationCities($formation, $formation->location);
+        }
+        $formations = $formations->sortBy('first_date');
+
+        return view('formations.liste-publique', compact('formations'));
+    }
+
+    public function detailPublique(Formation $formation) {
+        foreach ($formation->sessions as $k => $session) {
+            if ($session->club_id != '') {
+                $club = Club::where('id', $session->club_id)->selectRaw('nom')->first();
+                if ($club) {
+                    $formation->sessions[$k]->nom_club = $club->nom;
+                }
+            }
+        }
+        $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
+        return view('formations.detail-publique', compact('formation'));
     }
 
 }

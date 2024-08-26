@@ -15,6 +15,9 @@
                     @if($club)
                         <div style="font-weight: bolder; font-size: 15px;">{{ $club->nom }}</div>
                     @endif
+                    @if($ur)
+                        <div style="font-weight: bolder; font-size: 15px;">{{ $ur->nom }}</div>
+                    @endif
                     <div>{{ $adresse->libelle1 }}</div>
                     <div>{{ $adresse->libelle2 }}</div>
                     <div>{{ $adresse->codepostal.' '.$adresse->ville }}</div>

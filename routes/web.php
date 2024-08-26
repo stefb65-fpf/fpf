@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/registerAdhesion', [App\Http\Controllers\LoginController::class, 'registerAdhesion'])->name('registerAdhesion');
 
 //gestion des adhésions et abonnements club par responsable de clubs
+Route::get('/clubs/inscrits/{session}/liste', [App\Http\Controllers\ClubController::class, 'inscrits'])->name('clubs.sessions.inscrits');
+Route::get('/clubs/inscrits/{session}/export', [App\Http\Controllers\ClubController::class, 'export'])->name('clubs.inscrits.export');
+Route::get('/clubs/formations', [App\Http\Controllers\ClubController::class, 'formations'])->name('clubs.formations');
 Route::get('/clubs/florilege', [App\Http\Controllers\ClubController::class, 'florilege'])->name('clubs.florilege');
 Route::get('/clubs/statistiques', [App\Http\Controllers\ClubController::class, 'statistiques'])->name('clubs.statistiques');
 Route::get('/clubs/statistiques_votes_phases', [App\Http\Controllers\ClubController::class, 'statistiquesVotesPhases'])->name('clubs.statistiques_votes_phases');
@@ -35,6 +38,9 @@ Route::get('/personnes/attente_paiement_validation', [App\Http\Controllers\Perso
 
 Route::get('/urs/infos_ur/', [App\Http\Controllers\UrController::class, 'infosUr'])->name('urs.infos_ur');
 
+Route::get('/urs/inscrits/{session}/liste', [App\Http\Controllers\UrController::class, 'inscrits'])->name('urs.sessions.inscrits');
+Route::get('/urs/inscrits/{session}/export', [App\Http\Controllers\UrController::class, 'export'])->name('urs.inscrits.export');
+Route::get('/urs/formations', [App\Http\Controllers\UrController::class, 'formations'])->name('urs.formations');
 Route::get('/urs/statistiques', [App\Http\Controllers\UrController::class, 'statistiques'])->name('urs.statistiques');
 Route::get('/urs/statistiques_votes', [App\Http\Controllers\UrController::class, 'statistiquesVotes'])->name('urs.statistiques_votes');
 Route::get('/urs/statistiques_votes_phases', [App\Http\Controllers\UrController::class, 'statistiquesVotesPhases'])->name('urs.statistiques_votes_phases');
@@ -215,13 +221,21 @@ Route::put('/resetEmail/{personne}', [App\Http\Controllers\LoginController::clas
 // affichage des formations et actions liées à l'inscription
 Route::get('/formations', [App\Http\Controllers\FormationController::class, 'accueil'])->name('formations.accueil');
 Route::get('/formations/cancel_paiement', [App\Http\Controllers\FormationController::class, 'cancelPaiement']);
+Route::get('/formations/publiques', [App\Http\Controllers\FormationController::class, 'listePublique'])->name('formations.publiques');
 Route::get('/formations/validation_paiement', [App\Http\Controllers\FormationController::class, 'validationPaiement']);
 Route::get('/formations/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiementFormation']);
 Route::get('/formations/attente_paiement_validation/{formation}', [App\Http\Controllers\FormationController::class, 'attentePaiementValidation']);
 Route::get('/formations/{formation}/detail', [App\Http\Controllers\FormationController::class, 'detail'])->name('formations.detail');
+Route::get('/formations/publiques/{formation}/detail', [App\Http\Controllers\FormationController::class, 'detailPublique'])->name('formations.publiques.detail');
 Route::get('/formations/{secure_code}/payWithSecureCode', [App\Http\Controllers\FormationController::class, 'payWithSecureCode'])->name('formations.payWithSecureCode');
 Route::get('/formations/{md5}/evaluation', [App\Http\Controllers\FormationController::class, 'evaluation'])->name('formations.evaluation');
 Route::post('/formations/{personne_id}/{session_id}/saveEvaluation', [App\Http\Controllers\FormationController::class, 'saveEvaluation'])->name('formations.saveEvaluation');
+
+
+Route::get('/sessions/cancel_paiement', [App\Http\Controllers\FormationController::class, 'cancelPaiementSession']);
+Route::get('/sessions/validation_paiement', [App\Http\Controllers\FormationController::class, 'validationPaiementSession']);
+Route::get('/sessions/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiementSession']);
+Route::get('/sessions/attente_paiement_validation/{session}', [App\Http\Controllers\FormationController::class, 'attentePaiementValidationSession']);
 
 // gestion des clubs par responsable de clubs
 Route::get('/clubs/gestion', [App\Http\Controllers\ClubController::class, 'gestion'])->name('clubs.gestion');

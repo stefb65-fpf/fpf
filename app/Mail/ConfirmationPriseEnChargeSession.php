@@ -9,18 +9,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SendFormationPaymentLink extends Mailable
+class ConfirmationPriseEnChargeSession extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $inscrit;
+    public $session;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($inscrit)
+    public function __construct($session)
     {
-        $this->inscrit = $inscrit;
+        $this->session = $session;
     }
 
     /**
@@ -29,8 +29,7 @@ class SendFormationPaymentLink extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: 'formations@federation-photo.fr',
-            subject: 'FPF // Lien de paiement pour la formation '.$this->inscrit->session->formation->name
+            subject: "FPF // Prise en charge financière de la session de formation ".$this->session->formation->name,
         );
     }
 
@@ -40,7 +39,7 @@ class SendFormationPaymentLink extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.SendFormationPaymentLink',
+            view: 'emails.ConfirmationPriseEnChargeSession',
         );
     }
 

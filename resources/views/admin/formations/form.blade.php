@@ -67,15 +67,15 @@
                     </div>
                 </div>
                 <div class="formUnit w100">
-                    <div class="formLabel ">* Prix</div>
-                    <input value="{{ old('price',  $formation->price) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation" name="price"/>
+                    <div class="formLabel ">* Prix inscription</div>
+                    <input value="{{ old('price',  $formation->price) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation pour un adhérent" name="price"/>
                     <div class="w100 helper">
                         Le prix pourra être redéfini pour chaque session
                     </div>
                 </div>
                 <div class="formUnit w100">
                     <div class="formLabel ">* Prix non adhérent</div>
-                    <input value="{{ old('price_not_member',  $formation->price_not_member) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation" name="price_not_member"/>
+                    <input value="{{ old('price_not_member',  $formation->price_not_member) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation pour un non adhérent" name="price_not_member"/>
                     <div class="w100 helper">
                         Le prix non adhérent pourra être redéfini pour chaque session
                     </div>
@@ -98,6 +98,14 @@
                 <div class="formUnit w100">
                     <div class="formLabel ">Durée</div>
                     <input value="{{ old('duration',  $formation->duration) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Durée de la formation" name="duration"/>
+                </div>
+                <div class="formUnit w100">
+                    <div class="formLabel ">Coût global</div>
+                    <input value="{{ old('global_price',  $formation->global_price) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Coût global de la formation" name="global_price"/>
+                    <div class="w100 helper">
+                        Le coût global de la formation est le prix qu'une UR ou un club devra débourser pour orgnaiser une session de formation sans que les participants n'aient à payer de leur poche.<br>
+                        Si ce coût global est renseigné et supérieur à 0, la prise en charge sera proposée aux URs et clubs sollicitant l'organisation de la formation.
+                    </div>
                 </div>
                 <div class="formUnit w100">
                     <div class="formLabel "></div>

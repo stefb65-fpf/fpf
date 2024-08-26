@@ -6,6 +6,7 @@ use App\Concern\ClubTools;
 use App\Concern\Tools;
 use App\Concern\UrTools;
 use App\Concern\VoteTools;
+use App\Exports\InscritExport;
 use App\Http\Requests\AdherentRequest;
 use App\Http\Requests\AdressesRequest;
 use App\Http\Requests\ClubReunionRequest;
@@ -23,6 +24,7 @@ use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Reversement;
+use App\Models\Session;
 use App\Models\Souscription;
 use App\Models\Ur;
 use App\Models\Utilisateur;
@@ -31,6 +33,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UrController extends Controller
 {
@@ -48,7 +51,9 @@ class UrController extends Controller
     public function gestion()
     {
         $ur = $this->getUr();
-        return view('urs.gestion', compact('ur'));
+        // on regarde si'il y a des sessions de formation à venir pour l'UR
+        $nb_sessions = Session::where('ur_id', $ur->id)->where('start_date', '>=', date('Y-m-d'))->orderBy('start_date')->count();
+        return view('urs.gestion', compact('ur', 'nb_sessions'));
     }
 
     // affichage de la liste des adhérents d'une UR
@@ -318,9 +323,16 @@ class UrController extends Controller
         $datap['phone_mobile'] = $phone_mobile;
 
         $personne->update($datap);
+        if (sizeof($personne->adresses) > 0) {
+            $adresse = $personne->adresses[0];
+            $adresse->update($dataa);
+        } else {
+            // si l'adresse n'existe pas, on la crée
+            $adresse = Adresse::create($dataa);
+            // on attache l'adresse à la personne
+            $personne->adresses()->attach($adresse->id);
+        }
 
-        $adresse_1 = $personne->adresses[0];
-        $adresse_1->update($dataa);
 
         if (isset($request->villeLivraison) && isset($request->codepostalLivraison) && isset($request->paysLivraison) && isset($personne->adresses[1])) {
             $dataa2 = $request->only('libelle1Livraison', 'libelle2Livraison', 'codepostalLivraison', 'villeLivraison', 'telephonedomicileLivraison');
@@ -328,8 +340,15 @@ class UrController extends Controller
             if ($pays) {
                 $dataa2['pays'] = $pays->nom;
             }
-            $adresse_2 = $personne->adresses[1];
-            $adresse_2->update($dataa2);
+            if (sizeof($personne->adresses) > 1) {
+                $adresse_2 = $personne->adresses[1];
+                $adresse_2->update($dataa2);
+            } else {
+                // si l'adresse n'existe pas, on la crée
+                $adresse_2 = Adresse::create($dataa2);
+                // on attache l'adresse à la personne
+                $personne->adresses()->attach($adresse_2->id);
+            }
         }
         $user = session()->get('user');
         if ($user) {
@@ -1105,5 +1124,50 @@ class UrController extends Controller
         list($vote, $adherents) = $this->getNotVotedAdherents($club);
         return view('urs.statistiques.listevotesbyclub', compact('adherents', 'vote', 'club'));
 
+    }
+
+
+    public function formations() {
+        $ur = $this->getUr();
+        $sessions = Session::where('ur_id', $ur->id)->where('start_date', '>=', date('Y-m-d'))->orderBy('start_date')->get();
+        foreach ($sessions as $session) {
+            if ($session->club_id != null) {
+                $club = Club::where('id', $session->club_id)->first();
+                if ($club) {
+                    $session->numero_club = $club->numero;
+                }
+            }
+        }
+        return view('urs.formations.index', compact('sessions', 'ur'));
+    }
+
+    public function inscrits(Session $session) {
+        if (!$this->checkDroit('GESFORUR')) {
+            return redirect()->route('accueil');
+        }
+        return view('urs.formations.inscrits', compact('session'));
+    }
+
+    public function export(Session $session) {
+        // on récupère tous les inscrits de la session
+        $inscrits = $session->inscrits->where('attente', 0)->where('status', 1);
+        foreach ($inscrits as $inscrit) {
+            $utilisateur = Utilisateur::where('personne_id', $inscrit->personne_id)
+                ->whereIn('statut', [0,1,2,3])
+                ->orderByDesc('statut')
+                ->selectRaw('identifiant')
+                ->first();
+            if ($utilisateur) {
+                $inscrit->identifiant = $utilisateur->identifiant;
+            }
+        }
+        $fichier = 'session_'.$session->id.'_inscrits_' . date('YmdHis') . '.xls';
+        if (Excel::store(new InscritExport($inscrits), $fichier, 'xls')) {
+            $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
+            $texte = "Vous pouvez télécharger le fichier en cliquant sur le lien suivant : <a href='" . $file_to_download . "'>Télécharger</a>";
+            return redirect()->route('urs.sessions.inscrits', $session)->with('success', $texte);
+        } else {
+            return redirect()->route('urs.sessions.inscrits', $session)->with('success', "Un problème est survenu lors de l'export");
+        }
     }
 }
