@@ -64,6 +64,7 @@ class ClubController extends Controller
             $query  = $query->where('ct', $type_carte);
         }
         $clubs = $query->paginate(100);
+
         foreach ($clubs as $club) {
             // on récupère le contact
             $contact = DB::table('fonctionsutilisateurs')->join('utilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')

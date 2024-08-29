@@ -1,23 +1,30 @@
-@extends('layouts.pdf-fpf')
+@extends('layouts.pdf-facture')
 
 @section('content')
     <div style="font-size: 13px;">
-        <div style="text-align: center; font-size: 20px;">
-            Référence du règlement : {{ $ref }}
+        <div class="blue-font" style="text-align: left; font-size: 20px; text-transform: uppercase; font-weight: bold;">
+            facture proforma n° {{ $ref }}
         </div>
-        <div style="margin-top: 20px;">
-            Relevé du club {{ str_pad($club->urs_id, 2, '0', STR_PAD_LEFT).'-'.str_pad($club->numero, 4, '0', STR_PAD_LEFT) }} : {{ $club->nom }}
+        <div class="blue-font" style="font-size: 12px; font-weight: lighter; text-transform: uppercase;">
+            (référence à rappeler lors de votre règlement)
         </div>
-        <div style="margin-top: 10px;">
-            Veuillez effectuer un virement d’un montant de {{ number_format($total_montant, 2, ',', '') }} € en indiquant en référence le numéro de bordereau {{ $ref }} à :<br>
-            Fédération photographique de France<br>
-            IBAN : FR76 1751 5900 0008 2229 9272 052<br>
-            BIC : CEPAFRPP751
+        <div style="width: 100%; position: relative; margin-top: 25px;">
+            <div style="position: absolute; right: 0;">
+                <div class="blue-font" style="text-transform: uppercase; font-weight: bolder;">{{ $club->nom }}</div>
+                @if($club->adresse->libelle1)
+                    <div class="blue-font">{{ $club->adresse->libelle1 }}</div>
+                @endif
+                <div class="blue-font">{{ str_pad($club->adresse->codepostal, '0', 5, STR_PAD_LEFT).' '.$club->adresse->ville }}</div>
+            </div>
         </div>
-        <div style="margin-top: 20px">
+{{--        <div style="margin-top: 20px;">--}}
+{{--            Relevé du club {{ str_pad($club->urs_id, 2, '0', STR_PAD_LEFT).'-'.str_pad($club->numero, 4, '0', STR_PAD_LEFT) }} : {{ $club->nom }}--}}
+{{--        </div>--}}
+
+        <div style="margin-top: 80px">
             @if($total_club > 0)
-                <table style="width: 100%; border-spacing: 0px;">
-                    <thead style="background-color: #cccccc">
+                <table class="facture-table" style="width: 100%; border-spacing: 0px;">
+                    <thead class="bg-blue">
                     <tr>
                         <th style="text-align: center">Adhésion club</th>
                         <th style="text-align: center">Adhésion UR</th>
@@ -40,15 +47,15 @@
         </div>
 
         <div style="margin-top: 20px">
-            <table style="width: 100%; border-spacing: 0px;">
-                <thead style="background-color: #cccccc">
+            <table class="facture-table" style="width: 100%; border-spacing: 0px;">
+                <thead class="bg-blue">
                 <tr>
-                    <th style="text-align: left">Adhérent</th>
-                    <th style="text-align: left">Type carte</th>
-                    <th style="text-align: right">Adhésion</th>
-                    <th style="text-align: right">Abonnement</th>
-                    <th style="text-align: right">Florilège</th>
-                    <th style="text-align: right">Total</th>
+                    <th style="text-align: center">Adhérent</th>
+                    <th style="text-align: center">Type carte</th>
+                    <th style="text-align: center">Adhésion</th>
+                    <th style="text-align: center">Abonnement</th>
+                    <th style="text-align: center">Florilège</th>
+                    <th style="text-align: center">Total</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -75,9 +82,9 @@
                     </tr>
                 @endforeach
                 </tbody>
-                <tfoot style="background-color: #cccccc">
-                <tr style="line-height: 30px;">
-                    <td colspan="2" style="text-align: right; font-weight: bolder;">Pour l'ensemble des adhérents</td>
+                <tfoot class="bg-blue" style="color: white">
+                <tr>
+                    <td colspan="2" style="font-weight: bolder;">Total</td>
                     <td style="text-align: right; font-weight: bolder;">
                         {{ $total_adhesion > 0 ? number_format($total_adhesion, 2, ',', '').'€' : '' }}
                     </td>
@@ -95,8 +102,18 @@
             </table>
         </div>
 
-        <div style="margin-top: 50px; text-align: center; font-weight: bolder; font-size: 20px;">
-            Total à régler: {{ number_format($total_montant, 2, ',', '') }} €
+        <div class="blue-font" style="margin-top: 50px; text-transform: uppercase; font-weight: bolder; font-size: 20px;">
+            Montant global à régler: {{ number_format($total_montant, 2, ',', '') }} €
+        </div>
+
+        <div style="margin-top: 10px;">
+            Veuillez envoyer un chèque d'un montant de {{ number_format($total_montant, 2, ',', '') }} € pour le renouvellement ou
+            effectuer un virement de ce montant en rappelant la référence de cette facture proforma à :
+            <div style="margin-top: 20px; margin-left: 10px;">
+                Fédération photographique de France<br>
+                IBAN : FR76 1751 5900 0008 2229 9272 052<br>
+                BIC : CEPAFRPP751
+            </div>
         </div>
     </div>
 @endsection

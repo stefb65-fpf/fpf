@@ -329,7 +329,8 @@ class PublicationController extends Controller
 
     public function generateSouscriptionsColisage() {
         $tab_id = [];
-        for ($ur_id = 1; $ur_id <= 25; $ur_id++) {
+//        for ($ur_id = 1; $ur_id <= 25; $ur_id++) {
+        for ($ur_id = 1; $ur_id <= 24; $ur_id++) {
             $souscriptions_club = Souscription::join('clubs', 'clubs.id', '=', 'souscriptions.clubs_id')
                 ->whereNotNull('souscriptions.clubs_id')
                 ->where('souscriptions.statut', 1)

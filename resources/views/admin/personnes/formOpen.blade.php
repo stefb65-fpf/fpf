@@ -56,7 +56,7 @@
                 <div class="formUnit formUnitAdmin">
                     <div class="formLabel">UR *</div>
                     <select name="urs_id">
-                        @for($i=1; $i <26; $i++)
+                        @for($i=1; $i <25; $i++)
                             <option value="{{ $i }}">UR {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
                         @endfor
                     </select>

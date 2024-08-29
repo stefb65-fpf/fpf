@@ -7,16 +7,48 @@ namespace App\Concern;
 use App\Mail\SendInvoice;
 use App\Mail\SendRenouvellementMail;
 use App\Models\Club;
+use App\Models\Configsaison;
 use App\Models\Personne;
+use App\Models\Reglement;
+use App\Models\Tarif;
 use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 trait Invoice
 {
     protected function createAndSendInvoice($datas) {
         $datai = ['reference' => $datas['reference'], 'description' => $datas['description'], 'montant' => $datas['montant']];
+//        if (isset($datas['renew_club'])) {
+//            $reglement = Reglement::where('reference', $datas['reference'])->first();
+//            $configsaison = Configsaison::where('id', 1)->first();
+//            $montant_florilege = $configsaison->prixflorilegefrance;
+//            $tarif_abonne = Tarif::where('id', 17)->where('statut', 0)->first();
+//            $tarif_abonne_non_adherent = Tarif::where('id', 19)->where('statut', 0)->first();
+//
+//            $utilisateurs = Utilisateur::join('reglementsutilisateurs', 'reglementsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+//                ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+//                ->where('reglementsutilisateurs.reglements_id', $reglement->id)
+//                ->selectRaw('personnes.nom, personnes.prenom, utilisateurs.identifiant, utilisateurs.ct, utilisateurs.statut, reglementsutilisateurs.adhesion, reglementsutilisateurs.abonnement, reglementsutilisateurs.florilege')
+//                ->get();
+//            $tab_adherents = [];
+//            foreach ($utilisateurs as $utilisateur) {
+//                list($tarif_adhesion, $tarif_adhesion_supp) = $this->getTarifByCt($utilisateur->ct);
+//                $tab_adherents[] = [
+//                    'nom' => $utilisateur->nom,
+//                    'prenom' => $utilisateur->prenom,
+//                    'identifiant' => $utilisateur->identifiant,
+//                    'ct' => $utilisateur->ct,
+//                    'adhesion' => $utilisateur->adhesion,
+//                    'abonnement' => in_array($utilisateur->statut, [2,3]) ? $tarif_abonne : $tarif_abonne_non_adherent,
+//                    'florilege' => $utilisateur->florilege > 0 ? round($montant_florilege * $utilisateur->florilege, 2) : 0
+//                ];
+//            }
+//            dd($utilisateurs);
+//
+//        }
         $adresse = null; $personne = null; $club = null; $ur = null;
         if (isset($datas['personne_id'])) {
             $personne = Personne::where('id', $datas['personne_id'])->first();
@@ -66,6 +98,7 @@ trait Invoice
             ->save($dir.'/'.$name);
         chown($dir.'/'.$name, 'www-data');
         chgrp($dir.'/'.$name, 'www-data');
+
 
         if ($personne) {
             $email = $personne->email;

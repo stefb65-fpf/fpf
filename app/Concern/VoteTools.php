@@ -19,7 +19,8 @@ trait VoteTools
         // on récupère le nombre d'adhérents par UR - nombre d'utilisateurs ayant le statut 2 ou 3
         $adherents = Utilisateur::selectRaw('urs_id, COUNT(id) as nb')
             ->whereIn('statut', [2, 3])
-            ->where('urs_id', '<', 26)
+//            ->where('urs_id', '<', 26)
+            ->where('urs_id', '<', 25)
             ->groupBy('urs_id')
             ->get();
         foreach ($adherents as $adherent) {

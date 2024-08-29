@@ -337,13 +337,13 @@ trait Tools
     {
         if ($reglement->clubs_id) {
             $description = "Renouvellement des adhésions et abonnements pour le club";
-            $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'club_id' => $reglement->clubs_id];
+            $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'club_id' => $reglement->clubs_id, 'renew_club' => 1];
             $this->createAndSendInvoice($datai);
         } else {
             if (str_starts_with($reglement->reference, 'ADH-REN-')) {
-                $description = "Renouvellement adhésion individuelle";
+                $description = "Renouvellement adhésion FPF référence " . $reglement->reference;
             } else {
-                $description = "Renouvellement abonnement seul";
+                $description = "Renouvellement abonnement France Photographie référence ".$reglement->reference;
             }
             $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant];
             $utilisateurs = Utilisateur::join('reglementsutilisateurs', 'utilisateurs.id', '=', 'reglementsutilisateurs.utilisateurs_id')
@@ -1095,4 +1095,6 @@ trait Tools
         }
         return true;
     }
+
+
 }
