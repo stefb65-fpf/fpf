@@ -724,6 +724,9 @@ class UrController extends Controller
             ->where('fonctions_id', $fonction->id)
             ->where('urs_id', $ur->id)
             ->delete();
+        if (in_array($fonction->id, [57, 87])) {
+            $this->removeAuthorCapabilities($utilisateur->id);
+        }
         return redirect()->route('urs.fonctions.liste')->with('success', "L'attribution de la fonction a été supprimée");
     }
 
@@ -734,6 +737,9 @@ class UrController extends Controller
             ->where('fonctions_id', $fonction->id)
             ->where('utilisateurs_id', $utilisateur->id)
             ->delete();
+        if (in_array($fonction->id, [58, 336])) {
+            $this->removeAuthorCapabilities($utilisateur->id);
+        }
         return redirect()->route('urs.fonctions.manage_attribution', $fonction)->with('success', "L'attribution de la fonction a été supprimée");
     }
 
@@ -799,6 +805,9 @@ class UrController extends Controller
         }
         $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
         DB::table('fonctionsutilisateurs')->insert($datafu);
+        if (in_array($fonction->id, [58, 336])) {
+            $this->addAuthorCapabilities($utilisateur->id);
+        }
         return redirect()->route('urs.fonctions.manage_attribution', $fonction)->with('success', "L'attribution a été effectuée");
     }
 
@@ -987,6 +996,9 @@ class UrController extends Controller
             return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
         }
         DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+        if ($fonction_id == 97) {
+            $this->removeAuthorCapabilities($current_utilisateur_id);
+        }
         return redirect()->route('urs.clubs.liste_fonctions', $club_id)->with('success', "La fonction a été supprimée pour cet utilisateur");
     }
 

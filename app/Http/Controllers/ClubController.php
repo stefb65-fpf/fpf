@@ -369,6 +369,9 @@ class ClubController extends Controller
     public function deleteFonction($current_utilisateur_id, $fonction_id)
     {
         DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+        if ($fonction_id == 97) {
+            $this->removeAuthorCapabilities($current_utilisateur_id);
+        }
         $user = session()->get('user');
         if ($user) {
             $this->MailAndHistoricize($user, "Suppression d'une fonction du club");

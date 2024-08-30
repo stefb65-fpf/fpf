@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\File;
 
 trait UrTools
 {
+    use Tools;
+
     public function updateUrInformations(Ur $ur, $request)
     {
         $datap_info = $request->only('nom', 'courriel', 'web');
@@ -82,11 +84,18 @@ trait UrTools
             ->first();
         if ($old_utilisateur) {
             DB::table('fonctionsutilisateurs')->where('fonctions_id', $fonction->id)->where('utilisateurs_id', $old_utilisateur->id)->delete();
+            if (in_array($fonction->id, [57, 87])) {
+                $this->removeAuthorCapabilities($old_utilisateur->id);
+            }
         }
 
         // on ajoute la nouvelle attribution
         $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
         DB::table('fonctionsutilisateurs')->insert($datafu);
+
+        if (in_array($fonction->id, [57, 87])) {
+            $this->addAuthorCapabilities($utilisateur->id);
+        }
         return '0';
     }
 }

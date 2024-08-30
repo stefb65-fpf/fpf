@@ -163,6 +163,9 @@ class UrController extends Controller
             ->where('fonctions_id', $fonction->id)
             ->where('urs_id', $ur->id)
             ->delete();
+        if (in_array($fonction->id, [57, 87])) {
+            $this->removeAuthorCapabilities($utilisateur->id);
+        }
         return redirect()->route('admin.urs.fonctions', $ur)->with('success', "L'attribution de la fonction a été supprimée");
     }
 
@@ -172,6 +175,9 @@ class UrController extends Controller
             ->where('fonctions_id', $fonction->id)
             ->where('utilisateurs_id', $utilisateur->id)
             ->delete();
+        if (in_array($fonction->id, [58, 336])) {
+            $this->removeAuthorCapabilities($utilisateur->id);
+        }
         return redirect()->route('admin.urs.fonctions.manage_attribution', [$fonction, $ur])->with('success', "L'attribution de la fonction a été supprimée");
     }
 
@@ -218,6 +224,9 @@ class UrController extends Controller
         }
         $datafu = array('fonctions_id' => $fonction->id, 'utilisateurs_id' => $utilisateur->id);
         DB::table('fonctionsutilisateurs')->insert($datafu);
+        if (in_array($fonction->id, [58, 336])) {
+            $this->addAuthorCapabilities($utilisateur->id);
+        }
         return redirect()->route('admin.urs.fonctions.manage_attribution', [$fonction, $ur])->with('success', "L'attribution a été effectuée");
     }
 

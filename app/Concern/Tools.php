@@ -1096,5 +1096,51 @@ trait Tools
         return true;
     }
 
+    protected function addAuthorCapabilities($utilisateur_id) {
+        // si on n'est pas en production, on sort
+        if (env('APP_ENV') != 'production') {
+            return false;
+        }
+        $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
+        if (!$utilisateur) {
+            return false;
+        }
+        $wp_usermeta = DB::connection('mysqlwp')->select("SELECT U.ID, M.meta_value FROM wp_users U, wp_usermeta M WHERE U.ID = M.user_id AND M.meta_key = 'wp_capabilities' AND U.user_email = '" . $utilisateur->personne->email . "' ORDER BY ID DESC LIMIT 1");
+        if (sizeof($wp_usermeta) > 0) {
+            $wp_capabilities = unserialize($wp_usermeta[0]->meta_value);
+            if (!isset($wp_capabilities['ptb_clubsur_author'])) {
+                $wp_capabilities['ptb_clubsur_author'] = true;
+            }
+            DB::connection('mysqlwp')->statement("UPDATE wp_usermeta SET meta_value = '" . serialize($wp_capabilities) . "' WHERE user_id = " . $wp_usermeta[0]->ID . " AND meta_key = 'wp_capabilities'");
+        }
+        return true;
+    }
+
+    protected function removeAuthorCapabilities($utilisateur_id) {
+        if (env('APP_ENV') != 'production') {
+            return false;
+        }
+        // on récupère l'utilisateur et on contrôle s'il a encore une fonction club ou UR
+        $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
+        if (!$utilisateur) {
+            return false;
+        }
+
+        $exist_fonction = DB::table('fonctionsutilisateurs')
+            ->where('utilisateurs_id', $utilisateur_id)
+            ->whereIn('fonctions_id', [57, 58, 97, 87, 336])
+            ->first();
+        if (!$exist_fonction) {
+            // si pas de fonction, on récupère les capabilities dans la table wp_usermeta
+            $wp_usermeta = DB::connection('mysqlwp')->select("SELECT U.ID, M.meta_value FROM wp_users U, wp_usermeta M WHERE U.ID = M.user_id AND M.meta_key = 'wp_capabilities' AND U.user_email = '" . $utilisateur->personne->email . "' ORDER BY ID DESC LIMIT 1");
+            if (sizeof($wp_usermeta) > 0) {
+                $wp_capabilities = unserialize($wp_usermeta[0]->meta_value);
+                unset($wp_capabilities['ptb_clubsur_author']);
+                DB::connection('mysqlwp')->statement("UPDATE wp_usermeta SET meta_value = '" . serialize($wp_capabilities) . "' WHERE user_id = " . $wp_usermeta[0]->ID . " AND meta_key = 'wp_capabilities'");
+            }
+        }
+        return true;
+    }
+
 
 }

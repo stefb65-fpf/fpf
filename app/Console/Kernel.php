@@ -35,6 +35,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('update:annee')
             ->timezone('Europe/Paris')
             ->yearlyOn(1, 1, '03:00');
+        $schedule->command('update:author')
+            ->timezone('Europe/Paris')
+            ->yearlyOn(1, 1, '06:00');
         $schedule->command('update:vote')
             ->timezone('Europe/Paris')
             ->dailyAt('02:00');

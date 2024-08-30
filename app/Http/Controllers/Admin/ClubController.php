@@ -632,6 +632,9 @@ class ClubController extends Controller
             return redirect()->route('admin.clubs.liste_fonctions', $club_id)->with('error', "Un problème est survenu lors de la récupération des informations club");
         }
         DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+        if ($fonction_id == 97) {
+            $this->removeAuthorCapabilities($current_utilisateur_id);
+        }
         return redirect()->route('admin.clubs.liste_fonctions', $club_id)->with('success', "La fonction a été supprimée pour cet utilisateur");
     }
 

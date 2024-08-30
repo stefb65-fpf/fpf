@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\File;
 
 trait ClubTools
 {
+    use Tools;
+
     public function getClubFormParameters(Club $club)
     {
         $activites = Activite::all();
@@ -407,8 +409,16 @@ trait ClubTools
         //on ajoute la ligne correspondant à la table pivot
         $data_ap = array('utilisateurs_id' => $new_utilisateur_id, 'fonctions_id' => $fonction_id);
         DB::table('fonctionsutilisateurs')->insert($data_ap);
+        if ($fonction_id == 97) {
+            $this->addAuthorCapabilities($new_utilisateur_id);
+        }
+
         //on supprime l'ancien utilisateur
         DB::table('fonctionsutilisateurs')->where("utilisateurs_id", $current_utilisateur_id)->where("fonctions_id", $fonction_id)->delete();
+        if ($fonction_id == 97) {
+            $this->removeAuthorCapabilities($current_utilisateur_id);
+        }
+
         return true;
     }
 
@@ -430,6 +440,10 @@ trait ClubTools
         //on ajoute la ligne correspondant à la table pivot
         $data_ap = array('utilisateurs_id' => $new_utilisateur_id, 'fonctions_id' => $fonction_id);
         DB::table('fonctionsutilisateurs')->insert($data_ap);
+
+        if ($fonction_id == 97) {
+            $this->addAuthorCapabilities($new_utilisateur_id);
+        }
         return true;
     }
 }
