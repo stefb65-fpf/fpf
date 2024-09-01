@@ -1,11 +1,11 @@
 @extends('layouts.pdf-facture')
 
 @section('content')
-    <div style="font-size: 13px;">
-        <div class="blue-font" style="text-align: left; font-size: 20px; text-transform: uppercase; font-weight: bold;">
+    <div style="font-size: 11px;">
+        <div class="blue-font" style="text-align: left; font-size: 16px; text-transform: uppercase; font-weight: bold;">
             facture proforma n° {{ $ref }}
         </div>
-        <div class="blue-font" style="font-size: 12px; font-weight: lighter; text-transform: uppercase;">
+        <div class="blue-font" style="font-weight: lighter; text-transform: uppercase;">
             (référence à rappeler lors de votre règlement)
         </div>
         <div style="width: 100%; position: relative; margin-top: 25px;">
@@ -102,13 +102,12 @@
             </table>
         </div>
 
-        <div class="blue-font" style="margin-top: 50px; text-transform: uppercase; font-weight: bolder; font-size: 20px;">
+        <div class="blue-font" style="margin-top: 50px; text-transform: uppercase; font-weight: bolder; font-size: 16px;">
             Montant global à régler: {{ number_format($total_montant, 2, ',', '') }} €
         </div>
 
         <div style="margin-top: 10px;">
-            Veuillez envoyer un chèque d'un montant de {{ number_format($total_montant, 2, ',', '') }} € pour le renouvellement ou
-            effectuer un virement de ce montant en rappelant la référence de cette facture proforma à :
+            Veuillez effectuer un virement d'un montant de {{ number_format($total_montant, 2, ',', '') }} € en indiquant en référence le numéro de facture proforma à :
             <div style="margin-top: 20px; margin-left: 10px;">
                 Fédération photographique de France<br>
                 IBAN : FR76 1751 5900 0008 2229 9272 052<br>

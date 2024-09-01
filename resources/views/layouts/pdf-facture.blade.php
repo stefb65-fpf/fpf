@@ -6,11 +6,15 @@
     <style>
         @font-face {
             font-family: 'Aptos';
-            src: url({{storage_path('fonts/aptos.ttf')}});
+            src: url({{storage_path('fonts/Aptos.ttf')}});
+        }
+        @font-face {
+            font-family: 'Aptos Bold';
+            src: url({{storage_path('fonts/Aptos-Bold.ttf')}});
         }
         @font-face {
             font-family: 'Museo';
-            src: url({{storage_path('fonts/museo-sans-300.ttf')}});
+            src: url({{storage_path('fonts/Museo500-Regular.otf')}});
         }
 
         {{--@font-face {--}}
@@ -23,7 +27,7 @@
             font-family: Aptos, sans-serif; }
         header { position: fixed; top: -120px; left: 0px; right: 0px; color: #3e4c85; height: 120px;
             font-family: "Museo", sans-serif; }
-        footer { position: fixed; bottom: -50px; left: 0px; right: 0px; height: 80px; width: 100%; text-align: center; font-size:11px; }
+        footer { position: fixed; bottom: -50px; left: 0px; right: 0px; height: 80px; width: 100%; text-align: center; font-size:10px; }
         p { page-break-after: always; }
         p:last-child { page-break-after: never; }
         .blue-font {
@@ -57,8 +61,8 @@
 
                 </td>
                 <td>
-                    <div style="font-family: 'Museo',sans-serif; font-size: 2rem; text-align: center; line-height: 2rem; padding-left: 30px;">
-                        Fédération Photographique de<br>France
+                    <div style="font-family: 'Museo',sans-serif; font-size: 1.8rem; text-align: center; line-height: 1.8rem; padding-left: 30px;">
+                        Fédération Photographique de France
                     </div>
                 </td>
             </tr>

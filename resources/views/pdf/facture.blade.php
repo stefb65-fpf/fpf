@@ -1,11 +1,11 @@
 @extends('layouts.pdf-facture')
 
 @section('content')
-    <div style="font-size: 13px; margin-top: 50px;">
-        <div class="blue-font" style="text-align: left; font-size: 20px; text-transform: uppercase; font-weight: bold;">
+    <div style="font-size: 11px; margin-top: 50px;">
+        <div class="blue-font" style="text-align: left; font-size: 16px; text-transform: uppercase; font-weight: bold;">
             Facture n° {{ $invoice->numero }}
         </div>
-        <div class="blue-font" style="text-align: left; font-size: 16px; text-transform: uppercase; font-weight: bold;">
+        <div class="blue-font" style="text-align: left; font-size: 12px; text-transform: uppercase; font-weight: bold;">
             PROFORMA n° {{ $invoice->reference }}
         </div>
         <div style="width: 100%; position: relative; margin-top: 25px;">
@@ -47,7 +47,7 @@
 {{--            </tr>--}}
 {{--        </table>--}}
     </div>
-    <div style="font-size: 14px; margin-top: 100px;">
+    <div style="font-size: 12px; margin-top: 100px;">
         <table class="facture-table" style="width: 100%">
             <thead class="bg-blue">
                 <tr>
@@ -69,7 +69,7 @@
             </tbody>
         </table>
     </div>
-    <div class="blue-font" style="margin-top: 60px; text-transform: uppercase; font-size: 15px; font-weight: bolder;">
+    <div class="blue-font" style="margin-top: 60px; text-transform: uppercase; font-size: 13px; font-weight: bolder;">
         Règlement de {{ number_format($invoice->montant, 2, ',', ' ') }} € effectué en date du {{ $invoice->created_at->format('d/m/Y') }}.
     </div>
 @endsection
