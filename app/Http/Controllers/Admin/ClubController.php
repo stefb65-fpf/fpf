@@ -274,7 +274,7 @@ class ClubController extends Controller
             return redirect()->route('admin.clubs.index')->with('success', "Le club $club->numero a été créé. Pour valider l'inscription, vous devez valider le règlement $ref d'un montant de $montant_reglement €");
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('admin.clubs.create')->with('error', "Une erreur est survenue lors de la création du club");
+            return redirect()->route('admin.clubs.create')->with('error', "Une erreur est survenue lors de la création du club ".$e->getMessage());
         }
     }
 
@@ -326,10 +326,13 @@ class ClubController extends Controller
         }
         $total_adherents = $total_adhesion + $total_abonnement;
         $total_montant += $total_adherents;
+        $montant_florilege_club = 0;
+        $total_florilege = 0;
 
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadView('pdf.borderauclub', compact('tab_adherents', 'ref', 'club', 'total_montant', 'total_club',
-            'montant_adhesion_club', 'montant_abonnement_club', 'montant_adhesion_club_ur', 'total_adhesion', 'total_abonnement', 'total_adherents'))
+            'montant_adhesion_club', 'montant_abonnement_club', 'montant_adhesion_club_ur', 'total_adhesion', 'total_abonnement', 'total_adherents',
+            'montant_florilege_club', 'total_florilege'))
             ->setWarnings(false)
             ->setPaper('a4', 'portrait')
             ->save($dir.'/'.$name);

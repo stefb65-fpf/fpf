@@ -60,7 +60,7 @@
                 </thead>
                 <tbody>
                 @foreach($tab_adherents as $adherent)
-                    <tr style="line-height: 20px;">
+                    <tr>
                         <td>
                             {{ $adherent['adherent']['identifiant'].' - '.$adherent['adherent']['nom'].' '.$adherent['adherent']['prenom'] }}
                         </td>

@@ -237,9 +237,12 @@ trait Tools
 
     protected function saveReglement($reglement)
     {
-        $config = Configsaison::where('id', 1)->selectRaw('numeroencours, prixflorilegefrance')->first();
+        $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
+//        $config = Configsaison::where('id', 1)->selectRaw('numeroencours, prixflorilegefrance')->first();
         $numeroencours = $config->numeroencours;
-        $prix_florilege = $config->prixflorilegefrance;
+//        $prix_florilege = $config->prixflorilegefrance;
+        $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+        $prix_florilege = $tarif_florilege_france->tarif;
 
         // on traite tous les utilisateurs en passant leur statut à 2 et / ou en prologeant ou créant leur abonnement
         $utilisateurs = Utilisateur::join('reglementsutilisateurs', 'utilisateurs.id', '=', 'reglementsutilisateurs.utilisateurs_id')

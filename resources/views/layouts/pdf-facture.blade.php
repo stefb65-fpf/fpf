@@ -41,7 +41,7 @@
             border-collapse: collapse;
         }
         .facture-table td, .facture-table th {
-            padding: 5px;
+            padding-left: 5px;
         }
         .facture-table th {
             color: white;

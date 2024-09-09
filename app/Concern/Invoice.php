@@ -13,6 +13,7 @@ use App\Models\Reglement;
 use App\Models\Tarif;
 use App\Models\Ur;
 use App\Models\Utilisateur;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -20,35 +21,68 @@ use Illuminate\Support\Facades\Mail;
 trait Invoice
 {
     protected function createAndSendInvoice($datas) {
+        $tabct = [
+            2 => '> 25 ans',
+            3 => '18 - 25 ans',
+            4 => '< 18 ans',
+            5 => 'famille',
+            6 => '2nde carte',
+        ];
         $datai = ['reference' => $datas['reference'], 'description' => $datas['description'], 'montant' => $datas['montant']];
-//        if (isset($datas['renew_club'])) {
-//            $reglement = Reglement::where('reference', $datas['reference'])->first();
-//            $configsaison = Configsaison::where('id', 1)->first();
-//            $montant_florilege = $configsaison->prixflorilegefrance;
-//            $tarif_abonne = Tarif::where('id', 17)->where('statut', 0)->first();
-//            $tarif_abonne_non_adherent = Tarif::where('id', 19)->where('statut', 0)->first();
-//
-//            $utilisateurs = Utilisateur::join('reglementsutilisateurs', 'reglementsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
-//                ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
-//                ->where('reglementsutilisateurs.reglements_id', $reglement->id)
-//                ->selectRaw('personnes.nom, personnes.prenom, utilisateurs.identifiant, utilisateurs.ct, utilisateurs.statut, reglementsutilisateurs.adhesion, reglementsutilisateurs.abonnement, reglementsutilisateurs.florilege')
-//                ->get();
-//            $tab_adherents = [];
-//            foreach ($utilisateurs as $utilisateur) {
-//                list($tarif_adhesion, $tarif_adhesion_supp) = $this->getTarifByCt($utilisateur->ct);
-//                $tab_adherents[] = [
-//                    'nom' => $utilisateur->nom,
-//                    'prenom' => $utilisateur->prenom,
-//                    'identifiant' => $utilisateur->identifiant,
-//                    'ct' => $utilisateur->ct,
-//                    'adhesion' => $utilisateur->adhesion,
+        $tab_adherents = []; $tab_reglements = [];
+        $renew_club = 0;
+        if (isset($datas['renew_club'])) {
+            $renew_club = 1;
+            $reglement = Reglement::where('reference', $datas['reference'])->first();
+            $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+            $montant_florilege = $tarif_florilege_france->tarif;
+            $tarif_abonne = Tarif::where('id', 17)->where('statut', 0)->first();
+            $tarif_abonne_non_adherent = Tarif::where('id', 19)->where('statut', 0)->first();
+
+            $utilisateurs = Utilisateur::join('reglementsutilisateurs', 'reglementsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+                ->where('reglementsutilisateurs.reglements_id', $reglement->id)
+                ->selectRaw('personnes.nom, personnes.prenom, utilisateurs.identifiant, utilisateurs.ct, utilisateurs.statut, reglementsutilisateurs.adhesion, reglementsutilisateurs.abonnement, reglementsutilisateurs.florilege')
+                ->get();
+            foreach ($utilisateurs as $utilisateur) {
+                $tarif_adhesion = $this->getTarifByCtClub($utilisateur->ct);
+                $tab_adherents[] = [
+                    'nom' => $utilisateur->nom,
+                    'prenom' => $utilisateur->prenom,
+                    'identifiant' => $utilisateur->identifiant,
+                    'ct' => $tabct[$utilisateur->ct],
+                    'adhesion' => $utilisateur->adhesion * $tarif_adhesion,
+                    'abonnement' => $utilisateur->abonnement == 1 ? (in_array($utilisateur->statut, [2,3]) ? $tarif_abonne->tarif : $tarif_abonne_non_adherent->tarif) : 0,
 //                    'abonnement' => in_array($utilisateur->statut, [2,3]) ? $tarif_abonne : $tarif_abonne_non_adherent,
-//                    'florilege' => $utilisateur->florilege > 0 ? round($montant_florilege * $utilisateur->florilege, 2) : 0
-//                ];
-//            }
-//            dd($utilisateurs);
-//
-//        }
+                    'florilege' => $utilisateur->florilege > 0 ? round($montant_florilege * $utilisateur->florilege, 2) : 0
+                ];
+            }
+
+            list($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur, $montant_florilege_club) = $this->getMontantRenouvellementClub2($reglement->clubs_id, $reglement->aboClub, $reglement->florilegeClub);
+            if ($reglement->adh_club == 0) {
+                $montant_adhesion_club = 0;
+                $montant_adhesion_club_ur = 0;
+            }
+            $total_club = $montant_adhesion_club + $montant_abonnement_club + $montant_adhesion_club_ur + $montant_florilege_club;
+
+            $montant_adhesion_adherents = 0; $montant_abonnement_adherents = 0; $montant_florilege_adherents = 0;
+            foreach ($tab_adherents as $k => $adherent) {
+                $montant_adhesion_adherents += $adherent['adhesion'];
+                $montant_abonnement_adherents += $adherent['abonnement'];
+                $montant_florilege_adherents += $adherent['florilege'];
+                $tab_adherents[$k]['total'] = $adherent['adhesion'] + $adherent['abonnement'] + $adherent['florilege'];
+            }
+            $total_adherents = $montant_adhesion_adherents + $montant_abonnement_adherents + $montant_florilege_adherents;
+            $tab_reglements['montant_adhesion_club'] = $montant_adhesion_club;
+            $tab_reglements['montant_abonnement_club'] = $montant_abonnement_club;
+            $tab_reglements['montant_adhesion_club_ur'] = $montant_adhesion_club_ur;
+            $tab_reglements['montant_florilege_club'] = $montant_florilege_club;
+            $tab_reglements['total_club'] = $total_club;
+            $tab_reglements['montant_adhesion_adherents'] = $montant_adhesion_adherents;
+            $tab_reglements['montant_abonnement_adherents'] = $montant_abonnement_adherents;
+            $tab_reglements['montant_florilege_adherents'] = $montant_florilege_adherents;
+            $tab_reglements['montant_total_adherents'] = $montant_florilege_adherents + $montant_abonnement_adherents + $montant_adhesion_adherents;
+        }
         $adresse = null; $personne = null; $club = null; $ur = null;
         if (isset($datas['personne_id'])) {
             $personne = Personne::where('id', $datas['personne_id'])->first();
@@ -92,7 +126,7 @@ trait Invoice
             chgrp($dir, 'www-data');
         }
         $pdf = App::make('dompdf.wrapper');
-        $pdf->loadView('pdf.facture', compact('invoice', 'adresse', 'personne', 'club', 'ur'))
+        $pdf->loadView('pdf.facture', compact('invoice', 'adresse', 'personne', 'club', 'ur', 'tab_adherents', 'tab_reglements', 'renew_club'))
             ->setWarnings(false)
             ->setPaper('a4', 'portrait')
             ->save($dir.'/'.$name);
@@ -149,5 +183,66 @@ trait Invoice
             }
         }
         return true;
+    }
+
+
+
+    protected function getMontantRenouvellementClub2($club_id, $abo_club, $florilege_club) {
+        $club = Club::where('id', $club_id)->first();
+        if (!$club) {
+            return new JsonResponse(['erreur' => 'impossible de récupérer le club'], 400);
+        }
+        $montant_adhesion_club = 0; $montant_abonnement_club = 0; $montant_adhesion_club_ur = 0; $renew_old = 0; $montant_florilege = 0;
+
+        // club non encore validé, on doit faire le renouvellement
+        switch ($club->ct) {
+            case 'C' :
+                $tarif_id = 3;
+                break;
+            case 'A' :
+                $tarif_id = 2;
+                break;
+            default :
+                $tarif_id = 1;
+                break;
+        }
+
+        $tarif = Tarif::where('id', $tarif_id)->where('statut', 0)->first();
+        $montant_adhesion_club = $tarif->tarif;
+        if ($club->second_year == 1) {
+            $montant_adhesion_club = $tarif->tarif / 2;
+        }
+
+        // montant de l'adhésion à l'ur
+        $tarif = Tarif::where('id', 6)->where('statut', 0)->first();
+        $montant_adhesion_club_ur = $tarif->tarif;
+        if ($club->second_year == 1) {
+            $montant_adhesion_club_ur = $tarif->tarif / 2;
+        }
+        if ($abo_club == 1) {
+            $tarif = Tarif::where('id', 5)->where('statut', 0)->first();
+            $montant_abonnement_club = $tarif->tarif;
+        }
+
+        if ($florilege_club > 0) {
+            $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+            $prix_florilege = $tarif_florilege_france->tarif;
+            $montant_florilege = round($florilege_club * $prix_florilege, 2);
+        }
+        return array($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur, $montant_florilege);
+    }
+
+
+    protected function getTarifByCtClub($ct)
+    {
+        $tarif_id = match ($ct) {
+            '3' => 9,
+            '4' => 10,
+            '5' => 11,
+            '6' => 12,
+            default => 8,
+        };
+        $tarif_adhesion = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
+        return $tarif_adhesion ? $tarif_adhesion->tarif : 0;
     }
 }

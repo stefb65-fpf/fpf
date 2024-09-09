@@ -254,13 +254,19 @@ class PersonneController extends Controller
         if ($cartes[0]->clubs_id || in_array($cartes[0]->statut, [2,3])) {
             return redirect()->route('adhesion');
         }
+//        dd($cartes[0]);
 
         $tarif = 0;
         $tarif_supp = 0;
         $ct = 0;
-        if (in_array($personne->is_adherent, [1, 2])) {
-            // on récupère le montant dur enouvellement pour l'année en cours:
-            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+        if ($cartes[0]->ct == 'F') {
+            list($tarif, $tarif_supp) = $this->getTarifByCt($cartes[0]->ct);
+        } else {
+            if (in_array($personne->is_adherent, [1, 2])) {
+                // on récupère le montant du renouvellement pour l'année en cours:
+                list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+//            dd($tarif, $tarif_supp, $ct);
+            }
         }
 
         return view('personnes.adhesion_renew', compact('personne', 'tarif', 'tarif_supp', 'ct', 'cartes'));

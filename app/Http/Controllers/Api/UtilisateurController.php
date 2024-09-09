@@ -84,7 +84,7 @@ class UtilisateurController extends Controller
         list($tab_adherents, $total_adhesion, $total_abonnement, $total_florilege) = $this->getMontantRenouvellementAdherents($request->adherents, $request->abonnes, $request->florileges);
         $total_montant = $total_adhesion + $total_abonnement + $montant_abonnement_club + $montant_adhesion_club + $montant_adhesion_club_ur + $montant_florilege_club + $total_florilege;
         $total_club = $montant_abonnement_club + $montant_adhesion_club + $montant_adhesion_club_ur +$montant_florilege_club;
-        $total_adherents = $total_adhesion + $total_abonnement;
+        $total_adherents = $total_adhesion + $total_abonnement + $total_florilege;
         // on supprime le règlement potentiellement en attente pour le club
         $old_reglement = Reglement::where('clubs_id', $club->id)->where('statut', 0)->first();
         if ($old_reglement) {
@@ -402,7 +402,11 @@ class UtilisateurController extends Controller
         }
 
         // on récupère le montant dur enouvellement pour l'année en cours:
-        list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+        if ($utilisateur->ct == 'F') {
+            list($tarif, $tarif_supp) = $this->getTarifByCt($utilisateur->ct);
+        } else {
+            list($tarif, $tarif_supp, $ct) = $this->getTarifAdhesion($personne->datenaissance);
+        }
         $montant = $request->adhesion === 'adh' ? floatval($tarif) : floatval($tarif_supp) + floatval($tarif);
         if ($montant != $request->montant) {
             return new JsonResponse(['erreur' => 'Pas de renouvellement pour cet individuel'], 400);
@@ -714,8 +718,10 @@ class UtilisateurController extends Controller
         }
 
         if ($florilege_club > 0) {
-            $configsaison = Configsaison::where('id', 1)->first();
-            $montant_florilege = round($florilege_club * $configsaison->prixflorilegefrance, 2);
+//            $configsaison = Configsaison::where('id', 1)->first();
+            $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+            $prix_florilege = $tarif_florilege_france->tarif;
+            $montant_florilege = round($florilege_club * $prix_florilege, 2);
         }
         return array($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur, $montant_florilege);
     }
@@ -830,8 +836,10 @@ class UtilisateurController extends Controller
             }
         }
         if ($florileges) {
-            $configsaison = Configsaison::where('id', 1)->first();
-            $montant_florilege = $configsaison->prixflorilegefrance;
+//            $configsaison = Configsaison::where('id', 1)->first();
+//            $montant_florilege = $configsaison->prixflorilegefrance;
+            $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+            $montant_florilege = $tarif_florilege_france->tarif;
             foreach ($florileges as $florilege) {
                 $utilisateur = Utilisateur::where('id', $florilege['id'])->first();
                 if (!$utilisateur) {
