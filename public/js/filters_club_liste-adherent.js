@@ -149,6 +149,8 @@ $('#renouvellementAdherents').on('click', function (e) {
     const regIdentifiant = /^[0-9]{2}-[0-9]{4}-[0-9]{4}$/
     let passage = 1
 
+    const statut = $(this).data('statut')
+
     if (typeof $('#florilegeClub').val() != 'undefined' && $('#florilegeClub').val() != parseInt($('#florilegeClub').val())) {
         alert('Le montant du florilège doit être un nombre entier')
         return
@@ -225,6 +227,12 @@ $('#renouvellementAdherents').on('click', function (e) {
     // })
 
     if (passage == 0) {
+        return
+    }
+
+    // si le statut du club n'est pas 2 et que la longueur de idadhrents est inférieure à 2, on sort
+    if (statut != 2 && idAdherents.length < 1) {
+        alert('Vous devez renouveler au moins 1 adhérent')
         return
     }
 

@@ -72,7 +72,7 @@
                 un adhérent</a>
         @endif
 
-        <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-club="{{$club->id}}" {{ $exist_reglement_en_cours == 0 ? 'disabled' : '' }}>Renouveler
+        <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-statut="{{ $club->statut }}" data-club="{{$club->id}}" {{ $exist_reglement_en_cours == 0 ? 'disabled' : '' }}>Renouveler
         </button>
     </div>
     <div class="d-flex justify-between mt20 w100">

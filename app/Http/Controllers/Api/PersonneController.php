@@ -29,6 +29,7 @@ class PersonneController extends Controller
 
         $menu_club = false;
         $menu_ur = false;
+        $menu_ur_general = false;
         $menu_admin = $user->is_administratif;
         $menu_formation = !$user->is_administratif;
         if (sizeof($cartes[0]->fonctions) > 0) {
@@ -39,6 +40,7 @@ class PersonneController extends Controller
                 if (in_array($fonction->id, config('app.ur_functions'))) {
                     $menu_ur = true;
                 }
+
                 if ($fonction->instance == 1) {
                     // on contrôle les droits liés à la fonction
                     if (sizeof($fonction->droits)) {
@@ -53,9 +55,44 @@ class PersonneController extends Controller
                 $menu_admin = true;
             }
         }
+
+        if (!$menu_admin) {
+            if (sizeof($cartes[0]->droits) > 0) {
+                foreach ($cartes[0]->droits as $droit) {
+                    if (!in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])) {
+                        $menu_admin = true;
+                    }
+                }
+            }
+//                    if (sizeof($cartes[0]->droits) > 0) {
+//                        $menu_admin = true;
+//                    }
+        }
+        $menu_ur_general = $menu_ur;
+        if (!$menu_ur) {
+            if (sizeof($cartes[0]->droits) > 0) {
+                foreach ($cartes[0]->droits as $droit) {
+                    if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'GESVOTUR'])) {
+                        $menu_ur = true;
+                    }
+                }
+            }
+            if (sizeof($cartes[0]->fonctions) > 0) {
+                foreach ($cartes[0]->fonctions as $fonction) {
+                    if ($fonction->instance == 2) {
+                        foreach ($fonction->droits as $droit) {
+                            if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'GESVOTUR'])) {
+                                $menu_ur = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         $menu = [
             'club' => $menu_club,
             'ur' => $menu_ur,
+            'ur_general' => $menu_ur_general,
             'admin' => $menu_admin,
             'formation' => $menu_formation,
         ];

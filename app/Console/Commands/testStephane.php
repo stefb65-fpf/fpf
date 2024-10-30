@@ -2,12 +2,18 @@
 
 namespace App\Console\Commands;
 
+use App\Concern\Invoice;
+use App\Mail\SendUtilisateurCreateByAdmin;
+use App\Mail\TestMail;
+use App\Models\Reglement;
 use App\Models\Utilisateur;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class testStephane extends Command
 {
+    use Invoice;
     /**
      * The name and signature of the console command.
      *
@@ -27,7 +33,29 @@ class testStephane extends Command
      */
     public function handle()
     {
-        die();
+        // on récupère les enregistrements DNS du domaine federation-photo.fr
+//        $dnsRecords = dns_get_record('federation-photo.fr', DNS_ALL);
+
+//        // on récupère les enregistrements DNS DKIM
+//        $dnsRecords = dns_get_record('dkim._domainkey.federation-photo.fr', DNS_ALL);
+//        dd($dnsRecords);
+
+//        $mailSent = Mail::to('stefb65@gmail.com')->send(new TestMail());
+//        die();
+
+        // on prend tous les règlements validés pour les clubs depuis le 01/09/2024
+//        $reglements = Reglement::where('statut', 1)
+//            ->whereNotNull('clubs_id')
+//            ->where('dateenregistrement', '>=', '2024-09-01')
+//            ->get();
+        $reglements = Reglement::where('id', 37847)->get();
+        foreach ($reglements as $reglement) {
+            // on cherche la facture avec la référence du règlement
+            $description = "Renouvellement des adhésions et abonnements pour le club";
+            $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'club_id' => $reglement->clubs_id, 'renew_club' => 1];
+            $this->correctInvoice($datai);
+        }
+//        die();
 //        $cumuls_vote_club = DB::table('cumul_votes_clubs')->where('votes_id',62)->get();
 //        $nb_correction = 0;
 //        $delta = 0;
@@ -64,6 +92,6 @@ class testStephane extends Command
 //                }
 //            }
 //        }
-        dd($nb_correction, $delta);
+//        dd($nb_correction, $delta);
     }
 }

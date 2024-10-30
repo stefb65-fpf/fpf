@@ -44,7 +44,7 @@ class ProcessExcelSubscribe extends Command
 //                'dateenregistrement' => date('Y-m-d H:i:s'),
 //                'statut' => 01,
 //                'clubs_id' => 554,
-//                'reference' => '23-17-1288-0001'
+//                'reference' => '24-17-1288-0001'
 //            ];
 //            $reglement = Reglement::create($datar);
 //            while (($data = fgetcsv($fp, 0, ";")) !== FALSE) {
@@ -69,6 +69,9 @@ class ProcessExcelSubscribe extends Command
 //                    }
 //                    if ($type_carte == 'Famille') {
 //                        $ct = 5;
+//                    }
+//                    if ($type_carte == 'Second club') {
+//                        $ct = 6;
 //                    }
 //                    $abo = $data[12] == "Sans" ? 0 : 1;
 //
@@ -147,8 +150,8 @@ class ProcessExcelSubscribe extends Command
 //            fclose($fp);
 //            DB::commit();
 //        } catch (\Exception $e) {
-//            dd($e);
 //            DB::rollBack();
+//            dd($e);
 //        }
     }
 }

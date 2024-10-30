@@ -185,7 +185,7 @@
 
                         @if(in_array($view_type,["adherents","ur_adherents","recherche"]))
                             @if($view_type == "adherents")
-                                <td>{{$utilisateur->urs_id ? $utilisateur->ur ->nom:""}}</td>
+                                <td>{{$utilisateur->urs_id && $utilisateur->urs_id != 99 ? $utilisateur->ur->nom:""}}</td>
                             @endif
                             <td>{{$utilisateur->identifiant}}</td>
                             <td>

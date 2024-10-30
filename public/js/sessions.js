@@ -1,4 +1,4 @@
-$('#sessionPayVirement').on('click', function () {
+$('a[name=sessionPayVirement]').on('click', function () {
     const ref = $(this).data('ref')
     $.ajax({
         url:'/api/sessions/payByVirement',
@@ -16,7 +16,7 @@ $('#sessionPayVirement').on('click', function () {
     });
 })
 
-$('#sessionPayCb').on('click', function () {
+$('a[name=sessionPayCb]').on('click', function () {
     const ref = $(this).data('ref')
     $.ajax({
         url:'/api/sessions/payByCb',

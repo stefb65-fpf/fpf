@@ -32,6 +32,7 @@ function drawChartClubs() {
     let options = {
         title: 'Clubs',
         is3D: true,
+        colors: ['#e28a2d', '#f1e205', '#99d59a', '#0000FF'],
         // legend: { position: 'bottom' }
     }
 
@@ -66,6 +67,7 @@ function drawChartAdherents() {
     let options = {
         title: 'Adhérents',
         is3D: true,
+        colors: ['#e28a2d', '#f1e205', '#99d59a', '#0000FF'],
     }
 
 

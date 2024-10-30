@@ -45,7 +45,7 @@
                     <th>Places</th>
                     <th>Places en attente</th>
                     <th>Inscrits</th>
-                    <th>Statut facturation</th>
+{{--                    <th>Statut facturation</th>--}}
                     <th>Paiement organisateur</th>
                     <th></th>
                 </tr>
@@ -84,20 +84,20 @@
                                 <a href="{{ route('inscrits.liste', $session) }}" class="btnSmall adminPrimary">{{ sizeof($session->inscrits->where('status', 1)->where('attente', 0)) }} inscrits - Gérer</a>
                             @endif
                         </td>
-                        <td>
-                            @switch($session->invoice_status)
-                                @case(0)
-                                Non facturée
-                                @break
-                                @case(1)
-                                Facture transmise
-                                @break
-                                @case(2)
-                                Facture payée
-                                @break
-                            @endswitch
-                        </td>
-                        <td>
+{{--                        <td>--}}
+{{--                            @switch($session->invoice_status)--}}
+{{--                                @case(0)--}}
+{{--                                Non facturée--}}
+{{--                                @break--}}
+{{--                                @case(1)--}}
+{{--                                Facture transmise--}}
+{{--                                @break--}}
+{{--                                @case(2)--}}
+{{--                                Facture payée--}}
+{{--                                @break--}}
+{{--                            @endswitch--}}
+{{--                        </td>--}}
+                        <td style="width: 250px">
                             @if($session->pec > 0)
                                 @if($session->paiement_status == 1)
                                     <span class="alertSuccess">Paiement effectué</span>

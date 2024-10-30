@@ -68,10 +68,22 @@ class UpdateWpSite extends Command
                 ->whereIn('fonctionsutilisateurs.fonctions_id', [94,95,96,97])
                 ->get();
 
-            $wp_club = DB::connection('mysqlwp')->select("SELECT P.ID, M.meta_value FROM wp_posts P, wp_postmeta M WHERE M.post_id = P.id AND P.post_type = 'club-ur' AND M.meta_key = 'ptb_numero' AND M.meta_value = $numero_club LIMIT 1");
+            $wp_club = DB::connection('mysqlwp')->select("SELECT P.ID, P.post_title, M.meta_value FROM wp_posts P, wp_postmeta M WHERE M.post_id = P.id AND P.post_type = 'club-ur' AND M.meta_key = 'ptb_numero' AND M.meta_value = $numero_club LIMIT 1");
             if ($wp_club) {
                 // on met à jour le club
                 $post_id = $wp_club[0]->ID;
+
+                if ($club->nom != $wp_club[0]->post_title) {
+                    $nomclub = addslashes(trim($club->nom));
+                    $nomclub2 = str_replace('-', '', trim($club->nom));
+                    $nomclub3 = str_replace('.', '', $nomclub2);
+                    $postname1 = str_replace(' ', '-', strtolower($nomclub3));
+                    $postname2 = str_replace("'", '', $postname1);
+                    $postname2 = Str::slug($postname2);
+                    $postname = iconv('UTF-8', 'ISO-8859-15//TRANSLIT//IGNORE', utf8_decode(str_replace('--', '-', $postname2)));
+                    DB::connection('mysqlwp')->statement("UPDATE wp_posts SET post_title = '$nomclub', post_name = '$postname' WHERE ID = $post_id LIMIT 1");
+                }
+
 
                 $metas = DB::connection('mysqlwp')->select("SELECT * FROM wp_postmeta WHERE post_id = $post_id");
 

@@ -23,7 +23,8 @@
     <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection
 @section('js')
-    <script src="https://cdn.tiny.cloud/1/0tfgoauksbtjlp4sye52sgt384u2fu2caznkjrvnvtncd64s/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+{{--    <script src="https://cdn.tiny.cloud/1/0tfgoauksbtjlp4sye52sgt384u2fu2caznkjrvnvtncd64s/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>--}}
+    <script src="{{ asset('/js/tinymce/js/tinymce/tinymce.min.js') }}"></script>
     <script src="{{ asset('/js/editor.js') }}"></script>
     <script src="{{ asset('js/admin_votes.js') }}"></script>
 @endsection

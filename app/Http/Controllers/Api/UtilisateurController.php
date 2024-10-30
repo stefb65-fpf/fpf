@@ -101,6 +101,18 @@ class UtilisateurController extends Controller
         $nb_reglements = Reglement::where('reference', 'LIKE', $ref_club.'%')->count();
         $ref = $ref_club.'-'.str_pad($nb_reglements+1, 4, '0', STR_PAD_LEFT);
 
+        // on regarde si un règlement existe pour cette référence. Si c'est le cas, on augment de 1 et on boucle jusqu'à trouver une référence OK
+        $todo = true;
+        while ($todo) {
+            $exist_reglement = Reglement::where('reference', $ref)->first();
+            if (!$exist_reglement) {
+                $todo = false;
+            } else {
+                $nb_reglements++;
+                $ref = $ref_club.'-'.str_pad($nb_reglements, 4, '0', STR_PAD_LEFT);
+            }
+        }
+
         $data = array('clubs_id' => $club->id, 'montant' => $total_montant, 'statut' => 0, 'reference' => $ref, 'florilegeClub' => $request->florilegeClub);
         if ($montant_adhesion_club > 0) {
             $data['adhClub'] = 1;

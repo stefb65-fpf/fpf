@@ -76,8 +76,8 @@
                                         <span class="alertWarning">En attente de paiement</span>
                                     @else
                                         <div style="display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
-                                            <a class="adminPrimary btnSmall mr10" id="sessionPayVirement" data-ref="{{ $session->id }}">payer par virement</a>
-                                            <a class="adminPrimary btnSmall" id="sessionPayCb" data-ref="{{ $session->id }}">payer par CB</a>
+                                            <a class="adminPrimary btnSmall mr10" name="sessionPayVirement" data-ref="{{ $session->id }}">payer par virement</a>
+                                            <a class="adminPrimary btnSmall" name="sessionPayCb" data-ref="{{ $session->id }}">payer par CB</a>
                                         </div>
                                     @endif
                                 @endif

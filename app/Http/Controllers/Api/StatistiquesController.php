@@ -38,27 +38,43 @@ class StatistiquesController extends Controller
             $date_debut_saison = (date('Y') - 1) . '-09-01';
         }
         if ($request->level == 'fpf') {
-            $nb_renouveles = Utilisateur::whereIn('statut', [2,3])->where(
-                function ($query) use ($date_debut_saison) {
-                    $query->where('created_at', '<', $date_debut_saison)
-                        ->orWhereNull('created_at');
-                })->count();
+//            $nb_renouveles = Utilisateur::whereIn('statut', [2,3])->where(
+//                function ($query) use ($date_debut_saison) {
+//                    $query->where('created_at', '<', $date_debut_saison)
+//                        ->orWhereNull('created_at');
+//                })->count();
+            $nb_renouveles = Utilisateur::join('utilisateurs_prec', 'utilisateurs_prec.id', '=', 'utilisateurs.id')
+                ->whereIn('utilisateurs.statut', [2,3])
+                ->count('utilisateurs.id');
             $nb_nouveaux = Utilisateur::whereIn('statut', [2,3])->where('created_at', '>=', $date_debut_saison)->count();
             $nb_preinscrits = Utilisateur::where('statut', 1)->count();
-            $nb_nonrenouveles = Utilisateur::where('statut', 0)->count();
+            // SELECT COUNT(U.id) FROM utilisateurs_prec P, utilisateurs U WHERE U.id = P.id AND U.statut = 0 AND P.statut IN (2,3)
+            $nb_nonrenouveles = Utilisateur::join('utilisateurs_prec', 'utilisateurs_prec.id', '=', 'utilisateurs.id')
+                ->where('utilisateurs.statut', 0)
+                ->whereIn('utilisateurs_prec.statut', [2,3])
+                ->count('utilisateurs.id');
 
             $tab = array('non_renouveles' => $nb_nonrenouveles, 'valides' => $nb_renouveles, 'nouveaux' => $nb_nouveaux, 'preinscrits' => $nb_preinscrits);
             return new JsonResponse($tab, 200);
         }
         if ($request->level == 'ur') {
-            $nb_renouveles = Utilisateur::whereIn('statut', [2,3])->where('urs_id', $request->ur_id)->where(
-                function ($query) use ($date_debut_saison) {
-                    $query->where('created_at', '<', $date_debut_saison)
-                        ->orWhereNull('created_at');
-                })->count();
+//            $nb_renouveles = Utilisateur::whereIn('statut', [2,3])->where('urs_id', $request->ur_id)->where(
+//                function ($query) use ($date_debut_saison) {
+//                    $query->where('created_at', '<', $date_debut_saison)
+//                        ->orWhereNull('created_at');
+//                })->count();
+            $nb_renouveles = Utilisateur::join('utilisateurs_prec', 'utilisateurs_prec.id', '=', 'utilisateurs.id')
+                ->whereIn('utilisateurs.statut', [2,3])
+                ->where('utilisateurs.urs_id', $request->ur_id)
+                ->count('utilisateurs.id');
             $nb_nouveaux = Utilisateur::whereIn('statut', [2,3])->where('urs_id', $request->ur_id)->where('created_at', '>=', $date_debut_saison)->count();
             $nb_preinscrits = Utilisateur::where('statut', 1)->where('urs_id', $request->ur_id)->count();
             $nb_nonrenouveles = Utilisateur::where('statut', 0)->where('urs_id', $request->ur_id)->count();
+            $nb_nonrenouveles = Utilisateur::join('utilisateurs_prec', 'utilisateurs_prec.id', '=', 'utilisateurs.id')
+                ->where('utilisateurs.statut', 0)
+                ->where('utilisateurs.urs_id', $request->ur_id)
+                ->whereIn('utilisateurs_prec.statut', [2,3])
+                ->count('utilisateurs.id');
 
             $tab = array('non_renouveles' => $nb_nonrenouveles, 'valides' => $nb_renouveles, 'nouveaux' => $nb_nouveaux, 'preinscrits' => $nb_preinscrits);
             return new JsonResponse($tab, 200);

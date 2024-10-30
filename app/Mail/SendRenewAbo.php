@@ -27,7 +27,7 @@ class SendRenewAbo extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'FPF // Abonnement France Photographie arrivant bientôt à échéance',
+            subject: 'FPF // Abonnement France Photographie arrivé à échéance',
         );
     }
 

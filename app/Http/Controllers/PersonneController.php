@@ -237,14 +237,17 @@ class PersonneController extends Controller
 
     public function adhesion() {
         $user = session()->get('user');
-        foreach ($user->cartes as $carte) {
-            if ($carte->clubs_id) {
-                $club = Club::where('id', $carte->clubs_id)->selectRaw('nom')->first();
-                if ($club) {
-                    $carte->club = $club;
+        if ($user->cartes) {
+            foreach ($user->cartes as $carte) {
+                if ($carte->clubs_id) {
+                    $club = Club::where('id', $carte->clubs_id)->selectRaw('nom')->first();
+                    if ($club) {
+                        $carte->club = $club;
+                    }
                 }
             }
         }
+
         return view('personnes.adhesion', compact('user'));
     }
 

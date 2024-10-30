@@ -31,18 +31,32 @@ class SendRenewAbo extends Command
         // on récupère toutes les personnes pour qui le numéro de fin d'abonnement est égal au numéro en cours - 1
         $config_saison = DB::table('configsaisons')->where('id', 1)->first();
         $numero_encours = $config_saison->numeroencours;
-        $fin_abonnement = $numero_encours + 1;
+        $fin_abonnement = $numero_encours - 1;
 
         $personnes = Personne::join('abonnements', 'personnes.id', '=', 'abonnements.personne_id')
-            ->where('personnes.is_abonne', 1)
+//            ->where('personnes.is_abonne', 1)
             ->where('abonnements.fin', $fin_abonnement)
-            ->where('abonnements.etat', 1)
+//            ->where('abonnements.etat', 1)
             ->get();
 
+        $nb = 0;
         foreach ($personnes as $personne) {
-//            Mail::to('contact@envolinfo.com')->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
-            Mail::to($personne->email)->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
-            usleep(500000);
+            // on regarde si ces personnes n'ont pas un abvonnement en cours
+            $abonnement = DB::table('abonnements')
+                ->where('personne_id', $personne->id)
+                ->where('etat', 1)
+                ->first();
+            if (!$abonnement) {
+//                Mail::to('contact@envolinfo.com')->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
+                Mail::to($personne->email)->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
+                usleep(500000);
+            }
         }
+
+//        foreach ($personnes as $personne) {
+////            Mail::to('contact@envolinfo.com')->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
+//            Mail::to($personne->email)->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
+//            usleep(500000);
+//        }
     }
 }
