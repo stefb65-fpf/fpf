@@ -267,7 +267,7 @@
                     @if(in_array($adherent->statut, [0,4]))
                         <div class="mt5">
                             <a href="{{ route('clubs.removeAdherent', $adherent->id_utilisateur) }}" data-confirm="Cet adhérent ne sera plus visible dans votre liste d'adhérent club. Vous ne pourrez plus le réactiver par la suite mais la carte est conservée et le nom apparaitra toujours dans les résultats des concours. Confirmez-vous votre demande ? " data-method="delete"
-                               class="adminDanger btnSmall">plus dans club</a>
+                               class="adminDanger btnSmall">retirer de la liste</a>
                         </div>
 
                     @endif

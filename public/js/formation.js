@@ -109,7 +109,14 @@ $('#formationPayVirement').on('click', function () {
             $(location).attr('href', data.url)
         },
         error: function (e) {
-            alert(e.responseJSON.erreur)
+            if (e.responseJSON.erreur == 'utilisateur avec paiement en attente') {
+                $('#modalPaiementFormation').addClass('d-none')
+                $('#suppressionInscriptionAttente').data('ref', ref)
+                $('#modalSuppressionInscription').removeClass('d-none')
+            } else {
+                alert(e.responseJSON.erreur)
+            }
+            // alert(e.responseJSON.erreur)
         }
     });
 })
@@ -127,6 +134,31 @@ $('#formationPayCb').on('click', function () {
         dataType: 'JSON',
         success: function (data) {
             $(location).attr('href', data.url)
+        },
+        error: function (e) {
+            if (e.responseJSON.erreur == 'utilisateur avec paiement en attente') {
+                $('#modalPaiementFormation').addClass('d-none')
+                $('#suppressionInscriptionAttente').data('ref', ref)
+                $('#modalSuppressionInscription').removeClass('d-none')
+            } else {
+                alert(e.responseJSON.erreur)
+            }
+        }
+    });
+})
+
+$('#suppressionInscriptionAttente').on('click', function () {
+    const ref = $(this).data('ref')
+    $.ajax({
+        url:'/api/formations/suppressionInscriptionAttente',
+        type: 'POST',
+        data: {
+            ref: ref,
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            $('#modalSuppressionInscription').addClass('d-none')
+            alert("Votre inscription a été annulée. Vous pouvez de nouveau vous inscrire")
         },
         error: function (e) {
             alert(e.responseJSON.erreur)

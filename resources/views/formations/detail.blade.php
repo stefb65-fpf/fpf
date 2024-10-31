@@ -369,6 +369,26 @@
         </div>
     </div>
 
+    <div class="modalEdit d-none" id="modalSuppressionInscription">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Inscription à une session de formation</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Un inscription en attente de paiement a déjà été enregistrée pour cette formation.
+            Si vous n'avez pas effectué le paiement, merci de cliquer sur le bouton "Supprimer mon inscription en attente".
+            Sinon, attendez la prise en compte de votre paiement pour valider votre inscription
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="suppressionInscriptionAttente" data-ref="">
+                Supprimer mon inscription en attente
+            </div>
+        </div>
+    </div>
+
     <div class="modalEdit d-none" id="modalAttenteFormation">
         <div class="modalEditHeader">
             <div class="modalEditTitle">Inscription à une session de formation</div>

@@ -117,7 +117,11 @@ class FormationController extends Controller
             // on regarde si le user n'est pas déjà inscrits
             foreach ($session->inscrits as $inscrit) {
                 if ($inscrit->personne_id == $user->id) {
-                    return new JsonResponse(['erreur' => 'utilisateur déjà inscrit'], 400);
+                    if ($inscrit->status == 0 && $inscrit->attente_paiement == 1) {
+                        return new JsonResponse(['erreur' => 'utilisateur avec paiement en attente'], 400);
+                    } else {
+                        return new JsonResponse(['erreur' => 'utilisateur déjà inscrit'], 400);
+                    }
                 }
             }
             // on inscrit le user
@@ -198,7 +202,11 @@ class FormationController extends Controller
             // on regarde si le user n'est pas déjà inscrits
             foreach ($session->inscrits as $inscrit) {
                 if ($inscrit->personne_id == $user->id) {
-                    return new JsonResponse(['erreur' => 'utilisateur déjà inscrit'], 400);
+                    if ($inscrit->status == 0 && $inscrit->attente_paiement == 1) {
+                        return new JsonResponse(['erreur' => 'utilisateur avec paiement en attente'], 400);
+                    } else {
+                        return new JsonResponse(['erreur' => 'utilisateur déjà inscrit'], 400);
+                    }
                 }
             }
             // on inscrit le user
@@ -233,6 +241,23 @@ class FormationController extends Controller
             }
             return new JsonResponse(['erreur' => 'impossible de créer le lien de paiement'], 400);
         }
+    }
+
+    function suppressionInscriptionAttente(Request $request) {
+        $user = session()->get('user');
+        if (!$user) {
+            return new JsonResponse(['erreur' => 'session utilisateur inexistante'], 400);
+        }
+        $session = Session::where('id', $request->ref)->first();
+        if (!$session) {
+            return new JsonResponse(['erreur' => 'session de formation inexistante'], 400);
+        }
+        $inscrit = Inscrit::where('session_id', $session->id)->where('personne_id', $user->id)->first();
+        if (!$inscrit) {
+            return new JsonResponse(['erreur' => "Vous n'êtes pas inscrit à cette session"], 400);
+        }
+        $inscrit->delete();
+        return new JsonResponse([], 200);
     }
 
     public function saveWithoutPaiement(Request $request) {

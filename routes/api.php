@@ -87,6 +87,7 @@ Route::post('/formations/setInterest', [App\Http\Controllers\Api\FormationContro
 Route::post('/formations/askFormation', [App\Http\Controllers\Api\FormationController::class, 'askFormation']);
 Route::post('/getReviews', [App\Http\Controllers\Api\FormationController::class, 'getReviews']);
 Route::post('/formations/payByVirement', [App\Http\Controllers\Api\FormationController::class, 'payByVirement']);
+Route::post('/formations/suppressionInscriptionAttente', [App\Http\Controllers\Api\FormationController::class, 'suppressionInscriptionAttente']);
 Route::post('/formations/payByCb', [App\Http\Controllers\Api\FormationController::class, 'payByCb']);
 Route::post('/formations/inscriptionAttente', [App\Http\Controllers\Api\FormationController::class, 'inscriptionAttente']);
 Route::post('/formations/saveWithoutPaiement', [App\Http\Controllers\Api\FormationController::class, 'saveWithoutPaiement']);
