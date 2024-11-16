@@ -60,7 +60,8 @@ class InscritController extends Controller
 
         $email = $inscrit->personne->email;
 //        $email = 'contact@envolinfo.com';
-        $mailSent = Mail::to($email)->send(new SendFormationPaymentLink($inscrit));
+//        $mailSent = Mail::to($email)->send(new SendFormationPaymentLink($inscrit));
+        $mailSent = Mail::mailer('smtp2')->to($email)->send(new SendFormationPaymentLink($inscrit));
         $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
         $sujet = "FPF // Lien de paiement pour la formation ".$inscrit->session->formation->name;

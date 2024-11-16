@@ -67,7 +67,7 @@
                                 <a href="{{ route('clubs.sessions.inscrits', $session) }}" class="adminPrimary btnSmall">Voir les inscrits</a>
                             @endif
                         </td>
-                        <td>
+                        <td style="width: 250px;">
                             @if($session->pec > 0)
                                 @if($session->paiement_status == 1)
                                     <span class="alertSuccess">Paiement effectué</span>

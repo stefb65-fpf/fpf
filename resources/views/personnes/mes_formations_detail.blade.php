@@ -220,7 +220,12 @@
                                     <div class="inscription" style="line-height: 20px;">
                                         @if(in_array($session->id, $inscriptions))
                                             @if($session->inscrits->where('personne_id',$personne->id) && ($session->inscrits->where('personne_id',$personne->id)->first()->attente_paiement == 1))
-                                                <a class="orangeBtn" href="{{ route('formations.payWithSecureCode', $personne->inscrits->where('session_id', $session->id)->first()->secure_code) }}">En attente de paiement</a>
+                                                @if($personne->inscrits->where('session_id', $session->id)->first()->secure_code)
+                                                    <a class="orangeBtn" href="{{ route('formations.payWithSecureCode', $personne->inscrits->where('session_id', $session->id)->first()->secure_code) }}">En attente de paiement</a>
+                                                @else
+                                                    En attente de paiement
+                                                @endif
+{{--                                                <a class="orangeBtn" href="{{ route('formations.payWithSecureCode', $personne->inscrits->where('session_id', $session->id)->first()->secure_code) }}">En attente de paiement</a>--}}
                                             @elseif($session->inscrits->where('personne_id',$personne->id)->first()->personne_id == $personne->id)
                                                 <div class="bold">Vous êtes inscrit.e à cette session</div>
                                                 @if($session->diff > 5)

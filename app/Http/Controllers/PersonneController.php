@@ -340,7 +340,7 @@ class PersonneController extends Controller
         $user = session()->get('user');
         $personne = Personne::where('id', $user->id)->first();
         $sessions_id = [];
-        foreach ($personne->inscrits as $inscrit) {
+        foreach ($personne->inscrits->where('status', 1) as $inscrit) {
             $sessions_id[] = $inscrit->session_id;
         }
         $sessions = Session::whereIn('id', $sessions_id)->get();

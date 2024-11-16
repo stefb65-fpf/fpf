@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\Erratum;
 use App\Models\Personne;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -34,10 +35,10 @@ class SendRenewAbo extends Command
         $fin_abonnement = $numero_encours - 1;
 
         $personnes = Personne::join('abonnements', 'personnes.id', '=', 'abonnements.personne_id')
-//            ->where('personnes.is_abonne', 1)
             ->where('abonnements.fin', $fin_abonnement)
-//            ->where('abonnements.etat', 1)
+            ->selectRaw('personnes.id, personnes.email')
             ->get();
+
 
         $nb = 0;
         foreach ($personnes as $personne) {
@@ -47,16 +48,10 @@ class SendRenewAbo extends Command
                 ->where('etat', 1)
                 ->first();
             if (!$abonnement) {
-//                Mail::to('contact@envolinfo.com')->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
                 Mail::to($personne->email)->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
+//                Mail::to($personne->email)->send(new Erratum());
                 usleep(500000);
             }
         }
-
-//        foreach ($personnes as $personne) {
-////            Mail::to('contact@envolinfo.com')->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
-//            Mail::to($personne->email)->send(new \App\Mail\SendRenewAbo($numero_encours, $fin_abonnement));
-//            usleep(500000);
-//        }
     }
 }

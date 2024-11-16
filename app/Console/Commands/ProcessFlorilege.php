@@ -30,6 +30,12 @@ class ProcessFlorilege extends Command
      */
     public function handle()
     {
+
+        $description = "Prise en charge de la session de formation Pose Longue - en visioconférence avec Christophe Audebert";
+        $ref = 'SESSION-FORMATION-833-82';
+        $datai = ['reference' => $ref, 'description' => $description, 'montant' => 225, 'club_id' => 833];
+
+        $this->createAndSendInvoice($datai);
 //        $souscriptions = Souscription::whereIn('id', [4260])->get();
 ////        $souscriptions = Souscription::whereIn('id', [4316, 4307])->get();
 //        foreach ($souscriptions as $souscription) {

@@ -11,7 +11,7 @@
 {{--    </div>--}}
     <div class="w80 mb25 mt25" style="margin: 0 auto">
         <div>
-            Découvrez les formations proposées par la Fédération Photographique de France. Vous pouvez consulter les formations ci-dessous mais pour vous inscire, vous devez adhérer à la FPF.<br>
+            Découvrez les formations proposées par la Fédération Photographique de France. Vous pouvez consulter les formations ci-dessous mais pour vous inscrire, vous devez adhérer à la FPF.<br>
             Pour ce faire, vous pouvez :
             <ul class="ml40">
                 <li>devenir adhérent individuel en <a href="{{ route('registerAdhesion') }}" class="blue">créant un compte</a></li>

@@ -6,7 +6,7 @@
             {{ csrf_field() }}
             <div style="max-width: 1200px; margin: 20px auto">
                 L'adhérent que vous souhaitez ajouter possède déjà un identifiant FPF (carte autre club ou individuelle) et vous connaissez cet identifiant ?<br>
-                Vous pouvez l'inscire en indiquant son identifiant FPF sans saisir l'ensemble des informations.
+                Vous pouvez l'inscrire en indiquant son identifiant FPF sans saisir l'ensemble des informations.
             </div>
             <div class="formBlock">
                 <input type="hidden" name="prev" value="{{ $prev }}">

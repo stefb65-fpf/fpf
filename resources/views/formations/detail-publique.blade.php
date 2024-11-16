@@ -240,7 +240,7 @@
 
                                             </div>
                                             <div class="inscription">
-                                                <a class="blue" href="{{ route('registerAdhesion') }}">Pour vous inscire, créez un compte</a>
+                                                <a class="blue" href="{{ route('registerAdhesion') }}">Pour vous inscrire, créez un compte</a>
                                             </div>
                                         </div>
                                         <div>
