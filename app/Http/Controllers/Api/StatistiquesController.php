@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Club;
+use App\Models\Configsaison;
+use App\Models\Reglement;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -109,4 +111,107 @@ class StatistiquesController extends Controller
             return new JsonResponse($tab, 200);
         }
     }
+
+    public function gestStatsEvolution(Request $request) {
+        $debut_saison_actuelle = Configsaison::where('id', 1)->first()->datedebut;
+        $fin_saison_actuelle = Configsaison::where('id', 1)->first()->datefin;
+        $debut_saison_prev = Configsaison::where('id', 0)->first()->datedebut;
+        $fin_saison_prev = Configsaison::where('id', 0)->first()->datefin;
+        $saison_actuelle = intval(substr($debut_saison_actuelle, 0, 4));
+        $saison_future = intval(substr($debut_saison_prev, 0, 4));
+        $saison_actuelle_str = $saison_actuelle . '-' . ($saison_actuelle + 1);
+        $saison_future_str = $saison_future . '-' . ($saison_future + 1);
+        $query_actuels = Reglement::join('reglementsutilisateurs', 'reglements.id', '=', 'reglementsutilisateurs.reglements_id')
+            ->where('reglements.statut', 1)
+            ->where('reglements.dateenregistrement', '>=', $debut_saison_actuelle)
+            ->where('reglements.dateenregistrement', '<=', $fin_saison_actuelle)
+            ->where('reglementsutilisateurs.adhesion', 1)
+            ->selectRaw('COUNT(reglementsutilisateurs.utilisateurs_id) as nb, reglements.dateenregistrement, reglements.id, reglements.adhClub')
+            ->orderBy('reglements.dateenregistrement', 'asc')
+            ->groupBy('reglements.id');
+
+        if ($request->level == 'ur') {
+            $query_actuels->join('utilisateurs', 'reglementsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                ->where('utilisateurs.urs_id', $request->ur_id);
+        }
+        $reglements_actuels = $query_actuels->get();
+
+        $query_prev = Reglement::join('reglementsutilisateurs', 'reglements.id', '=', 'reglementsutilisateurs.reglements_id')
+            ->where('reglements.statut', 1)
+            ->where('reglements.dateenregistrement', '>=', $debut_saison_prev)
+            ->where('reglements.dateenregistrement', '<=', $fin_saison_prev)
+            ->where('reglementsutilisateurs.adhesion', 1)
+            ->selectRaw('COUNT(reglementsutilisateurs.utilisateurs_id) as nb, reglements.dateenregistrement, reglements.id, reglements.adhClub')
+            ->orderBy('reglements.dateenregistrement', 'asc')
+            ->groupBy('reglements.id');
+
+        if ($request->level == 'ur') {
+            $query_prev->join('utilisateurs', 'reglementsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                ->where('utilisateurs.urs_id', $request->ur_id);
+        }
+
+        $reglements_prev = $query_prev->get();
+
+        $tab_adhesion = array();
+        foreach ($reglements_actuels as $reglement) {
+            $mois = intval(substr($reglement->dateenregistrement, 3, 2));
+            if (isset($tab_adhesion[0][$mois])) {
+                $tab_adhesion[0][$mois]['nb'] += $reglement->nb;
+                if ($reglement->adhClub == 1) {
+                    if (isset($tab_adhesion[0][$mois]['club'])) {
+                        $tab_adhesion[0][$mois]['club'] += 1;
+                    } else {
+                        $tab_adhesion[0][$mois]['club'] = 1;
+                    }
+                }
+            } else {
+                $tab_adhesion[0][$mois]['nb'] = $reglement->nb;
+                if ($reglement->adhClub == 1) {
+                    $tab_adhesion[0][$mois]['club'] = 1;
+                }
+            }
+        }
+
+        foreach ($reglements_prev as $reglement) {
+            $mois = intval(substr($reglement->dateenregistrement, 3, 2));
+            if (isset($tab_adhesion[1][$mois])) {
+                $tab_adhesion[1][$mois]['nb'] += $reglement->nb;
+                if ($reglement->adhClub == 1) {
+                    if (isset($tab_adhesion[1][$mois]['club'])) {
+                        $tab_adhesion[1][$mois]['club'] += 1;
+                    } else {
+                        $tab_adhesion[1][$mois]['club'] = 1;
+                    }
+                }
+            } else {
+                $tab_adhesion[1][$mois]['nb'] = $reglement->nb;
+                if ($reglement->adhClub == 1) {
+                    $tab_adhesion[1][$mois]['club'] = 1;
+                }
+            }
+        }
+
+        // on parcourt tab_adhesion dans l'ordre et on cumule
+        $cumul = 0;
+        $cumul_club = 0;
+        $tab_clubs = [];
+        foreach ($tab_adhesion[0] as $k => $v) {
+            $cumul += $v['nb'];
+            $cumul_club += $v['club']??0;
+            $tab_adhesion[0][$k] = $cumul;
+            $tab_clubs[0][$k] = $cumul_club;
+        }
+
+        // on parcourt tab_adhesion dans l'ordre et on cumule
+        $cumul = 0;
+        $cumul_club = 0;
+        foreach ($tab_adhesion[1] as $k => $v) {
+            $cumul += $v['nb'];
+            $cumul_club += $v['club']??0;
+            $tab_adhesion[1][$k] = $cumul;
+            $tab_clubs[1][$k] = $cumul_club;
+        }
+        return new JsonResponse(['adhesions' => $tab_adhesion, 'clubs' => $tab_clubs, 'current_year' => $saison_actuelle_str, 'prev_year' => $saison_future_str], 200);
+    }
+
 }

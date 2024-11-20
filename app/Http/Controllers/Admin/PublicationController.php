@@ -359,8 +359,10 @@ class PublicationController extends Controller
                 ->whereNotNull('souscriptions.personne_id')
                 ->where('souscriptions.statut', 1)
                 ->where('utilisateurs.urs_id', $ur_id)
+                ->whereIn('utilisateurs.statut', [0,1,2,3])
                 ->whereNotNull('utilisateurs.clubs_id')
                 ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, personnes.nom, personnes.prenom, clubs.nom as club, clubs.numero')
+                ->orderByDesc('utilisateurs.statut')
                 ->orderBy('utilisateurs.identifiant')
                 ->groupBy('utilisateurs.id')
                 ->get();

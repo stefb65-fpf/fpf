@@ -37,7 +37,10 @@
                 </div>
                 <div class="d-flex">
                     <div id="piechartRepartitionAdherents" style="width: 50%; height: 500px"></div>
-{{--                    <div id="linechartEvolution" style="width: 50%; height: 500px"></div>--}}
+                    <div id="linechartEvolution" style="width: 50%; height: 500px"></div>
+                </div>
+                <div class="d-flex">
+                    <div id="linechartEvolutionClub" style="width: 50%; height: 500px"></div>
                 </div>
             </div>
         </div>

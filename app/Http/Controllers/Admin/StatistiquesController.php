@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Abonnement;
 use App\Models\Club;
 use App\Models\Configsaison;
+use App\Models\Reglement;
 use App\Models\Souscription;
 use App\Models\Ur;
 use App\Models\Utilisateur;
@@ -32,6 +33,74 @@ class StatistiquesController extends Controller
         $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
         $nb_abonnements_clubs = Club::where('numerofinabonnement', '>=', $numeroencours)->count();
         $nb_souscriptions = Souscription::where('statut', 1)->sum('nbexemplaires');
+
+//        $debut_saison_actuelle = Configsaison::where('id', 1)->first()->datedebut;
+//        $fin_saison_actuelle = Configsaison::where('id', 1)->first()->datefin;
+//        $debut_saison_prev = Configsaison::where('id', 0)->first()->datedebut;
+//        $fin_saison_prev = Configsaison::where('id', 0)->first()->datefin;
+//        $saison_actuelle = intval(substr($debut_saison_actuelle, 0, 4));
+//        $saison_future = intval(substr($debut_saison_prev, 0, 4));
+//
+//        $query_actuels = Reglement::join('reglementsutilisateurs', 'reglements.id', '=', 'reglementsutilisateurs.reglements_id')
+//            ->where('reglements.statut', 1)
+//            ->where('reglements.dateenregistrement', '>=', $debut_saison_actuelle)
+//            ->where('reglements.dateenregistrement', '<=', $fin_saison_actuelle)
+//            ->where('reglementsutilisateurs.adhesion', 1)
+//            ->selectRaw('COUNT(reglementsutilisateurs.utilisateurs_id) as nb, reglements.dateenregistrement, reglements.id, reglements.adhClub')
+//            ->orderBy('reglements.dateenregistrement', 'asc')
+//            ->groupBy('reglements.id');
+//
+//        $reglements_actuels = $query_actuels->get();
+//
+//        $query_prev = Reglement::join('reglementsutilisateurs', 'reglements.id', '=', 'reglementsutilisateurs.reglements_id')
+//            ->where('reglements.statut', 1)
+//            ->where('reglements.dateenregistrement', '>=', $debut_saison_prev)
+//            ->where('reglements.dateenregistrement', '<=', $fin_saison_prev)
+//            ->where('reglementsutilisateurs.adhesion', 1)
+//            ->selectRaw('COUNT(reglementsutilisateurs.utilisateurs_id) as nb, reglements.dateenregistrement, reglements.id, reglements.adhClub')
+//            ->orderBy('reglements.dateenregistrement', 'asc')
+//            ->groupBy('reglements.id');
+//        $reglements_prev = $query_prev->get();
+//
+//        $tab_adhesion = array();
+//        foreach ($reglements_actuels as $reglement) {
+//            $mois = intval(substr($reglement->dateenregistrement, 3, 2));
+//            if (isset($tab_adhesion[0][$mois])) {
+//                $tab_adhesion[0][$mois]['nb'] += $reglement->nb;
+//                if ($reglement->adhClub == 1) {
+//                    if (isset($tab_adhesion[0][$mois]['club'])) {
+//                        $tab_adhesion[0][$mois]['club'] += 1;
+//                    } else {
+//                        $tab_adhesion[0][$mois]['club'] = 1;
+//                    }
+//                }
+//            } else {
+//                $tab_adhesion[0][$mois]['nb'] = $reglement->nb;
+//                if ($reglement->adhClub == 1) {
+//                    $tab_adhesion[0][$mois]['club'] = 1;
+//                }
+//            }
+//        }
+//
+//        foreach ($reglements_prev as $reglement) {
+//            $mois = intval(substr($reglement->dateenregistrement, 3, 2));
+//            if (isset($tab_adhesion[1][$mois])) {
+//                $tab_adhesion[1][$mois]['nb'] += $reglement->nb;
+//                if ($reglement->adhClub == 1) {
+//                    if (isset($tab_adhesion[1][$mois]['club'])) {
+//                        $tab_adhesion[1][$mois]['club'] += 1;
+//                    } else {
+//                        $tab_adhesion[1][$mois]['club'] = 1;
+//                    }
+//                }
+//            } else {
+//                $tab_adhesion[1][$mois]['nb'] = $reglement->nb;
+//                if ($reglement->adhClub == 1) {
+//                    $tab_adhesion[1][$mois]['club'] = 1;
+//                }
+//            }
+//        }
+//        dd($tab_adhesion);
 
         // on regarde la répartition par cartes des adhésions actuelles
         $users = Utilisateur::whereIn('statut', [2,3])

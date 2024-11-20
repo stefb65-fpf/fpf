@@ -79,6 +79,7 @@ Route::post('/ajax/editListAdherents', [App\Http\Controllers\Api\UtilisateurCont
 Route::post('/gestStatsClub', [App\Http\Controllers\Api\StatistiquesController::class, 'gestStatsClub']);
 Route::post('/gestStatsAdherents', [App\Http\Controllers\Api\StatistiquesController::class, 'gestStatsAdherents']);
 Route::post('/gestStatsRepartitionCartes', [App\Http\Controllers\Api\StatistiquesController::class, 'gestStatsRepartitionCartes']);
+Route::post('/gestStatsEvolution', [App\Http\Controllers\Api\StatistiquesController::class, 'gestStatsEvolution']);
 
 
 // action sur l'affichage des formations
