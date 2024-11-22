@@ -8,6 +8,7 @@ Route::post('/editEtiquettes', [App\Http\Controllers\Admin\PublicationController
 Route::post('/editRoutageFede', [App\Http\Controllers\Admin\PublicationController::class, 'createRoutageFede']);
 Route::post('/generateSouscriptionsList', [App\Http\Controllers\Admin\PublicationController::class, 'generateSouscriptionsList']);
 Route::post('/generateSouscriptionsColisage', [App\Http\Controllers\Admin\PublicationController::class, 'generateSouscriptionsColisage']);
+Route::post('/generateSouscriptionsColisageRouteur', [App\Http\Controllers\Admin\PublicationController::class, 'generateSouscriptionsColisageRouteur']);
 
 // mise à jour de l'appartenance au CE d'une fonction FPF
 Route::post('/updateFonctionCe', [App\Http\Controllers\Admin\FonctionController::class, 'updateFonctionCe']);

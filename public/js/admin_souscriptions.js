@@ -17,6 +17,8 @@ $('#btnSouscriptionsList').on('click', function () {
 })
 
 $('#btnSouscriptionsColisage').on('click', function () {
+    $('#alertFlorilege').addClass('d-none')
+    $('#uploaderWaiting').removeClass('d-none')
     $.ajax({
         url:'/api/generateSouscriptionsColisage',
         type: 'POST',
@@ -24,7 +26,27 @@ $('#btnSouscriptionsColisage').on('click', function () {
         },
         dataType: 'JSON',
         success: function (reponse) {
+            $('#uploaderWaiting').addClass('d-none')
+            $('#linkAlertFlorilege').attr('href', reponse.file)
+            $('#alertFlorilege').removeClass('d-none')
+        },
+        error: function (e) {
+            console.log(e)
+        }
+    });
+})
 
+$('#btnSouscriptionsColisageRouteur').on('click', function () {
+    $('#alertFlorilege').addClass('d-none')
+    $.ajax({
+        url:'/api/generateSouscriptionsColisageRouteur',
+        type: 'POST',
+        data: {
+        },
+        dataType: 'JSON',
+        success: function (reponse) {
+            $('#linkAlertFlorilege').attr('href', reponse.file)
+            $('#alertFlorilege').removeClass('d-none')
         },
         error: function (e) {
             console.log(e)

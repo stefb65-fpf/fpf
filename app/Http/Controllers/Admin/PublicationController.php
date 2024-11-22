@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Concern\Tools;
+use App\Exports\ColisageExport;
 use App\Exports\FlorilegeExport;
 use App\Exports\RoutageFedeExport;
 use App\Exports\RoutageFpExport;
@@ -327,6 +328,152 @@ class PublicationController extends Controller
         }
     }
 
+    public function generateSouscriptionsColisageRouteur() {
+        $tab_id = [];
+        $ind = 100000;
+
+        $souscriptions = [];
+        $tab_personnes = [];
+        for ($ur_id = 1; $ur_id <= 24; $ur_id++) {
+            $souscriptions_club = Souscription::join('clubs', 'clubs.id', '=', 'souscriptions.clubs_id')
+                ->whereNotNull('souscriptions.clubs_id')
+                ->where('souscriptions.statut', 1)
+                ->where('clubs.urs_id', $ur_id)
+                ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, clubs.id, clubs.nom as club, clubs.numero, clubs.urs_id')
+                ->orderBy('clubs.urs_id')
+                ->orderBy('clubs.numero')
+                ->groupBy('clubs.id')
+                ->get();
+
+            foreach ($souscriptions_club as $souscription) {
+                // on cherche le contact du club
+                $souscription->contact = Personne::join('utilisateurs', 'personnes.id', '=', 'utilisateurs.personne_id')
+                    ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                    ->selectRaw('personnes.nom, personnes.prenom, personnes.id, personnes.sexe, personnes.phone_mobile, personnes.email')
+                    ->where('fonctionsutilisateurs.fonctions_id', 97)
+                    ->where('utilisateurs.clubs_id', $souscription->id)
+                    ->first();
+                $souscriptions[$souscription->id][] = $souscription;
+            }
+
+
+            $souscriptions_adherents = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
+                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+                ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
+//                ->join('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
+                ->whereNotNull('souscriptions.personne_id')
+                ->where('souscriptions.statut', 1)
+                ->where('utilisateurs.urs_id', $ur_id)
+                ->whereIn('utilisateurs.statut', [0,1,2,3])
+//                ->whereNotNull('utilisateurs.clubs_id')
+                ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, utilisateurs.personne_id, personnes.nom, personnes.prenom, personnes.sexe, personnes.phone_mobile, clubs.nom as club, clubs.numero')
+                ->orderByDesc('utilisateurs.statut')
+                ->orderBy('utilisateurs.identifiant')
+                ->groupBy('utilisateurs.id')
+                ->get();
+
+//            $souscriptions_all = $souscriptions_adherents_old->merge($souscriptions_adherents);
+
+            foreach ($souscriptions_adherents as $souscription) {
+                if (!in_array($souscription->id, $tab_id)) {
+                    if (is_null($souscription->clubs_id)) {
+                        $souscription->clubs_id = 0;
+                        $souscription->numero = $ind;
+                        $souscription->contact = Personne::where('id', $souscription->personne_id)
+                            ->selectRaw('nom, prenom, id, sexe, phone_mobile, email')
+                            ->first();
+                        $souscriptions[$ind][] = $souscription;
+                        $ind++;
+                    } else {
+                        $souscription->contact = Personne::join('utilisateurs', 'personnes.id', '=', 'utilisateurs.personne_id')
+                            ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                            ->selectRaw('personnes.nom, personnes.prenom, personnes.id, personnes.sexe, personnes.phone_mobile, personnes.email')
+                            ->where('fonctionsutilisateurs.fonctions_id', 97)
+                            ->where('utilisateurs.clubs_id', $souscription->clubs_id)
+                            ->first();
+                        if ($souscription->contact) {
+                            $souscriptions[$souscription->clubs_id][] = $souscription;
+                        }
+
+                    }
+                    $tab_id[] = $souscription->id;
+                    $tab_personnes[] = $souscription->personne_id;
+                }
+            }
+        }
+
+
+        for ($ur_id = 1; $ur_id <= 24; $ur_id++) {
+            $souscriptions_adherents_old = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
+                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+                ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
+                ->whereNotNull('souscriptions.personne_id')
+                ->where('souscriptions.statut', 1)
+                ->where('utilisateurs.urs_id', $ur_id)
+                ->where('utilisateurs.statut', '>', 3)
+                ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, utilisateurs.personne_id, personnes.nom, personnes.prenom, personnes.sexe, personnes.phone_mobile, clubs.nom as club, clubs.numero')
+                ->orderByDesc('utilisateurs.statut')
+                ->orderBy('utilisateurs.identifiant')
+                ->groupBy('utilisateurs.id')
+                ->get();
+
+            foreach ($souscriptions_adherents_old as $souscription) {
+                if (!in_array($souscription->personne_id, $tab_personnes) && !in_array($souscription->id, $tab_id)){
+                    if (is_null($souscription->clubs_id)) {
+                        $souscription->clubs_id = 0;
+                        $souscription->numero = $ind;
+                        $souscription->contact = Personne::where('id', $souscription->personne_id)
+                            ->selectRaw('nom, prenom, id, sexe, phone_mobile, email')
+                            ->first();
+                        $souscriptions[$ind][] = $souscription;
+                        $ind++;
+                    } else {
+
+                            $souscription->contact = Personne::join('utilisateurs', 'personnes.id', '=', 'utilisateurs.personne_id')
+                                ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                                ->selectRaw('personnes.nom, personnes.prenom, personnes.id, personnes.sexe, personnes.phone_mobile, personnes.email')
+                                ->where('fonctionsutilisateurs.fonctions_id', 97)
+                                ->where('utilisateurs.clubs_id', $souscription->clubs_id)
+                                ->first();
+                            if ($souscription->contact) {
+                                $souscriptions[$souscription->clubs_id][] = $souscription;
+
+                            }
+                    }
+                    $tab_personnes[] = $souscription->personne_id;
+                    $tab_id[] = $souscription->id;
+                }
+            }
+        }
+//        die();
+        $tab_souscriptions = [];
+        foreach ($souscriptions as $souscription) {
+            foreach ($souscription as $s) {
+                if (!isset($tab_souscriptions[$s->numero])) {
+                    $tab_souscriptions[$s->numero]['nbexemplaires'] = $s->nbexemplaires;
+                    $tab_souscriptions[$s->numero]['contact'] = $s->contact;
+                    $tab_souscriptions[$s->numero]['ur'] = $s->urs_id;
+                    $tab_souscriptions[$s->numero]['club'] = $s->club;
+                    $adresse = $s->contact->adresses()->first();
+                    if ($adresse) {
+                        $tab_souscriptions[$s->numero]['adresse'] = $adresse;
+                    }
+                } else {
+                    $tab_souscriptions[$s->numero]['nbexemplaires'] += $s->nbexemplaires;
+                }
+            }
+        }
+        $fichier = 'colisage_florilege_' . date('YmdHis') . '.xls';
+        if (Excel::store(new ColisageExport($tab_souscriptions), $fichier, 'xls')) {
+            $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
+            return new JsonResponse(['file' => $file_to_download], 200);
+        } else {
+            return new JsonResponse(['erreur' => 'impossible de récupérer le fichier'], 400);
+        }
+    }
+
+
+
     public function generateSouscriptionsColisage() {
         $tab_id = [];
 //        for ($ur_id = 1; $ur_id <= 25; $ur_id++) {
@@ -389,6 +536,18 @@ class PublicationController extends Controller
                 ->setPaper('a4', 'portrait')
                 ->save($dir . '/' . $name);
         }
+
+        $zip = new \ZipArchive();
+        $zipname = 'colisage_' . date('Y') . '.zip';
+        if ($zip->open($dir . '/' . $zipname, \ZipArchive::CREATE) === TRUE) {
+            for ($i = 1; $i <= 24; $i++) {
+                $pdf = 'colisage_' . date('Y') . '_'.str_pad($i, 2, '0', STR_PAD_LEFT).'.pdf';
+                $zip->addFile($dir . '/' . $pdf, $pdf);
+            }
+            $zip->close();
+        }
+        $file_to_download = env('APP_URL') . 'storage/app/public/uploads/souscriptions/' . $zipname;
+        return new JsonResponse(['file' => $file_to_download], 200);
     }
 
     protected function getIndividuels() {

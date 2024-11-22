@@ -20,8 +20,9 @@
             Le fichier Excel a été généré avec succès. Vous pouvez le <a class="blue" id="linkAlertFlorilege"  target="_blank">télécharger</a>.
         </div>
         <div class="flexEnd">
-            <button class="adminSuccess btnMedium mt10 mr10" type="text" id="btnSouscriptionsColisage">Liste de colisage</button>
-            <button class="adminPrimary btnMedium mt10" type="text" id="btnSouscriptionsList">Liste des souscriptions au format Excel</button>
+            <button class="adminPrimary btnMedium mt10 mr10" type="text" id="btnSouscriptionsColisageRouteur">Colisage pour le routeur</button>
+            <button class="adminSuccess btnMedium mt10 mr10" type="text" id="btnSouscriptionsColisage">Colisage pour UR</button>
+            <button class="adminWarning btnMedium mt10" type="text" id="btnSouscriptionsList">Liste des souscriptions au format Excel</button>
         </div>
         <div class="w100">
             <div class="pagination">
@@ -51,6 +52,9 @@
             </table>
             <div class="pagination">
                 {{ $souscriptions->render( "pagination::default") }}
+            </div>
+            <div id="uploaderWaiting" class="waiting d-none p100">
+                <img src="{{ url('storage/app/public/ajax-loader.gif') }}" style="max-width: 150px;">
             </div>
         </div>
     </div>
