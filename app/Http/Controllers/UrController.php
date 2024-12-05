@@ -740,6 +740,18 @@ class UrController extends Controller
         if (in_array($fonction->id, [58, 336])) {
             $this->removeAuthorCapabilities($utilisateur->id);
         }
+        // on regarde combien de membres de l'urs occupent encore cette fonction
+        $nbAttributions = DB::table('fonctionsutilisateurs')
+            ->join('utilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+            ->where('fonctionsutilisateurs.fonctions_id', $fonction->id)
+            ->where('utilisateurs.urs_id', $utilisateur->urs_id)
+            ->count();
+        if ($nbAttributions == 0) {
+            DB::table('fonctionsurs')
+                ->where('fonctions_id', $fonction->id)
+                ->where('urs_id', $ur->id)
+                ->delete();
+        }
         return redirect()->route('urs.fonctions.manage_attribution', $fonction)->with('success', "L'attribution de la fonction a été supprimée");
     }
 
