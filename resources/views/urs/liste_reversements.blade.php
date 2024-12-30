@@ -13,14 +13,35 @@
                 </svg>
             </a>
         </h1>
-        <div class="alertDanger w80">
-            <p>
-                <span class="bold">Attention !</span>
-                Cette page est en cours de développement. Elle n'est pas encore fonctionnelle.
-            </p>
-            <p class="mt20">
-                On affiche ici la liste des reversements effectués par la FPF
-            </p>
+        <div>
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Montant</th>
+                    <th>Référence</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($reversements as $reversement)
+                    <tr>
+                        <td>{{ substr($reversement->created_at, 8, 2).'/'.substr($reversement->created_at, 5, 2).'/'.substr($reversement->created_at, 0, 4) }}</td>
+                        <td>{{ number_format($reversement->montant, 2, ',', ' ').'€' }}</td>
+                        <td>{{ $reversement->reference }}</td>
+                        <td>
+                            @if($reversement->bordereau != '')
+                            <a class="adminPrimary btnSmall" target="_blank" href="{{ $reversement->bordereau }}">bordereau</a>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
         </div>
+
     </div>
+@endsection
+@section('css')
+    <link href="{{ asset('css/admin_fpf.css') }}" rel="stylesheet">
 @endsection

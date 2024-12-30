@@ -56,6 +56,7 @@ function drawChartAdherents() {
                 ['Pré-inscrits', reponse.preinscrits],
                 ['Renouvelés', reponse.valides],
                 ['Nouveaux', reponse.nouveaux],
+                ['Renouvelés > 1 an', reponse.renouveles_plus],
             ])
         },
         async: false,
@@ -66,7 +67,7 @@ function drawChartAdherents() {
     let options = {
         title: 'Adhérents',
         is3D: true,
-        colors: ['#e28a2d', '#f1e205', '#99d59a', '#0000FF'],
+        colors: ['#e28a2d', '#f1e205', '#99d59a', '#0000FF', '#880000'],
     }
 
 

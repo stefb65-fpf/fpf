@@ -546,7 +546,21 @@ class UrController extends Controller
     public function listeReversements()
     {
         $ur = $this->getUr();
-        return view('urs.liste_reversements', compact('ur'));
+        $reversements = Reversement::where('urs_id', $ur->id)->orderBy('created_at', 'desc')->get();
+        foreach ($reversements as $reversement) {
+            list($annee, $ur_id, $tmp) = explode('-', $reversement->reference);
+            if (intval($annee) > 18) {
+                if (file_exists(storage_path('app/public/uploads/bordereauxur/20' . $annee . '/bordereau-ur-' . $reversement->reference . '.pdf'))) {
+                    $reversement->bordereau = url('storage/app/public/uploads/bordereauxur/20' . $annee) . '/bordereau-ur-' . $reversement->reference . '.pdf';
+                } else {
+                    $reversement->bordereau = '';
+                }
+            } //            $reversement->bordereau = intval($annee) > 18 ? url('storage/app/public/uploads/bordereauxur/20'.$annee).'/bordereau-ur-'.$reversement->reference.'.pdf' : '';
+            else {
+                $reversement->bordereau = '';
+            }
+        }
+        return view('urs.liste_reversements', compact('ur', 'reversements'));
     }
 
     // fonction pour récupérer l'UR de l'adhérent
