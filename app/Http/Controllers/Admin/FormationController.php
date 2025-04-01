@@ -60,6 +60,7 @@ class FormationController extends Controller
             return redirect()->route('accueil');
         }
         $formation = new Formation();
+        $formation->global_price = 0;
         $categories = Categorieformation::orderBy('id')->get();
         return view('admin.formations.create', compact('formation', 'categories'));
     }

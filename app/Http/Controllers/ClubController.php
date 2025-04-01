@@ -50,7 +50,8 @@ class ClubController extends Controller
     public function gestion()
     {
         $club = $this->getClub();
-        $nb_sessions = Session::where('club_id', $club->id)->where('start_date', '>=', date('Y-m-d'))->orderBy('start_date')->count();
+        $nb_sessions = Session::where('club_id', $club->id)->orderBy('start_date')->count();
+//        $nb_sessions = Session::where('club_id', $club->id)->where('start_date', '>=', date('Y-m-d'))->orderBy('start_date')->count();
         return view('clubs.gestion', compact('club', 'nb_sessions'));
     }
 
