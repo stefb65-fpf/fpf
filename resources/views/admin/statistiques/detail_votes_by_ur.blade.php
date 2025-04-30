@@ -88,7 +88,7 @@
         </tr>
         </thead>
         <tbody>
-        @for($i = 1; $i < 26; $i++)
+        @for($i = 1; $i < 25; $i++)
             <tr>
                 <td>
                     @if($level == 'admin' || $i == $ur->id)
