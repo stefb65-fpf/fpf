@@ -292,13 +292,13 @@ trait Tools
         if ($reglement->aboClub == 1 || $reglement->adhClub == 1) {
             $club = Club::where('id', $reglement->clubs_id)->first();
             $datac = array('statut' => 2);
-            if ($club->ct == 'N') {
-                $datac['ct'] = '1';
-                $datac['second_year'] = 1;
-            }
-            if ($club->second_year == 1) {
-                $datac['second_year'] = 0;
-            }
+//            if ($club->ct == 'N') {
+//                $datac['ct'] = '1';
+//                $datac['second_year'] = 1;
+//            }
+//            if ($club->second_year == 1) {
+//                $datac['second_year'] = 0;
+//            }
             if ($reglement->aboClub == 1) {
                 if ($numeroencours > $club->numerofinabonnement) {
                     $datac['numerofinabonnement'] = $numeroencours + 4;

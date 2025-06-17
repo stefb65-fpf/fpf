@@ -33,6 +33,7 @@ class ReversementController extends Controller
             $montant_reversement_abo_adherent = round($tarif_abo_adherent->tarif * $tauxreversabt, 2);
             $tarif_adhesion_club_normal = Tarif::where('id', 6)->where('statut', 0)->first();
             $montant_reversement_adhesion_club_normal = round($tarif_adhesion_club_normal->tarif * $tauxreversclub, 2);
+            $montant_reversement_adhesion_club_second_year = $montant_reversement_adhesion_club_normal / 2;
             $tarif_adhesion_club_nouveau = Tarif::where('id', 7)->where('statut', 0)->first();
             $montant_reversement_adhesion_club_nouveau = round($tarif_adhesion_club_nouveau->tarif * $tauxreversclub, 2);
 
@@ -104,6 +105,9 @@ class ReversementController extends Controller
                         }
                         if ($reglement->adhClub == 1) {
                             $montant_adhesion_ur = $club->ct == 'N' ? $montant_reversement_adhesion_club_nouveau : $montant_reversement_adhesion_club_normal;
+                            if ($club->second_year == 1) {
+                                $montant_adhesion_ur = $montant_reversement_adhesion_club_second_year;
+                            }
                             // on ajoute le montant de l'adhésion club
                             if (!isset($tab_reversements[$reglement->clubs_id]['adhesion_ur'])) {
                                 $tab_reversements[$reglement->clubs_id]['adhesion_ur'] = $montant_adhesion_ur;
