@@ -14,6 +14,7 @@ $('select[name=filter]').on('change',function (e) {
     let statut = $('#statutFilterPersonnes option:selected').val()
     let typeCarte = $('#typeCarteFilterPersonnes option:selected').val()
     let typeAdherent = $('#typeAdherentFilterPersonnes option:selected').val()
+    let anciennete = $('#ancienneteFilterPersonnes option:selected').val()
 
     url += "/personnes/"
     if (viewType === 'adherents') {
@@ -22,6 +23,9 @@ $('select[name=filter]').on('change',function (e) {
         url += "ur_adherents/"
     }
     url += statut + "/" + typeCarte + "/" + typeAdherent;
+    if (anciennete === '1') {
+        url += "/null/1";
+    }
     window.location.href = url;
 })
 

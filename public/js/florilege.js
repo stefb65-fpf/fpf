@@ -9,6 +9,7 @@ $('#selectFlorilege').on('change', function() {
 $('button[name=orderFlorilege]').on('click', function() {
     const type = $(this).data('type')
     const personne_id = $(this).data('personne')
+    const utilisateur_id = $(this).data('identifiant')
     const nb = $('#selectFlorilege option:selected').val()
     const montant = parseFloat($('#priceUnitFlorilege').html()) * parseInt(nb)
     $.ajax({
@@ -18,7 +19,8 @@ $('button[name=orderFlorilege]').on('click', function() {
             type: type,
             nb: nb,
             montant: montant,
-            personne_id: personne_id
+            personne_id: personne_id,
+            utilisateur_id: utilisateur_id
         },
         success: function (data) {
             $(location).attr('href', data.url)

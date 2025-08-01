@@ -8,6 +8,7 @@ Route::post('/editEtiquettes', [App\Http\Controllers\Admin\PublicationController
 Route::post('/editRoutageFede', [App\Http\Controllers\Admin\PublicationController::class, 'createRoutageFede']);
 Route::post('/generateSouscriptionsList', [App\Http\Controllers\Admin\PublicationController::class, 'generateSouscriptionsList']);
 Route::post('/generateSouscriptionsColisage', [App\Http\Controllers\Admin\PublicationController::class, 'generateSouscriptionsColisage']);
+Route::post('/sendSouscriptionsColisage', [App\Http\Controllers\Admin\PublicationController::class, 'sendSouscriptionsColisage']);
 Route::post('/generateSouscriptionsColisageRouteur', [App\Http\Controllers\Admin\PublicationController::class, 'generateSouscriptionsColisageRouteur']);
 
 // mise à jour de l'appartenance au CE d'une fonction FPF
@@ -24,12 +25,18 @@ Route::post('/utilisateurs/renew/individuel', [App\Http\Controllers\Api\Utilisat
 Route::post('/admin/renew/individuel', [App\Http\Controllers\Api\UtilisateurController::class, 'renewIndividuelByAdmin']);
 Route::post('/utilisateurs/add/individuel', [App\Http\Controllers\Api\UtilisateurController::class, 'addIndividuel']);
 Route::post('/utilisateurs/add/abonnement', [App\Http\Controllers\Api\UtilisateurController::class, 'addAbonnement']);
+Route::post('/checkFusionAdherents', [App\Http\Controllers\Api\UtilisateurController::class, 'checkFusionAdherents']);
+Route::post('/fusionAdherents', [App\Http\Controllers\Api\UtilisateurController::class, 'fusionAdherents']);
 
 // action sur les règlements
 Route::post('/validReglement', [App\Http\Controllers\Api\ReglementController::class, 'validReglement']);
 Route::post('/editCartes', [App\Http\Controllers\Api\ReglementController::class, 'editCartes']);
 Route::post('/reEditCarte', [App\Http\Controllers\Api\ReglementController::class, 'reEditCarte'])->name('reEditCarte');
 Route::post('/relanceReglement', [App\Http\Controllers\Api\ReglementController::class, 'relanceReglement']);
+Route::post('/checkCancelReglement', [App\Http\Controllers\Api\ReglementController::class, 'checkCancelReglement']);
+Route::post('/annulationAdhesionIndividuel', [App\Http\Controllers\Api\ReglementController::class, 'annulationAdhesionIndividuel']);
+Route::post('/annulationAdhesionClub', [App\Http\Controllers\Api\ReglementController::class, 'annulationAdhesionClub']);
+Route::post('/cancelAvoir', [App\Http\Controllers\Api\ReglementController::class, 'cancelAvoir']);
 
 // gestion de commandes Florilège
 Route::post('/florilege/order', [App\Http\Controllers\Api\FlorilegeController::class, 'orderFlorilege']);
@@ -40,6 +47,10 @@ Route::post('/clubs/payByVirement', [App\Http\Controllers\Api\ClubController::cl
 Route::post('/clubs/payByCb', [App\Http\Controllers\Api\ClubController::class, 'payByCb']);
 Route::post('/submitClubActivites', [App\Http\Controllers\Api\ClubController::class, 'clubActivite']);
 Route::post('/submitClubEquipements', [App\Http\Controllers\Api\ClubController::class, 'clubEquipement']);
+Route::post('/exportPdfClubsByDepts', [App\Http\Controllers\Api\ClubController::class, 'exportPdfClubsByDepts']);
+Route::post('/updateAffichagePhotoClub', [App\Http\Controllers\Api\ClubController::class, 'updateAffichagePhotoClub']);
+Route::post('/updateClosedClub', [App\Http\Controllers\Api\ClubController::class, 'updateClosedClub']);
+Route::post('/extractClubsForUr', [App\Http\Controllers\Api\ClubController::class, 'extractClubsForUr']);
 
 // connexion des personnes, gestion de session
 Route::post('/personnes/updateSession', [App\Http\Controllers\Api\PersonneController::class, 'updateSession']);
@@ -96,6 +107,8 @@ Route::post('/formations/saveWithoutPaiement', [App\Http\Controllers\Api\Formati
 Route::post('/formations/addInscritToSession', [App\Http\Controllers\Api\FormationController::class, 'addInscritToSession']);
 Route::post('/formations/generatePdfEvaluations', [App\Http\Controllers\Api\FormationController::class, 'generatePdfEvaluations']);
 Route::post('/formations/cancelInscription', [App\Http\Controllers\Api\FormationController::class, 'cancelInscription']);
+
+Route::post('/demandes/{demande}/delete', [App\Http\Controllers\Api\FormationController::class, 'deleteDemande'])->name('formations.deleteDemande');
 
 Route::post('/sessions/payByVirement', [App\Http\Controllers\Api\SessionController::class, 'payByVirement']);
 Route::post('/sessions/payByCb', [App\Http\Controllers\Api\SessionController::class, 'payByCb']);

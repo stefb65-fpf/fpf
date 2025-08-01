@@ -21,3 +21,24 @@ $('.searchedTerm .close').on('click', function(){
     let url = "/admin/clubs/"+ur+"/"+statut+"/"+typeCarte+"/"+abonnement;
     window.location.href = url;
 })
+
+
+$('#btnExportClubByDepts').on('click', function(e) {
+    $('#alertPdfClubs').addClass('d-none')
+    $('#uploaderWaiting').removeClass('d-none')
+    $.ajax({
+        url:'/api/exportPdfClubsByDepts',
+        type: 'POST',
+        data: {
+        },
+        dataType: 'JSON',
+        success: function (reponse) {
+            $('#uploaderWaiting').addClass('d-none')
+            $('#linkAlertPdfClubs').attr('href', reponse.file);
+            $('#alertPdfClubs').removeClass('d-none')
+        },
+        error: function (e) {
+            console.log(e)
+        }
+    });
+})

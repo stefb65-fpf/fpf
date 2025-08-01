@@ -297,6 +297,15 @@ $('#renouvellementAdherents').on('click', function (e) {
             $('#montantRenouvellementAbonnement').html(reponse.total_abonnement)
             $('#montantRenouvellementFlorilege').html(reponse.total_florilege)
             $('#montantRenouvellement').html(reponse.total_montant)
+            if (reponse.montant_creance > 0) {
+                $('#montantAvoirClub').html(reponse.montant_creance)
+                $('#montantRenouvellementTotal').html(reponse.total_to_paid)
+                $('#montantAvecCreance').removeClass('d-none')
+                $('#montantSansCreance').addClass('d-none')
+            } else {
+                $('#montantAvecCreance').addClass('d-none')
+                $('#montantSansCreance').removeClass('d-none')
+            }
             $('#modalRenouvellement').removeClass('d-none')
         },
         error: function (e) {
@@ -408,12 +417,128 @@ $('#btnRenouvellement').on('click', function (e) {
         success: function (reponse) {
             $('#modalRenouvellement').addClass('d-none')
             $('#lienBordereauClub').attr('href', $('#app_url').html() + reponse.file)
-            $('#clubPayVirement').data('ref', reponse.reglement_id)
-            $('#clubPayCb').data('ref', reponse.reglement_id)
+            if (reponse.montant_paye > 0) {
+                $('#clubPayVirement').data('ref', reponse.reglement_id).removeClass('d-none')
+                $('#clubPayCb').data('ref', reponse.reglement_id).removeClass('d-none')
+            } else {
+                $('#clubPayVirement').addClass('d-none')
+                $('#clubPayCb').addClass('d-none')
+            }
             $('#modalRenouvellementOk').removeClass('d-none')
         },
         error: function (e) {
         }
     });
 })
+
+$('#btnFusionAdherents').on('click', function (e) {
+    e.preventDefault()
+    $('#btnCancelFusion').html('Annuler')
+    $('#fusionDemande').removeClass('d-none')
+    $('#btnValiderFusion').addClass('d-none')
+    $('#fusionResultat').html('')
+    $('#fusionResultat').addClass('d-none')
+    $('#idFusionMaitre').val('')
+    $('#idFusionEsclave').val('')
+    $('#btnCheckFusion').removeClass('d-none')
+    $('#modalFusion').removeClass('d-none')
+})
+
+$('#btnCheckFusion').on('click', function (e) {
+    if ($('#idFusionMaitre').val() == '' || $('#idFusionEsclave').val() == '') {
+        alert('Veuillez renseigner les deux identifiants')
+        return
+    }
+    // on controle que les deux identifiant doivent être de type xx-xxxx-xxxx avec x comme chiffre
+    const regIdentifiant = /^[0-9]{2}-[0-9]{4}-[0-9]{4}$/
+    if (!regIdentifiant.test($('#idFusionMaitre').val()) || !regIdentifiant.test($('#idFusionEsclave').val())) {
+        alert('Les identifiants doivent être au format xx-xxxx-xxxx')
+        return
+    }
+    // on contrôle que les deux indeitifiants ne sont pas identiques
+    if ($('#idFusionMaitre').val() == $('#idFusionEsclave').val()) {
+        alert('Les deux identifiants doivent être différents')
+        return
+    }
+
+    const control = $(this).data('control')
+    // on vérifie que les deux identifiants commencent par la même chaine que control
+    if (!$('#idFusionMaitre').val().startsWith(control) || !$('#idFusionEsclave').val().startsWith(control)) {
+        alert('Les deux identifiants doivent commencer par ' + control)
+        return
+    }
+
+    $.ajax({
+        url: '/api/checkFusionAdherents',
+        type: 'POST',
+        data: {
+            idMaitre: $('#idFusionMaitre').val(),
+            idEsclave: $('#idFusionEsclave').val()
+        },
+        dataType: 'JSON',
+        success: function (reponse) {
+            if (reponse.success) {
+                $('#fusionResultat').html(reponse.message)
+                $('#fusionResultat').removeClass('d-none')
+                $('#btnCheckFusion').addClass('d-none')
+                $('#fusionDemande').addClass('d-none')
+                $('#btnValiderFusion').removeClass('d-none')
+            } else {
+                alert(reponse.message)
+            }
+        },
+        error: function (e) {
+            let message;
+            // let message = 'Une erreur est survenue lors de la vérification de la fusion.';
+
+            try {
+                const response = JSON.parse(e.responseText);
+                if (response.erreur) {
+                    message = response.erreur;
+                }
+            } catch (parseError) {
+                // Si le JSON est invalide ou autre erreur
+                console.error('Erreur de parsing JSON :', parseError);
+            }
+
+            alert(message);
+        }
+    });
+})
+
+$('#btnValiderFusion').on('click', function (e) {
+    $.ajax({
+        url: '/api/fusionAdherents',
+        type: 'POST',
+        data: {
+            idMaitre: $('#idFusionMaitre').val(),
+            idEsclave: $('#idFusionEsclave').val()
+        },
+        dataType: 'JSON',
+        success: function (reponse) {
+            if (reponse.success) {
+                $('#fusionResultat').html(reponse.message)
+                $('#btnCancelFusion').html('Fermer')
+                $('#btnValiderFusion').addClass('d-none')
+            } else {
+                alert(reponse.message)
+            }
+        },
+        error: function (e) {
+            let message
+            try {
+                const response = JSON.parse(e.responseText)
+                if (response.erreur) {
+                    message = response.erreur
+                }
+            } catch (parseError) {
+                // Si le JSON est invalide ou autre erreur
+                console.error('Erreur de parsing JSON :', parseError)
+            }
+
+            alert(message)
+        }
+    });
+})
+
 

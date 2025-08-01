@@ -44,3 +44,48 @@ $('div[name=ajaxCheckbox]').on('click', function (e) {
     submitNewsPreferences(activite, clubId, form, $(this))
 })
 
+$('input[name=affichage_photo_club]').on('click', function (e) {
+    $('#messageAffichagePhoto').removeClass('show')
+    const ref = $(this).data('ref')
+    let affichage = $(this).is(':checked') ? 1 : 0
+    $.ajax({
+        url: '/api/updateAffichagePhotoClub',
+        type: 'POST',
+        data: {
+            ref: ref,
+            affichage: affichage
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            $('#messageAffichagePhoto').addClass('show')
+        },
+        error: function (e) {
+        }
+    });
+})
+
+
+$('#askClosed').on('click', function (e) {
+    $('#modalConfirmClosed').removeClass('d-none')
+})
+
+$('#confirmClosedClub').on('click', function (e) {
+    const ref = $(this).data('club')
+    $.ajax({
+        url: '/api/updateClosedClub',
+        type: 'POST',
+        data: {
+            ref: ref,
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            alert('Le club a été déclaré fermé avec succès.');
+            $('#modalConfirmClosed').addClass('d-none')
+            $(location).attr('href', $(location).attr('href'))
+        },
+        error: function (e) {
+            alert('Une erreur est survenue lors de la déclaration du club comme fermé.');
+        }
+    });
+})
+

@@ -252,7 +252,7 @@ $('div[name=reviews]').on('click', function (e) {
             if (data.nb != 0) {
                 $.each(data.reviews, function (index, item) {
                     let htmlItem = ""
-                    let nom = (item.prenom + item.nom).length ? item.prenom + " " + item.nom.substr(1, 1).toUpperCase() + "." : ""
+                    let nom = (item.prenom + item.nom).length ? item.prenom + " " + item.nom.substr(0, 1).toUpperCase() + "." : ""
                     let date = item.date.length ? item.date : ""
                     let note = item.note ? item.note : ""
                     let text = item.comment.length ? item.comment : ""

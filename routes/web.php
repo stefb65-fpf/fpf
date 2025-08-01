@@ -18,6 +18,7 @@ Route::get('/clubs/adherents/create', [App\Http\Controllers\ClubController::clas
 Route::post('/clubs/adherents/store', [App\Http\Controllers\ClubController::class, 'storeAdherent'])->name('clubs.adherents.store');
 Route::post('/clubs/sendReinitLink/{personne_id}', [App\Http\Controllers\ClubController::class, 'sendReinitLink'])->name('clubs.sendReinitLink');
 Route::delete('/clubs/removeAdherent/{utilisateur_id}', [App\Http\Controllers\ClubController::class, 'removeAdherent'])->name('clubs.removeAdherent');
+Route::post('/clubs/reactivateAdherent/{utilisateur_id}', [App\Http\Controllers\ClubController::class, 'reactivateAdherent'])->name('clubs.reactivateAdherent');
 Route::post('/clubs/adherents/storeExistingAdherent', [App\Http\Controllers\ClubController::class, 'storeExistingAdherent'])->name('clubs.adherents.storeExistingAdherent');
 Route::put('/clubs/adherents/{utilisateur_id}/update', [App\Http\Controllers\ClubController::class, 'updateAdherent'])->name('clubs.adherents.update');
 Route::get('/clubs/adherents/{statut?}/{abonnement?}', [App\Http\Controllers\ClubController::class, 'gestionAdherents'])->name('clubs.adherents.index');
@@ -65,6 +66,8 @@ Route::get('/admin/formations/{formation}/evaluations', [App\Http\Controllers\Ad
 Route::get('/admin/formations/parametrage', [App\Http\Controllers\Admin\FormationController::class, 'parametrage'])->name('formations.parametrage');
 Route::get('/admin/formations/accueil', [App\Http\Controllers\Admin\FormationController::class, 'accueil'])->name('formations.admin_accueil');
 Route::get('/admin/formations/export', [App\Http\Controllers\Admin\FormationController::class, 'export'])->name('formations.export');
+Route::get('/admin/formations/dashboard', [App\Http\Controllers\Admin\FormationController::class, 'dashboard'])->name('formations.dashboard');
+Route::delete('/admin/formations/{formation}/delete_dashboard', [App\Http\Controllers\Admin\FormationController::class, 'delete_dashboard'])->name('formations.delete_dashboard');
 Route::resource('/admin/formations', App\Http\Controllers\Admin\FormationController::class);
 Route::resource('/admin/categoriesformations', App\Http\Controllers\Admin\CategorieFormationController::class);
 Route::resource('/admin/evaluationsthemes', App\Http\Controllers\Admin\EvaluationthemeController::class);
@@ -78,6 +81,7 @@ Route::post('/admin/sessions/{formation}/store', [App\Http\Controllers\Admin\Ses
 Route::get('/admin/sessions/{session}/edit', [App\Http\Controllers\Admin\SessionController::class, 'edit'])->name('sessions.edit');
 Route::put('/admin/sessions/{session}/update', [App\Http\Controllers\Admin\SessionController::class, 'update'])->name('sessions.update');
 Route::delete('/admin/sessions/{session}/destroy', [App\Http\Controllers\Admin\SessionController::class, 'destroy'])->name('sessions.destroy');
+Route::delete('/admin/sessions/{session}/delete_dashboard', [App\Http\Controllers\Admin\SessionController::class, 'delete_dashboard'])->name('sessions.delete_dashboard');
 
 Route::get('/admin/inscrits/{session}/liste', [App\Http\Controllers\Admin\InscritController::class, 'liste'])->name('inscrits.liste');
 Route::delete('/admin/inscrits/{inscrit}/destroy', [App\Http\Controllers\Admin\InscritController::class, 'destroy'])->name('inscrits.destroy');
@@ -112,6 +116,7 @@ Route::get('/admin/reglements/cartes/historique', [App\Http\Controllers\Admin\Re
 //Route::resource('/admin/reglements', App\Http\Controllers\Admin\ReglementController::class);
 
 Route::get('/admin/factures/{term?}', [App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('admin.factures');
+Route::get('/admin/avoirs', [App\Http\Controllers\Admin\InvoiceController::class, 'avoirs'])->name('admin.avoirs');
 
 Route::get('/admin/supports/{type?}', [App\Http\Controllers\Admin\SupportController::class, 'index'])->name('supports.index');
 
@@ -300,7 +305,7 @@ Route::get('/urs/personnes/createOpen', [App\Http\Controllers\UrController::clas
 Route::post('/urs/personnes/store', [App\Http\Controllers\UrController::class,'storePersonne'])->name('urs.personnes.store');
 Route::post('/urs/personnes/storeOpen', [App\Http\Controllers\UrController::class,'storeOpen'])->name('urs.personnes.storeOpen');
 Route::put('/urs/personnes/{personne}/update/{view_type}', [App\Http\Controllers\UrController::class,'updatePersonne'])->name('urs.personnes.update');
-Route::get('/urs/personnes/{view_type}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\UrController::class, 'list']);
+Route::get('/urs/personnes/{view_type}/{statut?}/{type_carte?}/{type_adherent?}/{term?}/{anciennete?}', [App\Http\Controllers\UrController::class, 'list']);
 Route::get('/urs/liste_fonctions/{club}', [App\Http\Controllers\UrController::class, 'listeFonctionsClub'])->name('urs.clubs.liste_fonctions');
 Route::put('/urs/update-club-fonction/{club_id}/{current_utilisateur_id}/{fonction_id}',[App\Http\Controllers\UrController::class,'updateClubFonction'])->name('urs.updateFonctionClub');
 Route::put('/urs/add-club-fonction/{club_id}/{fonction_id}',[App\Http\Controllers\UrController::class,'addClubFonction'])->name('urs.addFonctionClub');
@@ -317,12 +322,13 @@ Route::delete('/admin/personnes/{personne}/anonymize/{view_type}', [App\Http\Con
 Route::put('/admin/personnes/{personne}/renewAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'renewAbo'])->name('admin.personnes.renewAbo');
 Route::put('/admin/personnes/{personne}/addFreeAbo/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'addFreeAbo'])->name('admin.personnes.addFreeAbo');
 Route::put('/admin/personnes/{personne}/addCarteIndividuelle/{view_type}', [App\Http\Controllers\Admin\PersonneController::class,'addCarteIndividuelle'])->name('admin.personnes.addCarteIndividuelle');
-Route::get('/admin/personnes/{view_type}/{ur_id?}/{statut?}/{type_carte?}/{type_adherent?}/{term?}', [App\Http\Controllers\Admin\PersonneController::class, 'list']);
+Route::get('/admin/personnes/{view_type}/{ur_id?}/{statut?}/{type_carte?}/{type_adherent?}/{term?}/{anciennete?}', [App\Http\Controllers\Admin\PersonneController::class, 'list']);
 Route::get('/admin/personnes', [App\Http\Controllers\Admin\PersonneController::class,'index'])->name('personnes.index');
 
 
 //gestion admin reglements
-Route::get('/admin/reglements/{term?}', [App\Http\Controllers\Admin\ReglementController::class, 'index']);
+Route::get('/admin/rapprochements/formations', [App\Http\Controllers\Admin\ReglementController::class, 'rapprochements'])->name('admin.rapprochements.formations');
+Route::get('/admin/reglements/{term?}', [App\Http\Controllers\Admin\ReglementController::class, 'index'])->name('admin.reglements');
 Route::resource('/admin/reglements', App\Http\Controllers\Admin\ReglementController::class);
 
 Route::get('/admin/reversements', [App\Http\Controllers\Admin\ReversementController::class, 'index'])->name('reversements.index');
