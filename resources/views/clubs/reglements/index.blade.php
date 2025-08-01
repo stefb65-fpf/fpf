@@ -36,7 +36,12 @@
                         <td>{{ $reglement->reference }}</td>
                         <td>{{ $reglement->statut === 0 ? 'En attente' : 'Traité' }}</td>
                         <td>{{ $reglement->created_at }}</td>
-                        <td>{{ $reglement->montant }}€</td>
+                        <td>
+                            {{ $reglement->montant }}€
+                            @if($reglement->montant_paye != $reglement->montant)
+                                <div style="color: #800">à payer: {{ $reglement->montant_paye }}€</div>
+                            @endif
+                        </td>
                         <td>{{ $reglement->dateenregistrement ?? '' }}</td>
                         <td>{{ $reglement->numerocheque ?? '' }}</td>
                         <td>

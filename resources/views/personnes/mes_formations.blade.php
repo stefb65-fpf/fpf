@@ -2,11 +2,13 @@
 @section('contentaccount')
     <div class="accountContent">
         <h1 class="mt25">MES FORMATIONS</h1>
-        @if($personne->avoir_formation > 0)
+        @if($personne->creance > 0)
+{{--        @if($personne->avoir_formation > 0)--}}
             <div class="alertInfo w80">
                 <p>
                     <span class="bold">Informations !</span>
-                    Suite à désinscription d'une ou plusieurs sessions de formation, vous disposez d'un avoir formation de {{ number_format($personne->avoir_formation, 2, ',', ' ') }} €.
+{{--                    Suite à désinscription d'une ou plusieurs sessions de formation, vous disposez d'un avoir formation de {{ number_format($personne->avoir_formation, 2, ',', ' ') }} €.--}}
+                    Suite à désinscription d'une ou plusieurs sessions de formation, vous disposez d'un avoir formation de {{ number_format($personne->creance, 2, ',', ' ') }} €.
                     Vous pouvez l'utiliser pour vous inscrire à une nouvelle formation.
                 </p>
             </div>

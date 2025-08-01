@@ -11,6 +11,8 @@
             <div class="foster">Vous avez déjà un compte ?</div>
             <a href="/login"> Connectez-vous !</a>
         </div>
+
+        @if(date('Y-m-d') <= $finSaison)
         <div style="color: #800; max-width: 800px; margin: 20px auto;">
             Vous allez procéder à <b>votre inscription individuelle à la FPF</b>, détachée de tout club ou collectif.<br>
             Votre adhésion intègre un abonnement à France Photographie pour 5 numéros:&nbsp;&nbsp;de manière obligatoire si vous avez plus de 25 ans, de manière facultative sinon.<br><br>
@@ -23,8 +25,19 @@
 
             Si vous n'êtes pas sûr(e) du type de votre adhésion,
             contactez le secrétariat de la FPF (<a href="mailto:fpf@federation-photo.fr">fpf@federation-photo.fr</a>), car il n’est <b>pas possible</b> d’annuler ou modifier cette adhésion une fois réglée.
+
+            @if(in_array(date('m'), ['03', '04', '05', '06', '07', '08']))
+            <br><br>
+            <b>Attention !</b> Si vous adhérez entre le 1er mars et le 31 août, votre adhésion ne sera valable que jusqu'au 31 Août de l'année en cours.<br>
+            @endif
         </div>
         @include('auth.registerForm', ['type' => 'adhesion'])
+        @else
+            <div style="color: #800; max-width: 800px; margin: 20px auto;">
+                Les adhésions ne sont plus possibles pour la saison en cours.<br>
+                Merci de revenir à partir du 1er septembre pour la saison suivante.
+            </div>
+        @endif
     </div>
 @endsection
 @section('js')

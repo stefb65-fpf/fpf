@@ -12,7 +12,7 @@
                 </svg>
             </a>
         </h1>
-        @include('clubs.listeAdherents', ['adherents' => $adherents, 'prefix' => 'admin.', 'club' => $club])
+        @include('clubs.listeAdherents', ['adherents' => $adherents, 'prefix' => 'admin.', 'club' => $club, 'level' => 'admin'])
     </div>
 @endsection
 @section('css')

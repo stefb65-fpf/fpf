@@ -31,7 +31,7 @@
                     <th>Club / Adhérent</th>
                     <th>Statut</th>
                     <th>Date de création</th>
-                    <th>Montant</th>
+                    <th>Montant bordereau</th>
                     <th>Date de validation FPF</th>
                     <th>Référence paiement</th>
                     <th></th>
@@ -44,7 +44,12 @@
                         <td>{{ $reglement->clubs_id ? 'Club: '.$reglement->nom_club : $reglement->nom }}</td>
                         <td>{{ $reglement->statut === 0 ? 'En attente' : 'Traité' }}</td>
                         <td>{{ $reglement->created_at }}</td>
-                        <td>{{ $reglement->montant }}€</td>
+                        <td>
+                            {{ $reglement->montant }}€
+                            @if($reglement->montant_paye != $reglement->montant)
+                                <div style="color: #800">à payer: {{ $reglement->montant_paye }}€</div>
+                            @endif
+                        </td>
                         <td>{{ $reglement->dateenregistrement ?? '' }}</td>
                         <td>{{ $reglement->numerocheque ?? '' }}</td>
                         <td>
@@ -53,9 +58,19 @@
                                     <a class="adminPrimary btnSmall" target="_blank" href="{{ $reglement->bordereau }}">bordereau</a>
                                 </div>
                             @endif
+                            @if($reglement->statut === 1)
+                                <div class="mb3">
+                                    <a class="adminWarning btnSmall" target="_blank" href="{{ route('admin.factures', 'RE='.$reglement->reference) }}">factures liées</a>
+                                </div>
+                                    @if($reglement->cancel === 1 && $droit_cancel)
+                                        <div class="mb3">
+                                            <a class="adminYellow btnSmall" name="cancelReglement" data-ref="{{ $reglement->id }}">annuler</a>
+                                        </div>
+                                    @endif
+                            @endif
                             @if($reglement->statut === 0)
                                 <div class="mb3">
-                                    <a class="adminSuccess btnSmall" target="_blank" name="validerReglement" data-id="{{ $reglement->id }}" data-reference="{{ $reglement->reference }}" data-montant="{{ $reglement->montant }}">valider</a>
+                                    <a class="adminSuccess btnSmall" target="_blank" name="validerReglement" data-id="{{ $reglement->id }}" data-reference="{{ $reglement->reference }}" data-montant="{{ $reglement->montant_paye }}">valider</a>
                                 </div>
                             @endif
                             @if($reglement->statut === 0 && $reglement->clubs_id)
@@ -145,6 +160,59 @@
         </div>
         <div class="modalEditFooter">
             <div class="adminDanger btnMedium mr10 modalEditClose">Fermer</div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modalEdit d-none" id="modalRemboursementIndividuel">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Annulation d'une adhésion individuelle</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Vous allez annuler l'adhésion individuelle de <strong id="nomAdherentRemboursementIndividuel"></strong>.<br>
+            Le montant du règlement était de <strong id="montantReglementRemboursementIndividuel"></strong>€.<br>
+            <span id="abonnementRemboursementIndividuel" class="d-none">
+                Un abonnement FP était inclus dans ce règlement. <strong id="nbNumerosEnvoyesRemboursementIndividuel"></strong> numéros ont été envoyés et ne seront pas remboursés.<br>
+            </span>
+            <span id="noAbonnementRemboursementIndividuel" class="d-none">
+                Aucun abonnement FP n'était inclus dans ce règlement.<br>
+            </span>
+            <br>
+            Une créance utilisateur d'un montant de <strong id="montantCreanceRemboursementIndividuel"></strong>€ va être enregistrée pour cet adhérent.<br>
+            <div style="color: red" id="alertPhotosRemboursementIndividuel" class="d-none">
+                <br>
+                Cet utilisateur a des photos dans des concours de la saison en cours. Son remboursement d'adhésion peut poser problème pour ces concours.
+            </div>
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="validRemboursementIndividuel" data-ref="">Valider l'annulation d'adhésion</div>
+        </div>
+    </div>
+
+
+    <div class="modalEdit d-none" id="modalRemboursementClub">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Annulation d'une adhésion d'adhérents club</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            Vous souhaitez annuler des adhésions du club <strong id="nomClubRemboursement"></strong>.<br>
+            Veuillez sélectionner les adhérents à rembourser dans la liste ci-dessous.<br>
+            Une créance sera créé pour le club du montant des adhésions et des abonnements sélectionnés auquel on retranche les sommes non remboursées pour envoi des numéros FP.<br>
+            <br>
+            <div id="listeAdherentsClubRemboursement" class="d-none"></div>
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="validRemboursementClub" data-ref="">Valider l'annulation d'adhésion</div>
         </div>
     </div>
 @endsection

@@ -22,7 +22,7 @@
             <br>
             Vous pouvez aussi consulter l'état de l'abonnement du club, son statut et le nombre d'adhérents.
         </div>
-        @include('clubs.update_form_club', ['pathPrefixName' => 'clubGestion_'])
+        @include('clubs.update_form_club', ['pathPrefixName' => 'clubGestion_', 'level' => 'club'])
 
     </div>
 @endsection

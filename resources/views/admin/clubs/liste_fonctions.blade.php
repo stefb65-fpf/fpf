@@ -22,6 +22,7 @@
             <div class="formBlockTitle">Président</div>
             <div class="formBlockWrapper align-start">
                 @if(isset($tab_fonctions[94]))
+                    @if(in_array('GESINFO', $droits_fpf))
                     <div class="btnWrapper d-flex relative w100">
                         <form action="{{route('admin.updateFonctionClub',[$club->id,$tab_fonctions[94]->id_utilisateur,94])}}"
                               method="POST">
@@ -46,6 +47,7 @@
                             <button class="danger formBtn relative btnSmall" type="submit">supprimer</button>
                         </form>
                     </div>
+                    @endif
                     <div class="formBlockWrapper inline">
                         @if($tab_fonctions[94]->nom)
                             <div class="formUnit mr25 ml0">
@@ -74,6 +76,7 @@
 
                     </div>
                 @else
+                    @if(in_array('GESINFO', $droits_fpf))
                     <div class="btnWrapper d-flex relative w100">
                         <form action="{{route('admin.addFonctionClub',[$club->id, 94])}}" method="POST">
                             <input type="hidden" name="_method" value="put">
@@ -90,6 +93,7 @@
                             </select>
                         </form>
                     </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -97,6 +101,7 @@
             <div class="formBlockTitle">Contact</div>
             <div class="formBlockWrapper align-start">
                 @if(isset($tab_fonctions[97]))
+                    @if(in_array('GESINFO', $droits_fpf))
                     <div class="btnWrapper d-flex relative w100">
                         <form action="{{route('admin.updateFonctionClub',[$club->id,$tab_fonctions[97]->id_utilisateur,97])}}"
                               method="POST">
@@ -115,6 +120,7 @@
                             </select>
                         </form>
                     </div>
+                    @endif
                     <div class="formBlockWrapper inline">
                         @if($tab_fonctions[97]->nom)
                             <div class="formUnit mr25 ml0">
@@ -143,22 +149,24 @@
 
                     </div>
                 @else
-                    <div class="btnWrapper d-flex relative w100">
-                        <form action="{{route('admin.addFonctionClub',[$club->id, 97])}}" method="POST">
-                            <input type="hidden" name="_method" value="put">
-                            {{ csrf_field() }}
-                            <button class="success formBtn relative mr25 btnSmall" name="showSelect">Ajouter</button>
-                            <select class="formValue adherent modifying floating hidden" name="adherent_id"
-                                    onchange="this.form.submit()" required>
-                                <option value="">Selectionnez un adhérent</option>
-                                @foreach($adherents as $adherent)
-                                    <option value="{{$adherent->id}}">{{$adherent->nom ?:$adherent->nom}}
-                                        - {{$adherent->prenom ?:$adherent->prenom}}
-                                        - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
-                                @endforeach
-                            </select>
-                        </form>
-                    </div>
+                    @if(in_array('GESINFO', $droits_fpf))
+                        <div class="btnWrapper d-flex relative w100">
+                            <form action="{{route('admin.addFonctionClub',[$club->id, 97])}}" method="POST">
+                                <input type="hidden" name="_method" value="put">
+                                {{ csrf_field() }}
+                                <button class="success formBtn relative mr25 btnSmall" name="showSelect">Ajouter</button>
+                                <select class="formValue adherent modifying floating hidden" name="adherent_id"
+                                        onchange="this.form.submit()" required>
+                                    <option value="">Selectionnez un adhérent</option>
+                                    @foreach($adherents as $adherent)
+                                        <option value="{{$adherent->id}}">{{$adherent->nom ?:$adherent->nom}}
+                                            - {{$adherent->prenom ?:$adherent->prenom}}
+                                            - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -166,30 +174,32 @@
             <div class="formBlockTitle">Trésorier</div>
             <div class="formBlockWrapper align-start">
                 @if(isset($tab_fonctions[95]))
-                    <div class="btnWrapper d-flex relative w100">
-                        <form action="{{route('admin.updateFonctionClub',[$club->id,$tab_fonctions[95]->id_utilisateur,95])}}"
-                              method="POST">
-                            <input type="hidden" name="_method" value="put">
-                            {{ csrf_field() }}
-                            <button class="attention formBtn relative mr25 btnSmall" name="showSelect">changer</button>
-                            <select class="formValue adherent modifying floating hidden" name="adherent_id" required
-                                    onchange="this.form.submit()">
-                                <option value="">Selectionnez un adhérent</option>
-                                @foreach($adherents as $adherent)
-                                    <option
-                                        value="{{$adherent->id}}" {{$adherent->id == $tab_fonctions[95]->id_utilisateur? "selected":""}} >{{$adherent->nom ?:$adherent->nom}}
-                                        - {{$adherent->prenom ?:$adherent->prenom}}
-                                        - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
-                                @endforeach
-                            </select>
-                        </form>
-                        <form action="{{route('admin.deleteFonctionClub',[$club->id, $tab_fonctions[95]->id_utilisateur,95])}}"
-                              method="POST">
-                            <input type="hidden" name="_method" value="delete">
-                            {{ csrf_field() }}
-                            <button class="danger formBtn relative btnSmall" type="submit">supprimer</button>
-                        </form>
-                    </div>
+                    @if(in_array('GESINFO', $droits_fpf))
+                        <div class="btnWrapper d-flex relative w100">
+                            <form action="{{route('admin.updateFonctionClub',[$club->id,$tab_fonctions[95]->id_utilisateur,95])}}"
+                                  method="POST">
+                                <input type="hidden" name="_method" value="put">
+                                {{ csrf_field() }}
+                                <button class="attention formBtn relative mr25 btnSmall" name="showSelect">changer</button>
+                                <select class="formValue adherent modifying floating hidden" name="adherent_id" required
+                                        onchange="this.form.submit()">
+                                    <option value="">Selectionnez un adhérent</option>
+                                    @foreach($adherents as $adherent)
+                                        <option
+                                            value="{{$adherent->id}}" {{$adherent->id == $tab_fonctions[95]->id_utilisateur? "selected":""}} >{{$adherent->nom ?:$adherent->nom}}
+                                            - {{$adherent->prenom ?:$adherent->prenom}}
+                                            - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                            <form action="{{route('admin.deleteFonctionClub',[$club->id, $tab_fonctions[95]->id_utilisateur,95])}}"
+                                  method="POST">
+                                <input type="hidden" name="_method" value="delete">
+                                {{ csrf_field() }}
+                                <button class="danger formBtn relative btnSmall" type="submit">supprimer</button>
+                            </form>
+                        </div>
+                    @endif
                     <div class="formBlockWrapper inline">
                         @if($tab_fonctions[95]->nom)
                             <div class="formUnit mr25 ml0">
@@ -218,22 +228,24 @@
 
                     </div>
                 @else
-                    <div class="btnWrapper d-flex relative w100">
-                        <form action="{{route('admin.addFonctionClub',[$club->id, 95])}}" method="POST">
-                            <input type="hidden" name="_method" value="put">
-                            {{ csrf_field() }}
-                            <button class="success formBtn relative mr25 btnSmall" name="showSelect">Ajouter</button>
-                            <select class="formValue adherent modifying floating hidden" name="adherent_id"
-                                    onchange="this.form.submit()" required>
-                                <option value="">Selectionnez un adhérent</option>
-                                @foreach($adherents as $adherent)
-                                    <option value="{{$adherent->id}}">{{$adherent->nom ?:$adherent->nom}}
-                                        - {{$adherent->prenom ?:$adherent->prenom}}
-                                        - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
-                                @endforeach
-                            </select>
-                        </form>
-                    </div>
+                    @if(in_array('GESINFO', $droits_fpf))
+                        <div class="btnWrapper d-flex relative w100">
+                            <form action="{{route('admin.addFonctionClub',[$club->id, 95])}}" method="POST">
+                                <input type="hidden" name="_method" value="put">
+                                {{ csrf_field() }}
+                                <button class="success formBtn relative mr25 btnSmall" name="showSelect">Ajouter</button>
+                                <select class="formValue adherent modifying floating hidden" name="adherent_id"
+                                        onchange="this.form.submit()" required>
+                                    <option value="">Selectionnez un adhérent</option>
+                                    @foreach($adherents as $adherent)
+                                        <option value="{{$adherent->id}}">{{$adherent->nom ?:$adherent->nom}}
+                                            - {{$adherent->prenom ?:$adherent->prenom}}
+                                            - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -241,6 +253,7 @@
             <div class="formBlockTitle">Secrétaire</div>
             <div class="formBlockWrapper align-start">
                 @if(isset($tab_fonctions[96]))
+                    @if(in_array('GESINFO', $droits_fpf))
                     <div class="btnWrapper d-flex relative w100">
                         <form action="{{route('admin.updateFonctionClub',[$club->id,$tab_fonctions[96]->id_utilisateur,96])}}"
                               method="POST">
@@ -265,6 +278,7 @@
                             <button class="danger formBtn relative btnSmall" type="submit">supprimer</button>
                         </form>
                     </div>
+                    @endif
                     <div class="formBlockWrapper inline">
                         @if($tab_fonctions[96]->nom)
                             <div class="formUnit mr25 ml0">
@@ -293,6 +307,7 @@
 
                     </div>
                 @else
+                    @if(in_array('GESINFO', $droits_fpf))
                     <div class="btnWrapper d-flex relative w100">
                         <form action="{{route('admin.addFonctionClub',[$club->id, 96])}}" method="POST">
                             <input type="hidden" name="_method" value="put">
@@ -309,6 +324,7 @@
                             </select>
                         </form>
                     </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -316,6 +332,7 @@
             <div class="formBlockTitle">Webmaster</div>
             <div class="formBlockWrapper align-start">
                 @if(isset($tab_fonctions[320]))
+                    @if(in_array('GESINFO', $droits_fpf))
                     <div class="btnWrapper d-flex relative w100">
                         <form action="{{route('admin.updateFonctionClub',[$club->id,$tab_fonctions[320]->id_utilisateur,320])}}"
                               method="POST">
@@ -340,6 +357,7 @@
                             <button class="danger formBtn relative btnSmall" type="submit">supprimer</button>
                         </form>
                     </div>
+                    @endif
                     <div class="formBlockWrapper inline">
                         @if($tab_fonctions[320]->nom)
                             <div class="formUnit mr25 ml0">
@@ -368,6 +386,7 @@
 
                     </div>
                 @else
+                    @if(in_array('GESINFO', $droits_fpf))
                     <div class="btnWrapper d-flex relative w100">
                         <form action="{{route('admin.addFonctionClub',[$club->id, 320])}}" method="POST">
                             <input type="hidden" name="_method" value="put">
@@ -384,8 +403,90 @@
                             </select>
                         </form>
                     </div>
+                    @endif
                 @endif
             </div>
         </div>
+
+        <div class="formBlock relative">
+            <div class="formBlockTitle">Responsable compétitions</div>
+            <div class="formBlockWrapper align-start">
+                @if(isset($tab_fonctions[464]))
+                    @if(in_array('GESINFO', $droits_fpf))
+                    <div class="btnWrapper d-flex relative w100">
+                        <form action="{{route('admin.updateFonctionClub',[$club->id,$tab_fonctions[464]->id_utilisateur,464])}}"
+                              method="POST">
+                            <input type="hidden" name="_method" value="put">
+                            {{ csrf_field() }}
+                            <button class="attention formBtn relative mr25 btnSmall" name="showSelect">changer</button>
+                            <select class="formValue adherent modifying floating hidden" name="adherent_id" required
+                                    onchange="this.form.submit()">
+                                <option value="">Selectionnez un adhérent</option>
+                                @foreach($adherents as $adherent)
+                                    <option
+                                        value="{{$adherent->id}}" {{$adherent->id == $tab_fonctions[464]->id_utilisateur? "selected":""}} >{{$adherent->nom ?:$adherent->nom}}
+                                        - {{$adherent->prenom ?:$adherent->prenom}}
+                                        - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                        <form action="{{route('admin.deleteFonctionClub',[$club->id, $tab_fonctions[464]->id_utilisateur,464])}}"
+                              method="POST">
+                            <input type="hidden" name="_method" value="delete">
+                            {{ csrf_field() }}
+                            <button class="danger formBtn relative btnSmall" type="submit">supprimer</button>
+                        </form>
+                    </div>
+                    @endif
+                    <div class="formBlockWrapper inline">
+                        @if($tab_fonctions[464]->nom)
+                            <div class="formUnit mr25 ml0">
+                                <label class="formLabel" for="nom"> Nom </label>
+                                <div> {{$tab_fonctions[464]->nom}} </div>
+                            </div>
+                        @endif
+                        @if($tab_fonctions[464]->prenom)
+                            <div class="formUnit mr25 ml0">
+                                <label class="formLabel" for="nom"> Prénom </label>
+                                <div> {{$tab_fonctions[464]->prenom}} </div>
+                            </div>
+                        @endif
+                        @if($tab_fonctions[464]->identifiant)
+                            <div class="formUnit mr25 ml0">
+                                <label class="formLabel" for="nom"> Identifiant </label>
+                                <div> {{$tab_fonctions[464]->identifiant}} </div>
+                            </div>
+                        @endif
+                        @if($tab_fonctions[464]->email)
+                            <div class="formUnit mr25 ml0">
+                                <label class="formLabel" for="nom"> Courriel </label>
+                                <div> {{$tab_fonctions[464]->email}} </div>
+                            </div>
+                        @endif
+
+                    </div>
+                @else
+                    @if(in_array('GESINFO', $droits_fpf))
+                    <div class="btnWrapper d-flex relative w100">
+                        <form action="{{route('admin.addFonctionClub',[$club->id, 464])}}" method="POST">
+                            <input type="hidden" name="_method" value="put">
+                            {{ csrf_field() }}
+                            <button class="success formBtn relative mr25 btnSmall" name="showSelect">Ajouter</button>
+                            <select class="formValue adherent modifying floating hidden" name="adherent_id"
+                                    onchange="this.form.submit()" required>
+                                <option value="">Selectionnez un adhérent</option>
+                                @foreach($adherents as $adherent)
+                                    <option value="{{$adherent->id}}">{{$adherent->nom ?:$adherent->nom}}
+                                        - {{$adherent->prenom ?:$adherent->prenom}}
+                                        - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
+                    @endif
+                @endif
+            </div>
+        </div>
+
     </div>
 @endsection

@@ -53,6 +53,11 @@ return [
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME2'),
             'password' => env('MAIL_PASSWORD2'),
+            'from' => [
+                'address' => env('MAIL_USERNAME2', ''),
+                'name' => env('MAIL_FROM_NAME', ''),
+                ]
+            ,
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],

@@ -387,5 +387,83 @@
                 @endif
             </div>
         </div>
+
+        <div class="formBlock relative">
+            <div class="formBlockTitle">Responsable compétitions</div>
+            <div class="formBlockWrapper align-start">
+                @if(isset($tab_fonctions[464]))
+                    <div class="btnWrapper d-flex relative w100">
+                        <form action="{{route('urs.updateFonctionClub',[$club->id,$tab_fonctions[464]->id_utilisateur,464])}}"
+                              method="POST">
+                            <input type="hidden" name="_method" value="put">
+                            {{ csrf_field() }}
+                            <button class="attention formBtn relative mr25 btnSmall" name="showSelect">changer</button>
+                            <select class="formValue adherent modifying floating hidden" name="adherent_id" required
+                                    onchange="this.form.submit()">
+                                <option value="">Selectionnez un adhérent</option>
+                                @foreach($adherents as $adherent)
+                                    <option
+                                        value="{{$adherent->id}}" {{$adherent->id == $tab_fonctions[464]->id_utilisateur? "selected":""}} >{{$adherent->nom ?:$adherent->nom}}
+                                        - {{$adherent->prenom ?:$adherent->prenom}}
+                                        - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                        <form action="{{route('urs.deleteFonctionClub',[$club->id, $tab_fonctions[464]->id_utilisateur,464])}}"
+                              method="POST">
+                            <input type="hidden" name="_method" value="delete">
+                            {{ csrf_field() }}
+                            <button class="danger formBtn relative btnSmall" type="submit">supprimer</button>
+                        </form>
+                    </div>
+                    <div class="formBlockWrapper inline">
+                        @if($tab_fonctions[464]->nom)
+                            <div class="formUnit mr25 ml0">
+                                <label class="formLabel" for="nom"> Nom </label>
+                                <div> {{$tab_fonctions[464]->nom}} </div>
+                            </div>
+                        @endif
+                        @if($tab_fonctions[464]->prenom)
+                            <div class="formUnit mr25 ml0">
+                                <label class="formLabel" for="nom"> Prénom </label>
+                                <div> {{$tab_fonctions[464]->prenom}} </div>
+                            </div>
+                        @endif
+                        @if($tab_fonctions[464]->identifiant)
+                            <div class="formUnit mr25 ml0">
+                                <label class="formLabel" for="nom"> Identifiant </label>
+                                <div> {{$tab_fonctions[464]->identifiant}} </div>
+                            </div>
+                        @endif
+                        @if($tab_fonctions[464]->email)
+                            <div class="formUnit mr25 ml0">
+                                <label class="formLabel" for="nom"> Courriel </label>
+                                <div> {{$tab_fonctions[464]->email}} </div>
+                            </div>
+                        @endif
+
+                    </div>
+                @else
+                    <div class="btnWrapper d-flex relative w100">
+                        <form action="{{route('urs.addFonctionClub',[$club->id, 464])}}" method="POST">
+                            <input type="hidden" name="_method" value="put">
+                            {{ csrf_field() }}
+                            <button class="success formBtn relative mr25 btnSmall" name="showSelect">Ajouter</button>
+                            <select class="formValue adherent modifying floating hidden" name="adherent_id"
+                                    onchange="this.form.submit()" required>
+                                <option value="">Selectionnez un adhérent</option>
+                                @foreach($adherents as $adherent)
+                                    <option value="{{$adherent->id}}">{{$adherent->nom ?:$adherent->nom}}
+                                        - {{$adherent->prenom ?:$adherent->prenom}}
+                                        - {{$adherent->identifiant ?:$adherent->identifiant}}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+
     </div>
 @endsection

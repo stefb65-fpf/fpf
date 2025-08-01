@@ -123,7 +123,9 @@
                             </div>
                         </div>
                     </div>{{-- end formBlockWrapper--}}
-                    <button class="formBtn success" type="submit">Valider</button>
+                    @if(in_array('GESINFO', $droits_fpf))
+                        <button class="formBtn success" type="submit">Valider</button>
+                    @endif
                 </form>
             </div>
         </div>

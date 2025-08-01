@@ -13,8 +13,10 @@
         <div class="w100 pt60" id="fonctions_federales">
             <div class="pageTitle">Fonctions fédérales <a href="#fonctions_regionales" class="ml50 fs1rem">(fonctions régionales)</a></div>
             <div class="d-flex justify-end mt20 w100">
-                <a href="{{ route('fonctions.create') }}" class="adminPrimary btnMedium">Ajouter une fonction fédérale</a>
-            </divclass>
+                @if(in_array('GESINFO', $droits_fpf))
+                    <a href="{{ route('fonctions.create') }}" class="adminPrimary btnMedium">Ajouter une fonction fédérale</a>
+                @endif
+            </div>
         </div>
 
         <table class="styled-table">
@@ -45,12 +47,14 @@
                         <input type="checkbox" name="ceFonction" {{ $fonction->ce == 1 ? 'checked' : '' }} data-ref="{{ $fonction->id }}">
                     </td>
                     <td>
-                        <div class="mb3">
-                            <a href="{{ route('fonctions.edit', $fonction) }}" class="adminPrimary btnSmall">Éditer</a>
-                        </div>
-                        <div class="mb3">
-                            <a href="{{route('fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer</a>
-                        </div>
+                        @if(in_array('GESINFO', $droits_fpf))
+                            <div class="mb3">
+                                <a href="{{ route('fonctions.edit', $fonction) }}" class="adminPrimary btnSmall">Éditer</a>
+                            </div>
+                            <div class="mb3">
+                                <a href="{{route('fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer</a>
+                            </div>
+                        @endif
                     </td>
                 </tr>
             @endforeach
@@ -60,7 +64,9 @@
         <div class="w100 pt60" id="fonctions_regionales">
             <div class="pageTitle">Fonctions régionales <a href="#fonctions_federales" class="ml50 fs1rem">(fonctions fédérales)</a></div>
             <div class="d-flex justify-end mt20 w100">
+                @if(in_array('GESINFO', $droits_fpf))
                 <a href="{{ route('fonctions.create_ur') }}" class="adminPrimary btnMedium">Ajouter une fonction régionale</a>
+                @endif
             </div>
             <table class="styled-table">
                 <thead>
@@ -95,12 +101,14 @@
                             </div>
                         </td>
                         <td>
-                            <div class="mb3">
-                                <a href="{{ route('fonctions.edit_ur', $fonction) }}" class="adminPrimary btnSmall">Éditer</a>
-                            </div>
-                            <div class="mb3">
-                                <a href="{{route('fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer</a>
-                            </div>
+                            @if(in_array('GESINFO', $droits_fpf))
+                                <div class="mb3">
+                                    <a href="{{ route('fonctions.edit_ur', $fonction) }}" class="adminPrimary btnSmall">Éditer</a>
+                                </div>
+                                <div class="mb3">
+                                    <a href="{{route('fonctions.destroy',$fonction)}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer</a>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

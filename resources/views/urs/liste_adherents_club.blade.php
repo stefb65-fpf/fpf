@@ -11,7 +11,7 @@
                 </svg>
             </a>
         </h1>
-        @include('clubs.listeAdherents', ['adherents' => $adherents, 'prefix' => 'urs.', 'club' => $club])
+        @include('clubs.listeAdherents', ['adherents' => $adherents, 'prefix' => 'urs.', 'club' => $club, 'droit_fusion' => false, 'level' => 'urs'])
     </div>
 @endsection
 @section('css')

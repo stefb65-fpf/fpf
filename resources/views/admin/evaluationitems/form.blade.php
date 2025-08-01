@@ -12,6 +12,13 @@
                     <input value="{{ old('libelle',  $item->name) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Nom de l'item" name="name"/>
                 </div>
                 <div class="formUnit w100">
+                    <div class="formLabel ">* Type</div>
+                    <select name="type" class="formValue modifying w75">
+                        <option value="0" {{ $item->type == 0 ? 'selected=selected' : '' }}>Texte libre</option>
+                        <option value="1" {{ $item->type == 1 ? 'selected=selected' : '' }}>Note à donner</option>
+                    </select>
+                </div>
+                <div class="formUnit w100">
                     <div class="formLabel ">* Position</div>
                     <input value="{{ old('libelle',  $item->position) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Position de l'item'" name="position"/>
                 </div>

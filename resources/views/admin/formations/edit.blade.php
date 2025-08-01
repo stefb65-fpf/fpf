@@ -3,7 +3,7 @@
     <div class="pageCanva">
         <h1 class="pageTitle">
             Modification de la formation {{ $formation->name }}
-            <a class="previousPage" title="Retour page précédente" href="{{ route('formations.index') }}">
+            <a class="previousPage" title="Retour page précédente" href="{{ route('formations.index') }}#{{ $formation->id }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                      class="bi bi-reply-fill" viewBox="0 0 16 16">
                     <path

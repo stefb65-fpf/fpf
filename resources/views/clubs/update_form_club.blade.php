@@ -77,12 +77,14 @@
             </div>
 
         </form>
+        @if($level != 'admin' || in_array('GESINFO', $droits_fpf))
         <div class="w100" data-formId="generaliteForm">
             <button class="formBtn mx16 relative d-none success" name="enableBtn" >
                 Valider
             </button>
             <button class="formBtn mx16 relative  primary" name="updateForm">Modifier</button>
         </div>
+        @endif
     </div>
 </div>
 <div class="formBlock">
@@ -168,10 +170,12 @@
             </div>{{-- end formBlockWrapper--}}
         </form>
     </div>
-    <div class="w100" data-formId="adresseForm">
-        <button class="formBtn relative mx16 success d-none" name="enableBtn">Valider</button>
-        <button class="formBtn relative primary mx16" name="updateForm">Modifier</button>
-    </div>
+    @if($level != 'admin' || in_array('GESINFO', $droits_fpf))
+        <div class="w100" data-formId="adresseForm">
+            <button class="formBtn relative mx16 success d-none" name="enableBtn">Valider</button>
+            <button class="formBtn relative primary mx16" name="updateForm">Modifier</button>
+        </div>
+    @endif
 </div>
 <div class="formBlock">
     <div class="formBlockTitle">Abonnement</div>
@@ -218,10 +222,12 @@
             </div>
         </form>
     </div>
-    <div class="w100" data-formId="reunionForm">
-        <button class="formBtn relative mx16 d-none success" name="enableBtn">                            Valider                        </button>
-        <button class="formBtn relative mx16 primary" name="updateForm">Modifier</button>
-    </div>
+    @if($level != 'admin' || in_array('GESINFO', $droits_fpf))
+        <div class="w100" data-formId="reunionForm">
+            <button class="formBtn relative mx16 d-none success" name="enableBtn">                            Valider                        </button>
+            <button class="formBtn relative mx16 primary" name="updateForm">Modifier</button>
+        </div>
+    @endif
 </div>
 <div class="formBlock relative checkbox">
     <div class="message success"
@@ -270,6 +276,52 @@
                 @endif
             </div>
         @endforeach
+    </div>
+</div>
+<div class="formBlock relative checkbox">
+    <div class="message success" id="messageAffichagePhoto"
+         style="left: calc( 50% - (250px / 2));
+                 position: absolute;
+                 width: 250px;
+                 text-align: center;">
+        Votre choix a été pris en compte
+    </div>
+    <div class="formBlockTitle">Gestion concours</div>
+    <div class="formBlockWrapper inline">
+        <div class="formUnit mr25">
+            <label class="formLabel pointer"
+                   for="affichage_photo_club">Affichage pour tout adhérent des photos club</label>
+                <input class="formValue pointer" type="checkbox" {{ $club->affichage_photo_club == 1 ? 'checked' : '' }}
+                       name="affichage_photo_club" data-ref="{{ $club->id }}" />
+        </div>
+    </div>
+</div>
+<div class="formBlock relative checkbox" style="text-align: center">
+    @if($club->closed == 0)
+        @if($level != 'admin' || in_array('GESINFO', $droits_fpf))
+        <button id="askClosed" class="formBtn relative mx16 danger" style="width: auto">Déclarer le club comme fermé</button>
+        @endif
+    @else
+        <div style="font-size: large; color: #ac4848">Le club est déclaré comme fermé</div>
+    @endif
+</div>
+
+<div class="modalEdit d-none" id="modalConfirmClosed">
+    <div class="modalEditHeader">
+        <div class="modalEditTitle">Changement d'état d'un club</div>
+        <div class="modalEditClose">
+            X
+        </div>
+    </div>
+    <div class="modalEditBody">
+        Souhaitez-vous réellement déclaré le club comme fermé ?<br>
+        <span class="bold">Attention, cette action est irréversible !</span><br>
+        Cette action empêchera les adhérents du club de s'inscrire à des concours nationaux et régionaux avec une carte de ce club.<br>
+    </div>
+    <div class="modalEditFooter">
+        <div class="btnMedium danger mr10 modalEditClose p5">Annuler</div>
+        <div class="btnMedium primary mr10 p5" style="cursor:pointer;" id="confirmClosedClub" data-club="{{ $club->id }}">Valider
+        </div>
     </div>
 </div>
 @section('js')

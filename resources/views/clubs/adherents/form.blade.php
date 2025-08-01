@@ -146,11 +146,13 @@
         </div>
     </div>
         <input type="hidden" name="personne_id" id="existantPersonneId">
-    <div class="d-flex justify-center">
-        @if($action == 'update')
-            <button type="submit" class="adminSuccess btnMedium">Enregistrer les modifications</button>
-        @else
-            <button class="adminSuccess btnMedium" id="checkBeforeInsertion" data-club="{{ $club->id }}">Ajouter l'adhérent</button>
-        @endif
-    </div>
+            @if($prev != 'admin' || in_array('GESINFO', $droits_fpf))
+                <div class="d-flex justify-center">
+                    @if($action == 'update')
+                        <button type="submit" class="adminSuccess btnMedium">Enregistrer les modifications</button>
+                    @else
+                        <button class="adminSuccess btnMedium" id="checkBeforeInsertion" data-club="{{ $club->id }}">Ajouter l'adhérent</button>
+                    @endif
+                </div>
+            @endif
 </form>

@@ -4,7 +4,7 @@
     <div class="pageCanva">
         <h1 class="pageTitle">
             Liste des sessions pour la formation {{ $formation->name }}
-            <a class="previousPage" title="Retour page précédente" href="{{ route('formations.index') }}">
+            <a class="previousPage" title="Retour page précédente" href="{{ route('formations.index') }}#{{ $formation->id }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
                     <path d="M5.921 11.9 1.353 8.62a.719.719 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z"/>
                 </svg>
@@ -16,18 +16,19 @@
         @if(sizeof($formation->demandes) > 0)
             <div>
                 Demandes d'organisation de session pour :
-                <ul class="ml50">
+                <div class="ml50">
                     @foreach($formation->demandes as $demande)
-                        <li>
-                            {{ $demande->club_id ? 'Club '.$demande->club->nom : 'UR '.$demande->ur->nom }}
+                        <div class="d-flex gap20">
+                            * {{ $demande->club_id ? 'Club '.$demande->club->nom : 'UR '.$demande->ur->nom }}
                             @if($demande->pec > 0)
                                 - Montant de la prise en charge {{ $demande->pec }} €
                                 - Prix restant à charge des adhérents: {{ round(($formation->global_price - $demande->pec) / $formation->places, 2) }} €
                                 (sur la base de {{ $formation->places }} places)
                             @endif
-                        </li>
+                            <a href="{{ route('formations.deleteDemande', $demande->id) }}" data-confirm="Confirmez-vous la suppression de cette demande ?" data-method="post" class="adminDanger btnSmall">Supprimer</a>
+                        </div>
                     @endforeach
-                </ul>
+                </div>
             </div>
         @endif
         @if(sizeof($sessions) == 0)

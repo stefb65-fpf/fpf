@@ -19,6 +19,16 @@
                     <div class="cardTitle">Liste des formations</div>
                 </div>
             </a>
+            <a class="card" href="{{ route('formations.dashboard') }}">
+                <div class="wrapper">
+                    <svg width="25" height="30" viewBox="0 0 25 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M5 23.75H20V16.25H5V23.75ZM6.25 17.5H18.75V22.5H6.25V17.5ZM11.25 12.5H5V11.25H11.25V12.5ZM11.25 7.5H5V6.25H11.25V7.5ZM15.8838 0H3.125C1.4025 0 0 1.4025 0 3.125V30H25V9.11625L15.8838 0ZM16.25 2.13375L22.8663 8.75H16.25V2.13375ZM1.25 28.75V3.125C1.25 2.09125 2.09125 1.25 3.125 1.25H15V10H23.75V28.75H1.25Z"
+                            fill="#2F2F2F"/>
+                    </svg>
+                    <div class="cardTitle">Tableau de bord</div>
+                </div>
+            </a>
             <a class="card" href="{{ route('formations.parametrage') }}">
                 <div class="wrapper">
                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">

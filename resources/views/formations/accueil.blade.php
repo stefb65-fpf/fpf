@@ -7,7 +7,7 @@
         </h1>
         <div class="cardList">
             @foreach($formations as $formation)
-                <div class="card">
+                <div class="card" id="{{ $formation->id }}">
                     <div class="inlineMd">
                         <div class="left">
                             @if($formation->new)
@@ -75,7 +75,7 @@
                                         {{($formation->stars - floor($formation->stars)) == 0 ? floor($formation->stars):$formation->stars}}
                                     </div>
                                     <div class="on5 mr5">/5</div>
-                                    <div class="nbvotes">({{$formation->reviews}} avis)</div>
+                                    <div class="nbvotes">({{$formation->reviews}} évaluations)</div>
                                 </div>
                             @endif
                         </div>

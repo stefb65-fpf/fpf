@@ -27,6 +27,7 @@
                     <option value="3" {{$statut == 3 ? "selected" : ""}}>Carte éditée</option>
                     <option value="0" {{$statut == 0 ? "selected" : ""}}>Non renouvelés</option>
                     <option value="4" {{$statut == 4 ? "selected" : ""}}>Anciens (non renouvelés > 1 an)</option>
+                    <option value="99" {{$statut == 99 ? "selected" : ""}}>Plus dans le club</option>
                 </select>
             </div>
             <div class="formUnit mb0">
@@ -40,6 +41,9 @@
         </div>
     </div>
 </div>
+@if($club->closed == 1)
+    <div style="font-size: large; color: #ac4848; margin: 30px auto">Le club est déclaré comme fermé</div>
+@endif
 @if(!sizeof($adherents))
     <div class="w100 text-center"> Ce club ne possède aucun adhérent répondant aux critères selectionnés.</div>
 
@@ -68,12 +72,18 @@
         @if($prefix == '')
             <a class="adminPrimary btnMedium ml10" href="{{ route('clubs.adherents.create') }}">Ajouter un adhérent</a>
         @else
-            <a class="adminPrimary btnMedium ml10" href="{{ route($prefix.'clubs.adherents.create', $club->id) }}">Ajouter
-                un adhérent</a>
+            @if(($level != 'admin') || in_array('GESINFO', $droits_fpf))
+                <a class="adminPrimary btnMedium ml10" href="{{ route($prefix.'clubs.adherents.create', $club->id) }}">Ajouter
+                    un adhérent</a>
+            @endif
         @endif
-
-        <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-statut="{{ $club->statut }}" data-club="{{$club->id}}" {{ $exist_reglement_en_cours == 0 ? 'disabled' : '' }}>Renouveler
-        </button>
+        @if($droit_fusion)
+            <a class="adminDanger btnMedium ml10" id="btnFusionAdherents">Fusionner deux identifiants</a>
+        @endif
+        @if(($level != 'admin') || in_array('GESINFO', $droits_fpf))
+            <button class="adminPrimary btnMedium ml10" type="text" id="renouvellementAdherents" data-statut="{{ $club->statut }}" data-club="{{$club->id}}" {{ $exist_reglement_en_cours == 0 ? 'disabled' : '' }}>Renouveler
+            </button>
+        @endif
     </div>
     <div class="d-flex justify-between mt20 w100">
         <div style="flex: 1">
@@ -162,18 +172,18 @@
         @foreach($adherents as $adherent)
             <tr>
                 <td style="text-align: left">
-                    @if(in_array($adherent->statut, [2, 3]) && $adherent->fin >= $numeroencours + 4)
+                    @if((in_array($adherent->statut, [2, 3]) && $adherent->fin >= $numeroencours + 4) || $adherent->adherent_club == 0)
                         &nbsp;
                     @else
                         <select name="adh_abo" data-ref="{{ $adherent->id_utilisateur }}" data-identifiant="{{ $adherent->identifiant }}" style="width: 200px;">
                             <option value="0"></option>
-                            @if(!in_array($adherent->statut, [2, 3]))
+                            @if(!in_array($adherent->statut, [2, 3]) && date('Y-m-d') <= $finSaison)
                                 <option value="1" {{ $adherent->statut == 1 && $adherent->aboPreinscrit == 0 ? 'selected=selected' : '' }}>Adhésion seule</option>
                             @endif
                             @if($adherent->fin == '' || $adherent->fin < $numeroencours + 4)
                                 <option value="2" {{ $adherent->statut != 1 && $adherent->aboPreinscrit == 1 ? 'selected=selected' : '' }}>Abonnement seul</option>
                             @endif
-                            @if(!in_array($adherent->statut, [2, 3]) && ($adherent->fin == '' || $adherent->fin < $numeroencours + 4))
+                            @if(!in_array($adherent->statut, [2, 3]) && ($adherent->fin == '' || $adherent->fin < $numeroencours + 4) && date('Y-m-d') <= $finSaison)
                                 <option value="3" {{ $adherent->statut == 1 && $adherent->aboPreinscrit == 1 ? 'selected=selected' : '' }}>Adhésion et abonnement</option>
                             @endif
                         </select>
@@ -186,17 +196,30 @@
 {{--                @endif--}}
                 <td>
                     <div class="d-flex">
-                        @if($florilege_actif)
-                            <input type="number" min="0" name="florilege" data-ref="{{ $adherent->id_utilisateur }}" value="{{ $adherent->florilegePreinscrit ?? 0 }}" style="width: 50px; text-align: center" />
-                        @endif
-                        @if($adherent->nb_florileges > 0)
-                            <div class="small ml5">/ {{ $adherent->nb_florileges }}</div>
+                        @if($adherent->adherent_club == 1)
+                            @if($florilege_actif)
+                                <input type="number" min="0" name="florilege" data-ref="{{ $adherent->id_utilisateur }}" value="{{ $adherent->florilegePreinscrit ?? 0 }}" style="width: 50px; text-align: center" />
+                            @endif
+                            @if($adherent->nb_florileges > 0)
+                                <div class="small ml5">/ {{ $adherent->nb_florileges }}</div>
+                            @endif
                         @endif
                     </div>
 
                 </td>
 {{--                <td><input type="checkbox" name="abonner" data-ref="{{ $adherent->id_utilisateur }}"  {{ $adherent->aboPreinscrit == 1 ? 'checked=checked' : '' }} /></td>--}}
-                <td>{{$adherent->identifiant}}</td>
+                <td>
+                    <div class="d-flex flex-column" style="align-items: center">
+                        <div>
+                            {{$adherent->identifiant}}
+                        </div>
+                    @if($adherent->nouveau == 1)
+                        <div>
+                            <small class="badge primary" style="padding: 3px 10px">Nouveau</small>
+                        </div>
+                    @endif
+                    </div>
+                </td>
                 <td>{{$adherent->personne->nom}} {{$adherent->personne->prenom}} </td>
                 <td>
                     @switch($adherent->statut)
@@ -264,12 +287,21 @@
                 <td>
                     <a href="{{ route($prefix.'clubs.adherents.edit', $adherent->id_utilisateur) }}"
                        class="adminPrimary btnSmall">éditer</a>
-                    @if(in_array($adherent->statut, [0,4]))
-                        <div class="mt5">
-                            <a href="{{ route('clubs.removeAdherent', $adherent->id_utilisateur) }}" data-confirm="Cet adhérent ne sera plus visible dans votre liste d'adhérent club. Vous ne pourrez plus le réactiver par la suite mais la carte est conservée et le nom apparaitra toujours dans les résultats des concours. Confirmez-vous votre demande ? " data-method="delete"
-                               class="adminDanger btnSmall">retirer de la liste</a>
-                        </div>
-
+                    @if(in_array($adherent->statut, [0,4]) && $adherent->adherent_club == 1)
+                        @if(($level != 'admin') || in_array('GESINFO', $droits_fpf))
+                            <div class="mt5">
+                                <a href="{{ route('clubs.removeAdherent', $adherent->id_utilisateur) }}" data-confirm="Cet adhérent ne sera plus visible dans votre liste d'adhérent club. Vous ne pourrez plus le réactiver par la suite mais la carte est conservée et le nom apparaitra toujours dans les résultats des concours. Confirmez-vous votre demande ? " data-method="delete"
+                                   class="adminDanger btnSmall">retirer de la liste</a>
+                            </div>
+                        @endif
+                    @endif
+                    @if($adherent->adherent_club == 0)
+                        @if(($level != 'admin') || in_array('GESINFO', $droits_fpf))
+                            <div class="mt5">
+                                <a href="{{ route('clubs.reactivateAdherent', $adherent->id_utilisateur) }}" data-confirm="Si vous poursuivez, l'adhérent sera de nouveau visible dans la liste des adhérents du club. Confirmez-vous la ré-activation ?" data-method="post"
+                                   class="adminSuccess btnSmall">réactiver</a>
+                            </div>
+                        @endif
                     @endif
 
                 </td>
@@ -302,7 +334,13 @@
             <div class="mt25 bold">
                 Le coût total des adhésions et abonnements adhérents et club est de <span
                     id="montantRenouvellement"></span>€.<br>
-                Cela correspond au montant que vous devez règler.
+                <div class="d-none" id="montantAvecCreance">
+                    Le club dispose d'un avoir de <span id="montantAvoirClub"></span>€. La somme à regler pour le renouvellement est donc de <span
+                        id="montantRenouvellementTotal"></span>€.
+                </div>
+                <div id="montantSansCreance">
+                    Cela correspond au montant que vous devez règler.
+                </div>
             </div>
             <div class="mt25">
                 Renouvellement des adhésions pour les adhérents sélectionnés: <span class="bold"
@@ -370,6 +408,34 @@
             <div class="adminDanger btnMedium mr10 modalEditCloseReload">Fermer</div>
             <div class="adminPrimary btnMedium mr10" id="clubPayVirement" data-ref="">Payer par virement</div>
             <div class="adminPrimary btnMedium mr10" id="clubPayCb" data-ref="">Payer par CB</div>
+        </div>
+    </div>
+
+    <div class="modalEdit d-none" id="modalFusion">
+        <div class="modalEditHeader">
+            <div class="modalEditTitle">Fusion de deux identifiants au sein du club</div>
+            <div class="modalEditClose">
+                X
+            </div>
+        </div>
+        <div class="modalEditBody">
+            <div id="fusionDemande">
+                <div>Saisissez les deux identifiants à fusionner. Pour ces deux identifiants, les nom et prénom doivent correspondre.</div>
+                <div class="mt10 formUnit formUnitAdmin">
+                    <div style="width: 50%">Identifiant maître (à conserver)</div>
+                    <input type="text" id="idFusionMaitre" class="formValue formValueAdmin w25 ml10 modifying" maxlength="12" />
+                </div>
+                <div class="mt10 formUnit formUnitAdmin">
+                    <div style="width: 50%">Identifiant esclave (à supprimer)</div>
+                    <input type="text" id="idFusionEsclave" class="formValue formValueAdmin w25 ml10 modifying" maxlength="12" />
+                </div>
+            </div>
+            <div id="fusionResultat" class="d-none"></div>
+        </div>
+        <div class="modalEditFooter">
+            <div class="adminDanger btnMedium mr10 modalEditClose" id="btnCancelFusion">Annuler</div>
+            <div class="adminPrimary btnMedium mr10" id="btnCheckFusion" data-club="{{ $club->id }}" data-control="{{ str_pad($club->urs_id, 2, '0', STR_PAD_LEFT).'-'.str_pad($club->numero, 4, '0', STR_PAD_LEFT) }}">Contrôler</div>
+            <div class="adminSuccess btnMedium mr10 d-none" id="btnValiderFusion">Valider la fusion</div>
         </div>
     </div>
 @endif

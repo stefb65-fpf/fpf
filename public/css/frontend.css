@@ -2821,7 +2821,7 @@ select.floating.hidden {
 /*tables*/
 /*****************************************************  */
 
-.styled-table {
+.styled-table, .styled-dashboard {
     border-collapse: collapse;
     margin: 25px 0;
     font-size: 0.8em;
@@ -2831,18 +2831,21 @@ select.floating.hidden {
     width: 100%;
 }
 
-.styled-table thead tr {
+.styled-table thead tr, .styled-dashboard thead tr {
     background-color: #003d77;
     color: #ffffff;
     text-align: left;
 }
 
 .styled-table th,
-.styled-table td {
+.styled-table td,
+.styled-dashboard th,
+.styled-dashboard td
+{
     padding: 12px 15px;
 }
 
-.styled-table tbody tr {
+.styled-table tbody tr, .styled-dashboard tbody tr {
     border-bottom: 1px solid #dddddd;
 }
 
@@ -2857,6 +2860,9 @@ select.floating.hidden {
 .styled-table tbody tr.active-row {
     font-weight: bold;
     color: #003d77;
+}
+.formation-dashboard {
+    background-color: rgba(0, 61, 119, 0.2);
 }
 
 .filters {
@@ -2946,6 +2952,10 @@ table.tablesorter tbody tr.odd td {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.club-closed {
+    background-color: #ac4848;
 }
 /*table.tablesorter thead tr .headerSortUp {*/
 /*    background-image: url(asc.gif);*/

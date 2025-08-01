@@ -20,6 +20,11 @@
             Ici vous avez la possibilité d'afficher la liste des clubs de votre UR et de les filtrer en fonction de leur
             statut, de leur type de carte et de leur abonnement.<br>
         </div>
+
+        <div id="alertPdfClubs" class="alertSuccess d-none mb25 w80">
+            Le fichier excel des clubs a été généré avec succès. Vous pouvez le <a class="blue" id="linkAlertPdfClubs"  target="_blank">télécharger</a>.
+        </div>
+
         <div class="filters d-flex">
             <div class="formBlock maxW100">
                 <div class="formBlockTitle">Filtres</div>
@@ -53,6 +58,9 @@
                             {{--                            <option value="G" {{$abonnement== "G" ? "selected":""}}>Gratuits</option>--}}
                         </select>
                     </div>
+                    <div class="formUnit mb0">
+                        <button class="btnMedium adminPrimary" id="extractClubsForUr" data-ur="{{ $ur->id }}">Extraire au format CSV</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,6 +86,7 @@
                     <th>N°</th>
                     {{--                    <th>UR</th>--}}
                     <th>Nom</th>
+                    <th>Type</th>
                     <th>Statut</th>
                     <th>Courriel</th>
                     <th>Coordonnées</th>
@@ -88,10 +97,33 @@
                 </thead>
                 <tbody>
                 @foreach($clubs as $club)
-                    <tr>
+                    <tr class="{{ $club->closed == 1 ? 'club-closed' : '' }}">
                         <td>{{ $club->numero }}</td>
                         {{--                        <td>{{$club->urs_id}}</td>--}}
                         <td>{{$club->nom}}</td>
+                        <td>
+                            @if($club->second_year == 1)
+                                <small class="badge success text-center" style="padding: 3px 10px">Seconde année</small>
+                            @else
+                                @switch($club->ct)
+                                    @case(1)
+                                        <small class="badge primary text-center" style="padding: 3px 10px">Normal</small>
+                                        @break
+                                    @case('N')
+                                        <small class="badge success text-center" style="padding: 3px 10px">Nouveau</small>
+                                        @break
+                                    @case('C')
+                                        <small class="badge danger text-center" style="padding: 3px 10px">Tous adhérents</small>
+                                        @break
+                                    @case('A')
+                                        <small class="badge attention text-center" style="padding: 3px 10px">Tous abonnés</small>
+                                        @break
+                                    @default
+                                        <span></span>
+                                        @break
+                                @endswitch
+                            @endif
+                        </td>
                         <td>
                             @switch($club->statut)
                                 @case(0)
@@ -167,6 +199,9 @@
                 {{ $clubs->render( "pagination::default") }}
             </div>
         @endif
+    </div>
+    <div id="uploaderWaiting" class="waiting d-none p100">
+        <img src="{{ url(env('APP_URL').'/storage/app/public/ajax-loader.gif') }}" style="max-width: 150px;">
     </div>
 @endsection
 @section('css')

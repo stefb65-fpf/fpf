@@ -194,14 +194,17 @@
                 </div>
 
                 <div class="d-flex align-start">
+                    @if($level == 'urs' || ($level = 'admin' && in_array('GESINFO', $droits_fpf)))
                     <button class="adminPrimary btnMedium" type="submit">
-                        @if($action == 'store')
-                            Ajouter la personne
-                        @else
-                            Enregistrer les modifications
-                        @endif
+
+                            @if($action == 'store')
+                                Ajouter la personne
+                            @else
+                                Enregistrer les modifications
+                            @endif
                     </button>
-                    @if($level == 'admin' && $action == 'update')
+                    @endif
+                    @if($level == 'admin' && $action == 'update' && in_array('GESINFO', $droits_fpf))
                         <a href="{{ route('admin.personnes.renewAbo', [$personne, $view_type]) }}" class="adminSuccess btnMedium ml50" data-method="put" data-confirm="Vous allez générer un règlement pour prolonger l'abonnement de l'adhérent de 5 numéros. Si celui-ci n'a pas d'abonnement en cours, la fin de son abonnement sera 5 numéros après celui en cours. Le règlement généré devra être validé pour la prise en compte.  Confirmez-vous votre demande ?">Abonner l'utilisateur pour un montant de {{ $montant_abonnement }}€</a>
                         <a href="{{ route('admin.personnes.addFreeAbo', [$personne, $view_type]) }}" class="adminSuccess btnMedium ml50" data-method="put" data-confirm="Voulez-vous vraiment ajouter un abonnement gratuit de 5 numéros ? Si l'utilisateur est déjà abonné, vous allez prolonger son abonnement de 5 numéros. Si celui-ci n'a pas d'abonnement en cours, la fin de son abonnement sera 5 numéros après celui en cours.">Ajouter un abonnement gratuit</a>
                         <a href="{{ route('admin.personnes.addCarteIndividuelle', [$personne, $view_type]) }}" class="adminSuccess btnMedium ml50" data-method="put" data-confirm="Voulez-vous vraiment créer une nouvelle carte individuelle pour cette personne ? L'identifiant ajouté sera basé sur l'adresse déjà enregistrée. Si cette adresse n'est pas valable, modifier là avant de créer la carte.">Ajouter une carte individuelle</a>

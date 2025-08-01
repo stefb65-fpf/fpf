@@ -102,17 +102,26 @@
             </table>
         </div>
 
-        <div class="blue-font" style="margin-top: 50px; text-transform: uppercase; font-weight: bolder; font-size: 16px;">
-            Montant global à régler: {{ number_format($total_montant, 2, ',', '') }} €
-        </div>
-
-        <div style="margin-top: 10px;">
-            Veuillez effectuer un virement d'un montant de {{ number_format($total_montant, 2, ',', '') }} € en indiquant en référence le numéro de facture proforma à :
-            <div style="margin-top: 20px; margin-left: 10px;">
-                Fédération photographique de France<br>
-                IBAN : FR76 1751 5900 0008 2229 9272 052<br>
-                BIC : CEPAFRPP751
+        @if($creance > 0)
+            <div class="blue-font" style="margin-top: 50px; text-transform: uppercase; font-weight: bolder; font-size: 16px;">
+                Votre club dispose d'un avoir de {{ number_format($creance, 2, ',', '') }}€.<br>
+                Montant global à régler: {{ number_format($montant_paye, 2, ',', '') }} €
             </div>
-        </div>
+        @else
+            <div class="blue-font" style="margin-top: 50px; text-transform: uppercase; font-weight: bolder; font-size: 16px;">
+                Montant global à régler: {{ number_format($total_montant, 2, ',', '') }} €
+            </div>
+        @endif
+
+        @if($montant_paye > 0)
+            <div style="margin-top: 10px;">
+                Veuillez effectuer un virement d'un montant de {{ number_format($montant_paye, 2, ',', '') }} € en indiquant en référence le numéro de facture proforma à :
+                <div style="margin-top: 20px; margin-left: 10px;">
+                    Fédération photographique de France<br>
+                    IBAN : FR76 1751 5900 0008 2229 9272 052<br>
+                    BIC : CEPAFRPP751
+                </div>
+            </div>
+        @endif
     </div>
 @endsection

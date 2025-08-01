@@ -15,7 +15,7 @@
             <a href="{{ route('formations.export') }}" class="btnMedium adminWarning ml10">Récapitulatif formations</a>
         </div>
         @foreach($formations as $formation)
-            <div class="cardList mt30">
+            <div class="cardList mt30" id="{{ $formation->id }}">
                 <div class="card">
                     <div class="inlineMd">
                         <div class="left">

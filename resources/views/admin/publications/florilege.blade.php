@@ -22,6 +22,7 @@
         <div class="flexEnd">
             <button class="adminPrimary btnMedium mt10 mr10" type="text" id="btnSouscriptionsColisageRouteur">Colisage pour le routeur</button>
             <button class="adminSuccess btnMedium mt10 mr10" type="text" id="btnSouscriptionsColisage">Colisage pour UR</button>
+            <button class="adminYellow btnMedium mt10 mr10" type="text" id="btnSendSouscriptionsColisage">Envoi colisage clubs / Urs</button>
             <button class="adminWarning btnMedium mt10" type="text" id="btnSouscriptionsList">Liste des souscriptions au format Excel</button>
         </div>
         <div class="w100">

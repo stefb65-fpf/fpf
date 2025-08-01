@@ -41,27 +41,29 @@
                         @endforeach
 {{--                        <a href="mailto:{{ $fonction->utilisateur->personne->email }}">{{ $fonction->utilisateur->personne->email }}</a></td>--}}
                     <td>
-                        <div class="mb3">
-                            @if($fonction->multiple == 0)
-                                <a href="{{ route('admin.urs.fonctions.change_attribution', [$fonction, $ur->id]) }}" class="adminPrimary btnSmall">Changer l'attribution</a>
-                            @else
-                                <a href="{{ route('admin.urs.fonctions.manage_attribution', [$fonction, $ur->id]) }}" class="adminPrimary btnSmall">Gérer les attributions</a>
-                            @endif
-                        </div>
-                        <div class="mb3">
-                            @if($fonction->multiple == 0)
-                                <a href="{{ route('admin.urs.fonctions.delete_attribution', [$fonction, $fonction->utilisateurs[0]]) }}" class="adminDanger btnSmall"
-                                   style="background-color: #c75f09" data-method="delete"
-                                   data-confirm="Voulez-vous vraiment supprimer l'attribution de cette fonction ?">
-                                    Supprimer l'attribution
-                                </a>
-                            @endif
-
-                        </div>
-                        @if($fonction->urs_id !== 0)
+                        @if(in_array('GESINFO', $droits_fpf))
                             <div class="mb3">
-                                <a href="{{route('admin.urs.fonctions.destroy',[$fonction, $ur->id])}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer la fonction</a>
+                                @if($fonction->multiple == 0)
+                                    <a href="{{ route('admin.urs.fonctions.change_attribution', [$fonction, $ur->id]) }}" class="adminPrimary btnSmall">Changer l'attribution</a>
+                                @else
+                                    <a href="{{ route('admin.urs.fonctions.manage_attribution', [$fonction, $ur->id]) }}" class="adminPrimary btnSmall">Gérer les attributions</a>
+                                @endif
                             </div>
+                            <div class="mb3">
+                                @if($fonction->multiple == 0)
+                                    <a href="{{ route('admin.urs.fonctions.delete_attribution', [$fonction, $fonction->utilisateurs[0]]) }}" class="adminDanger btnSmall"
+                                       style="background-color: #c75f09" data-method="delete"
+                                       data-confirm="Voulez-vous vraiment supprimer l'attribution de cette fonction ?">
+                                        Supprimer l'attribution
+                                    </a>
+                                @endif
+
+                            </div>
+                            @if($fonction->urs_id !== 0)
+                                <div class="mb3">
+                                    <a href="{{route('admin.urs.fonctions.destroy',[$fonction, $ur->id])}}" class="adminDanger btnSmall"  data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette fonction ? Toutes les fonctionnalités liées seront supprimées de manière irréversible">Supprimer la fonction</a>
+                                </div>
+                            @endif
                         @endif
 
                     </td>

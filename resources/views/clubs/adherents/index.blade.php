@@ -17,7 +17,7 @@
             </a>
         </h1>
 {{--        @include('clubs.listeAdherents', $adherents)--}}
-        @include('clubs.listeAdherents', ['adherents' => $adherents, 'prefix' => '', 'club' => $club])
+        @include('clubs.listeAdherents', ['adherents' => $adherents, 'prefix' => '', 'club' => $club, 'droit_fusion' => false, 'level' => 'club'])
     </div>
 @endsection
 @section('css')

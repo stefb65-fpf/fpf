@@ -49,7 +49,7 @@
             @endswitch
 
         </h1>
-        @if($term)
+        @if($term && $term != 'null')
             <div class="searchedTerm mt25">
                 <div class="title mt25">Vous avez cherché les personnes contenant l'expression :</div>
                 <div class="d-flex mt25 center">
@@ -114,15 +114,25 @@
                                 <option value="2" {{ $type_adherent == 2 ? 'selected' : '' }}>Adhérent de club</option>
                             </select>
                         </div>
+                        <div class="formUnit mb0">
+                            <div class="formLabel mr10 bold">Ancienneté :</div>
+                            <select class="formValue modifying" name="filter" id="ancienneteFilterPersonnes"
+                                    data-ref="anciennete">
+                                <option value="0">Tous</option>
+                                <option value="1" {{ $anciennete == 1 ? 'selected' : '' }}>Nouveau</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="flexEnd">
                 @if($view_type == "adherents")
+                    @if(in_array('GESINFO', $droits_fpf))
                     <a href="{{ route('admin.personnes.createOpen', 'adherents') }}" class="adminDanger btnMedium mr10">Ajout
                         open</a>
                     <a href="{{ route('admin.personnes.create', 'adherents') }}" class="adminPrimary btnMedium">Ajout
                         adhérent individuel</a>
+                    @endif
                 @else
                     <a href="{{ route('urs.personnes.createOpen', 'adherents') }}" class="adminDanger btnMedium mr10">Ajout
                         open</a>
@@ -132,15 +142,19 @@
             </div>
         @else
             @if($view_type === 'abonnes')
+                @if(in_array('GESINFO', $droits_fpf))
                 <div class="flexEnd">
                     <a href="{{ route('admin.personnes.create', 'abonnes') }}" class="adminPrimary btnMedium">Ajout
                         abonné seul</a>
                 </div>
+                    @endif
             @endif
             @if($view_type === 'formateurs')
                 <div class="flexEnd">
+                    @if(in_array('GESINFO', $droits_fpf))
                     <a href="{{ route('admin.personnes.create', 'formateurs') }}" class="adminPrimary btnMedium">Ajout
                         formateur</a>
+                    @endif
                 </div>
             @endif
         @endif
@@ -171,7 +185,7 @@
                     @if(in_array($view_type,["adherents","ur_adherents","recherche", 'abonnes']))
                         <th>Abonnement - N° fin</th>
                     @endif
-                    <th></th>
+                    <th colspan="2">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -187,7 +201,18 @@
                             @if($view_type == "adherents")
                                 <td>{{$utilisateur->urs_id && $utilisateur->urs_id != 99 ? $utilisateur->ur->nom:""}}</td>
                             @endif
-                            <td>{{$utilisateur->identifiant}}</td>
+                            <td>
+                                <div class="d-flex flex-column" style="align-items: center">
+                                    <div>
+                                        {{$utilisateur->identifiant}}
+                                    </div>
+                                    @if($utilisateur->nouveau == 1)
+                                        <div>
+                                            <small class="badge primary" style="padding: 3px 10px">Nouveau</small>
+                                        </div>
+                                    @endif
+                                </div>
+                            </td>
                             <td>
                                 @switch($utilisateur->statut)
                                     @case(0)
@@ -267,6 +292,21 @@
 {{--                            <td>Abonnement</td>--}}
                         @endif
                         <td>
+                            @if(!in_array($view_type,['abonnes', 'formateurs']))
+                                <a href="{{ route('clubs.sendReinitLink', $utilisateur->personne_id) }}" data-confirm="Confirmez-vous l'envoi d'un lien d'initialisation du mot de passe ?" data-method="post" style="transform: rotate(90deg); width: 25px; height: 25px; cursor: pointer; display: block"  title="{{ $utilisateur->premiere_connexion == 1 ? "Mot de passe non initialisé" : "Mot de passe initialisé" }} - Envoyer un lien d'initialisation">
+                                    @if($utilisateur->premiere_connexion == 1)
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#800" class="bi bi-key-fill" viewBox="0 0 16 16">
+                                            <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                        </svg>
+                                    @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#080" class="bi bi-key-fill" viewBox="0 0 16 16" >
+                                            <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                        </svg>
+                                    @endif
+                                </a>
+                            @endif
+                        </td>
+                        <td>
                             <div class="mb3">
                                 @if($level == 'admin')
                                     @if (in_array($view_type, ["adherents", "recherche"]))
@@ -282,13 +322,13 @@
                                         <a href="{{ route('admin.personnes.edit', [$utilisateur->id, $view_type]) }}"
                                            class="adminPrimary btnSmall">Editer</a>
                                     @endif
-                                    @if($utilisateur->statut == 3)
+                                    @if($utilisateur->statut == 3 && in_array('GESINFO', $droits_fpf))
                                         <div class="mt5">
                                             <a name="reEditCarte" data-ref="{{ $utilisateur->identifiant }}"
                                                class="adminSuccess btnSmall">nouvelle carte</a>
                                         </div>
                                     @endif
-                                    @if(in_array($utilisateur->ct, [7,8,9,'F']) && !in_array($utilisateur->statut, [1, 2,3]))
+                                    @if(in_array($utilisateur->ct, [7,8,9,'F']) && !in_array($utilisateur->statut, [1, 2,3]) && in_array('GESINFO', $droits_fpf))
                                         <div class="mt5">
                                             <a name="renewIndividuel" data-ref="{{ $utilisateur->identifiant }}" data-ct="{{ $utilisateur->ct }}"
                                                class="adminWarning btnSmall">renew individuel</a>

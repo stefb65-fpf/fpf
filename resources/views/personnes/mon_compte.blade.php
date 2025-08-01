@@ -92,6 +92,9 @@
                                 <span class="bolder">{{ $v->nom }}</span>: du <?= substr($v->debut, 8, 2).'/'.substr($v->debut, 5, 2).'/'.substr($v->debut, 0, 4) ?> 0h00 au <?= substr($v->fin, 8, 2).'/'.substr($v->fin, 5, 2).'/'.substr($v->fin, 0, 4) ?> 23h59
                             </div>
                         @else
+                            @php
+                            $fin_phase2 = $v->type == 1 ? $v->fin_phase2 : $v->fin;
+                            @endphp
                             <div>
                                 <span class="bolder">{{ $v->nom }}</span>
                                 <ul class="ml40">
@@ -99,11 +102,18 @@
                                         vote de tous les adhérents : du <?= substr($v->debut, 8, 2).'/'.substr($v->debut, 5, 2).'/'.substr($v->debut, 0, 4) ?> 3h00 au <?= substr($v->fin_phase1, 8, 2).'/'.substr($v->fin_phase1, 5, 2).'/'.substr($v->fin_phase1, 0, 4) ?> 23h59. Lors de cette phase, vous pouvez voter directement. Si vous ne votez pas, votre voix sera transférée directement au président de club pour la seconde phase. Si vous souhaitez que ce ne soit pas le cas, cliquez sur le bouton "JE NE DONNE PAS MON VOTE".
                                     </li>
                                     <li>
-                                        vote responsables clubs (voix du club et pouvoirs des adhérents): du <?= substr($v->debut_phase2, 8, 2).'/'.substr($v->debut_phase2, 5, 2).'/'.substr($v->debut_phase2, 0, 4) ?> 3h00 au <?= substr($v->fin_phase2, 8, 2).'/'.substr($v->fin_phase2, 5, 2).'/'.substr($v->fin_phase2, 0, 4) ?> 23h59. Lors de cette phase, vous pouvez voter ou transférer vos voix au président d'UR.
+                                        vote responsables clubs (voix du club et pouvoirs des adhérents):
+                                        du <?= substr($v->debut_phase2, 8, 2).'/'.substr($v->debut_phase2, 5, 2).'/'.substr($v->debut_phase2, 0, 4) ?> 3h00
+                                        au <?= substr($fin_phase2, 8, 2).'/'.substr($fin_phase2, 5, 2).'/'.substr($fin_phase2, 0, 4) ?> 23h59.
+                                        @if($v->type == 1)
+                                            Lors de cette phase, vous pouvez voter ou transférer vos voix au président d'UR.
+                                        @endif
                                     </li>
+                                    @if($v->type == 1)
                                     <li>
                                         vote des présidents d'UR (pouvoirs issus du vote des clubs) : du <?= substr($v->debut_phase3, 8, 2).'/'.substr($v->debut_phase3, 5, 2).'/'.substr($v->debut_phase3, 0, 4) ?> 3h00 au <?= substr($v->fin, 8, 2).'/'.substr($v->fin, 5, 2).'/'.substr($v->fin, 0, 4) ?> 23h59
                                     </li>
+                                    @endif
                                 </ul>
                             </div>
                         @endif
@@ -112,7 +122,7 @@
                             @if($v->type == 1 && $v->phase == 2)
                                 <button class="btnRegister primary" name="givePouvoir" data-vote="{{ $v->id }}">JE DONNE MES POUVOIRS AU PR&Eacute;SIDENT D'UR</button>
                             @endif
-                            @if($v->type == 1 && $v->phase == 1)
+                            @if(in_array($v->type, [1, 2]) && $v->phase == 1)
                                 <button class="btnRegister primary" name="cancelPouvoir" data-vote="{{ $v->id }}">JE NE DONNE PAS MON VOTE</button>
                             @endif
                         </div>

@@ -20,10 +20,11 @@
                     @if($portee == 'FPF')
                         <option value="1" {{ $vote->type === 1 ? 'selected=selected' : '' }}>3 phases</option>
                     @endif
+                    <option value="2" {{ $vote->type === 2 ? 'selected=selected' : '' }}>2 phases (UR)</option>
                 </select>
             </div>
         </div>
-        <div id="bloc3phases" style="{{ $vote->type === 1 ? '' : 'display: none' }}" class="formBlockWrapper">
+        <div id="bloc3phases" style="{{ in_array($vote->type, [1,2]) ? '' : 'display: none' }}" class="formBlockWrapper">
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Début phase 1</div>
                 <input class="formValue modifying formValueAdmin"  value="{{ old('debut_phase1', $vote->debut) }}" name="debut_phase1" type="date"/>
@@ -38,8 +39,13 @@
             </div>
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Fin phase 2</div>
-                <input class="formValue modifying formValueAdmin"  value="{{ old('fin_phase2', $vote->fin_phase2) }}" name="fin_phase2" type="date"/>
+                @php
+                $fin_phase2 = ($vote->type == 1) ? $vote->fin_phase2 : $vote->fin;
+                @endphp
+                <input class="formValue modifying formValueAdmin"  value="{{ old('fin_phase2', $fin_phase2) }}" name="fin_phase2" type="date"/>
             </div>
+        </div>
+        <div id="bloc3phasesexclusif" style="{{ $vote->type === 1 ? '' : 'display: none' }}" class="formBlockWrapper">
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Début phase 3</div>
                 <input class="formValue modifying formValueAdmin"  value="{{ old('debut_phase3', $vote->debut_phase3) }}" name="debut_phase3" type="date"/>
@@ -47,6 +53,23 @@
             <div class="formUnit formUnitAdmin">
                 <div class="formLabel">Fin phase 3</div>
                 <input class="formValue modifying formValueAdmin"  value="{{ old('fin_phase3', $vote->fin) }}" name="fin_phase3" type="date"/>
+            </div>
+        </div>
+
+        <div id="bloc2phases" style="{{ $vote->type === 2 ? '' : 'display: none' }}"  class="formBlockWrapper">
+            <div class="formUnit formUnitAdmin">
+                <div class="formLabel">Portée du vote</div>
+                <select class="formValue modifying formValueAdmin" name="deuxphases_urs_id">
+                    @if($portee == 'FPF')
+                        <option value="0" {{ $vote->urs_id == 0 ? 'selected=selected' : '' }}>Vote national</option>
+                        @for($i = 1; $i <= 25; $i++)
+                            <option value="{{ $i }}"  {{ $vote->urs_id == $i ? 'selected=selected' : '' }}>Vote UR {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
+                        @endfor
+                    @else
+                        <option value="{{ $portee }}"  {{ $vote->urs_id == $portee ? 'selected=selected' : '' }}>Vote UR {{ str_pad($portee, 2, '0', STR_PAD_LEFT) }}</option>
+                    @endif
+
+                </select>
             </div>
         </div>
 

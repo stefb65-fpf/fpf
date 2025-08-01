@@ -4,7 +4,7 @@
     <div class="formationsPage pageCanva">
         <h1 class="pageTitle">
             {{ $formation->name }}
-            <a class="previousPage" title="Retour page précédente" href="{{ route('formations.accueil') }}">
+            <a class="previousPage" title="Retour page précédente" href="{{ route('formations.accueil') }}#{{ $formation->id }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
                      class="bi bi-reply-fill" viewBox="0 0 16 16">
                     <path
@@ -74,7 +74,7 @@
                                             {{($formation->stars - floor($formation->stars)) == 0 ? floor($formation->stars):$formation->stars}}
                                         </div>
                                         <div class="on5 mr5">/5</div>
-                                        <div class="nbvotes">({{$formation->reviews}} avis)</div>
+                                        <div class="nbvotes">({{$formation->reviews}} évaluations)</div>
                                     </div>
                                 @endif
                             </div>
@@ -269,7 +269,10 @@
                                                 @if($session->end_inscription >= date('Y-m-d'))
                                                     @if((sizeof($session->inscrits->where('status', 1)->where('attente', 0)) < $session->places) && $session->full == 0)
                                                         <a name="paiementInscription" data-session="{{ $session->id }}"
-                                                           data-price="{{ $personne->price_adherent == 1 ? $session->price : $session->price_not_member }}" data-avoir="{{ $personne->avoir_formation }}" class="redBtn uppercase"
+                                                           data-price="{{ $personne->price_adherent == 1 ? $session->price : $session->price_not_member }}"
+                                                           data-avoir="{{ $personne->creance }}"
+{{--                                                           data-avoir="{{ $personne->avoir_formation }}" --}}
+                                                           class="redBtn uppercase"
                                                            style="cursor: pointer;">S'inscrire</a>
                                                     @else
                                                         @if(sizeof($session->inscrits->where('status', 1)->where('attente', 1)) < $session->waiting_places || $session->full == 1)
@@ -344,9 +347,11 @@
         </div>
         <div class="modalEditBody">
             Vous allez vous inscrire pour la session de formation <span class="bold">{{ $formation->name }}</span>.<br>
-            @if($personne->avoir_formation > 0)
+            @if($personne->creance > 0)
+{{--            @if($personne->avoir_formation > 0)--}}
                 <div>
-                    Vous disposez d'un avoir de <span class="bold">{{ $personne->avoir_formation }} €</span> sur votre compte.
+                    Vous disposez d'un avoir de <span class="bold">{{ $personne->creance }} €</span> sur votre compte.
+{{--                    Vous disposez d'un avoir de <span class="bold">{{ $personne->avoir_formation }} €</span> sur votre compte.--}}
                 </div>
             @endif
             <div id="paiementFormationNeeded">

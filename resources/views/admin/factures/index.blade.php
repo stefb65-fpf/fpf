@@ -29,6 +29,7 @@
                     <th>Numéro</th>
                     <th>Référence</th>
                     <th>Description</th>
+                    <th></th>
                     <th>Montant</th>
                     <th>Date</th>
                     <th></th>
@@ -38,8 +39,13 @@
                     @foreach($invoices as $invoice)
                         <tr>
                             <td>{{ $invoice->numero }}</td>
-                            <td>{{ $invoice->reference }}</td>
+                            <td><a style="color: blue" href="{{ route('admin.reglements', $invoice->reference) }}" target="_blank">{{ $invoice->reference }}</a></td>
                             <td>{{ $invoice->description }}</td>
+                            <td>
+                                @if($invoice->type == 1)
+                                    Avoir
+                                @endif
+                            </td>
                             <td class="text-right">{{ number_format($invoice->montant, 2, ',', ' ') }}€</td>
                             <td>{{ $invoice->created_at->format('d/m/Y') }}</td>
                             <td>
