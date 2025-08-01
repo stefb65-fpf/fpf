@@ -50,7 +50,7 @@ class VoteController extends Controller
             }
         }
         $nb_voix = 0;
-        if ($vote->type == 1) {
+        if (in_array($vote->type, [1, 2])) {
             if ($vote->phase == 2) {
                 // on regarde si le membre a un droit de vote club
                 $fonction = DB::table('fonctionsutilisateurs')
@@ -69,7 +69,8 @@ class VoteController extends Controller
                     }
                 }
             }
-
+        }
+        if ($vote->type == 1) {
             if ($vote->phase == 3) {
                 // on regarde si le membre a un droit de vote UR
                 $fonction = DB::table('fonctionsutilisateurs')

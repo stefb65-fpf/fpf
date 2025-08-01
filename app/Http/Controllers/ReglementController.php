@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Concern\Api;
 use App\Concern\Invoice;
 use App\Concern\Tools;
+use App\Models\Club;
 use App\Models\Inscrit;
 use App\Models\Personne;
 use App\Models\Reglement;
@@ -30,6 +31,17 @@ class ReglementController extends Controller
                         'monext_token' => null, 'monext_link' => null);
                     $reglement->update($data);
 
+                    if ($reglement->clubs_id) {
+                        $club = Club::where('id', $reglement->clubs_id)->first();
+                        if ($club) {
+                            if ($club->creance > 0) {
+                                $montant_creance_utilisee = $reglement->montant - $reglement->montant_paye;
+                                $new_creance = $club->creance - $montant_creance_utilisee > 0 ? $club->creance - $montant_creance_utilisee : 0;
+                                $club->update(['creance' => $new_creance]);
+                            }
+                        }
+                    }
+
                     $this->saveInvoiceForReglement($reglement);
                 }
             }
@@ -51,6 +63,7 @@ class ReglementController extends Controller
                     $description = "Abonnement à la revue France Photo";
                 }
                 list($code, $reglement) = $this->saveNewPersonne($personne, 'Monext');
+                $this->saveReglementEvents($reglement->id);
 
                 $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
                 $this->createAndSendInvoice($datai);
@@ -67,6 +80,7 @@ class ReglementController extends Controller
             $personne = Personne::where('monext_token', $request->token)->first();
             if ($personne) {
                 list($code, $reglement) = $this->saveNewCard($personne, 'Monext');
+                $this->saveReglementEvents($reglement->id);
 
                 $description = "Adhésion individuelle à la FPF";
                 $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
@@ -85,6 +99,7 @@ class ReglementController extends Controller
             $personne = Personne::where('monext_token', $request->token)->first();
             if ($personne) {
                 list($code, $reglement) = $this->saveNewAbo($personne, 'Monext');
+                $this->saveReglementEvents($reglement->id);
 
                 $description = "Abonnement individuel à la revue France Photo";
                 $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
@@ -108,11 +123,13 @@ class ReglementController extends Controller
                 $souscription->update($data);
 
                 if ($souscription->personne_id) {
+                    $this->saveSouscriptionEvents($souscription->id);
                     $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
                     $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'personne_id' => $souscription->personne_id];
                     $this->createAndSendInvoice($datai);
                 } else {
                     if ($souscription->clubs_id) {
+                        $this->saveSouscriptionEvents($souscription->id);
                         $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
                         $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->clubs_id];
                         $this->createAndSendInvoice($datai);
@@ -135,7 +152,8 @@ class ReglementController extends Controller
                 $inscrit->update($data);
 
                 $personne = Personne::where('id', $inscrit->personne_id)->first();
-                $personne->update(['avoir_formation' => 0]);
+                $personne->update(['creance' => 0]);
+//                $personne->update(['avoir_formation' => 0]);
 
                 $description = "Inscription à la formation ".$inscrit->session->formation->name;
                 $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;

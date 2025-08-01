@@ -68,7 +68,15 @@ class FlorilegeController extends Controller
             list($status, $reponse) = $this->callBridge($url, 'POST', json_encode($bridge_datas));
             if ($status == 200) {
                 $reponse = json_decode($reponse);
-                $datas = ['personne_id' => $personne->id, 'reference' => $ref, 'nbexemplaires' => $request->nb, 'montanttotal' => $montant_attendu,  'bridge_id' => $reponse->id, 'bridge_link' => $reponse->url];
+                $datas = [
+                    'personne_id' => $personne->id,
+                    'reference' => $ref,
+                    'nbexemplaires' => $request->nb,
+                    'montanttotal' => $montant_attendu,
+                    'bridge_id' => $reponse->id,
+                    'bridge_link' => $reponse->url,
+                    'utilisateur_id' => $request->utilisateur_id
+                ];
                 $souscription = Souscription::create($datas);
                 if ($souscription) {
                     return new JsonResponse(['url' => $reponse->url], 200);
@@ -92,7 +100,7 @@ class FlorilegeController extends Controller
             $result = $this->callMonext($montant_cents, $urls, $ref, $user);
             if ($result['code'] == '00000') {
                 $datas = ['personne_id' => $personne->id, 'reference' => $ref, 'nbexemplaires' => $request->nb, 'montanttotal' => $request->montant,
-                    'monext_token' => $result['token'], 'monext_link' => $result['redirectURL']];
+                    'monext_token' => $result['token'], 'monext_link' => $result['redirectURL'], 'utilisateur_id' => $request->utilisateur_id];
                 $souscription = Souscription::create($datas);
                 if ($souscription) {
                     return new JsonResponse(['url' => $result['redirectURL']], 200);

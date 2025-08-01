@@ -39,6 +39,10 @@ class Personne extends Model
         return $this->hasMany('App\Models\Inscrit');
     }
 
+    public function histoevents() {
+        return $this->hasMany('App\Models\Histoevent', 'event_id');
+    }
+
 //    public function getDatenaissanceAttribute($value){
 //        return $value? Carbon::createFromFormat('Y-m-d', $value)->format('d/m/Y'):null;
 //    }

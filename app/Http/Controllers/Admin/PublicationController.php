@@ -8,6 +8,9 @@ use App\Exports\FlorilegeExport;
 use App\Exports\RoutageFedeExport;
 use App\Exports\RoutageFpExport;
 use App\Http\Controllers\Controller;
+use App\Mail\SendColisageFlorilegeClub;
+use App\Mail\SendColisageFlorilegeUr;
+use App\Mail\SendInvoice;
 use App\Models\Abonnement;
 use App\Models\Adresse;
 use App\Models\Club;
@@ -19,6 +22,7 @@ use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PublicationController extends Controller
@@ -357,22 +361,30 @@ class PublicationController extends Controller
             }
 
 
-            $souscriptions_adherents = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
-                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+//            $souscriptions_adherents = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
+//                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+//                ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
+//                ->whereNotNull('souscriptions.personne_id')
+//                ->where('souscriptions.statut', 1)
+//                ->where('utilisateurs.urs_id', $ur_id)
+//                ->whereIn('utilisateurs.statut', [0,1,2,3])
+//                ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, utilisateurs.personne_id, personnes.nom, personnes.prenom, personnes.sexe, personnes.phone_mobile, clubs.nom as club, clubs.numero')
+//                ->orderByDesc('utilisateurs.statut')
+//                ->orderBy('utilisateurs.identifiant')
+//                ->groupBy('utilisateurs.id')
+//                ->get();
+
+            $souscriptions_adherents = Souscription::join('utilisateurs', 'souscriptions.utilisateur_id', '=', 'utilisateurs.id')
+                ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
                 ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
-//                ->join('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
-                ->whereNotNull('souscriptions.personne_id')
                 ->where('souscriptions.statut', 1)
                 ->where('utilisateurs.urs_id', $ur_id)
                 ->whereIn('utilisateurs.statut', [0,1,2,3])
-//                ->whereNotNull('utilisateurs.clubs_id')
                 ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, utilisateurs.personne_id, personnes.nom, personnes.prenom, personnes.sexe, personnes.phone_mobile, clubs.nom as club, clubs.numero')
                 ->orderByDesc('utilisateurs.statut')
                 ->orderBy('utilisateurs.identifiant')
                 ->groupBy('utilisateurs.id')
                 ->get();
-
-//            $souscriptions_all = $souscriptions_adherents_old->merge($souscriptions_adherents);
 
             foreach ($souscriptions_adherents as $souscription) {
                 if (!in_array($souscription->id, $tab_id)) {
@@ -402,12 +414,38 @@ class PublicationController extends Controller
             }
         }
 
+//        $souscriptions_adherents = Souscription::join('utilisateurs', 'souscriptions.utilisateur_id', '=', 'utilisateurs.id')
+//            ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+//            ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
+//            ->where('souscriptions.statut', 1)
+//            ->where('utilisateurs.urs_id', 17)
+//            ->whereIn('utilisateurs.statut', [0,1,2,3])
+//            ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, utilisateurs.personne_id, personnes.nom, personnes.prenom, personnes.sexe, personnes.phone_mobile, clubs.nom as club, clubs.numero')
+//            ->orderByDesc('utilisateurs.statut')
+//            ->orderBy('utilisateurs.identifiant')
+//            ->groupBy('utilisateurs.id')
+//            ->get();
+//
+//        dd($souscriptions_adherents);
+
 
         for ($ur_id = 1; $ur_id <= 24; $ur_id++) {
-            $souscriptions_adherents_old = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
-                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+//            $souscriptions_adherents_old = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
+//                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+//                ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
+//                ->whereNotNull('souscriptions.personne_id')
+//                ->where('souscriptions.statut', 1)
+//                ->where('utilisateurs.urs_id', $ur_id)
+//                ->where('utilisateurs.statut', '>', 3)
+//                ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, utilisateurs.personne_id, personnes.nom, personnes.prenom, personnes.sexe, personnes.phone_mobile, clubs.nom as club, clubs.numero')
+//                ->orderByDesc('utilisateurs.statut')
+//                ->orderBy('utilisateurs.identifiant')
+//                ->groupBy('utilisateurs.id')
+//                ->get();
+
+            $souscriptions_adherents_old = Souscription::join('utilisateurs', 'souscriptions.utilisateur_id', '=', 'utilisateurs.id')
+                ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
                 ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
-                ->whereNotNull('souscriptions.personne_id')
                 ->where('souscriptions.statut', 1)
                 ->where('utilisateurs.urs_id', $ur_id)
                 ->where('utilisateurs.statut', '>', 3)
@@ -463,6 +501,8 @@ class PublicationController extends Controller
                 }
             }
         }
+
+//        dd($souscriptions[575]);
         $fichier = 'colisage_florilege_' . date('YmdHis') . '.xls';
         if (Excel::store(new ColisageExport($tab_souscriptions), $fichier, 'xls')) {
             $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
@@ -500,10 +540,12 @@ class PublicationController extends Controller
                 $souscriptions[$souscription->id][] = $souscription;
             }
 
-            $souscriptions_adherents = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
-                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+            $souscriptions_adherents = Souscription::join('utilisateurs', 'souscriptions.utilisateur_id', '=', 'utilisateurs.id')
+//            $souscriptions_adherents = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
+                ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+//                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
                 ->join('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
-                ->whereNotNull('souscriptions.personne_id')
+//                ->whereNotNull('souscriptions.personne_id')
                 ->where('souscriptions.statut', 1)
                 ->where('utilisateurs.urs_id', $ur_id)
                 ->whereIn('utilisateurs.statut', [0,1,2,3])
@@ -535,6 +577,7 @@ class PublicationController extends Controller
                 ->setWarnings(false)
                 ->setPaper('a4', 'portrait')
                 ->save($dir . '/' . $name);
+
         }
 
         $zip = new \ZipArchive();
@@ -549,6 +592,128 @@ class PublicationController extends Controller
         $file_to_download = env('APP_URL') . 'storage/app/public/uploads/souscriptions/' . $zipname;
         return new JsonResponse(['file' => $file_to_download], 200);
     }
+
+
+
+
+    public function sendSouscriptionsColisage() {
+        $tab_id = [];
+        for ($ur_id = 17; $ur_id <= 18; $ur_id++) {
+            $souscriptions_club = Souscription::join('clubs', 'clubs.id', '=', 'souscriptions.clubs_id')
+                ->whereNotNull('souscriptions.clubs_id')
+                ->where('souscriptions.statut', 1)
+                ->where('clubs.urs_id', $ur_id)
+                ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, clubs.id, clubs.nom as club, clubs.numero, clubs.urs_id')
+                ->orderBy('clubs.urs_id')
+                ->orderBy('clubs.numero')
+                ->groupBy('clubs.id')
+                ->get();
+
+            $souscriptions = [];
+            foreach ($souscriptions_club as $souscription) {
+                // on cherche le contact du club
+                $souscription->contact = Personne::join('utilisateurs', 'personnes.id', '=', 'utilisateurs.personne_id')
+                    ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                    ->selectRaw('personnes.nom, personnes.prenom, personnes.id, personnes.email')
+                    ->where('fonctionsutilisateurs.fonctions_id', 97)
+                    ->where('utilisateurs.clubs_id', $souscription->id)
+                    ->first();
+                $souscriptions[$souscription->id][] = $souscription;
+            }
+
+            $souscriptions_adherents = Souscription::join('utilisateurs', 'souscriptions.utilisateur_id', '=', 'utilisateurs.id')
+                ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
+                ->join('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
+                ->where('souscriptions.statut', 1)
+                ->where('utilisateurs.urs_id', $ur_id)
+                ->whereIn('utilisateurs.statut', [0,1,2,3])
+                ->whereNotNull('utilisateurs.clubs_id')
+                ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, personnes.nom, personnes.prenom, clubs.nom as club, clubs.numero')
+                ->orderByDesc('utilisateurs.statut')
+                ->orderBy('utilisateurs.identifiant')
+                ->groupBy('utilisateurs.id')
+                ->get();
+            foreach ($souscriptions_adherents as $souscription) {
+                if (!in_array($souscription->id, $tab_id)) {
+                    $souscription->contact = Personne::join('utilisateurs', 'personnes.id', '=', 'utilisateurs.personne_id')
+                        ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                        ->selectRaw('personnes.nom, personnes.prenom, personnes.id, personnes.email')
+                        ->where('fonctionsutilisateurs.fonctions_id', 97)
+                        ->where('utilisateurs.clubs_id', $souscription->clubs_id)
+                        ->first();
+                    if ($souscription->contact) {
+                        $souscriptions[$souscription->clubs_id][] = $souscription;
+                        $tab_id[] = $souscription->id;
+                    }
+                }
+            }
+            foreach($souscriptions as $k => $souscription) {
+                $souscriptions_club = [
+                    $souscription
+                ];
+                if ($souscriptions_club[0][0]) {
+                    $dir = storage_path() . '/app/public/uploads/souscriptions/';
+                    $name = 'colisage_' . date('Y'). '_'.str_pad($ur_id, 2, '0', STR_PAD_LEFT) . '_' . $souscriptions_club[0][0]['numero'] . '.pdf';
+                    $pdf = App::make('dompdf.wrapper');
+                    $pdf->loadView('pdf.colisage', ['souscriptions' => $souscriptions_club])
+                        ->setWarnings(false)
+                        ->setPaper('a4', 'portrait')
+                        ->save($dir . '/' . $name);
+
+                    $to = $souscriptions_club[0][0]['contact']['email'];
+//                    $to = 'contact@envolinfo.com';
+
+                    $mailSent = Mail::to($to)->send(new SendColisageFlorilegeClub($dir . '/' . $name));
+                    $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+                    $mail = new \stdClass();
+                    $mail->titre = "Liste de colisage des Florilèges pour votre club";
+                    $mail->destinataire = $to;
+                    $mail->contenu = $htmlContent;
+                    $this->registerMail($souscriptions_club[0][0]['contact']['id'], $mail);
+                }
+
+            }
+
+
+            $dir = storage_path() . '/app/public/uploads/souscriptions/';
+            $name = 'colisage_' . date('Y') . '_'.str_pad($ur_id, 2, '0', STR_PAD_LEFT).'.pdf';
+            $pdf = App::make('dompdf.wrapper');
+            $pdf->loadView('pdf.colisage', compact('souscriptions'))
+                ->setWarnings(false)
+                ->setPaper('a4', 'portrait')
+                ->save($dir . '/' . $name);
+
+            // on récupère l'email de la personne présidente d'UR
+            $president = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
+                ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                ->join('fonctions', 'fonctions.id', '=', 'fonctionsutilisateurs.fonctions_id')
+                ->where('fonctions.id', 57)
+                ->where('utilisateurs.urs_id', $ur_id)
+                ->selectRaw('personnes.nom, personnes.prenom, personnes.email, personnes.id')
+                ->first();
+
+            $to = $president['email'];
+//            $to = 'contact@envolinfo.com';
+
+            $mailSent = Mail::to($to)->send(new SendColisageFlorilegeUr($dir . '/' . $name));
+            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+            $mail = new \stdClass();
+            $mail->titre = "Liste de colisage des Florilèges pour votre UR";
+            $mail->destinataire = $to;
+            $mail->contenu = $htmlContent;
+            $this->registerMail($president['id'], $mail);
+            sleep(1);
+
+        }
+
+        return new JsonResponse([], 200);
+    }
+
+
+
+
 
     protected function getIndividuels() {
         // on récupère les individuels

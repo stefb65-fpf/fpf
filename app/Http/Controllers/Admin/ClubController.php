@@ -58,7 +58,13 @@ class ClubController extends Controller
             $query  = $query->where('statut', $statut);
         }
         if ($abonnement != 'all' && in_array(strval($abonnement),[0,1,"G"])) {
-            $query  = $query->where('abon', $abonnement);
+//            $query  = $query->where('abon', $abonnement);
+            $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+            if ($abonnement == 1) {
+                $query->where('numerofinabonnement', '>=', $numeroencours);
+            } else {
+                $query->where('numerofinabonnement', '<', $numeroencours);
+            }
         }
         if ($type_carte != 'all' && (in_array(strval($type_carte),[1,"N","C","A"]))) {
             $query  = $query->where('ct', $type_carte);
@@ -252,6 +258,7 @@ class ClubController extends Controller
             $datar = [
                 'clubs_id' => $club->id,
                 'montant' => $montant_reglement,
+                'montant_paye' => $montant_reglement,
                 'statut' => 0,
                 'reference' => $ref,
                 'aboClub' => $club_abonne,
@@ -328,11 +335,13 @@ class ClubController extends Controller
         $total_montant += $total_adherents;
         $montant_florilege_club = 0;
         $total_florilege = 0;
+        $creance = 0;
+        $montant_paye = $total_montant;
 
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadView('pdf.borderauclub', compact('tab_adherents', 'ref', 'club', 'total_montant', 'total_club',
             'montant_adhesion_club', 'montant_abonnement_club', 'montant_adhesion_club_ur', 'total_adhesion', 'total_abonnement', 'total_adherents',
-            'montant_florilege_club', 'total_florilege'))
+            'montant_florilege_club', 'total_florilege', 'creance', 'montant_paye'))
             ->setWarnings(false)
             ->setPaper('a4', 'portrait')
             ->save($dir.'/'.$name);
@@ -488,6 +497,7 @@ class ClubController extends Controller
         return redirect()->route('admin.clubs.edit', $club)->with('success', "Les informations de réunion du club ont été mises à jour");
     }
     public function listeAdherent(Club $club, $statut = null,$abonnement = null){
+        $droit_fusion = $this->checkDroit('GESINFO');
         $config = Configsaison::where('id', 1)->selectRaw('numeroencours, datedebutflorilege, datefinflorilege')->first();
         $numeroencours = $config->numeroencours;
         $florilege_actif = date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege;
@@ -495,9 +505,10 @@ class ClubController extends Controller
         $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
         $statut = $statut ?? "init";
         $abonnement = $abonnement ?? "all";
+        $dans_club = $statut == 99 ? 0 : 1;
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('utilisateurs.clubs_id', $club->id)
-            ->where('utilisateurs.adherent_club', 1)
+            ->where('utilisateurs.adherent_club', $dans_club)
             ->orderBy('personnes.nom')->orderBy('personnes.prenom')
             ->selectRaw('*, utilisateurs.id as id_utilisateur');
         if (in_array($statut, [0,1,2,3,4])) {
@@ -574,8 +585,10 @@ class ClubController extends Controller
 ////            $adherent->fin = $adherent->personne->is_abonne ? $adherent->personne->abonnements->where('etat', 1)[0]['fin'] : '';
 //        }
 
+        $configSaison = Configsaison::where('id', 1)->first();
+        $finSaison = $configSaison->datefinadhesion;
         return view('admin.clubs.liste_adherents_club',compact('club','adherents', 'statut', 'abonnement',
-            'exist_reglement_en_cours', 'numeroencours', 'florilege_actif'));
+            'exist_reglement_en_cours', 'numeroencours', 'florilege_actif', 'droit_fusion', 'finSaison'));
     }
 
 

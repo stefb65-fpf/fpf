@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Models\Club;
+use App\Models\Inscrit;
 use App\Models\Reglement;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class ReglementController extends Controller
      */
     public function index($term=null)
     {
+        $droit_cancel = $this->checkDroit('AUTSPEC');
         $query = Reglement::orderByDesc('reglements.id');
         if($term){
             $this->getReglementsByTerm($term, $query);
@@ -43,9 +45,22 @@ class ReglementController extends Controller
                     $reglement->nom .= $utilisateur->personne->nom.' '.$utilisateur->personne->prenom.' ';
                 }
             }
+
+            // on regarde si pour le reglement il y a au moins un reglement_utilisateur ($reglement->utilisateurs) pour lequel le champ adhésion est à 1 et le champ reversement_a_faire est à 0
+            $reglement->cancel = 0;
+            if ($reglement->statut == 1) {
+                $count = DB::table('reglementsutilisateurs')
+                    ->where('reglements_id', '=', $reglement->id)
+//                    ->where('adhesion', '=', 1)
+                    ->where('reversement_a_faire', '=', 1)
+                    ->count();
+                if ($count > 0) {
+                    $reglement->cancel = 1;
+                }
+            }
         }
 
-        return view('admin.reglements.index', compact('reglements', 'term'));
+        return view('admin.reglements.index', compact('reglements', 'term', 'droit_cancel'));
     }
 
     public function editionCartes() {
@@ -115,5 +130,15 @@ class ReglementController extends Controller
         }
         krsort($tab_files);
         return view('admin.reglements.historiqueCartes', compact('tab_files'));
+    }
+
+    public function rapprochements()
+    {
+        $inscrits = Inscrit::where('status', 1)
+            ->where('amount', '>', 0)
+            ->where('attente', 0)
+            ->orderByDesc('updated_at')
+            ->paginate(100);
+        return view('admin.reglements.rapprochements', compact('inscrits'));
     }
 }

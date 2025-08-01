@@ -7,9 +7,11 @@ use App\Exports\RecapFormations;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FormationRequest;
 use App\Models\Categorieformation;
+use App\Models\Club;
 use App\Models\Evaluationsitem;
 use App\Models\Evaluationstheme;
 use App\Models\Formation;
+use App\Models\Inscrit;
 use App\Models\Interest;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -107,7 +109,10 @@ class FormationController extends Controller
             $data['waiting_places'] = 0;
         }
         $formation->update($data);
-        return redirect()->route('formations.index')->with('success', 'Formation modifiée avec succès');
+        // on ajoute #formation->id à l'url de rediorection pour retomber au bon endroit
+        $url = route('formations.index') . '#' . $formation->id;
+        return redirect($url)->with('success', 'Formation modifiée avec succès');
+//        return redirect()-->with('success', 'Formation modifiée avec succès');
     }
 
     /**
@@ -117,6 +122,12 @@ class FormationController extends Controller
     {
         $formation->delete();
         return redirect()->route('formations.index')->with('success', 'Formation supprimée avec succès');
+    }
+
+    public function delete_dashboard(Formation $formation)
+    {
+        $formation->delete();
+        return redirect()->route('formations.dashboard')->with('success', 'Formation supprimée avec succès');
     }
 
     public function activate(Formation $formation) {
@@ -196,5 +207,28 @@ class FormationController extends Controller
         } else {
             return redirect()->route('formations.index')->with('success', "Un problème est survenu lors de l'export");
         }
+    }
+
+    public function dashboard() {
+        if (!$this->checkDroit('GESFOR')) {
+            return redirect()->route('accueil');
+        }
+        $formations = Formation::orderByDesc('created_at')->where('published', 1)->get();
+        foreach ($formations as $formation) {
+            foreach ($formation->sessions as $session) {
+                $session->numero_club = '';
+                $session->nom_club = '';
+                if ($session->club_id != null) {
+                    $club = Club::where('id', $session->club_id)->first();
+                    if ($club) {
+                        $session->numero_club = $club->numero;
+                        $session->nom_club = $club->nom;
+                    }
+                }
+                $session->inscrits = Inscrit::where('session_id', $session->id)->where('status', 1)->count();
+                $session->inscrits_attente = Inscrit::where('session_id', $session->id)->where('status', 0)->count();
+            }
+        }
+        return view('admin.formations.dashboard', compact('formations'));
     }
 }

@@ -34,7 +34,7 @@ class EvaluationitemController extends Controller
         if (!$theme) {
             return redirect()->route('formations.parametrage')->with('error', "Le thème d'évaluation n'existe pas.");
         }
-        $data = ['name' => $request->name, 'position' => $request->position, 'evaluationstheme_id' => $theme->id];
+        $data = ['name' => $request->name, 'position' => $request->position, 'evaluationstheme_id' => $theme->id, 'type' => $request->type];
         $item = Evaluationsitem::create($data);
         $items = Evaluationsitem::where('position', '>=', $request->position)->where('id', '!=', $item->id)->get();
         foreach ($items as $item) {
@@ -59,7 +59,7 @@ class EvaluationitemController extends Controller
     public function update(Request $request, $item_id)
     {
         $item = Evaluationsitem::where('id', $item_id)->first();
-        $data = ['name' => $request->name, 'position' => $request->position];
+        $data = ['name' => $request->name, 'position' => $request->position, 'type' => $request->type];
         $item->update($data);
         return redirect()->route('formations.parametrage')->with('success', "L'item d'évaluation a bien été modifié.");
     }

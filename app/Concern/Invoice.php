@@ -4,6 +4,7 @@
 namespace App\Concern;
 
 
+use App\Mail\SendAvoir;
 use App\Mail\SendInvoice;
 use App\Mail\SendRenouvellementMail;
 use App\Models\Club;
@@ -140,6 +141,12 @@ trait Invoice
             $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
             $mail = new \stdClass();
+//            if (isset($datas['avoir']) && $datas['avoir'] == 1) {
+//                $mail->titre = "Avoir émis par la FPF";
+//            } else {
+//                $mail->titre = "Facture émise par la FPF";
+//
+//            }
             $mail->titre = "Facture émise par la FPF";
             $mail->destinataire = $email;
             $mail->contenu = $htmlContent;
@@ -174,6 +181,109 @@ trait Invoice
 
                 $mail = new \stdClass();
                 $mail->titre = "Facture émise par la FPF";
+                $mail->destinataire = $email;
+                $mail->contenu = $htmlContent;
+                $this->registerMail($contact->personne->id, $mail);
+                if ($user) {
+                    $this->registerMail($user->id, $mail);
+                }
+            }
+        }
+        return true;
+    }
+
+
+
+
+    protected function createAndSendAvoir($datas) {
+        $datai = [
+            'reference' => $datas['reference'],
+            'description' => $datas['description'],
+            'montant' => -$datas['montant'],
+        ];
+        $adresse = null;
+        $personne = null;
+        $club = null;
+        $type = 'club';
+        if (isset($datas['personne_id'])) {
+            $personne = Personne::where('id', $datas['personne_id'])->first();
+            if (!$personne) {
+                return false;
+            }
+            $type = 'personne';
+            $datai['personne_id'] = $personne->id;
+            $adresse = $personne->adresses()->first();
+        } else {
+            if (isset($datas['club_id'])) {
+                $club = Club::where('id', $datas['club_id'])->first();
+                if (!$club) {
+                    return false;
+                }
+                $datai['club_id'] = $club->id;
+                $adresse = $club->adresse;
+            }
+        }
+        $ref = date('y').'-'.date('m');
+        $last_invoice = \App\Models\Invoice::where('numero', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
+        $num = $last_invoice ? intval(substr($last_invoice->numero, -4)) + 1 : 1;
+        $numero = $ref.'-'.str_pad($num, 4, '0', STR_PAD_LEFT);
+        $datai['numero'] = $numero;
+        $invoice = \App\Models\Invoice::create($datai);
+
+        // on crée le pdf facture d'avoir
+        $primary_invoice = $datas['invoice'];
+        $remboursements =  isset($datas['remboursements']) ? $datas['remboursements'] : [];
+        $name = $numero.'.pdf';
+        $dir = $invoice->getStorageDir();
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+            chown($dir, 'www-data');
+            chgrp($dir, 'www-data');
+        }
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadView('pdf.avoir', compact('invoice', 'adresse', 'personne', 'club', 'primary_invoice', 'remboursements', 'type'))
+            ->setWarnings(false)
+            ->setPaper('a4', 'portrait')
+            ->save($dir.'/'.$name);
+        chown($dir.'/'.$name, 'www-data');
+        chgrp($dir.'/'.$name, 'www-data');
+
+
+        if ($personne) {
+            $email = $personne->email;
+            $mailSent = Mail::to($email)->send(new SendAvoir($invoice, $dir.'/'.$name));
+            $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+            $mail = new \stdClass();
+            $mail->titre = "Facture d'avoir émise par la FPF";
+            $mail->destinataire = $email;
+            $mail->contenu = $htmlContent;
+            $this->registerMail($personne->id, $mail);
+        } else {
+            $contact = null;
+            if ($club) {
+                // on cherche le contact du club
+                $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                    ->where('utilisateurs.clubs_id', $club->id)
+                    ->where('fonctionsutilisateurs.fonctions_id', 97)
+                    ->first();
+
+            }
+            if ($contact) {
+                $email = $contact->personne->email;
+                // TODO décommenter la ligne suivante pour envoyer l'email à l'utilisateur connecté
+                //$email = 'contact@envolinfo.com';
+                $user = session()->get('user');
+//                if ($user) {
+//                    $mailSent = Mail::to($email)->cc($user->email)->send(new SendAvoir($invoice, $dir.'/'.$name));
+//                } else {
+                    $mailSent = Mail::to($email)->send(new SendAvoir($invoice, $dir.'/'.$name));
+//                }
+
+                $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+                $mail = new \stdClass();
+                $mail->titre = "Facture d'avoir émise par la FPF";
                 $mail->destinataire = $email;
                 $mail->contenu = $htmlContent;
                 $this->registerMail($contact->personne->id, $mail);

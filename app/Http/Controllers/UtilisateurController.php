@@ -50,6 +50,7 @@ class UtilisateurController extends Controller
                 list($code, $reglement) = $this->saveNewPersonne($personne, 'Monext');
 
                 if ($code == 'ok') {
+                    $this->saveReglementEvents($reglement->id);
                     $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
                     $this->createAndSendInvoice($datai);
                 }

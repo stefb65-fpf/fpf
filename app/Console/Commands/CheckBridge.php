@@ -7,6 +7,7 @@ use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Mail\ConfirmationInscriptionFormation;
 use App\Mail\ConfirmationPriseEnChargeSession;
+use App\Models\Club;
 use App\Models\Inscrit;
 use App\Models\Personne;
 use App\Models\Reglement;
@@ -53,6 +54,17 @@ class CheckBridge extends Command
                             'numerocheque' => 'Bridge '.$reglement->bridge_id, 'dateenregistrement' => date('Y-m-d H:i:s'));
                         $reglement->update($data);
 
+                        if ($reglement->clubs_id) {
+                            $club = Club::where('id', $reglement->clubs_id)->first();
+                            if ($club) {
+                                if ($club->creance > 0) {
+                                    $montant_creance_utilisee = $reglement->montant - $reglement->montant_paye;
+                                    $new_creance = $club->creance - $montant_creance_utilisee > 0 ? $club->creance - $montant_creance_utilisee : 0;
+                                    $club->update(['creance' => $new_creance]);
+                                }
+                            }
+                        }
+
                         $this->saveInvoiceForReglement($reglement);
                     }
                 }
@@ -92,7 +104,7 @@ class CheckBridge extends Command
                             $description = "Abonnement à la revue France Photo";
                         }
                         list($code, $reglement) = $this->saveNewPersonne($personne, 'Bridge');
-
+                        $this->saveReglementEvents($reglement->id);
 
                         $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
                         $this->createAndSendInvoice($datai);
@@ -101,6 +113,7 @@ class CheckBridge extends Command
                     if ($personne->action_paiement == 'ADD_INDIVIDUEL_CARD') {
                         // on crée la carte
                         list($code, $reglement) = $this->saveNewCard($personne, 'Bridge');
+                        $this->saveReglementEvents($reglement->id);
 
                         $description = "Adhésion individuelle à la FPF";
                         $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
@@ -110,6 +123,7 @@ class CheckBridge extends Command
                     if ($personne->action_paiement == 'ADD_NEW_ABO') {
                         // on crée la carte
                         list($code, $reglement) = $this->saveNewAbo($personne, 'Monext');
+                        $this->saveReglementEvents($reglement->id);
 
                         $description = "Abonnement individuel à la revue France Photo";
                         $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
@@ -134,11 +148,13 @@ class CheckBridge extends Command
                     $souscription->update($data);
 
                     if ($souscription->personne_id) {
+                        $this->saveSouscriptionEvents($souscription->id);
                         $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
                         $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'personne_id' => $souscription->personne_id];
                         $this->createAndSendInvoice($datai);
                     } else {
                         if ($souscription->clubs_id) {
+                            $this->saveSouscriptionEvents($souscription->id);
                             $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
                             $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->clubs_id];
                             $this->createAndSendInvoice($datai);
@@ -166,7 +182,8 @@ class CheckBridge extends Command
                     $formation = $inscrit->session->formation;
 
                     $personne = Personne::where('id', $inscrit->personne_id)->first();
-                    $personne->update(['avoir_formation' => 0]);
+//                    $personne->update(['avoir_formation' => 0]);
+                    $personne->update(['creance' => 0]);
 
                     $email = $inscrit->personne->email;
                     $mailSent = Mail::mailer('smtp2')->to($email)->send(new ConfirmationInscriptionFormation($inscrit->session));

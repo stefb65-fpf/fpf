@@ -19,6 +19,7 @@ class InvoiceController extends Controller
         $query = Invoice::orderByDesc('id');
         if($term){
             $this->getInvoicesByTerm($term, $query);
+            $term = trim($term, 'RE=');
         }
         $invoices = $query->paginate(100);
         foreach ($invoices as $invoice) {
@@ -38,7 +39,12 @@ class InvoiceController extends Controller
                 $valid = 1;
             }
         } else {
-            if (str_contains($term, '-')) {
+            if (str_starts_with($term, 'RE=')) {
+                $reference = substr($term, 3);
+                $query->where('reference', $reference);
+                $valid = 1;
+            }
+            elseif (str_contains($term, '-')) {
                 $personne = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
                     ->where('utilisateurs.identifiant', $term)
                     ->selectRaw('personnes.id')
@@ -64,5 +70,20 @@ class InvoiceController extends Controller
             $query->where('id', 0);
         }
         return $query;
+    }
+
+    public function avoirs() {
+        // on chercke tous les clubs pour lesquels le champ créance est supérieur à 0
+        $clubs = Club::where('creance', '>', 0)
+            ->orderBy('numero')
+            ->get();
+
+        // on cherche toutes les personnes pour lesquelles le champ créance est supérieur à 0
+        $personnes = Personne::where('creance', '>', 0)
+            ->orderBy('nom')
+            ->orderBy('prenom')
+            ->get();
+
+        return view('admin.factures.avoirs', compact('personnes', 'clubs'));
     }
 }

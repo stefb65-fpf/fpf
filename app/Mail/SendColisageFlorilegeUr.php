@@ -6,32 +6,23 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SendRenouvellementMail extends Mailable
+class SendColisageFlorilegeUr extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $club;
     private $file;
-    public $ref;
-    public $montant;
-    public $montant_paye;
-    public $creance;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($club, $file, $ref, $montant, $montant_paye, $creance)
+    public function __construct($file)
     {
-        $this->club = $club;
         $this->file = $file;
-        $this->ref = $ref;
-        $this->montant = $montant;
-        $this->montant_paye = $montant_paye;
-        $this->creance = $creance;
     }
 
     /**
@@ -40,7 +31,11 @@ class SendRenouvellementMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'FPF // Renouvellement d\'adhésion FPF',
+            from: new Address('no-reply@federation-photo.fr', 'Département Publication'),
+            replyTo: [
+                new Address('dpt.publicat@federation-photo.fr', 'Département Publication')
+            ],
+            subject: 'FPF // Liste de colisage des Florilèges pour votre UR',
         );
     }
 
@@ -50,7 +45,7 @@ class SendRenouvellementMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.SendRenouvellementMail',
+            view: 'emails.SendColisageFlorilegeUr',
         );
     }
 

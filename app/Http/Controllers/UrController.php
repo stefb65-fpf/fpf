@@ -57,13 +57,16 @@ class UrController extends Controller
     }
 
     // affichage de la liste des adhérents d'une UR
-    public function list($view_type, $statut = null, $type_carte = null, $type_adherent = null, $term = null)
+    public function list($view_type, $statut = null, $type_carte = null, $type_adherent = null, $term = null, $anciennete = null)
     {
         $statut = $statut ?? "all";
         $type_adherent = $type_adherent ?? "all";
         $ur = $this->getUr();
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('urs_id', '=', $ur->id)->where('personne_id', '!=', null)->orderBy('personnes.nom')->orderBy('personnes.prenom');
+        if ($anciennete == 1) {
+            $query = $query->where('nouveau', 1);
+        }
         if ($view_type == "recherche" && $term) {
             $query = Personne::join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
                 ->where('utilisateurs.urs_id', '=', $ur->id)->orderBy('personnes.nom')->orderBy('personnes.prenom');
@@ -104,7 +107,20 @@ class UrController extends Controller
         $urs = Ur::orderBy('nom')->get();
         $ur_id = $ur->id;
         $level = 'urs';
-        return view('admin.personnes.liste', compact('view_type', 'utilisateurs', 'level', 'statut', 'type_carte', 'type_adherent', 'ur_id', 'urs', 'ur', 'term'));
+        return view('admin.personnes.liste',
+            compact(
+                'view_type',
+                'utilisateurs',
+                'level',
+                'statut',
+                'type_carte',
+                'type_adherent',
+                'ur_id',
+                'urs',
+                'ur',
+                'term',
+                'anciennete'
+            ));
     }
 
     public function createPersonne()
@@ -213,22 +229,33 @@ class UrController extends Controller
         if ($domain == 'federation-photo.fr') {
             return redirect()->back()->with('error', "Vous ne pouvez pas indiquer une adresse email contenant le domaine federation-photo.fr")->withInput();
         }
-        $olduser = Personne::where('email', $email)->first();
-        if ($olduser) {
-            return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
-        }
+        $personne = Personne::where('email', $email)->first();
+        if ($personne) {
+            if ($personne->is_adherent == 1) {
+                // on regarde s'il existe une carte utilisateur pour cette personne
+                $carte = Utilisateur::where('personne_id', $personne->id)->first();
+                if ($carte) {
+                    return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà et possède déjà une carte adhérent")->withInput();
+                }
+            } else {
+                // on met à jour le paramètre is_adherent de la personne
+                $data = ['is_adherent' => 1];
+                $personne->update($data);
+            }
+            //return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
+        } else {
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+            $datap = $request->only('nom', 'prenom', 'sexe', 'email');
+            $datap['nom'] = strtoupper($datap['nom']);
+            if ($phone_mobile == -1) {
+                return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
+            }
+            $datap['phone_mobile'] = $phone_mobile;
+            $datap['password'] = $this->generateRandomPassword();
 
-        $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
-        $datap = $request->only('nom', 'prenom', 'sexe', 'email');
-        $datap['nom'] = strtoupper($datap['nom']);
-        if ($phone_mobile == -1) {
-            return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
+            $datap['is_adherent'] = 2;
+            $personne = Personne::create($datap);
         }
-        $datap['phone_mobile'] = $phone_mobile;
-        $datap['password'] = $this->generateRandomPassword();
-
-        $datap['is_adherent'] = 2;
-        $personne = Personne::create($datap);
 
         $identifiant = str_pad($ur->id, 2, '0', STR_PAD_LEFT).'-0000-';
         $max_utilisateur = Utilisateur::where('identifiant', 'LIKE', $identifiant . '%')->max('numeroutilisateur');
@@ -394,7 +421,13 @@ class UrController extends Controller
             $this->getClubsByTerm($term, $query);
         }
         if (in_array(strval($abonnement), [0, 1, "G"]) && ($abonnement != 'all')) {
-            $query = $query->where('abon', $abonnement);
+//            $query = $query->where('abon', $abonnement);
+            $numeroencours = Configsaison::where('id', 1)->first()->numeroencours;
+            if ($abonnement == 1) {
+                $query->where('numerofinabonnement', '>=', $numeroencours);
+            } else {
+                $query->where('numerofinabonnement', '<', $numeroencours);
+            }
         }
 
         if (in_array(strval($type_carte), [1, "N", "C", "A"]) && ($type_carte != 'all')) {
@@ -434,10 +467,11 @@ class UrController extends Controller
         $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
         $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
         $statut = $statut ?? "init";
+        $dans_club = $statut == 99 ? 0 : 1;
         $abonnement = $abonnement ?? "all";
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('utilisateurs.clubs_id', $club->id)
-            ->where('utilisateurs.adherent_club', 1)
+            ->where('utilisateurs.adherent_club', $dans_club)
             ->orderBy('personnes.nom')->orderBy('personnes.prenom')
             ->selectRaw('*, utilisateurs.id as id_utilisateur');
         if (in_array($statut, [0, 1, 2, 3, 4])) {
@@ -511,8 +545,11 @@ class UrController extends Controller
 //            }
 //            $adherent->fin = $fin;
 //        }
+
+        $configSaison = Configsaison::where('id', 1)->first();
+        $finSaison = $configSaison->datefinadhesion;
         return view('urs.liste_adherents_club', compact('ur', 'club', 'adherents', 'statut', 'abonnement',
-            'exist_reglement_en_cours', 'numeroencours', 'florilege_actif'));
+            'exist_reglement_en_cours', 'numeroencours', 'florilege_actif', 'finSaison'));
     }
 
     // affichage de la liste des fonctions de l'UR

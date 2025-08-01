@@ -45,7 +45,7 @@ class PersonneController extends Controller
         return view('admin.liste_adherents');
     }
 
-    public function list($view_type, $ur_id = null, $statut = null, $type_carte = null, $type_adherent = null, $term = null)
+    public function list($view_type, $ur_id = null, $statut = null, $type_carte = null, $type_adherent = null, $term = null, $anciennete = null)
     {
         $statut = $statut ?? "all";
         $type_adherent = $type_adherent ?? "all";
@@ -69,6 +69,9 @@ class PersonneController extends Controller
             $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
                 ->where('urs_id', '!=', null)->where('urs_id', '!=', 0)->where('personne_id', '!=', null)
                 ->orderBy('personnes.nom')->orderBy('personnes.prenom');
+            if ($anciennete == 1) {
+                $query = $query->where('nouveau', 1);
+            }
         }
 
         if ($ur_id != 'all' && $ur_id) {
@@ -126,7 +129,20 @@ class PersonneController extends Controller
             }
             $utilisateur->fin = $fin;
         }
-        return view('admin.personnes.liste', compact('view_type', 'utilisateurs', 'statut', 'type_carte', 'level', 'type_adherent', 'ur_id', 'urs', 'ur', 'term'));
+        return view('admin.personnes.liste',
+            compact(
+                'view_type',
+                'utilisateurs',
+                'statut',
+                'type_carte',
+                'level',
+                'type_adherent',
+                'ur_id',
+                'urs',
+                'ur',
+                'term',
+                'anciennete'
+            ));
     }
 
 //    public function listeAbonnes()
@@ -280,7 +296,7 @@ class PersonneController extends Controller
         }
 
         if ($view_type == 'abonnes') {
-            // on vcréée l'abonnement de la personne
+            // on créée l'abonnement de la personne
             $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
             $numeroencours = $config->numeroencours;
             if ($request->fin != '') {
@@ -305,22 +321,39 @@ class PersonneController extends Controller
         if ($domain == 'federation-photo.fr') {
             return redirect()->back()->with('error', "Vous ne pouvez pas indiquer une adresse email contenant le domaine federation-photo.fr")->withInput();
         }
-        $olduser = Personne::where('email', $email)->first();
-        if ($olduser) {
-            return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
-        }
+//        $olduser = Personne::where('email', $email)->first();
+//        if ($olduser) {
+//            return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
+//        }
 
-        $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
-        $datap = $request->only('nom', 'prenom', 'sexe', 'email');
-        $datap['nom'] = strtoupper($datap['nom']);
-        if ($phone_mobile == -1) {
-            return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
-        }
-        $datap['phone_mobile'] = $phone_mobile;
-        $datap['password'] = $this->generateRandomPassword();
+        $personne = Personne::where('email', $email)->first();
+        if ($personne) {
+            if ($personne->is_adherent == 1) {
+                // on regarde s'il existe une carte utilisateur pour cette personne
+                $carte = Utilisateur::where('personne_id', $personne->id)->first();
+                if ($carte) {
+                    return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà et possède déjà une carte adhérent")->withInput();
+                }
+            } else {
+                // on met à jour le paramètre is_adherent de la personne
+                $data = ['is_adherent' => 1];
+                $personne->update($data);
+            }
+            //return redirect()->back()->with('error', "Une personne possédant la même adresse email existe déjà")->withInput();
+        } else {
 
-        $datap['is_adherent'] = 2;
-        $personne = Personne::create($datap);
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+            $datap = $request->only('nom', 'prenom', 'sexe', 'email');
+            $datap['nom'] = strtoupper($datap['nom']);
+            if ($phone_mobile == -1) {
+                return redirect()->back()->with('error', "Le numéro de téléphone mobile n'est pas valide")->withInput();
+            }
+            $datap['phone_mobile'] = $phone_mobile;
+            $datap['password'] = $this->generateRandomPassword();
+
+            $datap['is_adherent'] = 2;
+            $personne = Personne::create($datap);
+        }
 
         $identifiant = str_pad($request->urs_id, 2, '0', STR_PAD_LEFT).'-0000-';
         $max_utilisateur = Utilisateur::where('identifiant', 'LIKE', $identifiant . '%')->max('numeroutilisateur');
@@ -563,7 +596,7 @@ class PersonneController extends Controller
         $reglement = Reglement::create(['montant' => $montant, 'reference' => $ref, 'statut' => 0]);
 
         // on crée la liaison reglements utilisateurs
-        $dataru = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $utilisateur->id, 'adhesion' => 1);
+        $dataru = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $utilisateur->id, 'adhesion' => 1, 'abonnement' => 1);
         DB::table('reglementsutilisateurs')->insert($dataru);
 
         return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('success', "Le règlement $ref a bien été créé. Pour finaliser l'adhésion, merci de le valider dans la gestion des règlements");

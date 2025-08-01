@@ -142,4 +142,10 @@ class SessionController extends Controller
         $session->delete();
         return redirect()->route('sessions.index', $session->formation_id)->with('success', 'Session supprimée avec succès');
     }
+
+    public function delete_dashboard(Session $session)
+    {
+        $session->delete();
+        return redirect()->route('formations.dashboard')->with('success', 'Session supprimée avec succès');
+    }
 }

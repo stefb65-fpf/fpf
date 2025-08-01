@@ -13,6 +13,7 @@ use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Droit;
 use App\Models\Fonction;
+use App\Models\Histoevent;
 use App\Models\Historique;
 use App\Models\Historiquemail;
 use App\Models\Pays;
@@ -61,9 +62,211 @@ trait Tools
         return true;
     }
 
+
     /**
-     * @param null $user
+     * enregistre un évènement dans la table histoevent
+     * @param int $event_id
+     * @param float $amount
+     * @param int|null $personne_id
+     * @param int|null $utilisateur_id
+     * @param int|null $club_id
+     * @param string|null $date_create
+     * @param string|null $info
+     * @return bool
+     */
+    public function registerHistoEvent(
+        int $event_id,
+        float $amount = 0,
+        int $personne_id = null,
+        int $utilisateur_id = null,
+        int $club_id = null,
+        string $date_create = null,
+        string $info = null
+    )
+    {
+        if (!$event_id || !$amount) {
+            return false;
+        }
+        if (!$personne_id && !$utilisateur_id && !$club_id) {
+            return false;
+        }
+        $histo = Histoevent::create([
+            'event_id' => $event_id,
+            'info' => $info ?: null,
+            'amount' => $amount,
+            'personne_id' => $personne_id ?: null,
+            'utilisateur_id' => $utilisateur_id ?: null,
+            'club_id' => $club_id ?: null,
+            'created_at' => $date_create ?? date('Y-m-d H:i:s'),
+            'updated_at' => $date_create ?? date('Y-m-d H:i:s'),
+        ]);
+        if (!$histo) {
+            return false;
+        }
+        return true;
+    }
+
+    public function saveReglementEvents(int $reglement_id)
+    {
+        $reglement = Reglement::where('id', $reglement_id)->first();
+        if (!$reglement) {
+            return false;
+        }
+
+        $date_enregistrement = substr($reglement->dateenregistrement, 6, 4) . '-' .
+            substr($reglement->dateenregistrement, 3, 2) . '-' .
+            substr($reglement->dateenregistrement, 0, 2) . ' ' .
+            substr($reglement->dateenregistrement, 11, 8).':00';
+
+        $tarif_florilege = Tarif::where('statut', 0)->where('id', 21)->first();
+
+        if ($reglement->clubs_id) {
+            if ($reglement->adhClub == 1 || $reglement->aboClub == 1) {
+                list($montant_adhesion_club, $montant_abonnement_club) = $this->getMontantsClub($reglement);
+                if ($reglement->adhClub == 1) {
+                    // on enregistre l'adhésion du club
+                    $this->registerHistoEvent(1, $montant_adhesion_club, null, null, $reglement->clubs_id, $date_enregistrement);
+                }
+                if ($reglement->aboClub == 1) {
+                    // on enregistre l'abonnement du club
+                    $this->registerHistoEvent(2, $montant_abonnement_club, null, null, $reglement->clubs_id, $date_enregistrement);
+                }
+            }
+            if ($reglement->florilegeClub > 0) {
+                // on enregistre l'achat florilege du club
+                $montant = $reglement->florilegeClub * $tarif_florilege->tarif;
+                $this->registerHistoEvent(3, $montant, null, null, $reglement->clubs_id, $date_enregistrement);
+            }
+        }
+
+        $reglementsutilisateurs = DB::table('reglementsutilisateurs')
+            ->where('reglements_id', $reglement_id)
+            ->get();
+
+        foreach ($reglementsutilisateurs as $reglementutilisateur) {
+            $utilisateur = Utilisateur::where('id', $reglementutilisateur->utilisateurs_id)->first();
+            if ($utilisateur) {
+                list($tarif, $tarif_abo) = $this->getMontantsAdherent($utilisateur);
+                if ($reglementutilisateur->adhesion == 1) {
+                    // on enregistre l'adhésion
+                    $montant = $tarif;
+                    $this->registerHistoEvent(1, $montant, $utilisateur->personne_id, $utilisateur->id, null, $date_enregistrement);
+                }
+                if ($reglementutilisateur->abonnement == 1) {
+                    // on enregistre l'abonnement
+                    $montant = $tarif_abo;
+                    $this->registerHistoEvent(2, $montant, $utilisateur->personne_id, $utilisateur->id, null, $date_enregistrement);
+                }
+                if ($reglementutilisateur->florilege > 0) {
+                    // on enregistre l'achat florilege
+                    $montant = $reglementutilisateur->florilege * $tarif_florilege->tarif;
+                    $this->registerHistoEvent(3, $montant, $utilisateur->personne_id, $utilisateur->id, null, $date_enregistrement);
+                }
+            }
+        }
+        return true;
+    }
+
+
+
+    public function saveSouscriptionEvents(int $souscription_id)
+    {
+        $souscription = Souscription::where('id', $souscription_id)->first();
+        if (!$souscription) {
+            return false;
+        }
+
+        $tarif_florilege = Tarif::where('statut', 0)->where('id', 21)->first();
+        $date_enregistrement = $souscription->created_at->format('Y-m-d H:i:s');
+
+        if ($souscription->clubs_id) {
+                // on enregistre l'achat florilege du club
+                $montant = $souscription->nbexemplaires * $tarif_florilege->tarif;
+                $this->registerHistoEvent(3, $montant, null, null, $souscription->clubs_id, $date_enregistrement);
+        }
+        if ($souscription->personne_id) {
+            // on enregistre l'achat florilege de la personne
+            $montant = $souscription->nbexemplaires * $tarif_florilege->tarif;
+            $this->registerHistoEvent(3, $montant, $souscription->personne_id, $souscription->utilisateur_id, null, $date_enregistrement);
+        }
+        return true;
+    }
+
+
+
+    protected function getMontantsClub($reglement) {
+        $club = Club::where('id', $reglement->clubs_id)->first();
+        if (!$club) {
+            return new JsonResponse(['erreur' => 'impossible de récupérer le club'], 400);
+        }
+        $montant_abonnement_club = 0;
+
+        switch ($club->ct) {
+            case 'C' :
+                $tarif_id = 3;
+                break;
+            case 'A' :
+                $tarif_id = 2;
+                break;
+            default :
+                $tarif_id = 1;
+                break;
+        }
+
+        // on regarde si le club est dans la table clubs_prec
+        $club_prec = DB::table('clubs_prec')->where('id', $club->id)->first();
+        if (!$club_prec) {
+            $tarif_id = 4;
+        }
+
+        $tarif = Tarif::where('id', $tarif_id)->where('statut', 0)->first();
+        $montant_adhesion_club = $tarif->tarif;
+        if ($club_prec && $club_prec->second_year == 1) {
+            $montant_adhesion_club = $tarif->tarif / 2;
+        }
+
+        $tarif = Tarif::where('id', 5)->where('statut', 0)->first();
+        $montant_abonnement_club = $tarif->tarif;
+
+        return array($montant_adhesion_club, $montant_abonnement_club);
+    }
+
+    protected function getMontantsAdherent($utilisateur) {
+        $tarif_id = match ($utilisateur->ct) {
+            '3' => 9,
+            '4' => 10,
+            '5' => 11,
+            '6' => 12,
+            '7' => 13,
+            '8' => 14,
+            '9' => 15,
+            'F' => 16,
+            default => 8,
+        };
+        $tarif_id_supp = match ($utilisateur->ct) {
+            '8', '9', '7' => 23,
+            default => 17,
+        };
+        $tarif_adhesion = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
+        $tarif = $tarif_adhesion ? $tarif_adhesion->tarif : 0;
+        $tarif_abo = 0;
+        if ($tarif_id_supp) {
+            $tarif_supp = Tarif::where('statut', 0)->where('id', $tarif_id_supp)->first();
+            $tarif_abo = $tarif_supp ? $tarif_supp->tarif : 0;
+        }
+
+        if ($utilisateur->ct == '7') {
+            $tarif -= $tarif_abo;
+        }
+
+        return array($tarif, $tarif_abo);
+    }
+
+    /**
+     * enregistre un mail dans la table historiquemail
+     * @param int $personne_id
      * @param $mail
+     * @param int|null $utilisateur_id
      * @return bool
      */
     public function registerMail(int $personne_id, $mail, int $utilisateur_id = null)
@@ -87,6 +290,7 @@ trait Tools
         }
         return true;
     }
+
 
     public function get_string_between($string, $start, $end)
     {
@@ -338,6 +542,7 @@ trait Tools
 
     protected function saveInvoiceForReglement($reglement)
     {
+        $this->saveReglementEvents($reglement->id);
         if ($reglement->clubs_id) {
             $description = "Renouvellement des adhésions et abonnements pour le club";
             $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'club_id' => $reglement->clubs_id, 'renew_club' => 1];
@@ -390,6 +595,28 @@ trait Tools
         $tarif_id_supp = match ($ct) {
             '8', '9' => 23,
             default => 0,
+        };
+        $tarif_adhesion = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
+        $tarif = $tarif_adhesion ? $tarif_adhesion->tarif : 0;
+        $tarif_abo = 0;
+        if ($tarif_id_supp) {
+            $tarif_supp = Tarif::where('statut', 0)->where('id', $tarif_id_supp)->first();
+            $tarif_abo = $tarif_supp ? $tarif_supp->tarif : 0;
+        }
+        return [$tarif, $tarif_abo];
+    }
+
+    protected function getTarifByCtAdherentsClub($ct)
+    {
+        $tarif_id = match ($ct) {
+            '3' => 9,
+            '4' => 10,
+            '5' => 11,
+            '6' => 12,
+            default => 8,
+        };
+        $tarif_id_supp = match ($ct) {
+            default => 17,
         };
         $tarif_adhesion = Tarif::where('statut', 0)->where('id', $tarif_id)->first();
         $tarif = $tarif_adhesion ? $tarif_adhesion->tarif : 0;
@@ -820,78 +1047,93 @@ trait Tools
             if (sizeof($utilisateurs) > 0) {
                 $prec_statut3 = 4;
                 foreach ($utilisateurs as $utilisateur) {
-                    $fonctions = Fonction::join('fonctionsutilisateurs', 'fonctionsutilisateurs.fonctions_id', '=', 'fonctions.id')
-                        ->where('fonctionsutilisateurs.utilisateurs_id', $utilisateur->id)
-                        ->selectRaw('fonctions.id, fonctions.libelle, fonctions.instance, fonctions.parent_id')
-                        ->orderBy('fonctions.instance')
-                        ->orderBy('fonctions.ordre')
-                        ->get();
-                    $utilisateur->fonctions = $fonctions;
-                    if ($utilisateur->statut == 3) {
-                        if (sizeof($fonctions) > 0) {
-                            if ($fonctions[0]->instance < $prec_statut3) {
-                                array_unshift($cartes, $utilisateur);
+                    $valable = 1;
+                    if ($utilisateur->clubs_id) {
+                        // on regarde si le club est fermé
+                        $club = Club::where('id', $utilisateur->clubs_id)->first();
+                        if ($club && $club->closed == 1) {
+                            // le club est fermé, on ne garde pas la carte
+                            $valable = 0;
+                        }
+                    }
+                    if ($valable == 1) {
+                        $fonctions = Fonction::join('fonctionsutilisateurs', 'fonctionsutilisateurs.fonctions_id', '=', 'fonctions.id')
+                            ->where('fonctionsutilisateurs.utilisateurs_id', $utilisateur->id)
+                            ->selectRaw('fonctions.id, fonctions.libelle, fonctions.instance, fonctions.parent_id')
+                            ->orderBy('fonctions.instance')
+                            ->orderBy('fonctions.ordre')
+                            ->get();
+                        $utilisateur->fonctions = $fonctions;
+                        if ($utilisateur->statut == 3) {
+                            if (sizeof($fonctions) > 0) {
+                                if ($fonctions[0]->instance < $prec_statut3) {
+                                    array_unshift($cartes, $utilisateur);
+                                } else {
+                                    $cartes[] = $utilisateur;
+                                }
+                                $prec_statut3 = $fonctions[0]->instance;
                             } else {
-                                $cartes[] = $utilisateur;
+                                if (isset($cartes[0]) && !in_array($cartes[0]->statut, [2, 3])) {
+                                    array_unshift($cartes, $utilisateur);
+                                } else {
+                                    $cartes[] = $utilisateur;
+                                }
                             }
-                            $prec_statut3 = $fonctions[0]->instance;
                         } else {
-                            if (isset($cartes[0]) && !in_array($cartes[0]->statut, [2,3])) {
-                                array_unshift($cartes, $utilisateur);
-                            } else {
-                                $cartes[] = $utilisateur;
-                            }
+                            $cartes[] = $utilisateur;
                         }
                     } else {
-                        $cartes[] = $utilisateur;
+                        $utilisateur->fonctions = [];
                     }
                 }
-                if (sizeof($cartes[0]->fonctions) > 0) {
-                    foreach ($cartes[0]->fonctions as $fonction) {
-                        if (in_array($fonction->id, config('app.club_functions'))) {
-                            $menu_club = true;
-                        }
-                        if (in_array($fonction->id, config('app.ur_functions')) || in_array($fonction->parent_id, config('app.ur_functions'))) {
-                            $menu_ur = true;
-                        }
-
-
-                        if ($fonction->instance == 1) {
-                            // on contrôle les droits liés à la fonction
-                            if (sizeof($fonction->droits)) {
-                                $menu_admin = true;
-                            }
-                        }
-                    }
-                }
-
-                if (!$menu_admin) {
-                    if (sizeof($cartes[0]->droits) > 0) {
-                        foreach ($cartes[0]->droits as $droit) {
-                            if (!in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])) {
-                                $menu_admin = true;
-                            }
-                        }
-                    }
-//                    if (sizeof($cartes[0]->droits) > 0) {
-//                        $menu_admin = true;
-//                    }
-                }
-                $menu_ur_general = $menu_ur;
-                if (!$menu_ur) {
-                    if (sizeof($cartes[0]->droits) > 0) {
-                        foreach ($cartes[0]->droits as $droit) {
-                            if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'GESVOTUR'])) {
-                                $menu_ur = true;
-                            }
-                        }
-                    }
+                if (sizeof($cartes) > 0) {
                     if (sizeof($cartes[0]->fonctions) > 0) {
                         foreach ($cartes[0]->fonctions as $fonction) {
-                            if ($fonction->instance == 2) {
-                                foreach ($fonction->droits as $droit) {
-                                    if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'GESVOTUR'])) {
-                                        $menu_ur = true;
+                            if (in_array($fonction->id, config('app.club_functions'))) {
+                                $menu_club = true;
+                            }
+                            if (in_array($fonction->id, config('app.ur_functions')) || in_array($fonction->parent_id, config('app.ur_functions'))) {
+                                $menu_ur = true;
+                            }
+
+
+                            if ($fonction->instance == 1) {
+                                // on contrôle les droits liés à la fonction
+                                if (sizeof($fonction->droits)) {
+                                    $menu_admin = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (!$menu_admin) {
+                        if (sizeof($cartes[0]->droits) > 0) {
+                            foreach ($cartes[0]->droits as $droit) {
+                                if (!in_array($droit->label, ['GESNEWUR', 'GESNEWURCA'])) {
+                                    $menu_admin = true;
+                                }
+                            }
+                        }
+    //                    if (sizeof($cartes[0]->droits) > 0) {
+    //                        $menu_admin = true;
+    //                    }
+                    }
+                    $menu_ur_general = $menu_ur;
+                    if (!$menu_ur) {
+                        if (sizeof($cartes[0]->droits) > 0) {
+                            foreach ($cartes[0]->droits as $droit) {
+                                if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'GESVOTUR'])) {
+                                    $menu_ur = true;
+                                }
+                            }
+                        }
+                        if (sizeof($cartes[0]->fonctions) > 0) {
+                            foreach ($cartes[0]->fonctions as $fonction) {
+                                if ($fonction->instance == 2) {
+                                    foreach ($fonction->droits as $droit) {
+                                        if (in_array($droit->label, ['GESNEWUR', 'GESNEWURCA', 'GESVOTUR'])) {
+                                            $menu_ur = true;
+                                        }
                                     }
                                 }
                             }

@@ -29,4 +29,7 @@ class Utilisateur extends Model
     public function droits() {
         return $this->belongsToMany('App\Models\Droit');
     }
+    public function histoevents() {
+        return $this->hasMany('App\Models\Histoevent', 'event_id');
+    }
 }

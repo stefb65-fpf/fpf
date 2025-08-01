@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Concern\Hash;
+use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Exports\FlorilegeExport;
 use App\Exports\InscritExport;
@@ -21,6 +22,7 @@ class InscritController extends Controller
 {
     use Hash;
     use Tools;
+    use Invoice;
     public function __construct() {
         $this->middleware(['checkLogin', 'adminAccess']);
     }
@@ -45,11 +47,26 @@ class InscritController extends Controller
             return redirect()->route('inscrits.liste', $session)->with('error', 'Une erreur est survenue');
         }
         $amount = $inscrit->amount;
+        $reference = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
+        $primary_invoice = \App\Models\Invoice::where('reference', $reference)
+            ->first();
         // on supprime l'inscription
         $inscrit->delete();
 
         // on crédite le compte du user
-        $personne->update(['avoir_formation' => $personne->avoir_formation + $amount]);
+//        $personne->update(['avoir_formation' => $personne->avoir_formation + $amount]);
+        $personne->update(['creance' => $personne->creance + $amount]);
+
+        // on crée une facture d'avoir
+        $description = "Avoir pour annulation d'une inscription à une formation pour ".$personne->nom.' '.$personne->prenom;
+        $datai = [
+            'reference' => $reference,
+            'description' => $description,
+            'montant' => $amount,
+            'personne_id' => $personne->id,
+            'invoice' => $primary_invoice ? $primary_invoice->numero : null,
+        ];
+        $this->createAndSendAvoir($datai);
 
         return redirect()->route('inscrits.liste', $session)->with('success', 'Inscription supprimée avec succès');
     }

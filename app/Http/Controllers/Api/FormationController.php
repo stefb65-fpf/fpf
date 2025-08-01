@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Concern\Api;
+use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Mail\AnswerSupport;
@@ -28,6 +29,7 @@ use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Session;
 use App\Models\Vote;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -39,6 +41,7 @@ class FormationController extends Controller
 {
     use Api;
     use Tools;
+    use Invoice;
 
     protected function getFormateur(Request $request)
     {
@@ -68,7 +71,9 @@ class FormationController extends Controller
                     'comment' => $review->comment,
                     'nom' => $review->personne->nom,
                     'prenom' => $review->personne->prenom,
-                    'date' => $review->created_at->format('d F Y'),
+//                    'date' => $review->created_at->format('d F Y'),
+                    'date' => Carbon::parse($review->created_at)->translatedFormat('d F Y'),
+
                 ];
                 // on récupère toutes les évaluations pour la session et la personne donnée
                 $evaluations = Evaluation::where('session_id', $session->id)->where('personne_id', $review->personne_id)->where('stars', '!=', 0)->get();
@@ -106,8 +111,12 @@ class FormationController extends Controller
                 }
             }
         }
-        if ($personne->avoir_formation > 0) {
-            $price -= $personne->avoir_formation;
+//        if ($personne->avoir_formation > 0) {
+//            $price -= $personne->avoir_formation;
+//            if ($price < 0) $price = 0;
+//        }
+        if ($personne->creance > 0) {
+            $price -= $personne->creance;
             if ($price < 0) $price = 0;
         }
         if ($request->link == '') {
@@ -191,8 +200,12 @@ class FormationController extends Controller
                 }
             }
         }
-        if ($personne->avoir_formation > 0) {
-            $price -= $personne->avoir_formation;
+//        if ($personne->avoir_formation > 0) {
+//            $price -= $personne->avoir_formation;
+//            if ($price < 0) $price = 0;
+//        }
+        if ($personne->creance > 0) {
+            $price -= $personne->creance;
             if ($price < 0) $price = 0;
         }
         if ($request->link == '') {
@@ -273,11 +286,12 @@ class FormationController extends Controller
         if (!$session) {
             return new JsonResponse(['erreur' => 'session de formation inexistante'], 400);
         }
-        $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'status' => 1];
-        Inscrit::create($datai);
+        $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'status' => 1, 'amount' => $session->price];
+        $inscrit = Inscrit::create($datai);
 
         // on débite l'avoir du compte du user
-        $personne->update(['avoir_formation' => $personne->avoir_formation - $session->price]);
+        $personne->update(['creance' => $personne->creance - $session->price]);
+//        $personne->update(['avoir_formation' => $personne->avoir_formation - $session->price]);
 
         // on evnoei le mail de confirmation d'inscription
         $email = $user->email;
@@ -293,6 +307,11 @@ class FormationController extends Controller
 
         $sujet = substr("Inscription à la formation ".$session->formation->name, 0, 255);
         $this->registerAction($user->id, 2, $sujet);
+
+        $description = "Inscription à la formation ".$session->formation->name;
+        $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
+        $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->price, 'personne_id' => $inscrit->personne->id];
+        $this->createAndSendInvoice($datai);
 
         return new JsonResponse(['success' => 'OK'], 200);
     }
@@ -488,8 +507,34 @@ class FormationController extends Controller
 
         // on crédite le compte du user
         $personne = Personne::where('id', $user->id)->first();
-        $personne->update(['avoir_formation' => $personne->avoir_formation + $amount]);
+        $personne->update(['creance' => $personne->creance + $amount]);
+
+        // on crée une facture d'avoir
+        $reference = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
+        $primary_invoice = \App\Models\Invoice::where('reference', $reference)
+            ->first();
+        $description = "Avoir pour annulation d'une inscription à une formation pour ".$personne->nom.' '.$personne->prenom;
+        $datai = [
+            'reference' => $reference,
+            'description' => $description,
+            'montant' => $amount,
+            'personne_id' => $personne->id,
+            'invoice' => $primary_invoice ? $primary_invoice->numero : null,
+        ];
+        $this->createAndSendAvoir($datai);
+
+//        $personne->update(['avoir_formation' => $personne->avoir_formation + $amount]);
 
         return new JsonResponse(['success' => "Votre désinscription a été prise en compte et votre compte formation a été crédité de $amount €"], 200);
+    }
+
+    public function deleteDemande($demande_id) {
+        $demande = Demande::where('id', $demande_id)->first();
+        if (!$demande) {
+            return new JsonResponse(['erreur' => "Demande introuvable"], 400);
+        }
+        // on supprime la demande
+        $demande->delete();
+        return redirect()->back()->with('success', "La demande a été supprimée avec succès");
     }
 }

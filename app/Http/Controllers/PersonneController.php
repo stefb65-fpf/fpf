@@ -106,7 +106,7 @@ class PersonneController extends Controller
                     ->where(function (Builder $query) {
                         $query->where('type', 0)
                             ->orWhere(function (Builder $query) {
-                                $query->where('type', 1)
+                                $query->whereIn('type', [1, 2])
                                     ->where('phase', '>', 0);
                             });
                     })
@@ -134,7 +134,7 @@ class PersonneController extends Controller
                             unset($votes_encours[$k]);
                         }
                     }
-                    if ($v->type == 1) {
+                    if (in_array($v->type, [1, 2])) {
                         if ($v->phase == 2) {
                             if ($phase2_available == 0) {
                                 unset($votes_encours[$k]);
@@ -578,6 +578,8 @@ class PersonneController extends Controller
                                 $request->session()->put('menu', $menu);
                                 $request->session()->put('cartes', $cartes);
                                 $description = "Renouvellement adhésion FPF référence " . $reglement->reference;
+                                $this->saveReglementEvents($reglement->id);
+
                                 $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
                                 $this->createAndSendInvoice($datai);
                             }
@@ -594,6 +596,27 @@ class PersonneController extends Controller
     public function florilege()
     {
         $personne = session()->get('user');
+//        dd($personne->cartes[0]);
+        $contact = null; $adresse = null;
+        $cartes = session()->get('cartes');
+        $utilisateur_id = '';
+        if ($cartes[0]) {
+            $utilisateur_id = $cartes[0]->id;
+            if ($cartes[0]->clubs_id) {
+//                dd(session()->get('cartes'));
+                // on cherche le club et son contact
+                $club = Club::where('id', $cartes[0]->clubs_id)->first();
+                if ($club) {
+                    $contact = Personne::join('utilisateurs', 'personnes.id', '=', 'utilisateurs.personne_id')
+                        ->join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
+                        ->selectRaw('personnes.nom, personnes.prenom, personnes.id, personnes.sexe, personnes.phone_mobile, personnes.email')
+                        ->where('fonctionsutilisateurs.fonctions_id', 97)
+                        ->where('utilisateurs.clubs_id', $club->id)
+                        ->first();
+                    $adresse = $contact->adresses()->first();
+                }
+            }
+        }
         // on vérifie que le florilège est bien dispo à la commande
 //        $config = Configsaison::where('id', 1)->selectRaw('prixflorilegefrance, prixflorilegeetranger, datedebutflorilege, datefinflorilege')->first();
         $config = Configsaison::where('id', 1)->selectRaw('datedebutflorilege, datefinflorilege')->first();
@@ -604,7 +627,7 @@ class PersonneController extends Controller
         if (!(date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege)) {
             return redirect()->route('accueil');
         }
-        return view('personnes.florilege', compact('config', 'personne'));
+        return view('personnes.florilege', compact('config', 'personne', 'contact', 'adresse', 'utilisateur_id'));
     }
 
     public function cancelPaiementNewCard(Request $request)
@@ -636,6 +659,7 @@ class PersonneController extends Controller
 
                 if ($code == 'ok') {
                     $description = "Adhésion individuelle à la FPF";
+                    $this->saveReglementEvents($reglement->id);
                     $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
                     $this->createAndSendInvoice($datai);
                 }
@@ -655,6 +679,7 @@ class PersonneController extends Controller
 
                 if ($code == 'ok') {
                     $description = "Abonnement individuel à la revue France Photo";
+                    $this->saveReglementEvents($reglement->id);
                     $datai = ['reference' => $reglement->reference, 'description' => $description, 'montant' => $reglement->montant, 'personne_id' => $personne->id];
                     $this->createAndSendInvoice($datai);
 
@@ -691,11 +716,13 @@ class PersonneController extends Controller
                 $souscription->update($data);
 
                 if ($souscription->personne_id) {
+                    $this->saveSouscriptionEvents($souscription->id);
                     $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
                     $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'personne_id' => $souscription->personne_id];
                     $this->createAndSendInvoice($datai);
                 } else {
                     if ($souscription->clubs_id) {
+                        $this->saveSouscriptionEvents($souscription->id);
                         $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
                         $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->clubs_id];
                         $this->createAndSendInvoice($datai);

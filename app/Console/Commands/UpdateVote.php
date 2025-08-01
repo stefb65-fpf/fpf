@@ -34,10 +34,10 @@ class UpdateVote extends Command
     public function handle()
     {
         // on met à jour les votes pour lesquelles la date de debut  est égale à la date du jour
-        Vote::where('debut', date('Y-m-d'))->where('type', 1)->where('phase', 0)->update(['phase' => 1]);
+        Vote::where('debut', date('Y-m-d'))->whereIn('type', [1, 2])->where('phase', 0)->update(['phase' => 1]);
 
         // on met à jour les votes pour lesquelles la date de debut phase 2 est égale à la date du jour
-        $votes = Vote::where('debut_phase2', date('Y-m-d'))->where('type', 1)->get();
+        $votes = Vote::where('debut_phase2', date('Y-m-d'))->whereIn('type', [1, 2])->get();
         foreach ($votes as $vote) {
             $exist_vote_club = DB::table('votes_clubs')->where('votes_id', $vote->id)->first();
             if ($exist_vote_club) {

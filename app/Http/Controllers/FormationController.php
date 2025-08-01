@@ -152,7 +152,8 @@ class FormationController extends Controller
                 $formation = $inscrit->session->formation;
 
                 $personne = Personne::where('id', $inscrit->personne_id)->first();
-                $personne->update(['avoir_formation' => 0]);
+                $personne->update(['creance' => 0]);
+//                $personne->update(['avoir_formation' => 0]);
 
                 $email = $inscrit->personne->email;
                 $mailSent = Mail::mailer('smtp2')->to($email)->send(new ConfirmationInscriptionFormation($inscrit->session));
@@ -287,7 +288,7 @@ class FormationController extends Controller
         // on vérifie que la session existe*
         $session = Session::where('id', $session_id)->first();
         if (!$session) {
-            return redirect()->route('accueil')->with('error', "La session de fomration n'existe pas");
+            return redirect()->route('accueil')->with('error', "La session de formation n'existe pas");
         }
 
         // on vérifie que la personne existe

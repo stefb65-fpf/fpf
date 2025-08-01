@@ -12,6 +12,7 @@ use App\Mail\SendEmailModifiedPassword;
 use App\Mail\SendEmailReinitPassword;
 use App\Models\Abonnement;
 use App\Models\Commune;
+use App\Models\Configsaison;
 use App\Models\Fonction;
 use App\Models\Historique;
 use App\Models\Personne;
@@ -47,6 +48,9 @@ class LoginController extends Controller
         unset($personne->password);
 
         list($menu, $cartes) = $this->getMenu($personne);
+        if ($personne->is_adherent == 1 && sizeof($cartes) == 0) {
+            return redirect()->route('login')->with('error', "Aucune carte valide. Veuillez contacter le service administratif.");
+        }
         if (!$personne->is_administratif) {
             $personne = $this->getSituation($personne);
         }
@@ -268,8 +272,10 @@ class LoginController extends Controller
     // affichage de la vue pour adhésion individuelle
     public function registerAdhesion()
     {
+        $configSaison = Configsaison::where('id', 1)->first();
+        $finSaison = $configSaison->datefinadhesion;
         $countries = DB::table('pays')->orderBy('nom')->get();
-        return view('auth.registerAdhesion', compact('countries'));
+        return view('auth.registerAdhesion', compact('countries', 'finSaison'));
     }
 
 

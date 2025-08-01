@@ -68,19 +68,31 @@ class VoteController extends Controller
             }
             $data = $request->only('nom', 'type', 'debut', 'fin', 'urs_id', 'fonctions_id', 'vote_club');
         } else {
-            if ($request->debut_phase1 == null || $request->debut_phase2 == null || $request->debut_phase3 == null
-                || $request->fin_phase1 == null || $request->fin_phase2 == null || $request->fin_phase3 == null) {
-                return redirect()->route('votes.create')->with('error', 'Les date de début et de fin doivent être renseignées.');
+            if ($request->type == 1) {
+                if ($request->debut_phase1 == null || $request->debut_phase2 == null || $request->debut_phase3 == null
+                    || $request->fin_phase1 == null || $request->fin_phase2 == null || $request->fin_phase3 == null) {
+                    return redirect()->route('votes.create')->with('error', 'Les date de début et de fin doivent être renseignées.');
+                }
+                $data = $request->only('nom', 'type', 'fin_phase1', 'debut_phase2', 'fin_phase2', 'debut_phase3');
+                $data['debut'] = $request->debut_phase1;
+                $data['fin'] = $request->fin_phase3;
+                $data['urs_id'] = 0;
+                $data['fonctions_id'] = 0;
+                $data['vote_club'] = 0;
+            } else {
+                if ($request->debut_phase1 == null || $request->debut_phase2 == null
+                    || $request->fin_phase1 == null || $request->fin_phase2 == null) {
+                    return redirect()->route('votes.create')->with('error', 'Les date de début et de fin doivent être renseignées.');
+                }
+                $data = $request->only('nom', 'type', 'fin_phase1', 'debut_phase2');
+                $data['debut'] = $request->debut_phase1;
+                $data['fin'] = $request->fin_phase2;
+                $data['urs_id'] = $request->deuxphases_urs_id;
+                $data['fonctions_id'] = 0;
+                $data['vote_club'] = 0;
             }
-            $data = $request->only('nom', 'type', 'fin_phase1', 'debut_phase2', 'fin_phase2', 'debut_phase3');
-            $data['debut'] = $request->debut_phase1;
-            $data['fin'] = $request->fin_phase3;
-            $data['urs_id'] = 0;
-            $data['fonctions_id'] = 0;
-            $data['vote_club'] = 0;
         }
         $data['annee'] = date('Y');
-
         $vote = Vote::where('nom', $request->nom)->first();
         if ($vote) {
             return redirect()->route('votes.create')->with('error', 'Un vote avec ce nom existe déjà.');
@@ -117,13 +129,23 @@ class VoteController extends Controller
             }
             $data = $request->only('nom', 'type', 'debut', 'fin', 'urs_id', 'fonctions_id', 'vote_club');
         } else {
-            if ($request->debut_phase1 == null || $request->debut_phase2 == null || $request->debut_phase3 == null
-                || $request->fin_phase1 == null || $request->fin_phase2 == null || $request->fin_phase3 == null) {
-                return redirect()->route('votes.edit', $vote)->with('error', 'Les date de début et de fin doivent être renseignées.');
+            if ($request->type == 1) {
+                if ($request->debut_phase1 == null || $request->debut_phase2 == null || $request->debut_phase3 == null
+                    || $request->fin_phase1 == null || $request->fin_phase2 == null || $request->fin_phase3 == null) {
+                    return redirect()->route('votes.edit', $vote)->with('error', 'Les date de début et de fin doivent être renseignées.');
+                }
+                $data = $request->only('nom', 'type', 'fin_phase1', 'debut_phase2', 'fin_phase2', 'debut_phase3');
+                $data['debut'] = $request->debut_phase1;
+                $data['fin'] = $request->fin_phase3;
+            } else {
+                if ($request->debut_phase1 == null || $request->debut_phase2 == null
+                    || $request->fin_phase1 == null || $request->fin_phase2 == null) {
+                    return redirect()->route('votes.edit', $vote)->with('error', 'Les date de début et de fin doivent être renseignées.');
+                }
+                $data = $request->only('nom', 'type', 'fin_phase1', 'debut_phase2');
+                $data['debut'] = $request->debut_phase1;
+                $data['fin'] = $request->fin_phase2;
             }
-            $data = $request->only('nom', 'type', 'fin_phase1', 'debut_phase2', 'fin_phase2', 'debut_phase3');
-            $data['debut'] = $request->debut_phase1;
-            $data['fin'] = $request->fin_phase3;
         }
 
         $vote->update($data);

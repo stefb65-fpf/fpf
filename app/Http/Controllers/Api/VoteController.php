@@ -186,7 +186,7 @@ class VoteController extends Controller
             }
 
             // si c'est un vote 3 phases et que c'est la phase club
-            if ($vote->type == 1 && $vote->phase == 2) {
+            if (in_array($vote->type, [1, 2]) && $vote->phase == 2) {
                 // on met à jour la table cumul_votes_club
                 $datacvc = array('statut' => 1, 'updated_at' => date('Y-m-d'));
                 DB::table('cumul_votes_clubs')

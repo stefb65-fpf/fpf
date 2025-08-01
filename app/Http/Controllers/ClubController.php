@@ -108,9 +108,10 @@ class ClubController extends Controller
         $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
         $statut = $statut ?? "init";
         $abonnement = $abonnement ?? "all";
+        $dans_club = $statut == 99 ? 0 : 1;
         $query = Utilisateur::join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
             ->where('utilisateurs.clubs_id', $club->id)
-            ->where('utilisateurs.adherent_club', 1)
+            ->where('utilisateurs.adherent_club', $dans_club)
             ->orderBy('personnes.nom')->orderBy('personnes.prenom')
             ->selectRaw('*, utilisateurs.id as id_utilisateur');
         if (in_array($statut, [0, 1, 2, 3, 4])) {
@@ -178,8 +179,11 @@ class ClubController extends Controller
             $nb_florileges = Souscription::where('personne_id', $adherent->personne_id)->where('statut', 1)->sum('nbexemplaires');
             $adherent->nb_florileges = $nb_florileges;
         }
+
+        $configSaison = Configsaison::where('id', 1)->first();
+        $finSaison = $configSaison->datefinadhesion;
         return view('clubs.adherents.index', compact('club', 'statut', 'abonnement', 'adherents', 'numeroencours',
-            'exist_reglement_en_cours', 'florilege_actif'));
+            'exist_reglement_en_cours', 'florilege_actif', 'finSaison'));
     }
 
     // affichage de la vue permettant la saisie pour la création d'un adhérent par responsable de club
@@ -420,6 +424,12 @@ class ClubController extends Controller
                         'monext_token' => null, 'monext_link' => null);
                     $reglement->update($data);
 
+                    if ($club->creance > 0) {
+                        $montant_creance_utilisee = $reglement->montant - $reglement->montant_paye;
+                        $new_creance = $club->creance - $montant_creance_utilisee > 0 ? $club->creance - $montant_creance_utilisee : 0;
+                        $club->update(['creance' => $new_creance]);
+                    }
+
                     $this->saveInvoiceForReglement($reglement);
                 }
             }
@@ -480,11 +490,13 @@ class ClubController extends Controller
                 $souscription->update($data);
 
                 if ($souscription->personne_id) {
+                    $this->saveSouscriptionEvents($souscription->id);
                     $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
                     $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'personne_id' => $souscription->personne_id];
                     $this->createAndSendInvoice($datai);
                 } else {
                     if ($souscription->clubs_id) {
+                        $this->saveSouscriptionEvents($souscription->id);
                         $description = "Commande $souscription->reference pour $souscription->nbexemplaires numéros Florilège";
                         $datai = ['reference' => $souscription->reference, 'description' => $description, 'montant' => $souscription->montanttotal, 'club_id' => $souscription->clubs_id];
                         $this->createAndSendInvoice($datai);
@@ -583,6 +595,16 @@ class ClubController extends Controller
         $data = ['adherent_club' => 0];
         $utilisateur->update($data);
         return redirect()->back()->with('success', "L'adhérent a bien été enlevé de la liste visible du club. L'identifiant carte est conservé et son nom sera encore visible dans l'historique des concours.");
+    }
+
+    public function reactivateAdherent($utilisateur_id) {
+        $utilisateur = Utilisateur::where('id', $utilisateur_id)->first();
+        if (!$utilisateur) {
+            return redirect()->back()->with('error', "Un problème est survenu lors de la récupération des informations utilisateur");
+        }
+        $data = ['adherent_club' => 1];
+        $utilisateur->update($data);
+        return redirect()->back()->with('success', "L'adhérent a bien été réactivé et va être affiché dans la liste des adhérents visibles du club.");
     }
 
     public function sendReinitLink($personne_id) {

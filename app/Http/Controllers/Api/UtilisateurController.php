@@ -14,10 +14,14 @@ use App\Mail\SendRenouvellementMail;
 use App\Models\Abonnement;
 use App\Models\Adresse;
 use App\Models\Club;
+use App\Models\Competition;
 use App\Models\Configsaison;
 use App\Models\Pays;
 use App\Models\Personne;
+use App\Models\Photo;
+use App\Models\Rcompetition;
 use App\Models\Reglement;
+use App\Models\Rphoto;
 use App\Models\Tarif;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
@@ -63,6 +67,7 @@ class UtilisateurController extends Controller
     }
 
     public function checkRenouvellementAdherents(Request $request) {
+        $club = Club::where('id', $request->club)->first();
         list($montant_adhesion_club, $montant_abonnement_club, $montant_adhesion_club_ur, $montant_florilege_club) = $this->getMontantRenouvellementClub($request->club, $request->aboClub, $request->florilegeClub);
         list($tab_adherents, $total_adhesion, $total_abonnement, $total_florilege) = $this->getMontantRenouvellementAdherents($request->adherents, $request->abonnes, $request->florileges);
         $total_montant = $total_adhesion + $total_abonnement + $montant_abonnement_club + $montant_adhesion_club + $montant_adhesion_club_ur + $montant_florilege_club + $total_florilege;
@@ -74,7 +79,9 @@ class UtilisateurController extends Controller
             'montant_abonnement_club' => $montant_abonnement_club,
             'montant_adhesion_club' => $montant_adhesion_club,
             'montant_florilege_club' => $montant_florilege_club,
-            'montant_adhesion_club_ur' => $montant_adhesion_club_ur
+            'montant_adhesion_club_ur' => $montant_adhesion_club_ur,
+            'montant_creance' => $club->creance,
+            'total_to_paid' => ($total_montant - $club->creance > 0) ? $total_montant - $club->creance : 0,
             ], 200);
     }
 
@@ -113,7 +120,19 @@ class UtilisateurController extends Controller
             }
         }
 
-        $data = array('clubs_id' => $club->id, 'montant' => $total_montant, 'statut' => 0, 'reference' => $ref, 'florilegeClub' => $request->florilegeClub);
+        $montant_paye = ($total_montant - $club->creance > 0) ? $total_montant - $club->creance : 0;
+        $data = array(
+            'clubs_id' => $club->id,
+            'montant' => $total_montant,
+            'montant_paye' => $montant_paye,
+            'statut' => $montant_paye > 0 ? 0 : 1, // si le montant à payer est supérieur à 0, le statut est 0 (en attente de paiement), sinon il est à 1 (payé)
+            'reference' => $ref,
+            'florilegeClub' => $request->florilegeClub
+        );
+        if ($montant_paye == 0) {
+            $data['numerocheque'] = 'Créance club';
+            $data['dateenregistrement'] = date('Y-m-d H:i:s');
+        }
         if ($montant_adhesion_club > 0) {
             $data['adhClub'] = 1;
         }
@@ -121,6 +140,8 @@ class UtilisateurController extends Controller
             $data['aboClub'] = 1;
         }
         $reglement = Reglement::create($data);
+
+        $statut = $montant_paye > 0 ? 1 : 2; // si le montant à payer est supérieur à 0, le statut est 1 (inscription en cours), sinon il est à 2 (carte validée)
 
         // pour chaque adhérent, on passe le statut à 1 si l'adhésion est requise
         // on crée un règlement en indiquant l'abonnement et l'adhésion
@@ -141,7 +162,11 @@ class UtilisateurController extends Controller
 
             $datar = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $adherent['adherent']['id']);
             if (isset($adherent['adhesion'])) {
-                Utilisateur::where('id', $adherent['adherent']['id'])->update(['statut' => 1]);
+                $datauser = ['statut' => $statut];
+                if ($statut == 2) {
+                    $datauser['saison'] = date('Y');
+                }
+                Utilisateur::where('id', $adherent['adherent']['id'])->update($datauser);
                 $datar['adhesion'] = 1;
             }
             if (isset($adherent['abonnement'])) {
@@ -154,8 +179,15 @@ class UtilisateurController extends Controller
         }
 
         if ($club->statut == 0) {
-            $datac = array('statut' => 1);
+            $datac = array('statut' => $statut);
             $club->update($datac);
+        }
+
+        $creance = $club->creance;
+        if ($club->creance > 0 && $montant_paye == 0) {
+            // on déduit le montant du règlement de la créance en cours
+            $montant_creance = $club->creance > $total_montant ? $club->creance - $total_montant : 0;
+            $club->update(['creance' => $montant_creance]);
         }
 
         // on crée le bordereau
@@ -167,7 +199,7 @@ class UtilisateurController extends Controller
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadView('pdf.borderauclub', compact('tab_adherents', 'ref', 'club', 'total_montant', 'total_club',
             'montant_adhesion_club', 'montant_abonnement_club', 'montant_adhesion_club_ur', 'total_adhesion', 'total_abonnement', 'total_adherents',
-            'montant_florilege_club', 'total_florilege'))
+            'montant_florilege_club', 'total_florilege', 'montant_paye', 'creance'))
             ->setWarnings(false)
             ->setPaper('a4', 'portrait')
             ->save($dir.'/'.$name);
@@ -179,7 +211,11 @@ class UtilisateurController extends Controller
         if ($contact) {
             $user = session()->get('user');
             $email = $contact->personne->email;
-            $mailSent = Mail::to($email)->cc($user->email)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant));
+            // TODO enlever le mail de test
+            //$email = 'contact@envolinfo.com';
+            // TODO permuetr les lignes
+            $mailSent = Mail::to($email)->cc($user->email)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant, $montant_paye, $creance));
+//            $mailSent = Mail::to($email)->send(new SendRenouvellementMail($club, $dir.'/'.$name, $ref, $total_montant, $montant_paye, $creance));
             $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
 
             $this->registerAction($user->id, 1, "Validation du bordereau pour renouvellement FPF");
@@ -192,7 +228,7 @@ class UtilisateurController extends Controller
             $this->registerMail($user->id, $mail);
         }
 
-        return new JsonResponse(['file' => $filename, 'reglement_id' => $reglement->id], 200);
+        return new JsonResponse(['file' => $filename, 'reglement_id' => $reglement->id, 'montant_paye' => $montant_paye], 200);
     }
 
 
@@ -873,5 +909,337 @@ class UtilisateurController extends Controller
         ksort($tab_adherents);
 
         return array($tab_adherents, $total_adhesion, $total_abonnement, $total_florilege);
+    }
+
+    public function checkFusionAdherents(Request $request) {
+        $idMaitre = $request->idMaitre;
+        $idEsclave = $request->idEsclave;
+
+        // on regarde que les deux utilisateurs existent
+        $utilisateurMaitre = Utilisateur::where('identifiant', $idMaitre)->first();
+        if (!$utilisateurMaitre) {
+            return new JsonResponse(['erreur' => 'Utilisateur maître non trouvé'], 400);
+        }
+        $utilisateurEsclave = Utilisateur::where('identifiant', $idEsclave)->first();
+        if (!$utilisateurEsclave) {
+            return new JsonResponse(['erreur' => 'Utilisateur esclave non trouvé'], 400);
+        }
+        // si l'utilisateur esclave a un statut qui est 2 ou 3, on ne peut pas le fusionner
+        if (in_array($utilisateurEsclave->statut, [2, 3])) {
+            return new JsonResponse(['erreur' => 'L\'utilisateur esclave ne peut pas être fusionné car il a un statut actuel validé'], 400);
+        }
+
+        // si les utilisateurs n'ont pas la même personne, on regarde si les noms et prenom de la personne sont identiques.
+        // Si ce n'est pas le cas, on ne peut pas les fustionner. Si c'est le cas, on crée un message pour indiquer qu'il y a fusion de personne
+        if ($utilisateurMaitre->personne_id != $utilisateurEsclave->personne_id) {
+            $personneMaitre = Personne::where('id', $utilisateurMaitre->personne_id)->first();
+            $personneEsclave = Personne::where('id', $utilisateurEsclave->personne_id)->first();
+            if ($personneMaitre->nom != $personneEsclave->nom || $personneMaitre->prenom != $personneEsclave->prenom) {
+                return new JsonResponse(['erreur' => 'Les utilisateurs ne correspondent pas à la même personne dans la BDD et les noms/prénoms ne correspondent pas'], 400);
+            }
+            // si les deux personnes ne correspondent pas, on vériffie que la personne esclave n'a pas d'abonnement en cours
+            $abonnementEsclave = Abonnement::where('personne_id', $utilisateurEsclave->personne_id)
+                ->where('etat', 1)
+                ->first();
+            if ($abonnementEsclave) {
+                return new JsonResponse(['erreur' => 'L\'utilisateur esclave a un abonnement en cours et ne peut pas être fusionné'], 400);
+            }
+            $returnMessage = "<span style='color: #880000'>Les deux utilisateurs ne correspondent pas à la même personne dans la BDD, mais les noms et prénoms sont identiques.</span>";
+        } else {
+            $returnMessage = "Les deux utilisateurs correspondent à la même personne dans la BDD.";
+        }
+        $returnMessage .= "<br><br>L'utilisateur esclave n'a pas de carte valide et peut donc être fusionné avec l'utilisateur maître.";
+
+        // on regarde dans quelles tables l'utilisateur esclave est présent
+        $presences = [
+            [
+                'table'=> 'classementauteurs',
+                'champ' => 'participants_id',
+                'valeur' => $utilisateurEsclave->identifiant
+            ],
+            [
+                'table'=> 'rclassementauteurs',
+                'champ' => 'participants_id',
+                'valeur' => $utilisateurEsclave->identifiant
+            ],
+            [
+                'table'=> 'droit_utilisateur',
+                'champ' => 'utilisateur_id',
+                'valeur' => $utilisateurEsclave->id
+            ],
+            [
+                'table'=> 'reglementsutilisateurs',
+                'champ' => 'utilisateurs_id',
+                'valeur' => $utilisateurEsclave->id
+            ],
+            [
+                'table'=> 'fonctionsutilisateurs',
+                'champ' => 'utilisateurs_id',
+                'valeur' => $utilisateurEsclave->id
+            ],
+            [
+                'table'=> 'photos',
+                'champ' => 'participants_id',
+                'valeur' => $utilisateurEsclave->identifiant
+            ],
+            [
+                'table'=> 'rphotos',
+                'champ' => 'participants_id',
+                'valeur' => $utilisateurEsclave->identifiant
+            ],
+            [
+                'table'=> 'votes_utilisateurs',
+                'champ' => 'utilisateurs_id',
+                'valeur' => $utilisateurEsclave->id
+            ],
+            [
+                'table'=> 'candidats',
+                'champ' => 'utilisateurs_id',
+                'valeur' => $utilisateurEsclave->id
+            ],
+            [
+                'table' => 'logs',
+                'champ' => 'identifiant',
+                'valeur' => $utilisateurEsclave->identifiant
+            ]
+        ];
+        $tablesToDelete = [];
+        foreach ($presences as $presence) {
+            $count = DB::table($presence['table'])->where($presence['champ'], $presence['valeur'])->count();
+            if ($count > 0) {
+                $tablesToDelete[] = $presence['table'];
+            }
+        }
+        if (count($tablesToDelete) > 0) {
+            $returnMessage .= "<br><br><span style='color: #880000'>Attention, l'utilisateur esclave est présent dans les tables suivantes : " . implode(', ', $tablesToDelete) . ".</span>";
+        } else {
+            $returnMessage .= "<br><br>L'utilisateur esclave n'est pas présent dans d'autres tables.";
+        }
+
+        $tablesToDelete = [];
+        if ($utilisateurMaitre->personne_id != $utilisateurEsclave->personne_id) {
+            // on regarde dans quelles tables la personne esclave est présente
+            $presencesPersonne = [
+                [
+                    'table'=> 'evaluations',
+                    'champ' => 'personne_id',
+                ],
+                [
+                    'table'=> 'formateurs',
+                    'champ' => 'personne_id',
+                ],
+                [
+                    'table'=> 'historiquemails',
+                    'champ' => 'personne_id',
+                ],
+                [
+                    'table'=> 'historiques',
+                    'champ' => 'personne_id',
+                ],
+                [
+                    'table'=> 'historiques',
+                    'champ' => 'personne_id',
+                ],
+                [
+                    'table'=> 'inscrits',
+                    'champ' => 'personne_id',
+                ],
+                [
+                    'table'=> 'interests',
+                    'champ' => 'personne_id',
+                ],
+                [
+                    'table'=> 'invoices',
+                    'champ' => 'personne_id',
+                ],
+                [
+                    'table'=> 'souscriptions',
+                    'champ' => 'personne_id',
+                ],
+            ];
+            foreach ($presencesPersonne as $presence) {
+                $count = DB::table($presence['table'])->where($presence['champ'], $utilisateurEsclave->personne_id)->count();
+                if ($count > 0) {
+                    $tablesToDelete[] = $presence['table'];
+                }
+            }
+            if (count($tablesToDelete) > 0) {
+                $returnMessage .= "<br><br><span style='color: #880000'>Attention, la personne esclave est présent dans les tables suivantes : " . implode(', ', $tablesToDelete) . ".</span>";
+            } else {
+                $returnMessage .= "<br><br>La personne esclave n'est pas présente dans d'autres tables.";
+            }
+        }
+
+        return new JsonResponse(['message' => $returnMessage, 'success' => true], 200);
+    }
+
+    public function fusionAdherents(Request $request)
+    {
+        if (!$this->checkDroit('GESINFO')) {
+            return new JsonResponse(['erreur' => 'Vous n\'avez pas le droit de fusionner des adhérents'], 403);
+        }
+        $idMaitre = $request->idMaitre;
+        $idEsclave = $request->idEsclave;
+
+        // on regarde que les deux utilisateurs existent
+        $utilisateurMaitre = Utilisateur::where('identifiant', $idMaitre)->first();
+        if (!$utilisateurMaitre) {
+            return new JsonResponse(['erreur' => 'Utilisateur maître non trouvé'], 400);
+        }
+        $utilisateurEsclave = Utilisateur::where('identifiant', $idEsclave)->first();
+        if (!$utilisateurEsclave) {
+            return new JsonResponse(['erreur' => 'Utilisateur esclave non trouvé'], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+            // si l'identifiant de l'utilisateur esclave est présent dans la table classementauteurs, on le remplace par l'identifiant de l'utilisateur maître
+            DB::table('classementauteurs')
+                ->where('participants_id', $utilisateurEsclave->identifiant)
+                ->update(['participants_id' => $utilisateurMaitre->identifiant]);
+
+            // si l'identifiant de l'utilisateur esclave est présent dans la table rclassementauteurs, on le remplace par l'identifiant de l'utilisateur maître
+            DB::table('rclassementauteurs')
+                ->where('participants_id', $utilisateurEsclave->identifiant)
+                ->update(['participants_id' => $utilisateurMaitre->identifiant]);
+
+            // si l'identifiant de l'utilisateur esclave est présent dans la table photos, on le remplace par l'identifiant de l'utilisateur maître
+            $photos = Photo::where('participants_id', $utilisateurEsclave->identifiant)->get();
+            foreach ($photos as $photo) {
+                $old_ean = $photo->ean;
+                $suffixe_ean = substr($old_ean, -2);
+                $new_ean = str_replace('-', '', $utilisateurMaitre->identifiant) . $suffixe_ean;
+                $datau = [
+                    'participants_id' => $utilisateurMaitre->identifiant,
+                    'ean' => $new_ean
+                ];
+                $photo->update($datau);
+
+                $lacompet = Competition::where('id', $photo->competitions_id)->first();
+
+                // si le fichier existe, on le renomme
+                $dossier = env('PATH_COMPET').'national/'.$lacompet->saison.'/compet'.$lacompet->numero.'/';
+                $dossier_thumb = $dossier.'thumbs/';
+                if (file_exists($dossier . $old_ean . '.jpg')) {
+                    rename($dossier . $old_ean . '.jpg', $dossier . $new_ean . '.jpg');
+                }
+                if (file_exists($dossier_thumb . $old_ean . '.jpg')) {
+                    rename($dossier_thumb . $old_ean . '.jpg', $dossier_thumb . $new_ean . '.jpg');
+                }
+            }
+
+            // si l'identifiant de l'utilisateur esclave est présent dans la table rphotos, on le remplace par l'identifiant de l'utilisateur maître
+            $rphotos = Rphoto::where('participants_id', $utilisateurEsclave->identifiant)->get();
+            foreach ($rphotos as $photo) {
+                $old_ean = $photo->ean;
+                $suffixe_ean = substr($old_ean, -2);
+                $new_ean = str_replace('-', '', $utilisateurMaitre->identifiant) . $suffixe_ean;
+                $datau = [
+                    'participants_id' => $utilisateurMaitre->identifiant,
+                    'ean' => $new_ean
+                ];
+                $photo->update($datau);
+
+                $lacompet = Rcompetition::where('id', $photo->competitions_id)->first();
+                // si le fichier existe, on le renomme
+                $dossier = env('PATH_COMPET').'regional/'.$lacompet->saison.'/UR'.str_pad($lacompet->urs_id, 2, '0', STR_PAD_LEFT).'/compet'.$lacompet->numero.'/';
+                $dossier_thumb = $dossier.'thumbs/';
+
+                if (file_exists($dossier . $old_ean . '.jpg')) {
+                    rename($dossier . $old_ean . '.jpg', $dossier . $new_ean . '.jpg');
+                }
+
+                if (file_exists($dossier_thumb . $old_ean . '.jpg')) {
+                    rename($dossier_thumb . $old_ean . '.jpg', $dossier_thumb . $new_ean . '.jpg');
+                }
+            }
+
+            // si l'identifiant de l'utilisateur esclave est présent dans la table logs, on le remplace par l'identifiant de l'utilisateur maître
+            DB::table('logs')
+                ->where('identifiant', $utilisateurEsclave->identifiant)
+                ->update(['identifiant' => $utilisateurMaitre->identifiant]);
+
+            // si l'id de l'utilisateur esclave est présent dans la table droit_utilisateur, on le remplace par l'id de l'utilisateur maître
+            DB::table('droit_utilisateur')
+                ->where('utilisateur_id', $utilisateurEsclave->id)
+                ->update(['utilisateur_id' => $utilisateurMaitre->id]);
+
+            // si l'id de l'utilisateur esclave est présent dans la table reglementsutilisateurs, on le remplace par l'id de l'utilisateur maître
+            DB::table('reglementsutilisateurs')
+                ->where('utilisateurs_id', $utilisateurEsclave->id)
+                ->update(['utilisateurs_id' => $utilisateurMaitre->id]);
+
+            // si l'id de l'utilisateur esclave est présent dans la table fonctionsutilisateurs, on le remplace par l'id de l'utilisateur maître
+            DB::table('fonctionsutilisateurs')
+                ->where('utilisateurs_id', $utilisateurEsclave->id)
+                ->update(['utilisateurs_id' => $utilisateurMaitre->id]);
+
+            // si l'id de l'utilisateur esclave est présent dans la table votes_utilisateurs, on le remplace par l'id de l'utilisateur maître
+            DB::table('votes_utilisateurs')
+                ->where('utilisateurs_id', $utilisateurEsclave->id)
+                ->update(['utilisateurs_id' => $utilisateurMaitre->id]);
+
+            // si l'id de l'utilisateur esclave est présent dans la table candidats, on le remplace par l'id de l'utilisateur maître
+            DB::table('candidats')
+                ->where('utilisateurs_id', $utilisateurEsclave->id)
+                ->update(['utilisateurs_id' => $utilisateurMaitre->id]);
+
+            if ($utilisateurMaitre->personne_id != $utilisateurEsclave->personne_id) {
+                // si l'id de la personne esclave est présent dans la table evaluations, on le remplace par l'id de la personne maître
+                DB::table('evaluations')
+                    ->where('personne_id', $utilisateurEsclave->personne_id)
+                    ->update(['personne_id' => $utilisateurMaitre->personne_id]);
+
+                // si l'id de la personne esclave est présent dans la table formateurs, on le remplace par l'id de la personne maître
+                DB::table('formateurs')
+                    ->where('personne_id', $utilisateurEsclave->personne_id)
+                    ->update(['personne_id' => $utilisateurMaitre->personne_id]);
+
+                // si l'id de la personne esclave est présent dans la table historiquemails, on le remplace par l'id de la personne maître
+                DB::table('historiquemails')
+                    ->where('personne_id', $utilisateurEsclave->personne_id)
+                    ->update(['personne_id' => $utilisateurMaitre->personne_id]);
+
+                // si l'id de la personne esclave est présent dans la table historiques, on le remplace par l'id de la personne maître
+                DB::table('historiques')
+                    ->where('personne_id', $utilisateurEsclave->personne_id)
+                    ->update(['personne_id' => $utilisateurMaitre->personne_id]);
+
+                // si l'id de la personne esclave est présent dans la table inscrits, on le remplace par l'id de la personne maître
+                DB::table('inscrits')
+                    ->where('personne_id', $utilisateurEsclave->personne_id)
+                    ->update(['personne_id' => $utilisateurMaitre->personne_id]);
+
+                // si l'id de la personne esclave est présent dans la table interests, on le remplace par l'id de la personne maître
+                DB::table('interests')
+                    ->where('personne_id', $utilisateurEsclave->personne_id)
+                    ->update(['personne_id' => $utilisateurMaitre->personne_id]);
+
+                // si l'id de la personne esclave est présent dans la table invoices, on le remplace par l'id de la personne maître
+                DB::table('invoices')
+                    ->where('personne_id', $utilisateurEsclave->personne_id)
+                    ->update(['personne_id' => $utilisateurMaitre->personne_id]);
+
+                // si l'id de la personne esclave est présent dans la table souscriptions, on le remplace par l'id de la personne maître
+                DB::table('souscriptions')
+                    ->where('personne_id', $utilisateurEsclave->personne_id)
+                    ->update(['personne_id' => $utilisateurMaitre->personne_id]);
+
+                // on supprime la personne esclave
+                $personneEsclave = Personne::where('id', $utilisateurEsclave->personne_id)->first();
+                if ($personneEsclave) {
+                    $personneEsclave->delete();
+                }
+            }
+
+            // on supprime l'utilisateur esclave
+            $utilisateurEsclave->delete();
+            DB::commit();
+
+            return new JsonResponse(['message' => "Les utilisateurs ont été fusionnés avec succès. L'utilisateur esclave a été supprimé.", 'success' => true], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return new JsonResponse(['erreur' => 'Une erreur est survenue lors de la fusion des utilisateurs : ' . $e->getMessage()], 500);
+        }
     }
 }
