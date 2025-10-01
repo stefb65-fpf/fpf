@@ -47,10 +47,25 @@ class UpdateVote extends Command
                 });
             } else {
                 // on cherche tous les clubs valides
-                $clubs = Club::where('statut', 2)->get();
+                if (intval(date('m')) < 9) {
+                    $authorised_status = [2];
+                } else {
+                    $authorised_status = [0,1,2];
+                }
+                if ($vote->urs_id > 0) {
+                    $clubs = Club::whereIn('statut', $authorised_status)->where('urs_id', $vote->urs_id)->get();
+                } else {
+                    $clubs = Club::whereIn('statut', $authorised_status)->get();
+                }
+
                 foreach ($clubs as $club) {
                     // on recherche tous les adhérents dans ce club
-                    $utilisateurs = Utilisateur::whereIn('statut', [2,3])->where('clubs_id', $club->id)->get();
+                    if (intval(date('m')) < 9) {
+                        $authorised_status_adherents = [2,3];
+                    } else {
+                        $authorised_status_adherents = [0, 1, 2, 3];
+                    }
+                    $utilisateurs = Utilisateur::whereIn('statut', $authorised_status_adherents)->where('clubs_id', $club->id)->get();
 
                     $nb_voix = 1;
                     foreach ($utilisateurs as $utilisateur) {

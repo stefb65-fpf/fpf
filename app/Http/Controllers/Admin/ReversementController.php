@@ -127,6 +127,9 @@ class ReversementController extends Controller
                             $tab_reversements[$club->urs_id]['total']['total'] += $montant_adhesion_ur;
                         }
                     }
+//                    if ($reglement->id == 40477) {
+//                        dd($tab_reversements);
+//                    }
                 }
             }
 

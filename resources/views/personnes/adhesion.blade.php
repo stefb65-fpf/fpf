@@ -60,7 +60,11 @@
                 <td>
                         @if(!$carte->clubs_id)
                             @if(!in_array($carte->statut, [2,3]))
-                                <a name="btnReadhesion" data-url="{{ route("adhesion.renouveler") }}" data-ref="{{ $carte->id }}" class="btnNormal accountColor" data-ref="">Ré-adhérer</a>
+                                @if(date('Y-m-d') <= $finSaison)
+                                    <a name="btnReadhesion" data-url="{{ route("adhesion.renouveler") }}" data-ref="{{ $carte->id }}" class="btnNormal accountColor" data-ref="">Ré-adhérer</a>
+                                @else
+                                    renouvellement possible à partir du 1er Septembre
+                                @endif
                             @endif
                         @else
                             <a name="btnReadhesion" data-url="{{ route('adhesion.contactClub') }}" data-ref="{{ $carte->id }}" class="btnNormal accountColor">Contacter mon club</a>

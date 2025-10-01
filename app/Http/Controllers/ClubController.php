@@ -531,7 +531,11 @@ class ClubController extends Controller
         $club = $this->getClub();
         $nb_adherents = Utilisateur::whereIn('statut', [2,3])->where('clubs_id', $club->id)->count();
         $nb_adherents_previous = DB::table('utilisateurs_prec')->whereIn('statut', [2,3])->where('clubs_id', $club->id)->count();
-        $ratio_adherents = round(($nb_adherents - $nb_adherents_previous) * 100 / $nb_adherents_previous, 2);
+        if ($nb_adherents_previous > 0) {
+            $ratio_adherents = round(($nb_adherents - $nb_adherents_previous) * 100 / $nb_adherents_previous, 2);
+        } else {
+            $ratio_adherents = 0;
+        }
         $nb_abonnements = Abonnement::join('personnes', 'personnes.id', '=', 'abonnements.personne_id')
             ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
             ->where('abonnements.etat', 1)

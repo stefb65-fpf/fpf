@@ -52,8 +52,15 @@
         </div>
         <div class="mt60">
             @if($vote_club)
+                @if(in_array($vote->type, [1, 2]) && $vote->phase == 2)
+                    Pour cette phase de vote destinée aux clubs, vous disposez de {{ $nb_voix }} voix
+                    <div class="mt25 text-center">
+                        <a class="customBtn primary" name="saveVote" data-vote="{{ $vote->id }}" data-voix="{{ (in_array($vote->phase, [2,3]) && in_array($vote->type, [1,2])) ? $nb_voix : 1 }}">J'enregistre mon vote</a>
+                    </div>
+                @else
                 <a class="customBtn primary" name="saveVote" data-vote="{{ $vote->id }}" data-voix="2">J'enregistre mon vote et le vote du club (2 voix)</a>
                 <a class="customBtn primary" name="saveVote" data-vote="{{ $vote->id }}" data-voix="1">J'enregistre uniquement mon vote (1 voix)</a>
+                @endif
             @else
                 <div>
                     @if(in_array($vote->type, [1, 2]) && $vote->phase == 2)

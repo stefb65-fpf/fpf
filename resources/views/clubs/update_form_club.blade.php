@@ -177,26 +177,26 @@
         </div>
     @endif
 </div>
-<div class="formBlock">
-    <div class="formBlockTitle">Abonnement</div>
-    <div class="formBlockWrapper">
-        <div class="formUnit mr25">
-            <div class="formLabel">État de l'abonnement :</div>
-            @if($club->is_abonne)
-                <div>Abonné</div>
-            @else
-                <div>Sans abonnement</div>
-            @endif
-        </div>
-        @if($club->is_abonne)
-            <div class="formUnit mr25">
-                <div class="formLabel">Numéro de fin d'abonnement :</div>
-                <div>{{$club->numerofinabonnement}}</div>
-            </div>
-        @endif
+{{--<div class="formBlock">--}}
+{{--    <div class="formBlockTitle">Abonnement</div>--}}
+{{--    <div class="formBlockWrapper">--}}
+{{--        <div class="formUnit mr25">--}}
+{{--            <div class="formLabel">État de l'abonnement :</div>--}}
+{{--            @if($club->is_abonne)--}}
+{{--                <div>Abonné</div>--}}
+{{--            @else--}}
+{{--                <div>Sans abonnement</div>--}}
+{{--            @endif--}}
+{{--        </div>--}}
+{{--        @if($club->is_abonne)--}}
+{{--            <div class="formUnit mr25">--}}
+{{--                <div class="formLabel">Numéro de fin d'abonnement :</div>--}}
+{{--                <div>{{$club->numerofinabonnement}}</div>--}}
+{{--            </div>--}}
+{{--        @endif--}}
 
-    </div>
-</div>
+{{--    </div>--}}
+{{--</div>--}}
 <div class="formBlock">
     <div class="formBlockTitle">Réunions</div>
     <div class="formBlockWrapper">

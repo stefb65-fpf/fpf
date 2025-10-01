@@ -325,7 +325,7 @@ trait Invoice
 
         $tarif = Tarif::where('id', $tarif_id)->where('statut', 0)->first();
         $montant_adhesion_club = $tarif->tarif;
-        if ($club_prec && $club_prec->second_year == 1) {
+        if ($club_prec && $club->second_year == 1) {
             $montant_adhesion_club = $tarif->tarif / 2;
         }
 
@@ -335,7 +335,7 @@ trait Invoice
         if (!$club_prec) {
             $montant_adhesion_club_ur = 0;
         } else {
-            if ($club_prec->second_year == 1) {
+            if ($club->second_year == 1) {
                 $montant_adhesion_club_ur = $tarif->tarif / 2;
             }
         }

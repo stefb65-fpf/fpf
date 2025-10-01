@@ -16,18 +16,22 @@ class StatistiquesController extends Controller
         if ($request->level == 'fpf') {
             // on cherche le nombre de clubs renouvelés
             $nb_non_renouveles = Club::where('statut', 0)->count();
-            $nb_valides = Club::where('statut', 2)->where('second_year', 0)->count();
+            $nb_valides = Club::where('statut', 2)->count();
+//            $nb_valides = Club::where('statut', 2)->where('second_year', 0)->count();
             $nb_preinscrits = Club::where('statut', 1)->where('second_year', 0)->count();
-            $nb_nouveaux = Club::where('statut', 2)->where('second_year', 1)->count();
+            $nb_nouveaux = Club::where('statut', 2)->where('ct', 'N')->count();
+//            $nb_nouveaux = Club::where('statut', 2)->where('second_year', 1)->count();
             $tab = array('non_renouveles' => $nb_non_renouveles, 'valides' => $nb_valides, 'nouveaux' => $nb_nouveaux, 'preinscrits' => $nb_preinscrits);
             return new JsonResponse($tab, 200);
         }
         if ($request->level == 'ur') {
             // on cherche le nombre de clubs renouvelés
             $nb_non_renouveles = Club::where('statut', 0)->where('urs_id', $request->ur_id)->count();
-            $nb_valides = Club::where('statut', 2)->where('second_year', 0)->where('urs_id', $request->ur_id)->count();
+            $nb_valides = Club::where('statut', 2)->where('urs_id', $request->ur_id)->count();
+//            $nb_valides = Club::where('statut', 2)->where('second_year', 0)->where('urs_id', $request->ur_id)->count();
             $nb_preinscrits = Club::where('statut', 1)->where('second_year', 0)->where('urs_id', $request->ur_id)->count();
-            $nb_nouveaux = Club::where('statut', 2)->where('second_year', 1)->where('urs_id', $request->ur_id)->count();
+            $nb_nouveaux = Club::where('statut', 2)->where('ct', 'N')->where('urs_id', $request->ur_id)->count();
+//            $nb_nouveaux = Club::where('statut', 2)->where('second_year', 1)->where('urs_id', $request->ur_id)->count();
             $tab = array('non_renouveles' => $nb_non_renouveles, 'valides' => $nb_valides, 'nouveaux' => $nb_nouveaux, 'preinscrits' => $nb_preinscrits);
             return new JsonResponse($tab, 200);
         }

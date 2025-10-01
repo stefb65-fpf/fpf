@@ -1072,6 +1072,7 @@ class UrController extends Controller
         $ratio_adherents = round(($nb_adherents - $nb_adherents_previous) * 100 / $nb_adherents_previous, 2);
         $nb_clubs = Club::where('statut', 2)->where('urs_id', $ur->id)->count();
         $nb_clubs_previous = DB::table('clubs_prec')->where('urs_id', $ur->id)->where('statut', 2)->count();
+//        dd($nb_clubs, $nb_clubs_previous);
         $ratio_clubs = round(($nb_clubs - $nb_clubs_previous) * 100 / $nb_clubs_previous, 2);
         $nb_abonnements = Abonnement::join('personnes', 'personnes.id', '=', 'abonnements.personne_id')
             ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')

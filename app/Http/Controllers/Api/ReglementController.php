@@ -14,6 +14,7 @@ use App\Models\Personne;
 use App\Models\Photo;
 use App\Models\Reglement;
 use App\Models\Rphoto;
+use App\Models\Tarif;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -242,6 +243,8 @@ class ReglementController extends Controller
                 }
                 if ($reglement_utilisateur->adhesion == 0) {
                     $tarif = 0;
+                    $tarif_abo_supp = Tarif::where('statut', 0)->where('id', 19)->first();
+                    $tarif_supp = $tarif_abo_supp->tarif;
                 }
 
                 $ligne = [
@@ -477,6 +480,8 @@ class ReglementController extends Controller
                     $utilisateur->update($datau);
                 } else {
                     $tarif = 0;
+                    $tarif_abo_supp = Tarif::where('statut', 0)->where('id', 19)->first();
+                    $tarif_supp = $tarif_abo_supp->tarif;
                 }
 
 

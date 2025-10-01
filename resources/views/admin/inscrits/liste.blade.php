@@ -34,22 +34,27 @@
                 <th></th>
             </thead>
             <tbody>
-            @foreach($session->inscrits->where('status', 1) as $inscrit)
+{{--            @foreach($session->inscrits->where('status', 1) as $inscrit)--}}
+            @foreach($session->inscrits as $inscrit)
                 <tr>
                     <td>{{ $inscrit->personne->nom.' '.$inscrit->personne->prenom }}</td>
                     <td>{{ $inscrit->personne->email }}</td>
-                    <td>{{ $inscrit->attente == 0 ? 'OUI' : '' }} {{ $inscrit->attente_paiement == 1 ? 'NON PAYEE' : '' }}</td>
+                    <td>
+                        {{ $inscrit->attente == 0 && $inscrit->status == 1 ? 'OUI' : '' }}
+                        {{ $inscrit->attente_paiement == 1 ? 'NON PAYEE' : '' }}</td>
                     <td>{{ $inscrit->attente == 1 ? 'OUI' : '' }}</td>
                     <td>
-                        {{ $inscrit->attente_paiement == 1 ? 'LIEN TRANSMIS' : '' }}
+                        {{ $inscrit->attente_paiement == 1 && $inscrit->status == 1 ? 'LIEN TRANSMIS' : '' }}
                     </td>
                     <td>
                         @if($inscrit->attente == 0)
                             <a href="{{ route('inscrits.destroy', $inscrit) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer cet inscrit sans compensation ?" class="btnSmall adminDanger">Supprimer</a>
-                            <a href="{{ route('inscrits.destroyWithCredit', $inscrit) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer cet inscrit ? Un avoir formation du montant de son incription lui sera accordé." class="btnSmall adminWarning mt5">Supprimer avec avoir</a>
+                            @if ($inscrit->status == 1)
+                                <a href="{{ route('inscrits.destroyWithCredit', $inscrit) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer cet inscrit ? Un avoir formation du montant de son incription lui sera accordé." class="btnSmall adminWarning mt5">Supprimer avec avoir</a>
+                            @endif
                         @endif
-                        @if($inscrit->attente == 1)
-                            <a href="{{ route('inscrits.sendPaymentLink', $inscrit) }}" data-method="post" data-confirm="Voulez-vous vraiement envoyer le lien de paiement à cette personne ?" class="btnSmall adminPrimary">Envoyer lien paiement</a>
+                        @if($inscrit->attente == 1 || $inscrit->status == 0)
+                            <a href="{{ route('inscrits.sendPaymentLink', $inscrit) }}" data-method="post" data-confirm="Voulez-vous vraiement envoyer le lien de paiement à cette personne ?" class="btnSmall adminPrimary mt5">Envoyer lien paiement</a>
                         @endif
                     </td>
                 </tr>

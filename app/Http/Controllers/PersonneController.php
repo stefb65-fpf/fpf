@@ -247,8 +247,10 @@ class PersonneController extends Controller
                 }
             }
         }
+        $configSaison = Configsaison::where('id', 1)->first();
+        $finSaison = $configSaison->datefinadhesion;
 
-        return view('personnes.adhesion', compact('user'));
+        return view('personnes.adhesion', compact('user', 'finSaison'));
     }
 
     public function adhesionRenew() {
