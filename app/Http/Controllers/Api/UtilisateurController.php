@@ -173,21 +173,24 @@ class UtilisateurController extends Controller
                 $datar['abonnement'] = 1;
 
                 // il faut ajouter un abonnement pour l'utilisateur
-                $utilisateurmaj = Utilisateur::where('id', $adherent['adherent']['id'])->first();
-                $abonnement = Abonnement::where('personne_id', $utilisateurmaj->personne_id)->where('etat', 1)->first();
-                if ($abonnement) {
-                    $fin = $abonnement->fin + 5;
-                    $dataa = array('fin' => $fin);
-                    $abonnement->update($dataa);
-                } else {
-                    // on crée un abonnement avec état 1
-                    $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
-                    $numeroencours = $config->numeroencours;
-                    $debut = $numeroencours;
-                    $fin = $numeroencours + 4;
-                    $dataa = array('personne_id' => $utilisateurmaj->personne_id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
-                    Abonnement::create($dataa);
-                }            }
+                if ($statut == 2) {
+                    $utilisateurmaj = Utilisateur::where('id', $adherent['adherent']['id'])->first();
+                    $abonnement = Abonnement::where('personne_id', $utilisateurmaj->personne_id)->where('etat', 1)->first();
+                    if ($abonnement) {
+                        $fin = $abonnement->fin + 5;
+                        $dataa = array('fin' => $fin);
+                        $abonnement->update($dataa);
+                    } else {
+                        // on crée un abonnement avec état 1
+                        $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
+                        $numeroencours = $config->numeroencours;
+                        $debut = $numeroencours;
+                        $fin = $numeroencours + 4;
+                        $dataa = array('personne_id' => $utilisateurmaj->personne_id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
+                        Abonnement::create($dataa);
+                    }
+                }
+            }
             if (isset($adherent['nb_florilege'])) {
                 $datar['florilege'] = $adherent['nb_florilege'];
             }
