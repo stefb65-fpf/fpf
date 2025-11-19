@@ -7,7 +7,6 @@ use App\Models\Session;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
-// TODO à mettre en cron une fois par jour
 class SendRappelFormations extends Command
 {
     /**
