@@ -360,20 +360,6 @@ class PublicationController extends Controller
                 $souscriptions[$souscription->id][] = $souscription;
             }
 
-
-//            $souscriptions_adherents = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
-//                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
-//                ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
-//                ->whereNotNull('souscriptions.personne_id')
-//                ->where('souscriptions.statut', 1)
-//                ->where('utilisateurs.urs_id', $ur_id)
-//                ->whereIn('utilisateurs.statut', [0,1,2,3])
-//                ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, utilisateurs.personne_id, personnes.nom, personnes.prenom, personnes.sexe, personnes.phone_mobile, clubs.nom as club, clubs.numero')
-//                ->orderByDesc('utilisateurs.statut')
-//                ->orderBy('utilisateurs.identifiant')
-//                ->groupBy('utilisateurs.id')
-//                ->get();
-
             $souscriptions_adherents = Souscription::join('utilisateurs', 'souscriptions.utilisateur_id', '=', 'utilisateurs.id')
                 ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
                 ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
@@ -414,35 +400,7 @@ class PublicationController extends Controller
             }
         }
 
-//        $souscriptions_adherents = Souscription::join('utilisateurs', 'souscriptions.utilisateur_id', '=', 'utilisateurs.id')
-//            ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
-//            ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
-//            ->where('souscriptions.statut', 1)
-//            ->where('utilisateurs.urs_id', 17)
-//            ->whereIn('utilisateurs.statut', [0,1,2,3])
-//            ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, utilisateurs.personne_id, personnes.nom, personnes.prenom, personnes.sexe, personnes.phone_mobile, clubs.nom as club, clubs.numero')
-//            ->orderByDesc('utilisateurs.statut')
-//            ->orderBy('utilisateurs.identifiant')
-//            ->groupBy('utilisateurs.id')
-//            ->get();
-//
-//        dd($souscriptions_adherents);
-
-
         for ($ur_id = 1; $ur_id <= 24; $ur_id++) {
-//            $souscriptions_adherents_old = Souscription::join('personnes', 'souscriptions.personne_id', '=', 'personnes.id')
-//                ->join('utilisateurs', 'utilisateurs.personne_id', '=', 'personnes.id')
-//                ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')
-//                ->whereNotNull('souscriptions.personne_id')
-//                ->where('souscriptions.statut', 1)
-//                ->where('utilisateurs.urs_id', $ur_id)
-//                ->where('utilisateurs.statut', '>', 3)
-//                ->selectRaw('sum(souscriptions.nbexemplaires) as nbexemplaires, souscriptions.id, utilisateurs.identifiant, utilisateurs.clubs_id, utilisateurs.urs_id, utilisateurs.personne_id, personnes.nom, personnes.prenom, personnes.sexe, personnes.phone_mobile, clubs.nom as club, clubs.numero')
-//                ->orderByDesc('utilisateurs.statut')
-//                ->orderBy('utilisateurs.identifiant')
-//                ->groupBy('utilisateurs.id')
-//                ->get();
-
             $souscriptions_adherents_old = Souscription::join('utilisateurs', 'souscriptions.utilisateur_id', '=', 'utilisateurs.id')
                 ->join('personnes', 'personnes.id', '=', 'utilisateurs.personne_id')
                 ->leftJoin('clubs', 'clubs.id', '=', 'utilisateurs.clubs_id')

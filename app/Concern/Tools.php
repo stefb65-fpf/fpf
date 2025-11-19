@@ -495,7 +495,7 @@ trait Tools
                 // on insère des florilege dans la souscription
                 $datas = array('personne_id' => $utilisateur->personne_id, 'reference' => $reglement->reference, 'nbexemplaires' => $utilisateur->florilege,
                     'montanttotal' => round($prix_florilege * $utilisateur->florilege, 2), 'statut' => 1,
-                    'ref_reglement' => $reglement->reference);
+                    'ref_reglement' => $reglement->reference, 'utilisateur_id' => $utilisateur->id);
                 Souscription::create($datas);
             }
             $personne = Personne::where('id', $utilisateur->personne_id)->first();

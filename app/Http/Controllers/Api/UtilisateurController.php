@@ -22,6 +22,7 @@ use App\Models\Photo;
 use App\Models\Rcompetition;
 use App\Models\Reglement;
 use App\Models\Rphoto;
+use App\Models\Souscription;
 use App\Models\Tarif;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
@@ -146,6 +147,9 @@ class UtilisateurController extends Controller
         $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
         $numeroencours = $config->numeroencours;
 
+        $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+        $prix_florilege = $tarif_florilege_france->tarif;
+
         // pour chaque adhérent, on passe le statut à 1 si l'adhésion est requise
         // on crée un règlement en indiquant l'abonnement et l'adhésion
         foreach ($tab_adherents as $adherent) {
@@ -194,6 +198,19 @@ class UtilisateurController extends Controller
             }
             if (isset($adherent['nb_florilege'])) {
                 $datar['florilege'] = $adherent['nb_florilege'];
+
+                if ($statut == 2) {
+                    $utilisateurmaj = Utilisateur::where('id', $adherent['adherent']['id'])->first();
+                    // on crée la souscription
+                    $datas = array('personne_id' => $utilisateurmaj->personne_id, 'reference' => $reglement->reference,
+                        'nbexemplaires' => $adherent['nb_florilege'],
+                        'montanttotal' => round($prix_florilege * $adherent['nb_florilege'], 2),
+                        'statut' => 1,
+                        'ref_reglement' => $reglement->reference,
+                        'utilisateur_id' => $utilisateurmaj->id
+                    );
+                    Souscription::create($datas);
+                }
             }
             DB::table('reglementsutilisateurs')->insert($datar);
         }
