@@ -187,9 +187,14 @@ class PersonneController extends Controller
                 $adresse->indicatif = $pays->indicatif;
             }
         }
+        $adresse_principale = $personne->adresses->first();
         $countries = DB::table('pays')->orderBy('nom')->get();
         $level = 'admin';
         $tarif = Tarif::where('id', 19)->where('statut', 0)->first();
+        if (strtolower($adresse_principale['pays']) != 'france') {
+            $tarif = Tarif::where('id', 20)->where('statut', 0)->first();
+        }
+
         $montant_abonnement = $tarif->tarif;
         return view('admin.personnes.edit', compact('personne', 'view_type', 'countries', 'level', 'montant_abonnement'));
     }
@@ -531,21 +536,51 @@ class PersonneController extends Controller
 
     public function renewAbo(Personne $personne, $view_type) {
         $utilisateur = Utilisateur::where('personne_id', $personne->id)->first();
-        if (!$utilisateur) {
-            return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('error', "Un problème est survenu lors de la récupération de l'utilisateur");
+//        if (!$utilisateur) {
+//            return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('error', "Un problème est survenu lors de la récupération de l'utilisateur");
+//        }
+        if ($utilisateur) {
+            // on crée un règlement
+            $ref = 'ABO-NEW-'.$utilisateur->identifiant;
+        } else {
+            $ref = 'ADH-NEW-ABO-'.$personne->id;
         }
-        // on crée un règlement
-        $ref = 'ABO-NEW-'.$utilisateur->identifiant;
+
         $last_reglement = Reglement::where('reference', 'LIKE', $ref.'%')->orderBy('id', 'DESC')->first();
         $num = $last_reglement ? intval(substr($last_reglement->reference, -4)) + 1 : 1;
         $ref .= '-'.str_pad($num, 4, '0', STR_PAD_LEFT);
+        $adresse = $personne->adresses()->first();
         $tarif = Tarif::where('id', 19)->where('statut', 0)->first();
+        if (strtolower($adresse['pays']) != 'france') {
+            $tarif = Tarif::where('id', 20)->where('statut', 0)->first();
+        }
+
         $montant = $tarif->tarif;
         $reglement = Reglement::create(['montant' => $montant, 'reference' => $ref, 'statut' => 0]);
 
         // on crée la liaison reglements utilisateurs
-        $dataru = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $utilisateur->id, 'abonnement' => 1);
-        DB::table('reglementsutilisateurs')->insert($dataru);
+        if ($utilisateur) {
+            $dataru = array('reglements_id' => $reglement->id, 'utilisateurs_id' => $utilisateur->id, 'abonnement' => 1);
+            DB::table('reglementsutilisateurs')->insert($dataru);
+        } else {
+            $abonnement = Abonnement::where('personne_id', $personne->id)->where('etat', 1)->first();
+            if ($abonnement) {
+                $fin = $abonnement->fin + 5;
+                $dataa = array('fin' => $fin);
+                $abonnement->update($dataa);
+            } else {
+                // on crée un abonnement avec état 1
+                $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
+                $numeroencours = $config->numeroencours;
+                $debut = $numeroencours;
+                $fin = $numeroencours + 4;
+                $dataa = array('personne_id' => $personne->id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin);
+                Abonnement::create($dataa);
+
+                $datap = ['is_abonne' => 1];
+                $personne->update($datap);
+            }
+        }
 
         return redirect()->route('admin.personnes.edit', [$personne, $view_type])->with('success', "Le règlement $ref a bien été créé. Pour finaliser l'abonnement, merci de le valider dans la gestion des règlements");
     }

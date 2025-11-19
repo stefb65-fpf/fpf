@@ -26,7 +26,7 @@
                                 @if($formation->type == 1 || $formation->type == 2)
                                     <div class="tag bgPurpleLight">Présentiel</div>
                                 @endif
-                                @if($formation->places <  5)
+                                @if($formation->last_places)
                                     <div class="tag bgRed">Dernières Places</div>
                                 @endif
                                 @if($formation->categorie)
@@ -142,32 +142,40 @@
                     <div class="card p0">
                         <div class="cardTitle">Dates des futures sessions</div>
                         <div class="cardContent">
-                            @foreach($formation->sessions as $k => $session)
+                            @foreach($formation->sessions->where('status', '<', 3) as $k => $session)
                                 @if($session->start_date >= date('Y-m-d'))
                                     <div class="sessionContainer">
                                         @if($session->club_id)
                                             <div class="bold">
                                                 Organisé par le club {{ $session->nom_club }}
-                                                @if($session->pec > 0)
-                                                    <span class="ml10">- Montant pris en charge par le club: {{ $session->pec }}€</span>
-                                                @endif
+{{--                                                @if($session->pec > 0)--}}
+{{--                                                    <span class="ml10">- Montant pris en charge par le club: {{ $session->pec }}€</span>--}}
+{{--                                                @endif--}}
                                             </div>
                                         @else
                                             @if($session->ur_id)
                                                 <div class="bold">
                                                     Organisé par l'UR {{ str_pad($session->ur_id, 2, '0', STR_PAD_LEFT) }}
-                                                    @if($session->pec > 0)
-                                                        <span class="ml10">- Montant pris en charge par l'UR: {{ $session->pec }}€</span>
-                                                    @endif
+{{--                                                    @if($session->pec > 0)--}}
+{{--                                                        <span class="ml10">- Montant pris en charge par l'UR: {{ $session->pec }}€</span>--}}
+{{--                                                    @endif--}}
                                                 </div>
                                             @else
                                                 <div class="bold">
                                                     Organisé par la FPF
-                                                    @if($session->pec > 0)
-                                                        <span class="ml10">- Montant pris en charge par la FPF: {{ $session->pec }}€</span>
-                                                    @endif
+{{--                                                    @if($session->pec > 0)--}}
+{{--                                                        <span class="ml10">- Montant pris en charge par la FPF: {{ $session->pec }}€</span>--}}
+{{--                                                    @endif--}}
                                                 </div>
                                             @endif
+                                        @endif
+                                            @if(($session->club_id || $session->ur_id) && $session->reste_a_charge > 0)
+                                            <div>
+                                                Prise en charge par {{ $session->ur_id ? 'l\'UR' : 'le club' }}: {{ $session->reste_a_charge }}€
+                                                @if($session->pec_fpf > 0)
+                                                    - Prise en charge par la FPF: {{ $session->pec_fpf }}€
+                                                @endif
+                                            </div>
                                         @endif
                                         <div class="sessionContainerWrapper">
                                             <div class="start">

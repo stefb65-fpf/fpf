@@ -11,6 +11,15 @@
             </a>
         </h1>
 
+        <form method="GET" action="{{ route('admin.rapprochements.formations') }}" style="display: flex; justify-content: center; gap: 5px; margin-bottom: 20px;">
+            <div style="position: relative">
+                <input type="text" name="term" placeholder="Filtrer par référence exacte ou nom de la personne ou nom de la formation" value="{{ $term }}" style="padding: 5px;width: 550px;max-width: 90vw;" />
+                @if($term != '')
+                    <a href="{{ route('admin.rapprochements.formations') }}" style="position: absolute;right: 10px;top: 0;cursor: pointer;">x</a>
+                @endif
+            </div>
+        </form>
+
         <div class="w100">
             <table class="styled-table">
                 <thead>

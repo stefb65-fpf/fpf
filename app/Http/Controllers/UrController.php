@@ -20,6 +20,7 @@ use App\Models\Adresse;
 use App\Models\Club;
 use App\Models\Configsaison;
 use App\Models\Fonction;
+use App\Models\Invoice;
 use App\Models\Pays;
 use App\Models\Personne;
 use App\Models\Reglement;
@@ -51,9 +52,22 @@ class UrController extends Controller
     public function gestion()
     {
         $ur = $this->getUr();
+        $ur_invoices = Invoice::where('ur_id', $ur->id)->count();
         // on regarde si'il y a des sessions de formation à venir pour l'UR
         $nb_sessions = Session::where('ur_id', $ur->id)->where('start_date', '>=', date('Y-m-d'))->orderBy('start_date')->count();
-        return view('urs.gestion', compact('ur', 'nb_sessions'));
+        return view('urs.gestion', compact('ur', 'nb_sessions', 'ur_invoices'));
+    }
+
+    public function factures()
+    {
+        $ur = $this->getUr();
+        $invoices = Invoice::where('ur_id', $ur->id)->orderByDesc('created_at')->get();
+        foreach ($invoices as $invoice) {
+            list($tmp, $path) = explode('htdocs', $invoice->getStorageDir());
+            $path .= '/' . $invoice->numero . '.pdf';
+            $invoice->path = $path;
+        }
+        return view('urs.factures.index', compact('ur', 'invoices'));
     }
 
     // affichage de la liste des adhérents d'une UR
@@ -465,7 +479,7 @@ class UrController extends Controller
         $numeroencours = $config->numeroencours;
         $florilege_actif = date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege;
         $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
-        $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
+        $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 4;
         $statut = $statut ?? "init";
         $dans_club = $statut == 99 ? 0 : 1;
         $abonnement = $abonnement ?? "all";
@@ -1221,6 +1235,15 @@ class UrController extends Controller
         if (!$this->checkDroit('GESFORUR')) {
             return redirect()->route('accueil');
         }
+        foreach ($session->inscrits as $inscrit) {
+            $is_federe = false;
+            if ($inscrit->personne->utilisateurs) {
+                if ($inscrit->personne->utilisateurs->whereIn('statut', [2, 3])->count() > 0) {
+                    $is_federe = true;
+                }
+            }
+            $inscrit->is_federe = $is_federe;
+        }
         return view('urs.formations.inscrits', compact('session'));
     }
 
@@ -1228,13 +1251,17 @@ class UrController extends Controller
         // on récupère tous les inscrits de la session
         $inscrits = $session->inscrits->where('attente', 0)->where('status', 1);
         foreach ($inscrits as $inscrit) {
-            $utilisateur = Utilisateur::where('personne_id', $inscrit->personne_id)
-                ->whereIn('statut', [0,1,2,3])
-                ->orderByDesc('statut')
-                ->selectRaw('identifiant')
-                ->first();
-            if ($utilisateur) {
-                $inscrit->identifiant = $utilisateur->identifiant;
+            if ($inscrit->utilisateur_id) {
+                $inscrit->identifiant = $inscrit->utilisateur->identifiant;
+            } else {
+                $utilisateur = Utilisateur::where('personne_id', $inscrit->personne_id)
+                    ->whereIn('statut', [0,1,2,3])
+                    ->orderByDesc('statut')
+                    ->selectRaw('identifiant')
+                    ->first();
+                if ($utilisateur) {
+                    $inscrit->identifiant = $utilisateur->identifiant;
+                }
             }
         }
         $fichier = 'session_'.$session->id.'_inscrits_' . date('YmdHis') . '.xls';

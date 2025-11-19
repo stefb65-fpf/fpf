@@ -52,6 +52,9 @@ class Kernel extends ConsoleKernel
             ->dailyAt('07:00');
         $schedule->command('renew:abo')
             ->monthlyOn(1, '04:00');
+
+        $schedule->command('send:rappel-formations')->dailyAt('06:00');
+        $schedule->command('send:confirmation-formation')->dailyAt('06:30');
     }
 
     /**

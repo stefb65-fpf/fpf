@@ -105,7 +105,7 @@ class ClubController extends Controller
         $numeroencours = $config->numeroencours;
         $florilege_actif = date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege;
         $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
-        $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
+        $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 4;
         $statut = $statut ?? "init";
         $abonnement = $abonnement ?? "all";
         $dans_club = $statut == 99 ? 0 : 1;
@@ -647,6 +647,15 @@ class ClubController extends Controller
     }
 
     public function inscrits(Session $session) {
+        foreach ($session->inscrits as $inscrit) {
+            $is_federe = false;
+            if ($inscrit->personne->utilisateurs) {
+                if ($inscrit->personne->utilisateurs->whereIn('statut', [2, 3])->count() > 0) {
+                    $is_federe = true;
+                }
+            }
+            $inscrit->is_federe = $is_federe;
+        }
         return view('clubs.formations.inscrits', compact('session'));
     }
 
@@ -654,13 +663,17 @@ class ClubController extends Controller
         // on récupère tous les inscrits de la session
         $inscrits = $session->inscrits->where('attente', 0)->where('status', 1);
         foreach ($inscrits as $inscrit) {
-            $utilisateur = Utilisateur::where('personne_id', $inscrit->personne_id)
-                ->whereIn('statut', [0,1,2,3])
-                ->orderByDesc('statut')
-                ->selectRaw('identifiant')
-                ->first();
-            if ($utilisateur) {
-                $inscrit->identifiant = $utilisateur->identifiant;
+            if ($inscrit->utilisateur_id) {
+                $inscrit->identifiant = $inscrit->utilisateur->identifiant;
+            } else {
+                $utilisateur = Utilisateur::where('personne_id', $inscrit->personne_id)
+                    ->whereIn('statut', [0,1,2,3])
+                    ->orderByDesc('statut')
+                    ->selectRaw('identifiant')
+                    ->first();
+                if ($utilisateur) {
+                    $inscrit->identifiant = $utilisateur->identifiant;
+                }
             }
         }
         $fichier = 'session_'.$session->id.'_inscrits_' . date('YmdHis') . '.xls';

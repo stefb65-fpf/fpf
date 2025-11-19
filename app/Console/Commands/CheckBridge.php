@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Concern\Api;
 use App\Concern\Invoice;
 use App\Concern\Tools;
+use App\Mail\ConfirmationInscriptionDept;
 use App\Mail\ConfirmationInscriptionFormation;
 use App\Mail\ConfirmationPriseEnChargeSession;
 use App\Models\Club;
@@ -13,6 +14,7 @@ use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Session;
 use App\Models\Souscription;
+use App\Models\Ur;
 use App\Models\Utilisateur;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -199,10 +201,18 @@ class CheckBridge extends Command
                     $sujet = "Inscription à la formation $formation->name";
                     $this->registerAction($inscrit->personne->id, 2, $sujet);
 
-                    $description = "Inscription à la formation ".$inscrit->session->formation->name;
+                    $description = "Inscription à la formation ".$inscrit->session->formation->name." pour la session du ".date("d/m/Y",strtotime($inscrit->session->start_date));
                     $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
                     $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->amount, 'personne_id' => $inscrit->personne->id];
                     $this->createAndSendInvoice($datai);
+
+                    $email_dept = 'formations@federation-photo.fr';
+                    Mail::mailer('smtp2')->to($email_dept)->send(new ConfirmationInscriptionDept($inscrit->session, $personne));
+                    if (count($inscrit->session->formation->formateurs) > 0) {
+                        foreach ($inscrit->session->formation->formateurs as $formateur) {
+                            Mail::mailer('smtp2')->to($formateur->personne->email)->send(new ConfirmationInscriptionDept($inscrit->session, $personne));
+                        }
+                    }
                 }
                 if ($tab_reponse->status == 'REVOKED' || $tab_reponse->status == 'EXPIRED') {
                     $inscrit->delete();
@@ -226,24 +236,37 @@ class CheckBridge extends Command
                     $description = "Prise en charge de la session de formation ".$session->formation->name;
                     $contact = null;
                     if ($session->club_id) {
+                        $club = Club::where('id', $session->club_id)->first();
+                        $description .= " par le club ".$session->club->nom;
                         $ref = 'SESSION-FORMATION-'.$session->club_id.'-'.$session->id;
-                        $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'club_id' => $session->club_id];
+                        $montant = $session->reste_a_charge - $session->club->creance;
+                        $datai = ['reference' => $ref, 'description' => $description, 'montant' => $montant, 'club_id' => $session->club_id];
+//                        $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'club_id' => $session->club_id];
 
                         // on récupère le contact du club
                         $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
                             ->where('utilisateurs.clubs_id', $session->club_id)
                             ->where('fonctionsutilisateurs.fonctions_id', 97)
                             ->first();
+
+                        $club->update(['creance' => 0]);
                     } else {
+                        $ur = Ur::where('id', $session->ur_id)->first();
+                        $description .= " par l'UR ".$session->ur->nom;
                         $ref = 'SESSION-FORMATION-'.$session->ur_id.'-'.$session->id;
-                        $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'ur_id' => $session->ur_id];
+                        $montant = $session->reste_a_charge - $session->ur->creance;
+                        $datai = ['reference' => $ref, 'description' => $description, 'montant' => $montant, 'ur_id' => $session->ur_id];
+//                        $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'ur_id' => $session->ur_id];
 
                         // on récupère le président UR
                         $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
                             ->where('utilisateurs.urs_id', $session->ur_id)
                             ->where('fonctionsutilisateurs.fonctions_id', 57)
                             ->first();
+
+                        $ur->update(['creance' => 0]);
                     }
+                    $session->update(['paid' => $montant]);
                     $this->createAndSendInvoice($datai);
 
                     if ($contact) {

@@ -6,6 +6,11 @@
            Gestion d'Union Régionale <br>
             <div class="urTitle">{{ $ur->nom }}</div>
         </h1>
+        @if($ur->creance > 0)
+            <div class="bg-creance">
+                Votre UR dispose d'un avoir de {{ $ur->creance }}€ pour les prochaines opérations sur la base en ligne
+            </div>
+        @endif
         <div class="cardContainer">
             @if($menu['ur_general'])
             <a class="card" href="{{ route('urs.infos_ur') }}">
@@ -50,6 +55,16 @@
                     <div class="cardTitle">Trésorerie, Reversements</div>
                 </div>
             </a>
+            @if($ur_invoices > 0)
+                <a class="card" href="{{ route('urs.factures') }}">
+                    <div class="wrapper">
+                        <svg width="25" height="30" viewBox="0 0 25 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 23.75H20V16.25H5V23.75ZM6.25 17.5H18.75V22.5H6.25V17.5ZM11.25 12.5H5V11.25H11.25V12.5ZM11.25 7.5H5V6.25H11.25V7.5ZM15.8838 0H3.125C1.4025 0 0 1.4025 0 3.125V30H25V9.11625L15.8838 0ZM16.25 2.13375L22.8663 8.75H16.25V2.13375ZM1.25 28.75V3.125C1.25 2.09125 2.09125 1.25 3.125 1.25H15V10H23.75V28.75H1.25Z" fill="#2F2F2F"/>
+                        </svg>
+                        <div class="cardTitle">Factures</div>
+                    </div>
+                </a>
+            @endif
             @endif
             @if(in_array('GESNEWUR', $droits_fpf) || in_array('GESNEWURCA', $droits_fpf))
                 <a class="card" id="connectNewsletter">

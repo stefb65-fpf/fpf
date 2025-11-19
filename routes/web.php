@@ -47,6 +47,7 @@ Route::get('/urs/statistiques_votes', [App\Http\Controllers\UrController::class,
 Route::get('/urs/statistiques_votes_phases', [App\Http\Controllers\UrController::class, 'statistiquesVotesPhases'])->name('urs.statistiques_votes_phases');
 Route::get('/urs/statistiques_vote_detail/{vote}/{ur}', [App\Http\Controllers\UrController::class, 'statistiquesVoteDetail'])->name('urs.statistiques_vote_detail');
 Route::get('/urs/liste_votes_by_club/{vote}/{club_id}/{ur_id}', [App\Http\Controllers\UrController::class, 'statistiquesListeVoteByClub'])->name('urs.statistiques.liste_votes_by_club');
+Route::get('/urs/factures', [App\Http\Controllers\UrController::class, 'factures'])->name('urs.factures');
 Route::get('/urs/liste_reversements', [App\Http\Controllers\UrController::class, 'listeReversements'])->name('urs.liste_reversements');
 Route::get('/urs/fonctions/liste', [App\Http\Controllers\UrController::class, 'listeFonctions'])->name('urs.fonctions.liste');
 Route::get('/urs/{fonction}/change_attribution', [App\Http\Controllers\UrController::class, 'changeAttribution'])->name('urs.fonctions.change_attribution');
@@ -66,8 +67,10 @@ Route::get('/admin/formations/{formation}/evaluations', [App\Http\Controllers\Ad
 Route::get('/admin/formations/parametrage', [App\Http\Controllers\Admin\FormationController::class, 'parametrage'])->name('formations.parametrage');
 Route::get('/admin/formations/accueil', [App\Http\Controllers\Admin\FormationController::class, 'accueil'])->name('formations.admin_accueil');
 Route::get('/admin/formations/export', [App\Http\Controllers\Admin\FormationController::class, 'export'])->name('formations.export');
+Route::get('/admin/formations/exportListe', [App\Http\Controllers\Admin\FormationController::class, 'exportListe'])->name('formations.exportListe');
 Route::get('/admin/formations/dashboard', [App\Http\Controllers\Admin\FormationController::class, 'dashboard'])->name('formations.dashboard');
 Route::delete('/admin/formations/{formation}/delete_dashboard', [App\Http\Controllers\Admin\FormationController::class, 'delete_dashboard'])->name('formations.delete_dashboard');
+Route::delete('/admin/formations/{formation}/archive', [App\Http\Controllers\Admin\FormationController::class, 'archive'])->name('formations.archive');
 Route::resource('/admin/formations', App\Http\Controllers\Admin\FormationController::class);
 Route::resource('/admin/categoriesformations', App\Http\Controllers\Admin\CategorieFormationController::class);
 Route::resource('/admin/evaluationsthemes', App\Http\Controllers\Admin\EvaluationthemeController::class);
@@ -82,6 +85,9 @@ Route::get('/admin/sessions/{session}/edit', [App\Http\Controllers\Admin\Session
 Route::put('/admin/sessions/{session}/update', [App\Http\Controllers\Admin\SessionController::class, 'update'])->name('sessions.update');
 Route::delete('/admin/sessions/{session}/destroy', [App\Http\Controllers\Admin\SessionController::class, 'destroy'])->name('sessions.destroy');
 Route::delete('/admin/sessions/{session}/delete_dashboard', [App\Http\Controllers\Admin\SessionController::class, 'delete_dashboard'])->name('sessions.delete_dashboard');
+Route::post('/admin/sessions/{session}/cancel', [App\Http\Controllers\Admin\SessionController::class, 'cancel'])->name('sessions.cancel');
+Route::post('/admin/sessions/{session}/confirm', [App\Http\Controllers\Admin\SessionController::class, 'confirm'])->name('sessions.confirm');
+Route::get('/admin/sessions/{session}/end', [App\Http\Controllers\Admin\SessionController::class, 'end'])->name('sessions.end');
 
 Route::get('/admin/inscrits/{session}/liste', [App\Http\Controllers\Admin\InscritController::class, 'liste'])->name('inscrits.liste');
 Route::delete('/admin/inscrits/{inscrit}/destroy', [App\Http\Controllers\Admin\InscritController::class, 'destroy'])->name('inscrits.destroy');
@@ -183,6 +189,8 @@ Route::get('/registerAbonnement', [App\Http\Controllers\LoginController::class, 
 Route::get('/cancel_paiement', [App\Http\Controllers\UtilisateurController::class, 'cancelPaiement']);
 Route::get('/validation_paiement_carte', [App\Http\Controllers\UtilisateurController::class, 'validationPaiementCarte']);
 
+Route::get('/registerFormation', [App\Http\Controllers\LoginController::class, 'registerFormation']);
+
 Route::get('/cancel_paiement_add_new_card', [App\Http\Controllers\PersonneController::class, 'cancelPaiementNewCard']);
 Route::get('/validation_paiement_carte_new_card', [App\Http\Controllers\PersonneController::class, 'validationPaiementNewCard']);
 
@@ -225,12 +233,14 @@ Route::put('/resetEmail/{personne}', [App\Http\Controllers\LoginController::clas
 
 // affichage des formations et actions liées à l'inscription
 Route::get('/formations', [App\Http\Controllers\FormationController::class, 'accueil'])->name('formations.accueil');
+Route::get('/formations/not_adherent', [App\Http\Controllers\FormationController::class, 'notadherents'])->name('formations.notadherents');
 Route::get('/formations/cancel_paiement', [App\Http\Controllers\FormationController::class, 'cancelPaiement']);
 Route::get('/formations/publiques', [App\Http\Controllers\FormationController::class, 'listePublique'])->name('formations.publiques');
 Route::get('/formations/validation_paiement', [App\Http\Controllers\FormationController::class, 'validationPaiement']);
 Route::get('/formations/notification_paiement', [App\Http\Controllers\ReglementController::class, 'notificationPaiementFormation']);
 Route::get('/formations/attente_paiement_validation/{formation}', [App\Http\Controllers\FormationController::class, 'attentePaiementValidation']);
 Route::get('/formations/{formation}/detail', [App\Http\Controllers\FormationController::class, 'detail'])->name('formations.detail');
+Route::get('/formations/{formation}/detail_notadherents', [App\Http\Controllers\FormationController::class, 'detail_notadherents'])->name('formations.detail_notadherents');
 Route::get('/formations/publiques/{formation}/detail', [App\Http\Controllers\FormationController::class, 'detailPublique'])->name('formations.publiques.detail');
 Route::get('/formations/{secure_code}/payWithSecureCode', [App\Http\Controllers\FormationController::class, 'payWithSecureCode'])->name('formations.payWithSecureCode');
 Route::get('/formations/{md5}/evaluation', [App\Http\Controllers\FormationController::class, 'evaluation'])->name('formations.evaluation');

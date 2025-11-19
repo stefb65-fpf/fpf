@@ -63,7 +63,7 @@ $('a[name=paiementInscription]').on('click', function (e) {
         $('#saveFormationWithoutPaiement').data('ref', session)
         $('#saveFormationWithoutPaiement').removeClass('d-none')
     } else {
-        $('#priceModalPaiementFormation').html(real_price + ' €')
+        $('#priceModalPaiementFormation').html(real_price.toFixed(2).toString() + ' €')
         $('#paiementFormationNeeded').removeClass('d-none')
         $('#paiementFormationNotNeeded').addClass('d-none')
         $('#formationPayVirement').data('ref', session)
@@ -97,12 +97,14 @@ $('#saveFormationWithoutPaiement').on('click', function () {
 $('#formationPayVirement').on('click', function () {
     const ref = $(this).data('ref')
     const link = $(this).data('link')
+    const retour = $(this).data('return')
     $.ajax({
         url:'/api/formations/payByVirement',
         type: 'POST',
         data: {
             ref: ref,
-            link: link
+            link: link,
+            retour: retour
         },
         dataType: 'JSON',
         success: function (data) {
@@ -124,12 +126,14 @@ $('#formationPayVirement').on('click', function () {
 $('#formationPayCb').on('click', function () {
     const ref = $(this).data('ref')
     const link = $(this).data('link')
+    const retour = $(this).data('return')
     $.ajax({
         url:'/api/formations/payByCb',
         type: 'POST',
         data: {
             ref: ref,
-            link: link
+            link: link,
+            retour: retour
         },
         dataType: 'JSON',
         success: function (data) {
@@ -295,15 +299,16 @@ $('a[name=askFormation]').on('click', function (e) {
 $('#confirmAskFormation').on('click', function (e) {
     const level = $(this).data('level')
     const formation = $(this).data('formation')
-    const montant_pec = $(this).data('pec') ===0 ? 0 : $('#askFormationGlobalPrice').val()
-    if (isNaN(parseFloat(montant_pec))) {
-        alert("Veuillez renseigner un montant décimal valide")
-        return
-    }
-    if (montant_pec > $(this).data('cout')) {
-        alert("Le montant de prise en charge ne peut pas être supérieur au coût de la formation")
-        return
-    }
+    // const montant_pec = $(this).data('pec') === 0 ? 0 : $('#askFormationGlobalPrice').val()
+    const montant_pec = 0
+    // if (isNaN(parseFloat(montant_pec))) {
+    //     alert("Veuillez renseigner un montant décimal valide")
+    //     return
+    // }
+    // if (montant_pec > $(this).data('cout')) {
+    //     alert("Le montant de prise en charge ne peut pas être supérieur au coût de la formation")
+    //     return
+    // }
     $.ajax({
         url: '/api/formations/askFormation',
         type: 'POST',

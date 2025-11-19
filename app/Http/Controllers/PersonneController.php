@@ -33,6 +33,7 @@ use App\Models\Supportmessage;
 use App\Models\Tarif;
 use App\Models\Utilisateur;
 use App\Models\Vote;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -354,6 +355,19 @@ class PersonneController extends Controller
         $formations = Formation::where('published', 1)->whereIn('id', $formations_id)->orderByDesc('created_at')->get();
         foreach ($formations as $formation) {
             $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
+            $last_places = false;
+            foreach($formation->sessions as $session) {
+                // on regarde si le champ start_date est dans moins de 14 jours
+                $startDate = Carbon::parse($session->start_date);
+
+                // Vérifier si start_date est dans moins de 14 jours
+                $now = Carbon::now();
+                if ($startDate->between($now, $now->copy()->addDays(14)) && $session->inscrits->where('status', 1)->count() < $session->places) {
+                    // on regarde si le nombre d'inscrits pour la session est inférieur au nombre de places
+                    $last_places = true;
+                }
+            }
+            $formation->last_places = $last_places;
         }
 
         return view('personnes.mes_formations', compact('formations', 'personne'));
@@ -370,7 +384,8 @@ class PersonneController extends Controller
         }
         $personne_sessions = [];
         $now = new \DateTimeImmutable(date('Y-m-d'));
-        foreach ($formation->sessions as $k => $session) {
+        $last_places = false;
+        foreach ($formation->sessions->where('status', '<', 3) as $k => $session) {
             $session_start_date = new \DateTimeImmutable($session->start_date);
             $interval = $now->diff($session_start_date);
             $session->diff = $interval->format('%a');
@@ -381,7 +396,18 @@ class PersonneController extends Controller
             if ($club) {
                 $formation->sessions[$k]->nom_club = $club->nom;
             }
+
+            // on regarde si le champ start_date est dans moins de 14 jours
+            $startDate = Carbon::parse($session->start_date);
+
+            // Vérifier si start_date est dans moins de 14 jours
+            $now = Carbon::now();
+            if ($startDate->between($now, $now->copy()->addDays(14)) && $session->inscrits->where('status', 1)->count() < $session->places) {
+                // on regarde si le nombre d'inscrits pour la session est inférieur au nombre de places
+                $last_places = true;
+            }
         }
+        $formation->last_places = $last_places;
         $formation->sessions = $personne_sessions;
         $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
         return view('personnes.mes_formations_detail', compact('formation', 'personne', 'inscriptions'));
@@ -795,7 +821,12 @@ class PersonneController extends Controller
             }
         }
         if ($membre_club == 0) {
-            $tarif_id = 19;
+            $adresse = $personne->adresses()->first();
+            if ($adresse && strtolower($adresse['pays']) == 'france') {
+                $tarif_id = 19;
+            } else {
+                $tarif_id = 20;
+            }
 //            return redirect()->route('accueil');
         } else {
             $tarif_id = $tarif_reduit ? 17 : 19;

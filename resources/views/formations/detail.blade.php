@@ -26,8 +26,7 @@
                             @if($formation->type == 1 || $formation->type == 2)
                                 <div class="tag bgPurpleLight">Présentiel</div>
                             @endif
-                            {{--                                TODO: gérer le tag dernières places en fonction des places réservées et des places disponibles--}}
-                            @if($formation->places <  5)
+                            @if($formation->last_places)
                                 <div class="tag bgRed">Dernières Places</div>
                             @endif
                             @if($formation->categorie)
@@ -161,33 +160,41 @@
                                 @endif
                             </div>
                         @endif
-                        @foreach($formation->sessions as $k => $session)
+                        @foreach($formation->sessions->where('status', '<', 3) as $k => $session)
                             @if($session->start_date >= date('Y-m-d'))
                                 <div class="sessionContainer">
                                     @if($session->club_id)
                                         <div class="bold">
                                             Organisé par le club {{ $session->nom_club }}
-                                            @if($session->pec > 0)
-                                                <span class="ml10">- Montant pris en charge par le club: {{ $session->pec }}€</span>
-                                            @endif
+{{--                                            @if($session->pec > 0)--}}
+{{--                                                <span class="ml10">- Montant pris en charge par le club: {{ $session->pec }}€</span>--}}
+{{--                                            @endif--}}
                                         </div>
                                     @else
                                         @if($session->ur_id)
                                             <div class="bold">
                                                 Organisé par l'UR {{ str_pad($session->ur_id, 2, '0', STR_PAD_LEFT) }}
-                                                @if($session->pec > 0)
-                                                    <span class="ml10">- Montant pris en charge par l'UR: {{ $session->pec }}€</span>
-                                                @endif
+{{--                                                @if($session->pec > 0)--}}
+{{--                                                    <span class="ml10">- Montant pris en charge par l'UR: {{ $session->pec }}€</span>--}}
+{{--                                                @endif--}}
                                             </div>
                                         @else
                                             <div class="bold">
                                                 Organisé par la FPF
-                                                @if($session->pec > 0)
-                                                    <span class="ml10">- Montant pris en charge par la FPF: {{ $session->pec }}€</span>
-                                                @endif
+{{--                                                @if($session->pec > 0)--}}
+{{--                                                    <span class="ml10">- Montant pris en charge par la FPF: {{ $session->pec }}€</span>--}}
+{{--                                                @endif--}}
                                             </div>
                                         @endif
                                     @endif
+                                        @if(($session->club_id || $session->ur_id) && $session->reste_a_charge > 0)
+                                            <div>
+                                                Prise en charge par {{ $session->ur_id ? 'l\'UR' : 'le club' }}: {{ $session->reste_a_charge }}€
+                                                @if($session->pec_fpf > 0)
+                                                    - Prise en charge par la FPF: {{ $session->pec_fpf }}€
+                                                @endif
+                                            </div>
+                                        @endif
                                     <div class="sessionContainerWrapper">
                                         <div class="start">
                                             <div class="icon mr10">
@@ -368,8 +375,8 @@
         </div>
         <div class="modalEditFooter">
             <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>
-            <div class="adminPrimary btnMedium mr10" id="formationPayVirement" data-link="" data-ref="">Payer par virement</div>
-            <div class="adminPrimary btnMedium mr10" id="formationPayCb" data-link="" data-ref="">Payer par CB</div>
+            <div data-return="detail" class="adminPrimary btnMedium mr10" id="formationPayVirement" data-link="" data-ref="">Payer par virement</div>
+            <div data-return="detail" class="adminPrimary btnMedium mr10" id="formationPayCb" data-link="" data-ref="">Payer par CB</div>
             <div class="adminPrimary btnMedium mr10 d-none" id="saveFormationWithoutPaiement" data-ref="">Valider mon inscription</div>
         </div>
     </div>
@@ -425,23 +432,26 @@
         <div class="modalEditBody">
             Vous souhaitez soumettre une demande d'organisation de session de formation <span
                 class="bold">{{ $formation->name }}</span>.<br>
-            Une fois votre demande validée, vous serez contacté par les responsables du département formation.
-            @if($formation->global_price > 0)
-                <div class="mt10">
-                    Le financement de cette formation peut être pris en charge, totalement ou partiellement, par votre structure.
-                    Si tel est le cas, les inscrits à la formation devront :
-                    <ul style="list-style-type: circle; margin-left: 40px;">
-                        <li>ne rien débourser si vous prenez la totalité de la formation à votre charge</li>
-                        <li>débourser la somme résultant du calcul : (coût formation - montant prise en charge) / nombre de places</li>
-                    </ul>
-                    <br>
-                    Le coût global de la formation est de <span class="bold">{{ $formation->global_price }} €</span>.
-                    <div class="mt10">
-                        <label for="askFormationGlobalPrice">Montant de la prise en charge (laissez à 0 si pas de prise en charge)</label>
-                        <input type="number" id="askFormationGlobalPrice" name="askFormationGlobalPrice" value="0" style="width: 150px; text-align: center" />
-                    </div>
-                </div>
-            @endif
+            Pour un club ou une UR, le coût de la formation est pris en charge à 100% par la structure.<br>Les adhérents qui s'inscrivent n'auront alors rien à payer.<br>
+            Le coût global de la formation est de <b>{{ $formation->global_price }} €</b>.<br><br>
+            Une fois votre demande validée, vous serez contacté par les responsables du département formation.<br>S'il s'agit d'une formation en présentiel, le coût d'éventuels frais de déplacement seront précisés par le formateur.<br>
+            Nous reviendrons alors vers vous avant de créer la session de formation.
+{{--            @if($formation->global_price > 0)--}}
+{{--                <div class="mt10">--}}
+{{--                    Le financement de cette formation peut être pris en charge, totalement ou partiellement, par votre structure.--}}
+{{--                    Si tel est le cas, les inscrits à la formation devront :--}}
+{{--                    <ul style="list-style-type: circle; margin-left: 40px;">--}}
+{{--                        <li>ne rien débourser si vous prenez la totalité de la formation à votre charge</li>--}}
+{{--                        <li>débourser la somme résultant du calcul : (coût formation - montant prise en charge) / nombre de places</li>--}}
+{{--                    </ul>--}}
+{{--                    <br>--}}
+{{--                    Le coût global de la formation est de <span class="bold">{{ $formation->global_price }} €</span>.--}}
+{{--                    <div class="mt10">--}}
+{{--                        <label for="askFormationGlobalPrice">Montant de la prise en charge (laissez à 0 si pas de prise en charge)</label>--}}
+{{--                        <input type="number" id="askFormationGlobalPrice" name="askFormationGlobalPrice" value="0" style="width: 150px; text-align: center" />--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            @endif--}}
         </div>
         <div class="modalEditFooter">
             <div class="adminDanger btnMedium mr10 modalEditClose">Annuler</div>

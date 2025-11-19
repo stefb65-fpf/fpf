@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\Configsaison;
+use App\Models\Histoevent;
 use App\Models\Reglement;
 use App\Models\Utilisateur;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -230,5 +232,246 @@ class StatistiquesController extends Controller
         }
         return new JsonResponse(['adhesions' => $tab_adhesion, 'clubs' => $tab_clubs, 'current_year' => $saison_actuelle_str, 'prev_year' => $saison_future_str], 200);
     }
+
+
+
+//    public function gestStatsEvolutionSaisons()
+//    {
+//        $today = Carbon::today();
+//
+//        // Déterminer la saison actuelle
+//        // Si on est après le 1er septembre, la saison commence cette année
+//        // Sinon, elle a commencé l'année précédente
+//        $currentSeasonStart = $today->month >= 9
+//            ? Carbon::create($today->year, 9, 1)->startOfDay()
+//            : Carbon::create($today->year - 1, 9, 1)->startOfDay();
+//
+//        $previousSeasonStart = $currentSeasonStart->copy()->subYear();
+//        $currentSeasonEnd    = $currentSeasonStart->copy()->addYear()->endOfMonth()->endOfDay();
+//        $previousSeasonEnd   = $previousSeasonStart->copy()->addYear()->endOfMonth()->endOfDay();
+//
+//        // On limite la comparaison jusqu'à la même "date relative" dans la saison précédente
+//        $nbDaysSinceStart = $today->diffInDays($currentSeasonStart);
+//        $compareUntilCurrent = $currentSeasonStart->copy()->addDays($nbDaysSinceStart)->endOfDay();
+//        $compareUntilPrevious = $previousSeasonStart->copy()->addDays($nbDaysSinceStart)->endOfDay();
+//
+//
+//        // --- Données Saison actuelle ---
+//        $dataCurrent = Histoevent::query()
+//            ->selectRaw('DATE(created_at) as date, COUNT(DISTINCT personne_id) as count')
+//            ->where('event_id', 1)
+//            ->whereBetween('created_at', [$currentSeasonStart, $compareUntilCurrent])
+//            ->groupByRaw('DATE(created_at)')
+//            ->orderBy('date')
+//            ->get();
+//
+//        // --- Données Saison précédente ---
+//        $dataPrevious = Histoevent::query()
+//            ->selectRaw('DATE(created_at) as date, COUNT(DISTINCT personne_id) as count')
+//            ->where('event_id', 1)
+//            ->whereBetween('created_at', [$previousSeasonStart, $compareUntilPrevious])
+//            ->groupByRaw('DATE(created_at)')
+//            ->orderBy('date')
+//            ->get();
+//
+//        // Si pas de données pour l’une des deux saisons → pas de graphique
+//        if ($dataCurrent->isEmpty() || $dataPrevious->isEmpty()) {
+//            return response()->json(['message' => 'Pas assez de données pour comparer les deux saisons.'], 204);
+//        }
+//
+//        // --- Calcul cumulatif ---
+//        $cumulCurrent = [];
+//        $totalC = 0;
+//        foreach ($dataCurrent as $row) {
+//            $totalC += $row->count;
+//            $cumulCurrent[$row->date] = $totalC;
+//        }
+//
+//        $cumulPrevious = [];
+//        $totalP = 0;
+//        foreach ($dataPrevious as $row) {
+//            $totalP += $row->count;
+//            $cumulPrevious[$row->date] = $totalP;
+//        }
+//
+//        // --- Génération de la série temporelle alignée ---
+//        $output = [];
+//        for ($i = 0; $i <= $nbDaysSinceStart; $i++) {
+//            $dateC = $currentSeasonStart->copy()->addDays($i);
+//            $dateP = $previousSeasonStart->copy()->addDays($i);
+//
+//            $output[] = [
+//                'jour' => $dateC->format('d/m'),
+//                'previous' => $cumulPrevious[$dateP->format('Y-m-d')] ?? null,
+//                'current'  => $cumulCurrent[$dateC->format('Y-m-d')] ?? null,
+//            ];
+//        }
+//
+//        return response()->json([
+//            'labelPrevious' => $previousSeasonStart->year . '-' . $previousSeasonEnd->year,
+//            'labelCurrent'  => $currentSeasonStart->year . '-' . $currentSeasonEnd->year,
+//            'data' => $output
+//        ]);
+//    }
+
+    public function gestStatsEvolutionSaisons(Request $request)
+    {
+        $level = $request->level;
+        $ur_id = $request->ur_id;
+        $ct = $request->ct;
+        $today = Carbon::today();
+
+        // Déterminer la saison actuelle
+        $currentSeasonStart = $today->month >= 9
+            ? Carbon::create($today->year, 9, 1)->startOfDay()
+            : Carbon::create($today->year - 1, 9, 1)->startOfDay();
+
+        $previousSeasonStart = $currentSeasonStart->copy()->subYear();
+        $currentSeasonEnd    = $currentSeasonStart->copy()->addYear()->endOfMonth()->endOfDay();
+        $previousSeasonEnd   = $previousSeasonStart->copy()->addYear()->endOfMonth()->endOfDay();
+
+        // On limite la comparaison à la même date relative
+        $nbDaysSinceStart = $today->diffInDays($currentSeasonStart);
+        $compareUntilCurrent  = $currentSeasonStart->copy()->addDays($nbDaysSinceStart)->endOfDay();
+        $compareUntilPrevious = $previousSeasonStart->copy()->addDays($nbDaysSinceStart)->endOfDay();
+
+        // ---- Récupération des données ----
+        $dataPersonne = $this->getCumulAdhesions(
+            'personne',
+            $currentSeasonStart,
+            $compareUntilCurrent,
+            $previousSeasonStart,
+            $compareUntilPrevious,
+            $level,
+            $ur_id,
+            $ct
+        );
+
+        $dataClub = $this->getCumulAdhesions(
+            'club',
+            $currentSeasonStart,
+            $compareUntilCurrent,
+            $previousSeasonStart,
+            $compareUntilPrevious,
+            $level,
+            $ur_id,
+            $ct
+        );
+
+        // Si aucune donnée pour l’un ou l’autre → on renvoie quand même, mais vide
+        return response()->json([
+            'labelPrevious' => $previousSeasonStart->year . '-' . $previousSeasonEnd->year,
+            'labelCurrent'  => $currentSeasonStart->year . '-' . $currentSeasonEnd->year,
+            'personnes'     => $dataPersonne,
+            'clubs'         => $dataClub,
+        ]);
+    }
+
+    /**
+     * Calcule les cumulés jour par jour pour un type donné (personne ou club)
+     */
+    private function getCumulAdhesions(
+        string $type,
+        Carbon $startCurrent,
+        Carbon $endCurrent,
+        Carbon $startPrevious,
+        Carbon $endPrevious,
+        $level = 'fpf',
+        $ur_id = 0,
+        $ct = ''
+    ) {
+        if ($type === 'personne') {
+            $queryFilter = ['histoevents.personne_id', '!=', null];
+        } else {
+            $queryFilter = ['club_id', '!=', null];
+        }
+
+        // Saison actuelle
+        $current = Histoevent::query()
+            ->selectRaw('DATE(histoevents.created_at) as date, COUNT(DISTINCT ' . $queryFilter[0] . ') as count')
+            ->where('event_id', 1)
+            ->where($queryFilter[0], $queryFilter[1], $queryFilter[2])
+            ->whereBetween('histoevents.created_at', [$startCurrent, $endCurrent]);
+
+        // Saison précédente
+        $previous = Histoevent::query()
+            ->selectRaw('DATE(histoevents.created_at) as date, COUNT(DISTINCT ' . $queryFilter[0] . ') as count')
+            ->where('event_id', 1)
+            ->where($queryFilter[0], $queryFilter[1], $queryFilter[2])
+            ->whereBetween('histoevents.created_at', [$startPrevious, $endPrevious]);
+
+        if ($level !== 'fpf' && $ur_id > 0) {
+            if ($type === 'personne') {
+                // On joint utilisateurs pour filtrer par ur_id
+                $current->join('utilisateurs', 'histoevents.utilisateur_id', '=', 'utilisateurs.id')
+                    ->where('utilisateurs.urs_id', $ur_id);
+                $previous->join('utilisateurs', 'histoevents.utilisateur_id', '=', 'utilisateurs.id')
+                    ->where('utilisateurs.urs_id', $ur_id);
+                if ($ct != '') {
+                    $current->where('utilisateurs.ct', $ct);
+                    $previous->where('utilisateurs.ct', $ct);
+                }
+            } else {
+                // On joint clubs pour filtrer par ur_id
+                $current->join('clubs', 'histoevents.club_id', '=', 'clubs.id')
+                    ->where('clubs.urs_id', $ur_id);
+                $previous->join('clubs', 'histoevents.club_id', '=', 'clubs.id')
+                    ->where('clubs.urs_id', $ur_id);
+            }
+        } else {
+            if ($ct != '' && $type === 'personne') {
+                $current->join('utilisateurs', 'histoevents.utilisateur_id', '=', 'utilisateurs.id')
+                    ->where('utilisateurs.ct', $ct);
+                $previous->join('utilisateurs', 'histoevents.utilisateur_id', '=', 'utilisateurs.id')
+                    ->where('utilisateurs.ct', $ct);
+            }
+        }
+
+        $current = $current->groupByRaw('DATE(histoevents.created_at)')
+            ->orderBy('date')
+            ->get();
+
+        // Saison précédente
+        $previous = $previous->groupByRaw('DATE(histoevents.created_at)')
+            ->orderBy('date')
+            ->get();
+
+        if ($current->isEmpty() || $previous->isEmpty()) {
+            return [];
+        }
+
+        // Cumul jour par jour
+        $cumulCurrent = [];
+        $totalC = 0;
+        foreach ($current as $row) {
+            $totalC += $row->count;
+            $cumulCurrent[$row->date] = $totalC;
+        }
+
+        $cumulPrevious = [];
+        $totalP = 0;
+        foreach ($previous as $row) {
+            $totalP += $row->count;
+            $cumulPrevious[$row->date] = $totalP;
+        }
+
+        // Alignement des deux saisons jour par jour
+        $nbDays = $endCurrent->diffInDays($startCurrent);
+        $output = [];
+
+        for ($i = 0; $i <= $nbDays; $i++) {
+            $dateC = $startCurrent->copy()->addDays($i);
+            $dateP = $startPrevious->copy()->addDays($i);
+
+            $output[] = [
+                'jour'     => $dateC->format('d/m'),
+                'previous' => $cumulPrevious[$dateP->format('Y-m-d')] ?? null,
+                'current'  => $cumulCurrent[$dateC->format('Y-m-d')] ?? null,
+            ];
+        }
+
+        return $output;
+    }
+
 
 }

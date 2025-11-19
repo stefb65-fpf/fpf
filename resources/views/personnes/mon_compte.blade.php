@@ -18,6 +18,11 @@
             Pour consulter et renouveler votre abonnement, vous devez vous rendre dans l'onglet <a href="{{ route("abonnement") }}" class="blue bold">"Abonnement"</a> de votre compte.
         </div>
     </div>
+    @if($personne->creance > 0)
+        <div class="bg-creance mt25">
+            Vous disposez d'un avoir de {{ $personne->creance }}€ pour vos prochaines opérations sur la base en ligne
+        </div>
+    @endif
 {{--        @if(isset($cartes[0]) && is_null($cartes[0]->clubs_id) && !in_array($cartes[0]->statut, [2,3]))--}}
 {{--            @if($bad_profil == 2)--}}
 {{--                <div class="alertInfo w80">--}}

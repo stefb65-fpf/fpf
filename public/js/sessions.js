@@ -33,3 +33,21 @@ $('a[name=sessionPayCb]').on('click', function () {
         }
     });
 })
+
+$('a[name=sessionPayCreance]').on('click', function () {
+    const ref = $(this).data('ref')
+    $.ajax({
+        url:'/api/sessions/payByCreance',
+        type: 'POST',
+        data: {
+            ref: ref,
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            $(location).attr('href', $(location).attr('href'))
+        },
+        error: function (e) {
+            alert(e.responseJSON.erreur)
+        }
+    });
+})

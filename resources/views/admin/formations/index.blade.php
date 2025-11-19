@@ -10,9 +10,56 @@
                 </svg>
             </a>
         </h1>
+        <form method="GET" action="{{ route('formations.index') }}" style="display: flex; justify-content: center; gap: 5px; margin-bottom: 20px;">
+            {{-- Type --}}
+            <select name="type" style="padding: 5px 10px;background-color: white;border-radius: 5px;">
+                <option value="">-- Type --</option>
+                @foreach($types as $t => $type)
+                    <option value="{{ $t }}" {{ request('type') === (string) $t ? 'selected' : '' }}>
+                        {{ ucfirst($type) }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Catégorie --}}
+            <select name="categorie" style="padding: 5px 10px;background-color: white;border-radius: 5px;">
+                <option value="">-- Catégorie --</option>
+                @foreach($categories as $categorie)
+                    <option value="{{ $categorie->id }}" {{ request('categorie') == $categorie->id ? 'selected' : '' }}>
+                        {{ $categorie->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Formateur --}}
+            <select name="formateur" style="padding: 5px 10px;background-color: white;border-radius: 5px;">
+                <option value="">-- Formateur --</option>
+                @foreach($tab_formateurs as $formateur)
+                    <option value="{{ $formateur->id }}" {{ request('formateur') == $formateur->id ? 'selected' : '' }}>
+                        {{ $formateur->title }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Nouveau --}}
+            <select name="new" style="padding: 5px 10px;background-color: white;border-radius: 5px;">
+                <option value="">-- Nouveau --</option>
+                <option value="1" {{ request('new') === '1' ? 'selected' : '' }}>Oui</option>
+                <option value="0" {{ request('new') === '0' ? 'selected' : '' }}>Non</option>
+            </select>
+
+            <button type="submit" class="btnMedium adminPrimary">Filtrer</button>
+            @if(request()->hasAny(['type', 'categorie', 'formateur', 'new']))
+                <a href="{{ route('formations.index') }}" class="btnMedium adminDanger">
+                    Réinitialiser
+                </a>
+            @endif
+        </form>
+
         <div class="d-flex justify-center">
             <a href="{{ route('formations.create') }}" class="btnMedium adminPrimary">Ajouter une formation</a>
             <a href="{{ route('formations.export') }}" class="btnMedium adminWarning ml10">Récapitulatif formations</a>
+            <a href="{{ route('formations.exportListe') }}" class="btnMedium adminSuccess ml10">Liste de toutes les formations</a>
         </div>
         @foreach($formations as $formation)
             <div class="cardList mt30" id="{{ $formation->id }}">
@@ -32,7 +79,7 @@
                             @if(sizeof($formation->sessions->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))) > 0)
                                 <div class="tag" style="background-color: #3c3c3c">
                                     Prochaines dates
-                                    @foreach($formation->sessions->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
+                                    @foreach($formation->sessions->where('status', '<', 3)->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
                                         <span class="ml10">{{ date("d/m/Y",strtotime($session->start_date)) }}</span>
                                     @endforeach
                                 </div>
@@ -151,6 +198,9 @@
                             <a href="{{ route('formations.activate', $formation->id) }}" class="btnSmall ml10 adminSuccess">Publier</a>
                         @endif
                         <a href="{{ route('formations.edit', $formation->id) }}" class="btnSmall ml10 adminPrimary">Voir / Modifier</a>
+                        @if($formation->published == 0)
+                            <a href="{{ route('formations.archive', $formation->id) }}" data-method="delete"  data-confirm="Voulez-vous vraiment archiver cette formation ? Elle sera conservée en base mais ne sera plus visible dans votre liste" class="btnSmall ml10 adminDanger">Archiver</a>
+                        @endif
                         <a href="{{ route('formations.destroy', $formation->id) }}" data-method="delete"  data-confirm="Voulez-vous vraiment supprimer cette formation ?" class="btnSmall ml10 adminDanger">Supprimer</a>
                     </div>
                 </div>

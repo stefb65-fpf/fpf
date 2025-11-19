@@ -269,6 +269,12 @@ class LoginController extends Controller
         return view('auth.registerAbonnement', compact('countries'));
     }
 
+    public function registerFormation()
+    {
+        $countries = DB::table('pays')->orderBy('nom')->get();
+        return view('auth.registerFormation', compact('countries'));
+    }
+
     // affichage de la vue pour adhésion individuelle
     public function registerAdhesion()
     {

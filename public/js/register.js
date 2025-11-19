@@ -81,6 +81,163 @@ $('#checkNewUser').on('click', function () {
     })
 })
 
+
+$('#registerFormation').on('click', function() {
+    $('div[name=error]').removeClass('visible')
+    $('div[name=error]').html('')
+    if ($('#lastnameRegister').val() == '') {
+        console.log('erreur noù')
+        $('#lastnameRegister').parent().find('div[name=error]').html('Veuillez saisir votre nom')
+        $('#lastnameRegister').parent().find('div[name=error]').addClass('visible')
+        return
+    }
+    if ($('#firstnameRegister').val() == '') {
+        $('#firstnameRegister').parent().find('div[name=error]').html('Veuillez saisir votre prénom')
+        $('#firstnameRegister').parent().find('div[name=error]').addClass('visible')
+        return
+    }
+    if ($('#emailRegister').val() == '') {
+        $('#emailRegister').parent().find('div[name=error]').html('Veuillez saisir votre email')
+        $('#emailRegister').parent().find('div[name=error]').addClass('visible')
+        return
+    }
+    const regEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/
+    if (!regEmail.test($('#emailRegister').val())) {
+        $('#emailRegister').parent().find('div[name=error]').html("L'email n'est pas valide")
+        $('#emailRegister').parent().find('div[name=error]').addClass('visible')
+        return
+    }
+    if ($('#passwordRegister').val() == '') {
+        $('#passwordRegister').parent().parent().find('div[name=error]').html('Veuillez saisir votre mot de passe')
+        $('#passwordRegister').parent().parent().find('div[name=error]').addClass('visible')
+        return
+    }
+    if ($('#passwordRegister').val().length < 8 || $('#passwordRegister').val().length > 30) {
+        $('#passwordRegister').parent().parent().find('div[name=error]').html('Le mot de passe doit contenir entre 8 et 30 caractères')
+        $('#passwordRegister').parent().parent().find('div[name=error]').addClass('visible')
+        return
+    }
+
+    const regUpper = /^(.*[A-Z].*)+$/
+    const regLower = /^(.*[a-z].*)+$/
+    const regNumber = /^(.*[0-9].*)+$/
+    if (!regUpper.test($('#passwordRegister').val())) {
+        $('#passwordRegister').parent().parent().find('div[name=error]').html('Le mot de passe doit contenir au moins une majuscule')
+        $('#passwordRegister').parent().parent().find('div[name=error]').addClass('visible')
+        return
+    }
+    if (!regLower.test($('#passwordRegister').val())) {
+        $('#passwordRegister').parent().parent().find('div[name=error]').html('Le mot de passe doit contenir au moins une minuscule')
+        $('#passwordRegister').parent().parent().find('div[name=error]').addClass('visible')
+        return
+    }
+    if (!regNumber.test($('#passwordRegister').val())) {
+        $('#passwordRegister').parent().parent().find('div[name=error]').html('Le mot de passe doit contenir au moins un chiffre')
+        $('#passwordRegister').parent().parent().find('div[name=error]').addClass('visible')
+        return
+    }
+    if ($('#codepostalRegister').val() == '') {
+        $('#codepostalRegister').parent().parent().find('div[name=error]').html('Veuillez saisir votre code postal')
+        $('#codepostalRegister').parent().parent().find('div[name=error]').addClass('visible')
+        return
+    }
+    if ($('#villeRegister').val() == '') {
+        $('#villeRegister').parent().parent().find('div[name=error]').html('Veuillez saisir votre commune')
+        $('#villeRegister').parent().parent().find('div[name=error]').addClass('visible')
+        return
+    }
+
+    if ($('#phoneRegister').val() == '') {
+        $('#phoneRegister').parent().find('div[name=error]').html('Veuillez saisir votre nméro de téléphone moble')
+        $('#phoneRegister').parent().find('div[name=error]').addClass('visible')
+        return
+    }
+
+    $.ajax({
+        url: '/api/utilisateurs/checkBeforeInsertion',
+        type: 'POST',
+        data: {
+            email: $('#emailRegister').val(),
+            nom: $('#lastnameRegister').val(),
+            prenom: $('#firstnameRegister').val()
+        },
+        success: function (data) {
+            if (data.code == 30) {
+                alert("Vous ne pouvez pas saisir une adresse email contenant le nom de domaine federation-photo.fr")
+                return
+            }
+            if (data.code == 10 || data.code == 40) {
+                $('#emailRegister').parent().find('div[name=error]').html('Cette adresse email est déjà présente dans notre base de données. Vous pouvez vous connecter ou ré-initialiser votre mot de passe')
+                $('#emailRegister').parent().find('div[name=error]').addClass('visible')
+                return
+            }
+            if (data.code == 20) {
+                $('#nameSameName').html('')
+                $.each(data.personnes, function(index, personne) {
+                    let chaine = '<div class="selectPersonne" data-ref="' + personne.id + '">' + personne.prenom + ' ' + personne.nom + ' - ' + personne.email + '</div>'
+                    $('#nameSameName').append(chaine)
+                })
+                $('#modalSameName').removeClass('d-none')
+                return
+            }
+
+            let datas = {
+                sexe: $('input[type=radio][name=sexe]:checked').val(),
+                nom: $('#lastnameRegister').val(),
+                prenom: $('#firstnameRegister').val(),
+                email: $('#emailRegister').val(),
+                password: $('#passwordRegister').val(),
+                codepostal: $('#codepostalRegister').val(),
+                ville: $('#villeRegister').val(),
+                phone_mobile: $('#phoneRegister').val(),
+            };
+
+            $.ajax({
+                url: '/api/utilisateurs/registerFormation',
+                type: 'POST',
+                data: datas,
+                success: function (data) {
+                    $('#modalConfirmRegister').removeClass('d-none')
+                },
+                error: function (err) {
+                    alert('Une erreur est survenue lors de l\'enregistrement de votre compte. ' + err.responseJSON.erreur)
+                }
+            })
+
+        },
+        error: function (err) {
+            alert('Une erreur est survenue lors de la vérification des informations.')
+        }
+    })
+
+})
+
+$('#confirmSameNameRegister').on('click', function() {
+    let datas = {
+        sexe: $('input[type=radio][name=sexe]:checked').val(),
+        nom: $('#lastnameRegister').val(),
+        prenom: $('#firstnameRegister').val(),
+        email: $('#emailRegister').val(),
+        password: $('#passwordRegister').val(),
+        codepostal: $('#codepostalRegister').val(),
+        ville: $('#villeRegister').val(),
+        phone_mobile: $('#phoneRegister').val(),
+    };
+
+    $.ajax({
+        url: '/api/utilisateurs/registerFormation',
+        type: 'POST',
+        data: datas,
+        success: function (data) {
+            $('#modalSameName').addClass('d-none')
+            $('#modalConfirmRegister').removeClass('d-none')
+        },
+        error: function (err) {
+            alert('Une erreur est survenue lors de l\'enregistrement de votre compte. ' + err.responseJSON.erreur)
+        }
+    })
+})
+
 $('input[class=autosuggestCFA]').on('keyup', function () {
     const elem = $(this)
     const ul = $(this).parent().find('ul')

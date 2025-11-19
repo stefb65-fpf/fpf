@@ -14,6 +14,7 @@ use App\Models\Personne;
 use App\Models\Photo;
 use App\Models\Reglement;
 use App\Models\Rphoto;
+use App\Models\Souscription;
 use App\Models\Tarif;
 use App\Models\Utilisateur;
 use Illuminate\Http\JsonResponse;
@@ -214,9 +215,12 @@ class ReglementController extends Controller
 
         $config = Configsaison::where('id', 1)->first();
         $numero_en_cours = $config->numeroencours;
+        $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+        $prix_florilege = $tarif_florilege_france->tarif;
 
         $tab_utilisateurs = [];
         foreach ($reglement->utilisateurs as $utilisateur) {
+            $montant_florilege = 0;
             $reglement_utilisateur = DB::table('reglementsutilisateurs')
                 ->where('reglements_id', '=', $reglement->id)
                 ->where('utilisateurs_id', '=', $utilisateur->id)
@@ -246,6 +250,10 @@ class ReglementController extends Controller
                     $tarif_abo_supp = Tarif::where('statut', 0)->where('id', 19)->first();
                     $tarif_supp = $tarif_abo_supp->tarif;
                 }
+                if ($reglement_utilisateur->florilege > 0) {
+                    $montant_florilege = floatval($reglement_utilisateur->florilege * $prix_florilege);
+                }
+
 
                 $ligne = [
                     'id' => $utilisateur->id,
@@ -255,6 +263,8 @@ class ReglementController extends Controller
                     'tarif_abo' => $tarif_supp,
                     'ct' => $utilisateur->ct,
                     'abonnement' => $reglement_utilisateur->abonnement,
+                    'florilege' => $reglement_utilisateur->florilege,
+                    'montant_florilege' => $montant_florilege,
                     'nb_numeros_restant' => $nb_numeros_restant,
                     'nb_numeros_envoyes' => $nb_numeros_envoyes,
                     'montant_non_rembourse' => $montant_non_rembourse,
@@ -440,6 +450,9 @@ class ReglementController extends Controller
         $config = Configsaison::where('id', 1)->first();
         $numero_en_cours = $config->numeroencours;
 
+        $tarif_florilege_france = Tarif::where('statut', 0)->where('id', 21)->first();
+        $prix_florilege = $tarif_florilege_france->tarif;
+
         $utilisateurs = Utilisateur::whereIn('id', $tab_adherents)->get();
 
         $tab_remboursements = [];
@@ -513,6 +526,20 @@ class ReglementController extends Controller
                     }
                 }
 
+                if ($reglement_utilisateur->florilege > 0) {
+                    $montant_florilege = floatval($reglement_utilisateur->florilege * $prix_florilege);
+                    $montant_creance += $montant_florilege;
+                    $montant_creance_utilisateur += $montant_florilege;
+
+                    $existing_subscription = Souscription::where('personne_id', $utilisateur->personne->id)
+                        ->where('statut', 1)
+                        ->where('ref_reglement', $reglement->reference)
+                        ->first();
+                    if ($existing_subscription) {
+                        $existing_subscription->delete();
+                    }
+                }
+
                 $tab_remboursements[] = [
                     'adherent' => $utilisateur->identifiant.' - '.$utilisateur->personne->nom.' '.$utilisateur->personne->prenom,
                     'adhesion' => $tarif,
@@ -538,7 +565,7 @@ class ReglementController extends Controller
             $club->update($datac);
 
             // on crée la facture d'avoir
-            $description = "Avoir pour annulation d'adhésions pour le club ".$club->nom." pour la saison courante";
+            $description = "Avoir pour annulation d'adhésions / abonnements / souscriptions florilège pour le club ".$club->nom." pour la saison courante";
             $datai = [
                 'reference' => $reglement->reference,
                 'description' => $description,

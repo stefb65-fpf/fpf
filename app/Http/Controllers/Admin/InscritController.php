@@ -31,6 +31,15 @@ class InscritController extends Controller
         if (!$this->checkDroit('GESFOR')) {
             return redirect()->route('accueil');
         }
+        foreach ($session->inscrits as $inscrit) {
+            $is_federe = false;
+            if ($inscrit->personne->utilisateurs) {
+                if ($inscrit->personne->utilisateurs->whereIn('statut', [2, 3])->count() > 0) {
+                    $is_federe = true;
+                }
+            }
+            $inscrit->is_federe = $is_federe;
+        }
         return view('admin.inscrits.liste', compact('session'));
     }
 
@@ -58,7 +67,9 @@ class InscritController extends Controller
         $personne->update(['creance' => $personne->creance + $amount]);
 
         // on crée une facture d'avoir
-        $description = "Avoir pour annulation d'une inscription à une formation pour ".$personne->nom.' '.$personne->prenom;
+//        $description = "Avoir pour annulation d'une inscription à une formation pour ".$personne->nom.' '.$personne->prenom;
+//        $description = "Avoir pour annulation d'une inscription à la formation ".$session->formation->name." pour ".$personne->nom.' '.$personne->prenom;
+        $description = "Avoir pour annulation d'une inscription à la formation ".$session->formation->name." pour la session du ".date("d/m/Y",strtotime($session->start_date))." pour ".$personne->nom.' '.$personne->prenom;
         $datai = [
             'reference' => $reference,
             'description' => $description,
@@ -94,13 +105,17 @@ class InscritController extends Controller
         // on récupère tous les inscrits de la session
         $inscrits = $session->inscrits->where('attente', 0)->where('status', 1);
         foreach ($inscrits as $inscrit) {
-            $utilisateur = Utilisateur::where('personne_id', $inscrit->personne_id)
-                ->whereIn('statut', [0,1,2,3])
-                ->orderByDesc('statut')
-                ->selectRaw('identifiant')
-                ->first();
-            if ($utilisateur) {
-                $inscrit->identifiant = $utilisateur->identifiant;
+            if ($inscrit->utilisateur_id) {
+                $inscrit->identifiant = $inscrit->utilisateur->identifiant;
+            } else {
+                $utilisateur = Utilisateur::where('personne_id', $inscrit->personne_id)
+                    ->whereIn('statut', [0,1,2,3])
+                    ->orderByDesc('statut')
+                    ->selectRaw('identifiant')
+                    ->first();
+                if ($utilisateur) {
+                    $inscrit->identifiant = $utilisateur->identifiant;
+                }
             }
         }
         $fichier = 'session_'.$session->id.'_inscrits_' . date('YmdHis') . '.xls';

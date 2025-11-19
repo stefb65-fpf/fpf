@@ -6,9 +6,11 @@ use App\Concern\Api;
 use App\Concern\FormationTools;
 use App\Concern\Invoice;
 use App\Concern\Tools;
+use App\Mail\ConfirmationInscriptionDept;
 use App\Mail\ConfirmationInscriptionFormation;
 use App\Mail\ConfirmationPriseEnChargeSession;
 use App\Mail\SendInvoice;
+use App\Models\Categorieformation;
 use App\Models\Club;
 use App\Models\Evaluation;
 use App\Models\Evaluationstheme;
@@ -17,7 +19,9 @@ use App\Models\Inscrit;
 use App\Models\Interest;
 use App\Models\Personne;
 use App\Models\Session;
+use App\Models\Ur;
 use App\Models\Utilisateur;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use function Psy\debug;
@@ -34,9 +38,28 @@ class FormationController extends Controller
         $this->middleware('checkLogin')->except(['listePublique', 'detailPublique']);
     }
 
-    public function accueil()
+    public function accueil(Request $request)
     {
-        $formations = Formation::where('published', 1)->orderByDesc('created_at')->get();
+//        $formations = Formation::where('published', 1)->orderByDesc('created_at')->get();
+        $formations = Formation::query()
+            ->with(['formateurs'])
+            ->when($request->filled('type') || $request->type === '0', function ($query) use ($request) {
+                $query->where('type', $request->type);
+            })
+            ->when($request->categorie, function ($query, $categorie) {
+                $query->where('categories_formation_id', $categorie);
+            })
+            ->when($request->formateur, function ($query, $formateurId) {
+                $query->whereHas('formateurs', function ($q) use ($formateurId) {
+                    $q->where('formateur_id', $formateurId);
+                });
+            })
+            ->when($request->new !== null && $request->new !== '', function ($query) use ($request) {
+                $query->where('new', $request->new);
+            })
+            ->where('published', 1)
+            ->orderByDesc('created_at')
+            ->get();
         foreach ($formations as $formation) {
             if (sizeof($formation->sessions->where('start_date', '>=', date('Y-m-d'))) > 0) {
                 $formation->first_date = $formation->sessions->sortBy('start_date')->where('start_date', '>=', date('Y-m-d'))->first()->start_date;
@@ -47,8 +70,53 @@ class FormationController extends Controller
             $formation->location = $this->getFormationCities($formation, $formation->location);
         }
         $formations = $formations->sortBy('first_date');
+        $tab_formateurs = [];
+        foreach ($formations as $k => $formation) {
+            $formations[$k] = $this->checkLastPlaces($formation);
+            foreach ($formation->formateurs as $formateur) {
+                if (!isset($tab_formateurs[$formateur->personne->nom])) {
+                    $tab_formateurs[$formateur->personne->nom] = $formateur;
+                }
+            }
+        }
+        ksort($tab_formateurs);
 
-        return view('formations.accueil', compact('formations'));
+        $types = [0 => 'distanciel', 1 => 'présentiel', 2 => 'les deux'];
+        $categories = CategorieFormation::all();
+        return view('formations.accueil', compact('formations', 'types', 'categories', 'tab_formateurs'));
+    }
+
+    public function notadherents()
+    {
+        $formations = Formation::where('published', 1)->orderByDesc('created_at')->get();
+
+        foreach ($formations as $j => $formation) {
+            foreach ($formation->sessions as $k => $session) {
+                if ($session->ur_id != '') {
+                    unset($formation->sessions[$k]);
+                }
+                if ($session->club_id != '') {
+                    unset($formation->sessions[$k]);
+                }
+            }
+            if (count($formation->sessions) == 0 || sizeof($formation->sessions->where('start_date', '>=', date('Y-m-d'))) == 0) {
+                unset($formations[$j]);
+                continue;
+            }
+            if (sizeof($formation->sessions->where('start_date', '>=', date('Y-m-d'))) > 0) {
+                $formation->first_date = $formation->sessions->sortBy('start_date')->where('start_date', '>=', date('Y-m-d'))->first()->start_date;
+            } else {
+                $formation->first_date = '2222-01-01';
+            }
+
+            $formation->location = $this->getFormationCities($formation, $formation->location);
+        }
+        $formations = $formations->sortBy('first_date');
+        foreach ($formations as $k => $formation) {
+            $formations[$k] = $this->checkLastPlaces($formation);
+        }
+
+        return view('formations.notadherents', compact('formations'));
     }
 
     public function detail(Formation $formation)
@@ -68,6 +136,7 @@ class FormationController extends Controller
         foreach ($personne->inscrits->where('status', 1) as $inscrit) {
             $inscriptions[] = $inscrit->session_id;
         }
+        $this->checkLastPlaces($formation);
         foreach ($formation->sessions as $k => $session) {
             $session_full = 0;
             if ($session->ur_id != '') {
@@ -88,9 +157,31 @@ class FormationController extends Controller
             }
             $formation->sessions[$k]->full = $session_full;
         }
-        $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
+//        $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
         $formation->interest = $this->getFormationInterest($formation);
         return view('formations.detail', compact('formation', 'personne', 'inscriptions'));
+    }
+
+    public function detail_notadherents(Formation $formation)
+    {
+        $user = session()->get('user');
+        $personne = Personne::where('id', $user->id)->first();
+        $price_adherent = 0;
+        $personne->price_adherent = $price_adherent;
+        $inscriptions = [];
+        foreach ($personne->inscrits->where('status', 1) as $inscrit) {
+            $inscriptions[] = $inscrit->session_id;
+        }
+        $this->checkLastPlaces($formation);
+        foreach ($formation->sessions as $k => $session) {
+            if ($session->ur_id != '') {
+                unset($formation->sessions[$k]);
+            }
+            if ($session->club_id != '') {
+                unset($formation->sessions[$k]);
+            }
+        }
+        return view('formations.detail_notadherents', compact('formation', 'personne', 'inscriptions'));
     }
 
     protected function getFormationInterest($formation) {
@@ -169,11 +260,24 @@ class FormationController extends Controller
                 $sujet = "Inscription à la formation $formation->name";
                 $this->registerAction($inscrit->personne->id, 2, $sujet);
 
-                $description = "Inscription à la formation " . $inscrit->session->formation->name;
+                $description = "Inscription à la formation " . $inscrit->session->formation->name." pour la session du ".date("d/m/Y",strtotime($inscrit->session->start_date));
                 $ref = 'FORMATION-' . $inscrit->personne_id . '-' . $inscrit->session_id;
                 $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->amount, 'personne_id' => $inscrit->personne->id];
                 $this->createAndSendInvoice($datai);
-                return redirect()->route('formations.detail', $formation->id)->with('success', "Votre paiement a été pris en compte et vous êtes désormais inscrit à cette formation");
+
+                $email_dept = 'formations@federation-photo.fr';
+                Mail::mailer('smtp2')->to($email_dept)->send(new ConfirmationInscriptionDept($inscrit->session, $personne));
+                if (count($inscrit->session->formation->formateurs) > 0) {
+                    foreach ($inscrit->session->formation->formateurs as $formateur) {
+                        Mail::mailer('smtp2')->to($formateur->personne->email)->send(new ConfirmationInscriptionDept($inscrit->session, $personne));
+                    }
+                }
+                if ($personne->is_adherent == 0) {
+                    return redirect()->route('formations.detail_notadherents', $formation->id)->with('success', "Votre paiement a été pris en compte et vous êtes désormais inscrit à cette formation");
+                } else {
+                    return redirect()->route('formations.detail', $formation->id)->with('success', "Votre paiement a été pris en compte et vous êtes désormais inscrit à cette formation");
+                }
+
             }
         } else {
             return redirect()->route('formations.accueil')->with('error', "Votre paiement n'a pas été accepté");
@@ -193,24 +297,37 @@ class FormationController extends Controller
                 $description = "Prise en charge de la session de formation ".$session->formation->name;
                 $contact = null;
                 if ($session->club_id) {
+                    $club = Club::where('id', $session->club_id)->first();
+                    $description .= " par le club ".$session->club->nom;
                     $ref = 'SESSION-FORMATION-'.$session->club_id.'-'.$session->id;
-                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'club_id' => $session->club_id];
+                    $montant = $session->reste_a_charge - $session->club->creance;
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $montant, 'club_id' => $session->club_id];
+//                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'club_id' => $session->club_id];
 
                     // on récupère le contact du club
                     $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
                         ->where('utilisateurs.clubs_id', $session->club_id)
                         ->where('fonctionsutilisateurs.fonctions_id', 97)
                         ->first();
+
+                    $club->update(['creance' => 0]);
                 } else {
+                    $ur = Ur::where('id', $session->ur_id)->first();
+                    $description .= " par l'UR ".$session->ur->nom;
                     $ref = 'SESSION-FORMATION-'.$session->ur_id.'-'.$session->id;
-                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'ur_id' => $session->ur_id];
+                    $montant = $session->reste_a_charge - $session->ur->creance;
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $montant, 'ur_id' => $session->ur_id];
+//                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'ur_id' => $session->ur_id];
 
                     // on récupère le président UR
                     $contact = Utilisateur::join('fonctionsutilisateurs', 'fonctionsutilisateurs.utilisateurs_id', '=', 'utilisateurs.id')
                         ->where('utilisateurs.urs_id', $session->ur_id)
                         ->where('fonctionsutilisateurs.fonctions_id', 57)
                         ->first();
+
+                    $ur->update(['creance' => 0]);
                 }
+                $session->update(['paid' => $montant]);
                 $this->createAndSendInvoice($datai);
 
                 if ($contact) {
@@ -240,7 +357,13 @@ class FormationController extends Controller
 
     public function attentePaiementValidation($formation_id)
     {
-        return redirect()->route('formations.detail', $formation_id)->with('success', "Si vous avez procédé au paiement par virement de votre inscription, celle-ci sera traitée d'ici quelques minutes et un email vous informera de sa prise en compte");
+        $user = session()->get('user');
+        if ($user->is_adhrent == 0) {
+            return redirect()->route('formations.detail_notadherents', $formation_id)->with('success', "Si vous avez procédé au paiement par virement de votre inscription, celle-ci sera traitée d'ici quelques minutes et un email vous informera de sa prise en compte");
+        } else {
+            return redirect()->route('formations.detail', $formation_id)->with('success', "Si vous avez procédé au paiement par virement de votre inscription, celle-ci sera traitée d'ici quelques minutes et un email vous informera de sa prise en compte");
+        }
+
     }
 
     public function payWithSecureCode($secure_code) {
@@ -345,8 +468,27 @@ class FormationController extends Controller
         return redirect()->route('accueil')->with('success', "Votre évaluation a bien été prise en compte");
     }
 
-    public function listePublique() {
-        $formations = Formation::where('published', 1)->orderByDesc('created_at')->get();
+    public function listePublique(Request $request) {
+//        $formations = Formation::where('published', 1)->orderByDesc('created_at')->get();
+        $formations = Formation::query()
+            ->with(['formateurs'])
+            ->when($request->filled('type') || $request->type === '0', function ($query) use ($request) {
+                $query->where('type', $request->type);
+            })
+            ->when($request->categorie, function ($query, $categorie) {
+                $query->where('categories_formation_id', $categorie);
+            })
+            ->when($request->formateur, function ($query, $formateurId) {
+                $query->whereHas('formateurs', function ($q) use ($formateurId) {
+                    $q->where('formateur_id', $formateurId);
+                });
+            })
+            ->when($request->new !== null && $request->new !== '', function ($query) use ($request) {
+                $query->where('new', $request->new);
+            })
+            ->where('published', 1)
+            ->orderByDesc('created_at')
+            ->get();
         foreach ($formations as $formation) {
             if (sizeof($formation->sessions->where('start_date', '>=', date('Y-m-d'))) > 0) {
                 $formation->first_date = $formation->sessions->sortBy('start_date')->where('start_date', '>=', date('Y-m-d'))->first()->start_date;
@@ -355,10 +497,26 @@ class FormationController extends Controller
             }
 
             $formation->location = $this->getFormationCities($formation, $formation->location);
+
+            $formation = $this->checkLastPlaces($formation);
         }
         $formations = $formations->sortBy('first_date');
 
-        return view('formations.liste-publique', compact('formations'));
+        $tab_formateurs = [];
+        foreach ($formations as $k => $formation) {
+            $formations[$k] = $this->checkLastPlaces($formation);
+            foreach ($formation->formateurs as $formateur) {
+                if (!isset($tab_formateurs[$formateur->personne->nom])) {
+                    $tab_formateurs[$formateur->personne->nom] = $formateur;
+                }
+            }
+        }
+        ksort($tab_formateurs);
+
+        $types = [0 => 'distanciel', 1 => 'présentiel', 2 => 'les deux'];
+        $categories = CategorieFormation::all();
+
+        return view('formations.liste-publique', compact('formations', 'tab_formateurs', 'types', 'categories'));
     }
 
     public function detailPublique(Formation $formation) {
@@ -371,7 +529,27 @@ class FormationController extends Controller
             }
         }
         $formation->location = strlen($formation->location) ? $formation->location : $this->getFormationCities($formation);
+        $formation = $this->checkLastPlaces($formation);
         return view('formations.detail-publique', compact('formation'));
+    }
+
+
+    protected function checkLastPlaces($formation) {
+        $last_places = false;
+        foreach($formation->sessions as $session) {
+            // on regarde si le champ start_date est dans moins de 14 jours
+            $startDate = Carbon::parse($session->start_date);
+
+            // Vérifier si start_date est dans moins de 14 jours
+            $now = Carbon::now();
+            if ($startDate->between($now, $now->copy()->addDays(14)) && $session->inscrits->where('status', 1)->count() < $session->places) {
+                // on regarde si le nombre d'inscrits pour la session est inférieur au nombre de places
+                $last_places = true;
+            }
+        }
+        $formation->last_places = $last_places;
+
+        return $formation;
     }
 
 }

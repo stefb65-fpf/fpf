@@ -13,21 +13,28 @@
                 </svg>
             </a>
         </h1>
+        @if($ur->creance > 0)
+            <div class="bg-creance">
+                Votre UR dispose d'un avoir de {{ $ur->creance }}€ pour les prochaines opérations sur la base en ligne
+            </div>
+        @endif
 
         @if(sizeof($sessions) == 0)
             <div class="emptyList">Aucune session pour cette formation</div>
         @else
-            <div class="alertInfo">
-                <div>Si vous prenez financièrement en charge certaines des formations listées ci-dessous, attendez la confirmation de l'organisation de la session pour effectuer le paiement</div>
-            </div>
+{{--            <div class="alertInfo">--}}
+{{--                <div>Si vous prenez financièrement en charge certaines des formations listées ci-dessous, attendez la confirmation de l'organisation de la session pour effectuer le paiement</div>--}}
+{{--            </div>--}}
             <table class="styled-table">
                 <thead>
                 <tr>
                     <th>Nom</th>
                     <th>Date de début</th>
                     <th>UR / Club</th>
+                    <th>Statut</th>
                     <th>Type</th>
                     <th>Prise en charge</th>
+                    <th>Payé</th>
                     <th>Prix adhérent</th>
                     <th>Places</th>
                     <th>Places en attente</th>
@@ -45,6 +52,19 @@
                             {{ $session->numero_club ?? 'UR' }}
                         </td>
                         <td>
+                            @if($session->status == 0)
+                                En attente
+                            @elseif($session->status == 1)
+                                <span style="color: darkgreen; font-weight: bold;">Confirmée gestionnaire</span>
+                            @elseif($session->status == 2)
+                                <span style="color: darkgreen; font-weight: bold;">Confirmée - Mails transmis</span>
+                            @elseif($session->status == 3)
+                                <span style="color: darkblue; font-weight: bold;">Terminée</span>
+                            @elseif($session->status == 99)
+                                <span style="color: darkred; font-weight: bold;">Annulée</span>
+                            @endif
+                        </td>
+                        <td>
                             @if($session->type == 0)
                                 A distance
                             @elseif($session->type == 1)
@@ -57,7 +77,9 @@
                                 {{ $session->location }}
                             @endif
                         </td>
-                        <td>{{ $session->pec }} €</td>
+                        <td>{{ $session->reste_a_charge }} €</td>
+                        <td>{{ $session->paiement_status == 1 ? $session->paid.'€' : '-' }}</td>
+{{--                        <td>{{ $session->pec }} €</td>--}}
                         <td>{{ $session->price }} €</td>
                         <td>{{ $session->places }}</td>
                         <td>{{ $session->waiting_places }}</td>
@@ -72,17 +94,24 @@
                             @endif
                         </td>
                         <td>
-                            @if($session->pec > 0)
+                            @if($session->reste_a_charge > 0)
+{{--                            @if($session->pec > 0)--}}
                                 @if($session->paiement_status == 1)
-                                    <span class="alertSuccess">Paiement effectué</span>
+                                    <span class="alertSuccess" style="display: block; margin: 0;">Paiement effectué</span>
                                 @else
                                     @if($session->attente_paiement == 1)
-                                        <span class="alertWarning">En attente de paiement</span>
+                                        <span class="alertWarning" style="display: block; margin: 0;">En attente de paiement</span>
                                     @else
+                                        @if($session->status < 99)
                                         <div style="display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
-                                            <a class="adminPrimary btnSmall mr10" id="sessionPayVirement" data-ref="{{ $session->id }}">payer par virement</a>
-                                            <a class="adminPrimary btnSmall" id="sessionPayCb" data-ref="{{ $session->id }}">payer par CB</a>
+                                            @if($ur->creance >= $session->reste_a_charge)
+                                                <a class="adminPrimary btnSmall mr10" name="sessionPayCreance" data-ref="{{ $session->id }}">utiliser la créance UR</a>
+                                            @else
+                                                <a class="adminPrimary btnSmall mr10" name="sessionPayVirement" data-ref="{{ $session->id }}">payer par virement {{ floatval($session->reste_a_charge - $ur->creance) }}€</a>
+                                                <a class="adminPrimary btnSmall" name="sessionPayCb" data-ref="{{ $session->id }}">payer par CB {{ floatval($session->reste_a_charge - $ur->creance) }}€</a>
+                                            @endif
                                         </div>
+                                       @endif
                                     @endif
                                 @endif
                             @endif

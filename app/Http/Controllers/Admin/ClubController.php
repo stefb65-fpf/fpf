@@ -502,7 +502,7 @@ class ClubController extends Controller
         $numeroencours = $config->numeroencours;
         $florilege_actif = date('Y-m-d') >= $config->datedebutflorilege && date('Y-m-d') <= $config->datefinflorilege;
         $club->is_abonne = $club->numerofinabonnement >= $numeroencours;
-        $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 5;
+        $club->numero_fin_reabonnement = $club->is_abonne ? $club->numerofinabonnement + 5 : $numeroencours + 4;
         $statut = $statut ?? "init";
         $abonnement = $abonnement ?? "all";
         $dans_club = $statut == 99 ? 0 : 1;

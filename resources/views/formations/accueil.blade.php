@@ -5,6 +5,51 @@
         <h1 class="pageTitle">
             Formations
         </h1>
+        <form method="GET" action="{{ route('formations.accueil') }}" style="display: flex; justify-content: center; gap: 5px; margin-bottom: 20px;">
+            {{-- Type --}}
+            <select name="type" style="padding: 5px 10px;background-color: white;border-radius: 5px;">
+                <option value="">-- Type --</option>
+                @foreach($types as $t => $type)
+                    <option value="{{ $t }}" {{ request('type') === (string) $t ? 'selected' : '' }}>
+                        {{ ucfirst($type) }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Catégorie --}}
+            <select name="categorie" style="padding: 5px 10px;background-color: white;border-radius: 5px;">
+                <option value="">-- Catégorie --</option>
+                @foreach($categories as $categorie)
+                    <option value="{{ $categorie->id }}" {{ request('categorie') == $categorie->id ? 'selected' : '' }}>
+                        {{ $categorie->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Formateur --}}
+            <select name="formateur" style="padding: 5px 10px;background-color: white;border-radius: 5px;">
+                <option value="">-- Formateur --</option>
+                @foreach($tab_formateurs as $formateur)
+                    <option value="{{ $formateur->id }}" {{ request('formateur') == $formateur->id ? 'selected' : '' }}>
+                        {{ $formateur->title }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Nouveau --}}
+            <select name="new" style="padding: 5px 10px;background-color: white;border-radius: 5px;">
+                <option value="">-- Nouveau --</option>
+                <option value="1" {{ request('new') === '1' ? 'selected' : '' }}>Oui</option>
+                <option value="0" {{ request('new') === '0' ? 'selected' : '' }}>Non</option>
+            </select>
+
+            <button type="submit" class="redBtn" style="background-color: #2b2bbd; border: #2b2bbd">Filtrer</button>
+            @if(request()->hasAny(['type', 'categorie', 'formateur', 'new']))
+                <a href="{{ route('formations.accueil') }}" class="redBtn">
+                    Réinitialiser
+                </a>
+            @endif
+        </form>
         <div class="cardList">
             @foreach($formations as $formation)
                 <div class="card" id="{{ $formation->id }}">
@@ -19,8 +64,7 @@
                             @if($formation->type == 1 || $formation->type == 2)
                                 <div class="tag bgPurpleLight">Présentiel</div>
                             @endif
-                            {{--                                TODO: gérer le tag dernières places en fonction des places réservées et des places disponibles--}}
-                            @if($formation->places <  5)
+                            @if($formation->last_places)
                                 <div class="tag bgRed">Dernières Places</div>
                             @endif
                             @if($formation->categorie)
@@ -29,7 +73,7 @@
                                 @if(sizeof($formation->sessions->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))) > 0)
                                     <div class="tag" style="background-color: #3c3c3c">
                                         Prochaines dates
-                                        @foreach($formation->sessions->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
+                                        @foreach($formation->sessions->where('status', '<', 3)->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
                                             <span class="ml10">{{ date("d/m/Y",strtotime($session->start_date)) }}</span>
                                         @endforeach
                                     </div>

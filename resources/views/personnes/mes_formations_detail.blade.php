@@ -25,8 +25,7 @@
                             @if($formation->type == 1 || $formation->type == 2)
                                 <div class="tag bgPurpleLight">Présentiel</div>
                             @endif
-                            {{--                                TODO: gérer le tag dernières places en fonction des places réservées et des places disponibles--}}
-                            @if($formation->places <  5)
+                            @if($formation->last_places)
                                 <div class="tag bgRed">Dernières Places</div>
                             @endif
                             @if($formation->categorie)

@@ -23,9 +23,17 @@ class ReglementController extends Controller
     public function index($term=null)
     {
         $droit_cancel = $this->checkDroit('AUTSPEC');
+        $search_statut = '-1';
         $query = Reglement::orderByDesc('reglements.id');
         if($term){
             $this->getReglementsByTerm($term, $query);
+            if (str_starts_with($term, 'st=')) {
+                $search_statut = substr($term, 3);
+                $term = null;
+            }
+            if (str_starts_with($term, 'mt=')) {
+                $term = null;
+            }
         }
         $reglements = $query->paginate(100);
         foreach ($reglements as $reglement) {
@@ -60,7 +68,7 @@ class ReglementController extends Controller
             }
         }
 
-        return view('admin.reglements.index', compact('reglements', 'term', 'droit_cancel'));
+        return view('admin.reglements.index', compact('reglements', 'term', 'droit_cancel', 'search_statut'));
     }
 
     public function editionCartes() {
@@ -132,13 +140,52 @@ class ReglementController extends Controller
         return view('admin.reglements.historiqueCartes', compact('tab_files'));
     }
 
-    public function rapprochements()
+    public function rapprochements(Request $request)
     {
-        $inscrits = Inscrit::where('status', 1)
-            ->where('amount', '>', 0)
-            ->where('attente', 0)
-            ->orderByDesc('updated_at')
-            ->paginate(100);
-        return view('admin.reglements.rapprochements', compact('inscrits'));
+        $term = '';
+        if($request->term) {
+            $term = htmlspecialchars($request->term);
+            $inscrits = [];
+            if (substr_count($request->term, '-') > 1) {
+                // on va chercher par référence
+                $tab = explode('-', $request->term);
+                if ($tab[1] && $tab[2]) {
+                    $inscrits = Inscrit::where('status', 1)
+                        ->where('amount', '>', 0)
+                        ->where('attente', 0)
+                        ->where('session_id', $tab[2])
+                        ->where('personne_id', $tab[1])
+                        ->orderByDesc('updated_at')
+                        ->paginate(100);
+                }
+            } else {
+                $inscrits = Inscrit::join('personnes', 'personnes.id', '=', 'inscrits.personne_id')
+                    ->where('inscrits.status', 1)
+                    ->where('inscrits.amount', '>', 0)
+                    ->where('inscrits.attente', 0)
+                    ->where('personnes.nom', 'LIKE', '%'.trim($term).'%')
+                    ->orderByDesc('inscrits.updated_at')
+                    ->paginate(100);
+
+                if(count($inscrits) == 0) {
+                    $inscrits = Inscrit::join('sessions', 'sessions.id', '=', 'inscrits.session_id')
+                        ->join('formations', 'formations.id', '=', 'sessions.formation_id')
+                        ->where('inscrits.status', 1)
+                        ->where('inscrits.amount', '>', 0)
+                        ->where('inscrits.attente', 0)
+                        ->where('formations.name', 'LIKE', '%'.trim($term).'%')
+                        ->orderByDesc('inscrits.updated_at')
+                        ->paginate(100);
+                }
+            }
+        } else {
+            $inscrits = Inscrit::where('status', 1)
+                ->where('amount', '>', 0)
+                ->where('attente', 0)
+                ->orderByDesc('updated_at')
+                ->paginate(100);
+        }
+
+        return view('admin.reglements.rapprochements', compact('inscrits', 'term'));
     }
 }

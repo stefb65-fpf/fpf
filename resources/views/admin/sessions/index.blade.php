@@ -13,6 +13,21 @@
         <div class="d-flex justify-center">
             <a href="{{ route('sessions.create', $formation) }}" class="btnMedium adminPrimary">Ajouter une session</a>
         </div>
+        <div class="alertInfo" style="width: 95%; margin-top: 20px;">
+            <ul style="margin-left: 30px;">
+                <li><b>Suppression</b>: lorsqu'une session n'a aucun inscrit et que c'est une session organisée par la FPF ou une session non encore payée et organisée par un club ou une UR, on peut la supprimer ==> il n'y a alors aucune facture, aucune créance</li>
+                <li><b>Annulation</b>: lorsqu'une session a des inscrits ou qu'elle est organisée par un club ou une UR et qu'elle a été payée par cette structure, on peut l'annuler
+                    <ol style="margin-left: 30px;">
+                        <li>les inscrits reçoivent un mail</li>
+                        <li>si la formation est organisée par la FPF, les inscrits ont une créance en fonction de ce qu'ils ont payé</li>
+                        <li>si la formation est organisée par un club ou une UR, les inscrits n'ont pas de créance</li>
+                        <li>si la formation est organisée par un club ou une UR, la structure organisatrice reçoit un mail. Si elle a payé la session, elle reçoit une facture d'avoir</li>
+                        <li>les formateurs reçoivent un mail</li>
+                    </ol>
+                </li>
+                <li><b>Confirmation</b>: cette action doit être réalisée au moins 10 jours avant le début de la formation si celle-ci est en présentiel et 2 jours si elle est en distanciel. Un mail sera envoyé à tous les participants, aux formateurs et à la structure organisatrice 10 jours ou 2 jours avant le début.</li>
+            </ul>
+        </div>
         @if(sizeof($formation->demandes) > 0)
             <div>
                 Demandes d'organisation de session pour :
@@ -20,11 +35,11 @@
                     @foreach($formation->demandes as $demande)
                         <div class="d-flex gap20">
                             * {{ $demande->club_id ? 'Club '.$demande->club->nom : 'UR '.$demande->ur->nom }}
-                            @if($demande->pec > 0)
-                                - Montant de la prise en charge {{ $demande->pec }} €
-                                - Prix restant à charge des adhérents: {{ round(($formation->global_price - $demande->pec) / $formation->places, 2) }} €
-                                (sur la base de {{ $formation->places }} places)
-                            @endif
+{{--                            @if($demande->pec > 0)--}}
+{{--                                - Montant de la prise en charge {{ $demande->pec }} €--}}
+{{--                                - Prix restant à charge des adhérents: {{ round(($formation->global_price - $demande->pec) / $formation->places, 2) }} €--}}
+{{--                                (sur la base de {{ $formation->places }} places)--}}
+{{--                            @endif--}}
                             <a href="{{ route('formations.deleteDemande', $demande->id) }}" data-confirm="Confirmez-vous la suppression de cette demande ?" data-method="post" class="adminDanger btnSmall">Supprimer</a>
                         </div>
                     @endforeach
@@ -40,9 +55,13 @@
                     <th>Date de début</th>
                     <th>Fin inscription</th>
                     <th>UR / Club</th>
+                    <th>Statut</th>
                     <th>Type</th>
+                    <th>PEC FPF</th>
+                    <th>Coût structure</th>
+                    <th>Payé</th>
                     <th>Prix</th>
-                    <th>Prise en charge</th>
+{{--                    <th>Prise en charge</th>--}}
                     <th>Places</th>
                     <th>Places en attente</th>
                     <th>Inscrits</th>
@@ -64,6 +83,19 @@
                             @endif
                         </td>
                         <td>
+                            @if($session->status == 0)
+                                En attente
+                            @elseif($session->status == 1)
+                                <span style="color: darkgreen; font-weight: bold;">Confirmée gestionnaire</span>
+                            @elseif($session->status == 2)
+                                <span style="color: darkgreen; font-weight: bold;">Confirmée - Mails transmis</span>
+                            @elseif($session->status == 3)
+                                <span style="color: darkblue; font-weight: bold;">Terminée</span>
+                            @elseif($session->status == 99)
+                                <span style="color: darkred; font-weight: bold;">Annulée</span>
+                            @endif
+                        </td>
+                        <td>
                             @if($session->type == 0)
                                 A distance
                             @elseif($session->type == 1)
@@ -76,14 +108,18 @@
                                 {{ $session->location }}
                             @endif
                         </td>
-                        <td>{{ $session->price }} €</td>
-                        <td>{{ $session->pec }} €</td>
+                        <td>{{ $session->pec_fpf > 0 ? $session->pec_fpf.'€' : '' }}</td>
+                        <td>{{ ($session->ur_id || $session->club_id) ? $session->reste_a_charge.'€' : '' }}</td>
+                        <td>{{ (($session->ur_id || $session->club_id) && $session->paiement_status == 1) ? $session->paid.'€' : '' }}</td>
+                        <td>{{ $session->price }}€</td>
+{{--                        <td>{{ $session->pec }} €</td>--}}
                         <td>{{ $session->places }}</td>
                         <td>{{ $session->waiting_places }}</td>
                         <td>
-                            @if(sizeof($session->inscrits->where('status', 1)) > 0)
+{{--                            @if(sizeof($session->inscrits->where('status', 1)) > 0)--}}
+{{--                                <a href="{{ route('inscrits.liste', $session) }}" class="btnSmall adminPrimary">{{ sizeof($session->inscrits->where('status', 1)->where('attente', 0)) }} inscrits - Gérer</a>--}}
+{{--                            @endif--}}
                                 <a href="{{ route('inscrits.liste', $session) }}" class="btnSmall adminPrimary">{{ sizeof($session->inscrits->where('status', 1)->where('attente', 0)) }} inscrits - Gérer</a>
-                            @endif
                         </td>
 {{--                        <td>--}}
 {{--                            @switch($session->invoice_status)--}}
@@ -99,21 +135,37 @@
 {{--                            @endswitch--}}
 {{--                        </td>--}}
                         <td style="width: 250px">
-                            @if($session->pec > 0)
+                            @if($session->reste_a_charge > 0 && ($session->ur_id || $session->club_id))
+{{--                            @if($session->pec > 0)--}}
                                 @if($session->paiement_status == 1)
-                                    <span class="alertSuccess">Paiement effectué</span>
+                                    <span style="color: darkgreen; font-weight: bold;">Paiement effectué</span>
                                 @else
                                     @if($session->attente_paiement == 1)
-                                        <span class="alertWarning">Paiement en cours</span>
+                                        <span style="color: darkorange; font-weight: bold;">Paiement en cours</span>
                                     @else
-                                        <span class="alertDanger">Paiement non effectué</span>
+                                        <span  style="color: darkred; font-weight: bold;">Paiement non effectué</span>
                                     @endif
                                 @endif
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('sessions.edit', $session) }}" class="btnSmall adminPrimary">Modifier</a>
-                            <a href="{{ route('sessions.destroy', $session) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer cette session ?" class="btnSmall adminDanger mt5">Supprimer</a>
+                            @if($session->status < 3)
+                                <a href="{{ route('sessions.edit', $session) }}" class="btnSmall adminPrimary">Modifier</a>
+                            @endif
+                            @if($session->status == 2)
+                                <a href="{{ route('sessions.end', $session) }}" class="btnSmall adminSuccess mt5">Marquer comme terminée</a>
+                            @endif
+                            @if(sizeof($session->inscrits->where('status', 1)) == 0 && $session->status == 0 && $session->paiement_status == 0)
+                                <a href="{{ route('sessions.destroy', $session) }}" data-method="delete" data-confirm="Voulez-vous vraiment supprimer cette session ?" class="btnSmall adminDanger mt5">Supprimer</a>
+{{--                                @if($session->ur_id || $session->club_id)--}}
+{{--                                        <a href="{{ route('sessions.cancel', $session) }}" data-method="post" data-confirm="Voulez-vous vraiment annuler cette session ? Un mail sera envoyé aux inscrits, formateurs et organisateurs" class="btnSmall adminDanger mt5">Annuler la session</a>--}}
+{{--                                @endif--}}
+                            @else
+                                @if($session->status == 0)
+                                    <a href="{{ route('sessions.confirm', $session) }}" data-method="post" data-confirm="Voulez-vous vraiment confirmer cette session ?" class="btnSmall adminSuccess mt5">Confirmer la session</a>
+                                    <a href="{{ route('sessions.cancel', $session) }}" data-method="post" data-confirm="Voulez-vous vraiment annuler cette session ? Un mail sera envoyé aux inscrits, formateurs et organisateurs" class="btnSmall adminDanger mt5">Annuler la session</a>
+                                @endif
+                            @endif
                         </td>
                     </tr>
                 @endforeach

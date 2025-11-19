@@ -21,4 +21,14 @@ class Session extends Model
     public function inscrits() {
         return $this->hasMany('App\Models\Inscrit');
     }
+
+    public function club()
+    {
+        return $this->belongsTo('App\Models\Club');
+    }
+
+    public function ur()
+    {
+        return $this->belongsTo('App\Models\Ur');
+    }
 }

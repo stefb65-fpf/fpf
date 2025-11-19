@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Concern\Tools;
+use App\Exports\FormationsListeExport;
 use App\Exports\RecapFormations;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FormationRequest;
@@ -10,6 +11,7 @@ use App\Models\Categorieformation;
 use App\Models\Club;
 use App\Models\Evaluationsitem;
 use App\Models\Evaluationstheme;
+use App\Models\Formateur;
 use App\Models\Formation;
 use App\Models\Inscrit;
 use App\Models\Interest;
@@ -30,12 +32,32 @@ class FormationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!$this->checkDroit('GESFOR')) {
             return redirect()->route('accueil');
         }
-        $formations = Formation::orderByDesc('created_at')->get();
+//        $formations = Formation::orderByDesc('created_at')->get();
+        $formations = Formation::query()
+            ->with(['formateurs'])
+            ->when($request->filled('type') || $request->type === '0', function ($query) use ($request) {
+                $query->where('type', $request->type);
+            })
+            ->when($request->categorie, function ($query, $categorie) {
+                $query->where('categories_formation_id', $categorie);
+            })
+            ->when($request->formateur, function ($query, $formateurId) {
+                $query->whereHas('formateurs', function ($q) use ($formateurId) {
+                    $q->where('formateur_id', $formateurId);
+                });
+            })
+            ->when($request->new !== null && $request->new !== '', function ($query) use ($request) {
+                $query->where('new', $request->new);
+            })
+            ->where('archived', false)
+            ->orderByDesc('created_at')
+            ->get();
+        $tab_formateurs = [];
         foreach($formations as $formation) {
             $formation->trinom = isset($formation->formateurs[0]) ? $formation->formateurs[0]->personne->nom : '';
             $formation->interests = Interest::where('formation_id', $formation->id)->count();
@@ -46,11 +68,21 @@ class FormationController extends Controller
                 }
             }
             $formation->exist_eval = $exist_eval;
+            foreach ($formation->formateurs as $formateur) {
+                if (!isset($tab_formateurs[$formateur->personne->nom])) {
+                    $tab_formateurs[$formateur->personne->nom] = $formateur;
+                }
+            }
         }
+        ksort($tab_formateurs);
         $formations = $formations->sort(function($a, $b) {
             return $a->trinom > $b->trinom;
         });
-        return view('admin.formations.index', compact('formations'));
+
+        $types = [0 => 'distanciel', 1 => 'présentiel', 2 => 'les deux'];
+        $categories = CategorieFormation::all();
+        $formateurs = Formateur::all();
+        return view('admin.formations.index', compact('formations', 'types', 'categories', 'formateurs', 'tab_formateurs'));
     }
 
     /**
@@ -115,6 +147,13 @@ class FormationController extends Controller
 //        return redirect()-->with('success', 'Formation modifiée avec succès');
     }
 
+
+    public function archive(Formation $formation)
+    {
+        $formation->update(['archived' => true, 'published' => false]);
+        return redirect()->route('formations.index')->with('success', 'Formation archivée avec succès');
+    }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -131,6 +170,9 @@ class FormationController extends Controller
     }
 
     public function activate(Formation $formation) {
+        if (count($formation->formateurs) == 0) {
+            return redirect()->route('formations.index')->with('error', 'Pour publier la formation, vous devez saisir au moins un formateur.');
+        }
         $data = array('published' => 1);
         $formation->update($data);
         return redirect()->route('formations.index')->with('success', 'Formation activée avec succès');
@@ -201,6 +243,21 @@ class FormationController extends Controller
         }
         $fichier = 'recap_formation' . date('YmdHis') . '.xls';
         if (Excel::store(new RecapFormations($formations), $fichier, 'xls')) {
+            $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
+            $texte = "Vous pouvez télécharger le fichier en cliquant sur le lien suivant : <a href='" . $file_to_download . "'>Télécharger</a>";
+            return redirect()->route('formations.index')->with('success', $texte);
+        } else {
+            return redirect()->route('formations.index')->with('success', "Un problème est survenu lors de l'export");
+        }
+    }
+
+    public function exportListe() {
+//        $formations = Formation::orderBy('id')->get();
+        $formations = Formation::with(['sessions' => function ($query) {
+            $query->orderBy('start_date');
+        }])->orderBy('id')->get();
+        $fichier = 'liste_formations_' . date('YmdHis') . '.xls';
+        if (Excel::store(new FormationsListeExport($formations), $fichier, 'xls')) {
             $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
             $texte = "Vous pouvez télécharger le fichier en cliquant sur le lien suivant : <a href='" . $file_to_download . "'>Télécharger</a>";
             return redirect()->route('formations.index')->with('success', $texte);

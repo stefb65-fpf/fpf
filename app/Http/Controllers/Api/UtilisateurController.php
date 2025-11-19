@@ -143,6 +143,9 @@ class UtilisateurController extends Controller
 
         $statut = $montant_paye > 0 ? 1 : 2; // si le montant à payer est supérieur à 0, le statut est 1 (inscription en cours), sinon il est à 2 (carte validée)
 
+        $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
+        $numeroencours = $config->numeroencours;
+
         // pour chaque adhérent, on passe le statut à 1 si l'adhésion est requise
         // on crée un règlement en indiquant l'abonnement et l'adhésion
         foreach ($tab_adherents as $adherent) {
@@ -182,8 +185,6 @@ class UtilisateurController extends Controller
                         $abonnement->update($dataa);
                     } else {
                         // on crée un abonnement avec état 1
-                        $config = Configsaison::where('id', 1)->selectRaw('numeroencours')->first();
-                        $numeroencours = $config->numeroencours;
                         $debut = $numeroencours;
                         $fin = $numeroencours + 4;
                         $dataa = array('personne_id' => $utilisateurmaj->personne_id, 'etat' => 1, 'debut' => $debut, 'fin' => $fin, 'reglement_id' => $reglement->id);
@@ -199,6 +200,10 @@ class UtilisateurController extends Controller
 
         if ($club->statut == 0) {
             $datac = array('statut' => $statut);
+            $club->update($datac);
+        }
+        if ($statut == 2 && $montant_abonnement_club > 0) {
+            $datac = array('numerofinabonnement' => $numeroencours + 4);
             $club->update($datac);
         }
 
@@ -460,6 +465,51 @@ class UtilisateurController extends Controller
             }
         }
     }
+
+
+
+    public function registerFormation(Request $request) {
+        // on vérifie si la personne existe déjà
+        if (!filter_var(trim($request->email), FILTER_VALIDATE_EMAIL)) {
+            return new JsonResponse(['erreur' => 'email invalide'], 400);
+        }
+        $personne = Personne::where('email', trim($request->email))->first();
+        if ($personne) {
+            return new JsonResponse(['erreur' => 'cette personne existe déjà'], 400);
+        }
+        // on enregistre la personne
+        $dataa = array('codepostal' => $request->codepostal,'ville' => strtoupper(trim($request->ville)));
+        $password = $this->encodePwd($request->password);
+        $datap = array('nom' => strtoupper(trim($request->nom)), 'prenom' => trim($request->prenom), 'email' => trim($request->email), 'sexe' => $request->sexe,
+            'password' => $password);
+
+//        $pays = Pays::where('id', $request->pays)->first();
+//        $pays = Pays::where('id', 78)->first();
+//        if ($pays) {
+//            $dataa['pays'] = $pays->nom;
+//            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile, $pays->indicatif);
+//        } else {
+            $dataa['pays'] = 'FRANCE';
+            $phone_mobile = $this->format_mobile_for_base($request->phone_mobile);
+//        }
+        if ($phone_mobile == -1) {
+            return new JsonResponse(['erreur' => 'téléphone mobile invalide'], 400);
+        }
+        $datap['phone_mobile'] = $phone_mobile;
+        $personne = Personne::create($datap);
+
+        // on enregistre l'adresse
+        $adresse = Adresse::create($dataa);
+
+        // on lie l'adresse à la personne
+        $personne->adresses()->attach($adresse->id);
+
+        return new JsonResponse(['success' => 'votre compte a bien été créé'], 200);
+    }
+
+
+
+
 
     public function renewIndividuel(Request $request) {
         $personne = Personne::where('id', $request->personne_id)->first();

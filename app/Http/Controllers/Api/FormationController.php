@@ -3,18 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Concern\Api;
+use App\Concern\Hash;
 use App\Concern\Invoice;
 use App\Concern\Tools;
 use App\Http\Controllers\Controller;
 use App\Mail\AnswerSupport;
 use App\Mail\AskFormation;
 use App\Mail\ConfirmationDemandeSession;
+use App\Mail\ConfirmationInscriptionDept;
 use App\Mail\ConfirmationInscriptionFormation;
 use App\Mail\ConfirmationInscriptionFormationAttente;
 use App\Mail\ConfirmVote;
 use App\Mail\RelanceReglement;
 use App\Mail\SendAlertSupport;
 use App\Mail\SendCodeForVote;
+use App\Mail\SendFormationPaymentLink;
 use App\Models\Candidat;
 use App\Models\Demande;
 use App\Models\Election;
@@ -39,6 +42,7 @@ use Illuminate\Support\Facades\Mail;
 
 class FormationController extends Controller
 {
+    use Hash;
     use Api;
     use Tools;
     use Invoice;
@@ -135,6 +139,9 @@ class FormationController extends Controller
             }
             // on inscrit le user
             $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'attente_paiement' => 1, 'amount' => $price];
+            if (session()->get('cartes')) {
+                $datai['utilisateur_id'] = session()->get('cartes')[0]->id;
+            }
             $inscrit = Inscrit::create($datai);
         } else {
             $inscrit = Inscrit::where('secure_code', $request->link)->first();
@@ -224,6 +231,9 @@ class FormationController extends Controller
             }
             // on inscrit le user
             $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'attente_paiement' => 1, 'amount' => $price];
+            if (session()->get('cartes')) {
+                $datai['utilisateur_id'] = session()->get('cartes')[0]->id;
+            }
             $inscrit = Inscrit::create($datai);
         } else {
             $inscrit = Inscrit::where('secure_code', $request->link)->first();
@@ -286,7 +296,14 @@ class FormationController extends Controller
         if (!$session) {
             return new JsonResponse(['erreur' => 'session de formation inexistante'], 400);
         }
+        $exist_inscrit = Inscrit::where('session_id', $session->id)->where('personne_id', $user->id)->first();
+        if ($exist_inscrit) {
+            return new JsonResponse(['erreur' => 'inscription existante'], 400);
+        }
         $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'status' => 1, 'amount' => $session->price];
+        if (session()->get('cartes')) {
+            $datai['utilisateur_id'] = session()->get('cartes')[0]->id;
+        }
         $inscrit = Inscrit::create($datai);
 
         // on débite l'avoir du compte du user
@@ -308,10 +325,18 @@ class FormationController extends Controller
         $sujet = substr("Inscription à la formation ".$session->formation->name, 0, 255);
         $this->registerAction($user->id, 2, $sujet);
 
-        $description = "Inscription à la formation ".$session->formation->name;
+        $description = "Inscription à la formation ".$session->formation->name." pour la session du ".date("d/m/Y",strtotime($inscrit->session->start_date));
         $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
         $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->price, 'personne_id' => $inscrit->personne->id];
         $this->createAndSendInvoice($datai);
+
+        $email_dept = 'formations@federation-photo.fr';
+        Mail::mailer('smtp2')->to($email_dept)->send(new ConfirmationInscriptionDept($session, $personne));
+        if (count($session->formation->formateurs) > 0) {
+            foreach ($session->formation->formateurs as $formateur) {
+                Mail::mailer('smtp2')->to($formateur->personne->email)->send(new ConfirmationInscriptionDept($session, $personne));
+            }
+        }
 
         return new JsonResponse(['success' => 'OK'], 200);
     }
@@ -337,6 +362,9 @@ class FormationController extends Controller
         }
         // on enregistre l'inscription en attente
         $datai = ['session_id' => $session->id, 'personne_id' => $user->id, 'attente' => 1, 'status' => 1];
+        if (session()->get('cartes')) {
+            $datai['utilisateur_id'] = session()->get('cartes')[0]->id;
+        }
         Inscrit::create($datai);
 
         // on envoie le mail pour confirmer l'inscription en attente
@@ -375,6 +403,41 @@ class FormationController extends Controller
         // on ajoute l'inscrit
         $datai = ['session_id' => $session->id, 'personne_id' => $personne->id, 'attente' => 0, 'status' => 1];
         Inscrit::create($datai);
+        return new JsonResponse([], 200);
+    }
+
+    public function addInscritToSessionAndSendLink(Request $request) {
+        $personne = Personne::where('email', $request->email)->first();
+        if (!$personne) {
+            return new JsonResponse(['erreur' => "L'adresse email ne correspond à aucune personne"], 400);
+        }
+        $session = Session::where('id', $request->session_id)->first();
+        if (!$session) {
+            return new JsonResponse(['erreur' => "La session de formation n'existe pas"], 400);
+        }
+        // on regarde si la personn n'est pas déjà inscrite
+        $inscrit = Inscrit::where('personne_id', $personne->id)->where('session_id', $session->id)->first();
+        if ($inscrit) {
+            return new JsonResponse(['erreur' => "La personne est déjà inscrite à cette session"], 400);
+        }
+
+
+        // on ajoute l'inscrit
+        $datai = ['session_id' => $session->id, 'personne_id' => $personne->id, 'attente' => 0, 'status' => 1,
+            'attente_paiement' => 1, 'secure_code' => $this->encodeShortReinit()];
+        $inscrit = Inscrit::create($datai);
+
+        $email = $personne->email;
+        $mailSent = Mail::mailer('smtp2')->to($email)->send(new SendFormationPaymentLink($inscrit));
+        $htmlContent = $mailSent->getOriginalMessage()->getHtmlBody();
+
+        $sujet = "FPF // Lien de paiement pour la formation ".$inscrit->session->formation->name;
+        $mail = new \stdClass();
+        $mail->titre = $sujet;
+        $mail->destinataire = $email;
+        $mail->contenu = $htmlContent;
+        $this->registerMail($personne->id, $mail);
+
         return new JsonResponse([], 200);
     }
 
@@ -513,7 +576,8 @@ class FormationController extends Controller
         $reference = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
         $primary_invoice = \App\Models\Invoice::where('reference', $reference)
             ->first();
-        $description = "Avoir pour annulation d'une inscription à une formation pour ".$personne->nom.' '.$personne->prenom;
+//        $description = "Avoir pour annulation d'une inscription à une formation pour ".$personne->nom.' '.$personne->prenom;
+        $description = "Avoir pour annulation d'une inscription à la formation ".$session->formation->name." pour la session du ".date("d/m/Y",strtotime($session->start_date))." pour ".$personne->nom.' '.$personne->prenom;
         $datai = [
             'reference' => $reference,
             'description' => $description,

@@ -49,11 +49,28 @@
                 </div>
                 <div class="d-flex">
                     <div id="piechartRepartitionAdherents" style="width: 50%; height: 500px"></div>
-                    <div id="linechartEvolution" style="width: 50%; height: 500px"></div>
+{{--                    <div id="linechartEvolution" style="width: 50%; height: 500px"></div>--}}
                 </div>
-                <div class="d-flex">
-                    <div id="linechartEvolutionClub" style="width: 50%; height: 500px"></div>
+                <div class="d-flex justify-center" style="background-color: white; padding-top: 20px;">
+                    <label for="carteSelect">Type de carte :</label>
+                    <select id="carteSelect">
+                        <option value="">Toutes</option>
+                        <option value="2">Adhérents clubs > 25 ans</option>
+                        <option value="3">Adhérents clubs 18 - 25 ans</option>
+                        <option value="4">Adhérents clubs < 18 ans</option>
+                        <option value="5">Adhérents clubs famille</option>
+                        <option value="6">Adhérents clubs 2nd club</option>
+                        <option value="7">Individuels > 25 ans</option>
+                        <option value="8">Individuels 18 - 25 ans</option>
+                        <option value="9">Individuels < 18 ans</option>
+                        <option value="F">Individuels famille</option>
+                    </select>
                 </div>
+                <div id="linechartEvolutionSaisonsAdherents" style="width:100%; height:500px;"></div>
+                <div id="linechartEvolutionSaisonsClubs" style="width:100%; height:500px;"></div>
+{{--                <div class="d-flex">--}}
+{{--                    <div id="linechartEvolutionClub" style="width: 50%; height: 500px"></div>--}}
+{{--                </div>--}}
             </div>
         </div>
 

@@ -66,3 +66,6 @@
         </div>
     </div>
 @endsection
+@section('js')
+    <script src="{{ asset('js/admin_invoices.js') }}?t=<?= time() ?>"></script>
+@endsection

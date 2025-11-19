@@ -19,7 +19,7 @@ class ComposerServiceProvider extends ServiceProvider
         );
         view()->composer(
             ['layouts.menu', 'layouts.header', 'urs.gestion', 'admin.statistiques.index', 'admin.statistiques.votes', 'admin.statistiques.votesphases',
-                'clubs.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes', 'urs.statistiques.votesphases', 'formations.detail',
+                'clubs.statistiques.index', 'urs.statistiques.index', 'urs.statistiques.votes', 'urs.statistiques.votesphases', 'formations.detail', 'formations.detail_notadherents',
                 'admin.statistiques.votesdetail','admin.statistiques.listevotesbyclub', 'urs.statistiques.votesdetail','urs.statistiques.listevotesbyclub'],
             'App\Http\ViewComposers\MenuComposer'
         );

@@ -3,13 +3,18 @@
 @section('content')
     <div class="pageCanva">
         <h1 class="pageTitle">
-            <div>Gestion Club
+            <div>
+                Gestion Club
                 <div class="urTitle">
                     {{ $club->nom }}
                 </div>
             </div>
-
         </h1>
+        @if($club->creance > 0)
+            <div class="bg-creance">
+                Votre club dispose d'un avoir de {{ $club->creance }}€ pour les prochaines opérations sur la base en ligne
+            </div>
+        @endif
         <div class="cardContainer">
                 <a class="card" href="{{ route('clubs.infos_club') }}">
                     <div class="wrapper">

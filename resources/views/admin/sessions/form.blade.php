@@ -9,7 +9,7 @@
             <div class="formBlockWrapper">
                 <div class="formUnit w100">
                     <div class="formLabel ">UR</div>
-                    <select name="ur_id" class="w75" style="padding: 5px;" >
+                    <select id="ur_id" name="ur_id" class="w75" style="padding: 5px;" >
                         <option value="0"></option>
                         @for($i=1; $i <= 25; $i++)
                             <option value="{{ $i }}" {{ old('ur_id', $session->ur_id) == $i ? 'selected=selected' : '' }}>{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
@@ -21,7 +21,7 @@
                 </div>
                 <div class="formUnit w100">
                     <div class="formLabel ">Numéro de club</div>
-                    <input value="{{ old('numero_club',  $session->numero_club) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Numéro du club organisateur" name="numero_club"/>
+                    <input value="{{ old('numero_club',  $session->numero_club) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Numéro du club organisateur" name="numero_club" id="numero_club"/>
                     <div class="w100 helper">
                         Ne saisir que si la session est organisée par un club
                     </div>
@@ -41,26 +41,52 @@
                 @if($formation->global_price > 0)
                     <div class="formUnit w100">
                         <div class="formLabel ">
-                            Coût global formation: {{ $formation->global_price }}€ - Si la structure organisatrice prend en charge tout ou partie du financement,
-                            vous devez modifier le prix d'inscription en conséquence selon la formule : (Coût global - Prise en charge) / Nombre de places
+                            Coût global formation
+{{--                            - Si la structure organisatrice prend en charge tout ou partie du financement,--}}
+{{--                            vous devez modifier le prix d'inscription en conséquence selon la formule : (Coût global - Prise en charge) / Nombre de places--}}
                         </div>
+                        <input value="{{ $formation->global_price }}" class="inputFormAction formValue modifying w75" type="text" id="cout_global" readonly />
 {{--                        <input value="{{ $formation->global_price }}" class="inputFormAction formValue modifying w75 disabled" readonly type="text" />--}}
                     </div>
                 @endif
-                <div class="formUnit w100">
-                    <div class="formLabel ">Prise en charge</div>
-                    <input value="{{ old('pec',  $session->pec) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Montant de la prise en charge" name="pec"/>
+{{--                <div class="formUnit w100">--}}
+{{--                    <div class="formLabel ">Prise en charge</div>--}}
+{{--                    <input value="{{ old('pec',  $session->pec) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Montant de la prise en charge" name="pec"/>--}}
+{{--                    <div class="w100 helper">--}}
+{{--                        Ne saisir que si la session est prise en charge par une structure. Ce montant de prise en charge sera indiqué sur l'interface des adhérents.--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+                <div class="formUnit w100 {{ $session->type == 1 && ($session->ur_id || $session->club_id) ? '' : 'd-none-admin' }}" id="frais_deplacement_wrapper">
+                    <div class="formLabel ">Frais déplacement</div>
+                    <input value="{{ old('frais_deplacement',  $session->frais_deplacement) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Frais de déplacement du formateur" name="frais_deplacement" id="frais_deplacement" />
                     <div class="w100 helper">
-                        Ne saisir que si la session est prise en charge par une structure. Ce montant de prise en charge sera indiqué sur l'interface des adhérents.
+                        Frais de déplacement du formateur (peut varier pour chaque session)
                     </div>
                 </div>
                 <div class="formUnit w100">
-                    <div class="formLabel ">* Prix</div>
-                    <input value="{{ old('price',  $session->price) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation" name="price"/>
+                    <div class="formLabel ">Prise en charge FPF</div>
+                    <input value="{{ old('pec_fpf',  $session->pec_fpf) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Montant de la prise en charge FPF" name="pec_fpf" id="pec_fpf" />
+                    <div class="w100 helper">
+                        Prise en charge de la FPF pour une formation organisée par une UR ou un club
+                    </div>
                 </div>
-                <div class="formUnit w100">
+                <div class="formUnit w100 {{ ($session->ur_id || $session->club_id) ? '' : 'd-none-admin' }}" id="reste_a_charge_wrapper">
+                    <div class="formLabel ">Reste à charge</div>
+                    <input value="{{ old('reste_a_charge',  $session->reste_a_charge) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Reste à charge pour la structure" name="reste_a_charge" id="reste_a_charge" readonly />
+                    <div class="w100 helper">
+                        Reste à charge pour la structure = prix global formation + frais déplacement - prise en charge FPF
+                    </div>
+                </div>
+                <div class="formUnit w100 {{ ($session->ur_id || $session->club_id) ? 'd-none-admin' : '' }}" id="price_wrapper">
+                    <div class="formLabel ">* Prix</div>
+                    <input value="{{ old('price',  $session->price) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation" name="price" id="price" />
+                </div>
+                <div class="formUnit w100 {{ ($session->ur_id || $session->club_id) ? 'd-none-admin': '' }}" id="price_not_member_wrapper">
                     <div class="formLabel ">* Prix non adhérent</div>
-                    <input value="{{ old('price_not_member',  $session->price_not_member) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation pour non adhérent" name="price_not_member"/>
+                    <input value="{{ old('price_not_member',  $session->price_not_member) }}" class="inputFormAction formValue modifying w75" type="text" placeholder="Prix de la formation pour non adhérent" name="price_not_member" id="price_not_member"/>
+                </div>
+                <div class="formUnit w100 {{ ($session->ur_id || $session->club_id) ? '' :'d-none-admin' }}" id="free_wrapper">
+                    <b>Pour une formation organisée par une UR ou un club, le prix demandé lors de l'inscription est à 0.</b>
                 </div>
                 <div class="formUnit w100">
                     <div class="formLabel ">* Nombre de places</div>

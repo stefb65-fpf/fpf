@@ -15,6 +15,11 @@ class Inscrit extends Model
         return $this->belongsTo(Personne::class);
     }
 
+    public function utilisateur()
+    {
+        return $this->belongsTo(Utilisateur::class);
+    }
+
     public function session()
     {
         return $this->belongsTo(Session::class);

@@ -139,6 +139,9 @@ $('a[name=cancelReglement]').on('click', function(e){
                                 chaine += ' - non remboursé: ' + utilisateur.montant_non_rembourse + '€'
                             }
                         }
+                        if (utilisateur.florilege > 0) {
+                            chaine += ' - florilege: ' + utilisateur.montant_florilege + ' € '
+                        }
                         chaine += ')</span>'
                         chaine += '</label>'
                         chaine += '</div>';
@@ -230,5 +233,26 @@ $('#validRemboursementIndividuel').on('click', function(e){
             alert(message);
         }
     });
+})
+
+$('#selectStatutReglement').on('change', function() {
+    if ($('#selectStatutReglement option:selected').val() == -1) {
+        window.location.href = '/admin/reglements'
+    } else {
+        if ($('#selectStatutReglement option:selected').val() == 0) {
+            window.location.href = '/admin/reglements/st=0'
+        } else {
+            window.location.href = '/admin/reglements/st=1'
+        }
+    }
+})
+
+$('#inputMontantReglement').on('keypress', function(e) {
+    if (e.which === 13) {
+        const montant = $('#inputMontantReglement').val()
+        if (montant !== '' && parseInt(montant) == montant) {
+            window.location.href = '/admin/reglements/mt=' + montant
+        }
+    }
 })
 

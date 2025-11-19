@@ -81,6 +81,12 @@
                             formations
                         </a>
                     </li>
+                @else
+                    <li class="leftMenuItem">
+                        <a href="{{ route('formations.notadherents') }}">
+                            formations
+                        </a>
+                    </li>
                 @endif
                 @if($menu['club'])
                     <li class="leftMenuItem{{ Request::is('gestion-club')?" active":""}}">

@@ -17,6 +17,8 @@
                 <tr>
                     <td>Formation / Session</td>
                     <td>UR / Club</td>
+                    <td>PEC FPF</td>
+                    <td>Coût structure</td>
                     <td>Prix (membre / non membre)</td>
                     <td>Places (normales / en attente)</td>
                     <td>Inscrits (validés / attente)</td>
@@ -27,7 +29,7 @@
                 @foreach($formations as $formation)
                     <tr class="formation-dashboard ">
                         <td style="font-weight: bold">{{ $formation->name }}</td>
-                        <td colspan="4"></td>
+                        <td colspan="6"></td>
                         <td>
                             <a href="{{ route('formations.edit', $formation->id) }}" class="btnSmall adminPrimary" target="_blank">éditer la formation</a>
                             @if(sizeof($formation->sessions) == 0)
@@ -65,6 +67,8 @@
                                         PEC : {{ $session->pec }}€
                                     @endif
                                 </td>
+                                <td>{{ $session->pec_fpf > 0 ? $session->pec_fpf.'€' : '' }}</td>
+                                <td>{{ ($session->ur_id || $session->club_id) ? $session->reste_a_charge.'€' : '' }}</td>
                                 <td>{{ $session->price }}€ / {{ $session->price_not_member }}€</td>
                                 <td>{{ $session->places }} / {{ $session->waiting_places }}</td>
                                 <td>

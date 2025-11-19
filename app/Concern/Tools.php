@@ -413,6 +413,16 @@ trait Tools
 
     protected function getReglementsByTerm($term, $query)
     {
+        if (str_starts_with($term, 'st=')) {
+            $statut = substr($term, 3);
+            $query->where('statut', $statut);
+            return $query;
+        }
+        if (str_starts_with($term, 'mt=')) {
+            $montant = substr($term, 3);
+            $query->where('montant', $montant);
+            return $query;
+        }
         if (is_numeric($term)) {
             $club = Club::where('numero', $term)->first();
             if ($club) {

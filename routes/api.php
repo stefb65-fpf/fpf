@@ -21,6 +21,7 @@ Route::post('/validRenouvellementAdherents', [App\Http\Controllers\Api\Utilisate
 Route::post('/utilisateurs/checkBeforeInsertion', [App\Http\Controllers\Api\UtilisateurController::class, 'checkBeforeInsertion']);
 Route::post('/utilisateurs/getTarifForNewUser', [App\Http\Controllers\Api\UtilisateurController::class, 'getTarifForNewUser']);
 Route::post('/utilisateurs/register', [App\Http\Controllers\Api\UtilisateurController::class, 'register']);
+Route::post('/utilisateurs/registerFormation', [App\Http\Controllers\Api\UtilisateurController::class, 'registerFormation']);
 Route::post('/utilisateurs/renew/individuel', [App\Http\Controllers\Api\UtilisateurController::class, 'renewIndividuel']);
 Route::post('/admin/renew/individuel', [App\Http\Controllers\Api\UtilisateurController::class, 'renewIndividuelByAdmin']);
 Route::post('/utilisateurs/add/individuel', [App\Http\Controllers\Api\UtilisateurController::class, 'addIndividuel']);
@@ -92,6 +93,7 @@ Route::post('/gestStatsClub', [App\Http\Controllers\Api\StatistiquesController::
 Route::post('/gestStatsAdherents', [App\Http\Controllers\Api\StatistiquesController::class, 'gestStatsAdherents']);
 Route::post('/gestStatsRepartitionCartes', [App\Http\Controllers\Api\StatistiquesController::class, 'gestStatsRepartitionCartes']);
 Route::post('/gestStatsEvolution', [App\Http\Controllers\Api\StatistiquesController::class, 'gestStatsEvolution']);
+Route::post('/gestStatsEvolutionSaisons', [App\Http\Controllers\Api\StatistiquesController::class, 'gestStatsEvolutionSaisons']);
 
 
 // action sur l'affichage des formations
@@ -105,6 +107,7 @@ Route::post('/formations/payByCb', [App\Http\Controllers\Api\FormationController
 Route::post('/formations/inscriptionAttente', [App\Http\Controllers\Api\FormationController::class, 'inscriptionAttente']);
 Route::post('/formations/saveWithoutPaiement', [App\Http\Controllers\Api\FormationController::class, 'saveWithoutPaiement']);
 Route::post('/formations/addInscritToSession', [App\Http\Controllers\Api\FormationController::class, 'addInscritToSession']);
+Route::post('/formations/addInscritToSessionAndSendLink', [App\Http\Controllers\Api\FormationController::class, 'addInscritToSessionAndSendLink']);
 Route::post('/formations/generatePdfEvaluations', [App\Http\Controllers\Api\FormationController::class, 'generatePdfEvaluations']);
 Route::post('/formations/cancelInscription', [App\Http\Controllers\Api\FormationController::class, 'cancelInscription']);
 
@@ -112,6 +115,7 @@ Route::post('/demandes/{demande}/delete', [App\Http\Controllers\Api\FormationCon
 
 Route::post('/sessions/payByVirement', [App\Http\Controllers\Api\SessionController::class, 'payByVirement']);
 Route::post('/sessions/payByCb', [App\Http\Controllers\Api\SessionController::class, 'payByCb']);
+Route::post('/sessions/payByCreance', [App\Http\Controllers\Api\SessionController::class, 'payByCreance']);
 
 Route::post('/checkTrainerEmail', [App\Http\Controllers\Api\FormateurController::class, 'checkTrainerEmail']);
 

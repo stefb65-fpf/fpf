@@ -18,6 +18,9 @@
                 @if($club)
                     <div class="blue-font" style="text-transform: uppercase; font-weight: bolder;">{{ $club->nom }}</div>
                 @endif
+                @if($ur)
+                    <div class="blue-font" style="text-transform: uppercase; font-weight: bolder;">{{ $ur->nom }}</div>
+                @endif
                 <div class="blue-font">{{ $adresse->libelle1 }}</div>
                 <div class="blue-font">{{ $adresse->libelle2 }}</div>
                 <div class="blue-font">{{ $adresse->codepostal.' '.$adresse->ville }}</div>
@@ -49,6 +52,7 @@
         </table>
         @else
             <div style="margin-top: 20px;">
+                @if(sizeof($remboursements) > 0)
                 <table class="facture-table" style="width: 100%; border-spacing: 0px;">
                     <thead class="bg-blue">
                     <tr>
@@ -94,6 +98,28 @@
                     </tr>
                     </tfoot>
                 </table>
+                @else
+                    <table class="facture-table" style="width: 100%">
+                        <thead class="bg-blue">
+                        <tr>
+                            <th>Description</th>
+                            <th>Montant</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td style="width: 80%">
+                                <div style="padding-right:20px; ">
+                                    {{ $invoice->description }}
+                                </div>
+                            </td>
+                            <td style="width: 20%; text-align: right;">
+                                {{ number_format($invoice->montant, 2, ',', ' ') }} €
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                @endif
             </div>
         @endif
     </div>
@@ -102,7 +128,7 @@
         @if($type == 'personne')
             Création d'une créance utilisateur d'un montant de {{ number_format(-$invoice->montant, 2, ',', ' ') }} € effectué en date du {{ $invoice->created_at->format('d/m/Y') }}.
         @else
-            Création d'une créance club d'un montant de {{ number_format(-$invoice->montant, 2, ',', ' ') }} € effectué en date du {{ $invoice->created_at->format('d/m/Y') }}.
+            Création d'une créance {{ $type }} d'un montant de {{ number_format(-$invoice->montant, 2, ',', ' ') }} € effectué en date du {{ $invoice->created_at->format('d/m/Y') }}.
         @endif
 
     </div>

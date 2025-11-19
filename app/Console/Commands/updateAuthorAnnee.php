@@ -35,7 +35,7 @@ class updateAuthorAnnee extends Command
             $user = Utilisateur::join('personnes', 'utilisateurs.personne_id', '=', 'personnes.id')
                 ->join('fonctionsutilisateurs', 'utilisateurs.id', '=', 'fonctionsutilisateurs.utilisateurs_id')
                 ->whereIn('utilisateurs.statut', [2, 3])
-                ->whereIn('fonctionsutilisateurs.fonctions_id', [57, 58, 97, 87, 336])
+                ->whereIn('fonctionsutilisateurs.fonctions_id', [57, 58, 97, 87, 336, 320])
                 ->where('personnes.email', $wp_user->user_email)
                 ->first();
             if (!$user) {

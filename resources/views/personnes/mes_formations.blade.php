@@ -27,8 +27,7 @@
                             @if($formation->type == 1 || $formation->type == 2)
                                 <div class="tag bgPurpleLight">Présentiel</div>
                             @endif
-                            {{--                                TODO: gérer le tag dernières places en fonction des places réservées et des places disponibles--}}
-                            @if($formation->places <  5)
+                            @if($formation->last_places)
                                 <div class="tag bgRed">Dernières Places</div>
                             @endif
                             @if($formation->categorie)
@@ -37,7 +36,7 @@
                                 @if(sizeof($formation->sessions->sortBy('start_date')->where('start_date', '>', date('Y-m-d'))) > 0)
                                     <div class="tag" style="background-color: #3c3c3c">
                                         Prochaines dates
-                                        @foreach($formation->sessions->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
+                                        @foreach($formation->sessions->where('status', '<', 3)->where('start_date', '>', date('Y-m-d'))->take(5) as $session)
                                             <span class="ml10">{{ date("d/m/Y",strtotime($session->start_date)) }}</span>
                                         @endforeach
                                     </div>

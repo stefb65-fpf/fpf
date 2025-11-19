@@ -10,6 +10,25 @@
                 </svg>
             </a>
         </h1>
+        <div class="filters d-flex">
+            <div class="formBlock maxW100">
+                <div class="formBlockTitle">Filtres</div>
+                <div class="d-flex flexWrap">
+                    <div class="formUnit mb0">
+                        <div class="formLabel mr10 bold">Statut :</div>
+                        <select class="formValue modifying" id="selectStatutReglement">
+                            <option value="-1" {{ $search_statut == '-1' ? 'selected=selected' : '' }}>Tous</option>
+                            <option value="0" {{ $search_statut == '0' ? 'selected=selected' : '' }}>En attente</option>
+                            <option value="1" {{ $search_statut == '1' ? 'selected=selected' : '' }}>Traité</option>
+                        </select>
+                    </div>
+                    <div class="formUnit mb0">
+                        <div class="formLabel mr10 bold">Montant :</div>
+                        <input type="text" id="inputMontantReglement" />
+                    </div>
+                </div>
+            </div>
+        </div>
         @if($term)
             <div class="searchedTerm mt25">
                 <div class="title mt25">Vous avez cherché les règlements contenant l'expression :</div>

@@ -109,7 +109,7 @@ class FormateurController extends Controller
 
     public function add(Request $request, Formation $formation) {
         $formation->formateurs()->attach($request->formateur_id);
-        return redirect()->back()->with('success', 'Le formateur a bien été à la formation.');
+        return redirect()->back()->with('success', 'Le formateur a bien été ajouté à la formation.');
     }
 
     public function remove(Formation $formation, Formateur $formateur) {

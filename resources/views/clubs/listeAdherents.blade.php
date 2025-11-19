@@ -1,3 +1,9 @@
+@if($club->creance > 0)
+    <div class="bg-creance mb25">
+        Votre club dispose d'un avoir de {{ $club->creance }}€ pour les prochaines opérations sur la base en ligne
+    </div>
+@endif
+
 <div class="alertInfo w80">
     <span class="bold">Informations !</span>
     Vous pouvez gérer le renouvellement des adhésions et abonnements des membres de votre club ainsi que la commande de Florilège (si la période de commande est ouverte).

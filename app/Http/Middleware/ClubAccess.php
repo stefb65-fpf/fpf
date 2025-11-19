@@ -17,7 +17,7 @@ class ClubAccess
     {
         // on vérifie que l'utilisateur a bien un accès Club
         $menu = $request->session()->get('menu');
-        if (!$menu || !$menu['club']) {
+        if (!$menu || (!$menu['club'] && !$menu['admin'])) {
             return redirect('/');
         }
         return $next($request);

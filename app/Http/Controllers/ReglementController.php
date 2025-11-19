@@ -11,6 +11,7 @@ use App\Models\Personne;
 use App\Models\Reglement;
 use App\Models\Session;
 use App\Models\Souscription;
+use App\Models\Ur;
 use Illuminate\Http\Request;
 
 class ReglementController extends Controller
@@ -155,7 +156,7 @@ class ReglementController extends Controller
                 $personne->update(['creance' => 0]);
 //                $personne->update(['avoir_formation' => 0]);
 
-                $description = "Inscription à la formation ".$inscrit->session->formation->name;
+                $description = "Inscription à la formation ".$inscrit->session->formation->name." pour la session du ".date("d/m/Y",strtotime($inscrit->session->start_date));
                 $ref = 'FORMATION-'.$inscrit->personne_id.'-'.$inscrit->session_id;
                 $datai = ['reference' => $ref, 'description' => $description, 'montant' => $inscrit->amount, 'personne_id' => $inscrit->personne->id];
                 $this->createAndSendInvoice($datai);
@@ -179,12 +180,25 @@ class ReglementController extends Controller
 
                 $description = "Prise en charge de la session de formation ".$session->formation->name;
                 if ($session->club_id) {
+                    $club = Club::where('id', $session->club_id)->first();
+                    $description .= " par le club ".$session->club->nom;
                     $ref = 'SESSION-FORMATION-'.$session->club_id.'-'.$session->id;
-                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'club_id' => $session->club_id];
+                    $montant = $session->reste_a_charge - $session->club->creance;
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $montant, 'club_id' => $session->club_id];
+//                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'club_id' => $session->club_id];
+
+                    $club->update(['creance' => 0]);
                 } else {
+                    $ur = Ur::where('id', $session->ur_id)->first();
+                    $description .= " par l'UR ".$session->ur->nom;
+                    $montant = $session->reste_a_charge - $session->ur->creance;
                     $ref = 'SESSION-FORMATION-'.$session->ur_id.'-'.$session->id;
-                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'ur_id' => $session->ur_id];
+                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $montant, 'ur_id' => $session->ur_id];
+//                    $datai = ['reference' => $ref, 'description' => $description, 'montant' => $session->pec, 'ur_id' => $session->ur_id];
+
+                    $ur->update(['creance' => 0]);
                 }
+                $session->update(['paid' => $montant]);
 
                 $this->createAndSendInvoice($datai);
             }

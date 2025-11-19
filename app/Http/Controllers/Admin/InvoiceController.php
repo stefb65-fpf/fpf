@@ -52,6 +52,18 @@ class InvoiceController extends Controller
                 if ($personne) {
                     $query->where('personne_id', $personne->id);
                     $valid = 1;
+                } else {
+                    $invoice = Invoice::where('numero', $term)->first();
+                    if ($invoice) {
+                        $query->where('id', $invoice->id);
+                        $valid = 1;
+                    } else {
+                        $invoice = Invoice::where('reference', 'LIKE', '%' . $term . '%')->first();
+                        if ($invoice) {
+                            $query->where('reference', 'LIKE', '%' . $term . '%');
+                            $valid = 1;
+                        }
+                    }
                 }
             } else {
                 $personnes = Personne::where('nom', 'LIKE', '%' . $term . '%')

@@ -5,7 +5,7 @@
     <a href="{{ env('APP_URL') }}mes-mails" class="accountMenuItem{{ Request::is('mes-mails')?" active":""}}">Mails reçus</a>
     <a href="{{ env('APP_URL') }}mes-actions" class="accountMenuItem{{ Request::is('mes-actions')?" active":""}}">Historique</a>
     <a href="{{ env('APP_URL') }}mes-formations" class="accountMenuItem{{ Request::is('mes-formations')?" active":""}}">Mes Formations</a>
-    @if($florilege->active)
+    @if($florilege->active && $user->is_adherent > 0)
         <a href="{{ env('APP_URL') }}florilege" class="accountMenuItem{{ Request::is('florilege')?" active":""}}">Florilège</a>
     @endif
     @if($individual_invoices > 0)
