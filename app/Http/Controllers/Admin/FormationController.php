@@ -54,6 +54,8 @@ class FormationController extends Controller
             ->when($request->new !== null && $request->new !== '', function ($query) use ($request) {
                 $query->where('new', $request->new);
             })
+            ->selectRaw('id, name, shortDesc, categories_formation_id, type, location, level, price, price_not_member,
+            places, waiting_places, duration, published, new, stars, reviews, global_price, created_at, updated_at, archived')
             ->where('archived', false)
             ->orderByDesc('created_at')
             ->get();
@@ -230,7 +232,10 @@ class FormationController extends Controller
     }
 
     public function export() {
-        $formations = Formation::orderBy('id')->get();
+        $formations = Formation::orderBy('id')
+            ->selectRaw('id, name, shortDesc, categories_formation_id, type, location, level, price, price_not_member,
+            places, waiting_places, duration, published, new, stars, reviews, global_price, created_at, updated_at, archived')
+            ->get();
         foreach ($formations as $j => $formation) {
             foreach ($formation->sessions as $k => $session) {
                 if ($session->start_date < date('Y-m-d')) {
@@ -255,7 +260,10 @@ class FormationController extends Controller
 //        $formations = Formation::orderBy('id')->get();
         $formations = Formation::with(['sessions' => function ($query) {
             $query->orderBy('start_date');
-        }])->orderBy('id')->get();
+        }])
+            ->selectRaw('id, name, shortDesc, categories_formation_id, type, location, level, price, price_not_member,
+            places, waiting_places, duration, published, new, stars, reviews, global_price, created_at, updated_at, archived')
+            ->orderBy('id')->get();
         $fichier = 'liste_formations_' . date('YmdHis') . '.xls';
         if (Excel::store(new FormationsListeExport($formations), $fichier, 'xls')) {
             $file_to_download = env('APP_URL') . 'storage/app/public/xls/' . $fichier;
@@ -270,7 +278,10 @@ class FormationController extends Controller
         if (!$this->checkDroit('GESFOR')) {
             return redirect()->route('accueil');
         }
-        $formations = Formation::orderByDesc('created_at')->where('published', 1)->get();
+        $formations = Formation::orderByDesc('created_at')
+            ->selectRaw('id, name, shortDesc, categories_formation_id, type, location, level, price, price_not_member,
+            places, waiting_places, duration, published, new, stars, reviews, global_price, created_at, updated_at, archived')
+            ->where('published', 1)->get();
         foreach ($formations as $formation) {
             foreach ($formation->sessions as $session) {
                 $session->numero_club = '';

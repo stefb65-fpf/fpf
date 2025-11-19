@@ -57,6 +57,8 @@ class FormationController extends Controller
             ->when($request->new !== null && $request->new !== '', function ($query) use ($request) {
                 $query->where('new', $request->new);
             })
+            ->selectRaw('id, name, shortDesc, categories_formation_id, type, location, level, price, price_not_member,
+            places, waiting_places, duration, published, new, stars, reviews, global_price, created_at, updated_at, archived')
             ->where('published', 1)
             ->orderByDesc('created_at')
             ->get();
@@ -486,6 +488,8 @@ class FormationController extends Controller
             ->when($request->new !== null && $request->new !== '', function ($query) use ($request) {
                 $query->where('new', $request->new);
             })
+            ->selectRaw('id, name, shortDesc, categories_formation_id, type, location, level, price, price_not_member,
+            places, waiting_places, duration, published, new, stars, reviews, global_price, created_at, updated_at, archived')
             ->where('published', 1)
             ->orderByDesc('created_at')
             ->get();
